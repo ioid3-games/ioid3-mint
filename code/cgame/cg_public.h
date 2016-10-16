@@ -25,16 +25,16 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #ifndef __CG_PUBLIC_H__
 #define __CG_PUBLIC_H__
 
-#define CG_API_NAME				"SPEARMINT_CGAME"
+#define CG_API_NAME "SPEARMINT_CGAME"
 
 // major 0 means each minor is an API break.
 // major > 0 means each major is an API break and each minor extends API.
-#define CG_API_MAJOR_VERSION	0
-#define CG_API_MINOR_VERSION	37
+#define CG_API_MAJOR_VERSION 0
+#define CG_API_MINOR_VERSION 37
 
 
-#define CMD_BACKUP			64	
-#define CMD_MASK			(CMD_BACKUP - 1)
+#define CMD_BACKUP 64
+#define CMD_MASK (CMD_BACKUP - 1)
 // allow a lot of command backups for very fast systems
 // multiple commands may be combined into a single packet, so this
 // needs to be larger than PACKET_BACKUP
@@ -90,7 +90,6 @@ typedef struct {
 	char updateInfoString[MAX_STRING_CHARS];
 	char messageString[MAX_STRING_CHARS];
 } uiClientState_t;
-
 // Used by LAN_CompareServers
 #define SORT_HOST			0
 #define SORT_MAP			1
@@ -101,7 +100,6 @@ typedef struct {
 #define SORT_BOTS			6
 #define SORT_MAXCLIENTS		7
 #define SORT_GAMEDIR		8
-
 // server browser sources
 #define AS_LOCAL			0
 #define AS_FAVORITES		1
@@ -117,13 +115,15 @@ typedef enum {
 } demoState_t;
 
 // bit flags for trap_Mouse_GetState and trap_Mouse_SetState
-#define MOUSE_CLIENT			0x0001		// update mouse x and y for usercmd_t creation, don't allow mouse to leave window
-#define MOUSE_CGAME				0x0002		// call CG_MOUSE_EVENT when mouse moves
-#define MOUSE_SYSTEMCURSOR		0x0004		// show system cursor, ignored if MOUSE_CLIENT is set or fullscreen
+#define MOUSE_CLIENT		0x0001 // update mouse x and y for usercmd_t creation, don't allow mouse to leave window
+#define MOUSE_CGAME			0x0002 // call CG_MOUSE_EVENT when mouse moves
+#define MOUSE_SYSTEMCURSOR	0x0004 // show system cursor, ignored if MOUSE_CLIENT is set or fullscreen
 
 enum {
-	JOYEVENT_NONE, JOYEVENT_AXIS, JOYEVENT_BUTTON, JOYEVENT_HAT,
-
+	JOYEVENT_NONE,
+	JOYEVENT_AXIS,
+	JOYEVENT_BUTTON,
+	JOYEVENT_HAT,
 	JOYEVENT_MAX
 };
 
@@ -154,22 +154,18 @@ also see qvmTraps_t in qcommon.h for QVM - specific system calls
 
 typedef enum {
 	// ============== general Quake services ==================
-
 	CG_PRINT = 0,
 	CG_ERROR,
 	CG_MILLISECONDS,
 	CG_REAL_TIME,
 	CG_SNAPVECTOR,
-
 	CG_ARGC,
 	CG_ARGV,
 	CG_ARGS,
 	CG_LITERAL_ARGS,
-
 	CG_ADDCOMMAND,
 	CG_REMOVECOMMAND,
 	CG_CMD_EXECUTETEXT,
-
 	CG_CVAR_REGISTER,
 	CG_CVAR_UPDATE,
 	CG_CVAR_SET,
@@ -181,7 +177,6 @@ typedef enum {
 	CG_CVAR_LATCHED_VARIABLE_STRING_BUFFER,
 	CG_CVAR_INFO_STRING_BUFFER,
 	CG_CVAR_CHECK_RANGE,
-
 	CG_FS_FOPENFILE,
 	CG_FS_READ,
 	CG_FS_WRITE,
@@ -191,7 +186,6 @@ typedef enum {
 	CG_FS_GETFILELIST,
 	CG_FS_DELETE,
 	CG_FS_RENAME,
-
 	CG_PC_ADD_GLOBAL_DEFINE,
 	CG_PC_REMOVE_ALL_GLOBAL_DEFINES,
 	CG_PC_LOAD_SOURCE,
@@ -199,12 +193,10 @@ typedef enum {
 	CG_PC_READ_TOKEN,
 	CG_PC_UNREAD_TOKEN,
 	CG_PC_SOURCE_FILE_AND_LINE,
-
 	CG_HEAP_MALLOC, // (int size);
 	CG_HEAP_AVAILABLE, // (void);
 	CG_HEAP_FREE, // (void *data);
 	// =========== client game specific functionality =============
-
 	CG_GETCLIPBOARDDATA = 100,
 	CG_GETGLCONFIG,
 	CG_MEMORY_REMAINING,
@@ -251,7 +243,6 @@ typedef enum {
 	CG_CM_TRANSFORMEDCAPSULETRACE,
 	CG_CM_BISPHERETRACE,
 	CG_CM_TRANSFORMEDBISPHERETRACE,
-
 	CG_R_REGISTERMODEL = 300,
 	CG_R_REGISTERSHADEREX,
 	CG_R_REGISTERSHADER,
@@ -294,7 +285,6 @@ typedef enum {
 	CG_R_GET_SURFACE_SHADER,
 	CG_R_GET_SHADER_FROM_MODEL,
 	CG_R_GET_SHADER_NAME,
-
 	CG_S_REGISTERSOUND = 400,
 	CG_S_SOUNDDURATION,
 	CG_S_STARTLOCALSOUND,
@@ -313,7 +303,6 @@ typedef enum {
 	CG_S_RESPATIALIZE,
 	CG_S_ADDREALLOOPINGSOUND,
 	CG_S_STOPLOOPINGSOUND,
-
 	CG_KEY_KEYNUMTOSTRINGBUF = 500,
 	CG_KEY_GETBINDINGBUF,
 	CG_KEY_SETBINDING,
@@ -325,20 +314,16 @@ typedef enum {
 	CG_KEY_CLEARSTATES,
 	CG_KEY_GETKEY,
 	CG_KEY_SETREPEAT,
-
 	CG_MOUSE_GETSTATE,
 	CG_MOUSE_SETSTATE,
-
 	CG_SET_KEY_FOR_JOY_EVENT, // (int localPlayerNum, const joyevent_t *joyevent, int keynum);
 	CG_GET_KEY_FOR_JOY_EVENT, // (int localPlayerNum, const joyevent_t *joyevent);
 	CG_GET_JOY_EVENT_FOR_KEY, // (int localPlayerNum, int keynum, int startIndex, joyevent_t *joyevent);
 	CG_JOY_EVENT_TO_STRING, // (const joyevent_t *joyevent, char *buf, int size);
-
 	CG_LAN_GETPINGQUEUECOUNT = 600,
 	CG_LAN_CLEARPING,
 	CG_LAN_GETPING,
 	CG_LAN_GETPINGINFO,
-
 	CG_LAN_GETSERVERCOUNT,
 	CG_LAN_GETSERVERADDRESSSTRING,
 	CG_LAN_GETSERVERINFO,
@@ -349,20 +334,16 @@ typedef enum {
 	CG_LAN_SAVECACHEDSERVERS,
 	CG_LAN_ADDSERVER,
 	CG_LAN_REMOVESERVER,
-
 	CG_LAN_SERVERSTATUS,
 	CG_LAN_GETSERVERPING,
 	CG_LAN_SERVERISVISIBLE,
 	CG_LAN_COMPARESERVERS,
-
 	CG_LAN_SERVERISINFAVORITELIST,
-
 	CG_CIN_PLAYCINEMATIC = 700,
 	CG_CIN_STOPCINEMATIC,
 	CG_CIN_RUNCINEMATIC,
 	CG_CIN_DRAWCINEMATIC,
 	CG_CIN_SETEXTENTS,
-
 /*
 	CG_LOADCAMERA = 800,
 	CG_STARTCAMERA,
@@ -379,13 +360,12 @@ typedef enum {
 */
 
 typedef enum {
-	CG_GETAPINAME = 100, CG_GETAPIVERSION,
-
+	CG_GETAPINAME = 100,
+	CG_GETAPIVERSION,
 	CG_INIT = 200,
 // void UI_Init(connstate_t state, int maxSplitView, int playVideo);
 	// playVideo = 1 means first game to run and no start up arguments
 	// playVideo = 2 means switched to a new game/mod and not connecting to a server
-
 	CG_INGAME_INIT,
 // void CG_Init(int serverMessageNum, int serverCommandSequence, int maxSplitView, int playerNum0, int playerNum1, int playerNum2, int playerNum3)
 	// called when the level loads or when the renderer is restarted
@@ -394,79 +374,59 @@ typedef enum {
 	// will call CG_DrawInformation during the loading process
 	// reliableCommandSequence will be 0 on fresh loads, but higher for
 	// demos, tourney restarts, or vid_restarts
-
 	CG_SHUTDOWN,
 // void (*CG_Shutdown) (void);
 	// oportunity to flush and close any open files
-
 	CG_CONSOLE_COMMAND,
 // qboolean(*CG_ConsoleCommand) (connstate_t state, int realTime);
 	// a console command has been issued locally that is not recognized by the
 	// main game system.
 	// use Cmd_Argc() / Cmd_Argv() to read the command, return qfalse if the
 	// command is not known to the game
-
 	CG_REFRESH,
 // void (*CG_Refresh)(int serverTime, stereoFrame_t stereoView, qboolean demoPlayback, connstate_t state, int realTime);
 	// Draws UI and if connected to a server, generates and draws a game scene
 	// and status information at the given time.
 	// If demoPlayback is set, local movement prediction will not be enabled
-
 	CG_CROSSHAIR_PLAYER,
 // int (*CG_CrosshairPlayer)(int localPlayerNum);
-
 	CG_LAST_ATTACKER,
 // int (*CG_LastAttacker)(int localPlayerNum);
-
 	CG_VOIP_STRING,
 //  char *(*CG_VoIPString) (void);
 	// pass voip target token unknown by client to cgame to convert into playerNums
 	// use Cmd_Argc() / Cmd_Argv() to read the target token, return a
 	// string of comma - delimited playerNums based on target token or
 	// NULL if unknown token.
-
 	CG_KEY_EVENT,
 // void (*CG_KeyEvent)(int key, qboolean down, unsigned time, connstate_t state);
-
 	CG_CHAR_EVENT,
 // void (*CG_CharEvent)(int character, connstate_t state);
-
 	CG_MOUSE_EVENT,
 // void (*CG_MouseEvent)(int localPlayerNum, int dx, int dy);
-
 	CG_JOYSTICK_AXIS_EVENT,
 // void (*CG_JoystickAxisEvent)(int localPlayerNum, int axis, int value, unsigned time, connstate_t state, int negKey, int posKey);
-
 	CG_JOYSTICK_BUTTON_EVENT,
 // void (*CG_JoystickButtonEvent)(int localPlayerNum, int button, qboolean down, unsigned time, connstate_t state, int key);
-
 	CG_JOYSTICK_HAT_EVENT,
 // void (*CG_JoystickHatEvent)(int localPlayerNum, int hat, int state, unsigned time, connstate_t state, int upKey, int rightKey, int downKey, int leftKey);
-
 	CG_MOUSE_POSITION,
 // int (*CG_MousePosition)(int localPlayerNum);
-
 	CG_SET_MOUSE_POSITION,
 //  void (*CG_SetMousePosition)(int localPlayerNum, int x, int y);
-
 	CG_SET_ACTIVE_MENU,
 // void (*CG_SetActiveMenu) (uiMenuCommand_t menu);
-
 	CG_CONSOLE_TEXT,
 // void (*CG_ConsoleText)(int realTime, qboolean restoredText);
 // pass text that has been printed to the console to cgame
 // use Cmd_Argc() / Cmd_Argv() to read it
 // if restoredText is qtrue, text is being added from before cgame was loaded.
-
 	CG_CONSOLE_CLOSE,
 // void Con_Close(void);
 // force console to close, used before loading screens
-
 	CG_CREATE_USER_CMD,
 // usercmd_t *CG_CreateUserCmd(int localPlayerNum, int frameTime, int frameMsec, float mx, float my, qboolean anykeydown);
-
 	CG_UPDATE_GLCONFIG
 // void CG_UpdateGLConfig(void);
 } cgameExport_t;
-
 #endif

@@ -81,6 +81,7 @@ bspFile_t *BSP_Load(const char *name) {
 	length = LoadQuakeFile((quakefile_t *)name, &buf.v);
 #endif
 	if (!buf.i) {
+		// File not found.
 		return NULL;
 	}
 	// check formats
