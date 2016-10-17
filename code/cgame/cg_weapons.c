@@ -220,11 +220,9 @@ void CG_RailTrail(playerInfo_t *pi, vec3_t start, vec3_t end) {
 
 	localEntity_t *le;
 	refEntity_t *re;
-
 #define RADIUS 4
 #define ROTATION 1
 #define SPACING 5
-
 	start[2] -= 4;
 
 	le = CG_AllocLocalEntity();
@@ -275,7 +273,6 @@ void CG_RailTrail(playerInfo_t *pi, vec3_t start, vec3_t end) {
 	VectorScale(vec, SPACING, vec);
 
 	skip = -1;
-
 	j = 18;
 
 	for (i = 0; i < len; i += SPACING) {
@@ -410,7 +407,7 @@ static void CG_NailTrail(centity_t *ent, const weaponInfo_t *wi) {
 	BG_EvaluateTrajectory(&es->pos, cg.time, origin);
 
 	contents = CG_PointContents(origin, -1);
-	// if object(e.g. grenade) is stationary, don't toss up smoke
+	// if object (e.g. grenade) is stationary, don't toss up smoke
 	if (es->pos.trType == TR_STATIONARY) {
 		ent->trailTime = cg.time;
 		return;
@@ -432,7 +429,7 @@ static void CG_NailTrail(centity_t *ent, const weaponInfo_t *wi) {
 	for (; t <= ent->trailTime; t += step) {
 		BG_EvaluateTrajectory(&es->pos, t, lastPos);
 
-		smoke = CG_SmokePuff(lastPos, up,   wi->trailRadius,   1, 1, 1, 0.33f, wi->wiTrailTime,   t, 0, 0,   cgs.media.nailPuffShader);
+		smoke = CG_SmokePuff(lastPos, up, wi->trailRadius, 1, 1, 1, 0.33f, wi->wiTrailTime, t, 0, 0, cgs.media.nailPuffShader);
 		// use the optimized local entity add
 		smoke->leType = LE_SCALE_FADE;
 	}
@@ -1216,7 +1213,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent,
 		CG_PositionRotatedEntityOnTag(&barrel, &gun, weapon->weaponModel, "tag_barrel");
 		CG_AddWeaponWithPowerups(&barrel, cent->currentState.powerups);
 	}
-	// if the index of the nonPredictedCent is not the same as the playerNum then this is a fake player(like on teh single player podiums),
+	// if the index of the nonPredictedCent is not the same as the playerNum then this is a fake player (like on teh single player podiums),
 	// so go ahead and use the cent
 	if ((nonPredictedCent - cg_entities) != cent->currentState.playerNum) {
 		nonPredictedCent = cent;

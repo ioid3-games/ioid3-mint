@@ -39,28 +39,24 @@ JOYSTICK SELECT MENU
 #include "ui_local.h"
 
 #define MAX_JOYSTICKS 16
-
-#define JOY_MENU_VERTICAL_SPACING		16
+#define JOY_MENU_VERTICAL_SPACING 16
 
 #define ART_BACK0 "menu/art/back_0"
 #define ART_BACK1 "menu/art/back_1"
 #define ART_FRAMEL "menu/art/frame2_l"
 #define ART_FRAMER "menu/art/frame1_r"
 
-#define ID_JOYSTICK		10
-#define ID_BACK			ID_JOYSTICK + MAX_JOYSTICKS
+#define ID_JOYSTICK	10
+#define ID_BACK		ID_JOYSTICK + MAX_JOYSTICKS
 
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
-
 	menutext_s joysticks[MAX_JOYSTICKS];
 	menubitmap_s back;
-
 	char joystickNames[MAX_JOYSTICKS][61];
 	int numJoysticks;
 	int originalJoystick;
@@ -107,14 +103,13 @@ static void UI_JoystickMenu_Event(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
+		case ID_BACK:
+			if (joystickMenu.changed) {
+				trap_Cmd_ExecuteText(EXEC_APPEND, "in_restart\n");
+			}
 
-	case ID_BACK:
-		if (joystickMenu.changed) {
-			trap_Cmd_ExecuteText(EXEC_APPEND, "in_restart\n");
-		}
-
-		UI_PopMenu();
-		break;
+			UI_PopMenu();
+			break;
 	}
 }
 
@@ -126,6 +121,7 @@ UI_TokenizeDelimitedString
 static void UI_TokenizeDelimitedString(const char *text_in, char *cmd_tokenized, int *cmd_argc, char **cmd_argv, char delimiter) {
 	const char *text;
 	char *textOut;
+
 	// clear previous args
 	*cmd_argc = 0;
 
@@ -138,7 +134,7 @@ static void UI_TokenizeDelimitedString(const char *text_in, char *cmd_tokenized,
 
 	while (1) {
 		if (*cmd_argc == MAX_STRING_TOKENS) {
-			return;			// this is usually something malicious
+			return; // this is usually something malicious
 		}
 		// skip whitespace
 		while (*text && *text <= ' ') {
@@ -146,7 +142,7 @@ static void UI_TokenizeDelimitedString(const char *text_in, char *cmd_tokenized,
 		}
 
 		if (!*text) {
-			return;			// all tokens parsed
+			return; // all tokens parsed
 		}
 		// regular token
 		cmd_argv[*cmd_argc] = textOut;
@@ -168,8 +164,8 @@ UI_Joystick_GetNames
 static void UI_Joystick_GetNames(void) {
 	char joybuf[MAX_STRING_CHARS];
 	int i;
-	char *cmd_argv[MAX_STRING_TOKENS];		// points into cmd_tokenized
-	char cmd_tokenized[BIG_INFO_STRING + MAX_STRING_TOKENS];	// will have 0 bytes inserted
+	char *cmd_argv[MAX_STRING_TOKENS]; // points into cmd_tokenized
+	char cmd_tokenized[BIG_INFO_STRING + MAX_STRING_TOKENS]; // will have 0 bytes inserted
 
 	// Get newline delimited string of joystick names.
 	Q_strncpyz(joybuf, CG_Cvar_VariableString("in_availableJoysticks"), sizeof(joybuf));
@@ -211,7 +207,6 @@ static void UI_Joystick_MenuInit(int localPlayerNum) {
 	UI_Joystick_GetNames();
 
 	joystickMenu.localPlayerNum = localPlayerNum;
-
 	joystickMenu.menu.wrapAround = qtrue;
 	joystickMenu.menu.fullscreen = qtrue;
 
@@ -301,6 +296,7 @@ UI_Joystick_Cache
 =======================================================================================================================================
 */
 void UI_Joystick_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_BACK0);
 	trap_R_RegisterShaderNoMip(ART_BACK1);
 	trap_R_RegisterShaderNoMip(ART_FRAMEL);
@@ -313,7 +309,7 @@ UI_JoystickMenu
 =======================================================================================================================================
 */
 void UI_JoystickMenu(int localPlayerNum) {
+
 	UI_Joystick_MenuInit(localPlayerNum);
 	UI_PushMenu(&joystickMenu.menu);
 }
-

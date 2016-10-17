@@ -360,8 +360,12 @@ void EA_Move(int playerNum, vec3_t dir, float speed) {
 
 	VectorCopy(dir, bi->dir);
 	// cap speed
-	if (speed > MAX_USERMOVE) speed = MAX_USERMOVE;
-	} else if (speed < -MAX_USERMOVE) speed = -MAX_USERMOVE;
+	if (speed > MAX_USERMOVE) {
+		speed = MAX_USERMOVE;
+	} else if (speed < -MAX_USERMOVE) {
+		speed = -MAX_USERMOVE;
+	}
+
 	bi->speed = speed;
 
 	if (speed <= 200) {

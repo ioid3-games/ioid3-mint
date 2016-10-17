@@ -25,12 +25,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-DISPLAY OPTIONS MENU
+	DISPLAY OPTIONS MENU
+
 =======================================================================================================================================
 */
 
 #include "ui_local.h"
-
 
 #define ART_FRAMEL "menu/art/frame2_l"
 #define ART_FRAMER "menu/art/frame1_r"
@@ -39,30 +39,26 @@ DISPLAY OPTIONS MENU
 #define ART_ACCEPT0 "menu/art/accept_0"
 #define ART_ACCEPT1 "menu/art/accept_1"
 
-#define ID_GRAPHICS			10
-#define ID_DISPLAY			11
-#define ID_SOUND			12
-#define ID_NETWORK			13
-#define ID_BRIGHTNESS		14
-#define ID_SCREENSIZE		15
-#define ID_BACK				16
-#define ID_APPLY			17
-#define ID_ANAGLYPH			18
-#define ID_GREYSCALE		19
-
+#define ID_GRAPHICS		10
+#define ID_DISPLAY		11
+#define ID_SOUND		12
+#define ID_NETWORK		13
+#define ID_BRIGHTNESS	14
+#define ID_SCREENSIZE	15
+#define ID_BACK			16
+#define ID_APPLY		17
+#define ID_ANAGLYPH		18
+#define ID_GREYSCALE	19
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
-
 	menutext_s graphics;
 	menutext_s display;
 	menutext_s sound;
 	menutext_s network;
-
 	menuslider_s brightness;
 	menuslider_s screensize;
 	menulist_s anaglyph;
@@ -85,40 +81,40 @@ static void UI_DisplayOptionsMenu_Event(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_GRAPHICS:
-		UI_PopMenu();
-		UI_GraphicsOptionsMenu();
-		break;
-	case ID_DISPLAY:
-		break;
-	case ID_SOUND:
-		UI_PopMenu();
-		UI_SoundOptionsMenu();
-		break;
-	case ID_NETWORK:
-		UI_PopMenu();
-		UI_NetworkOptionsMenu();
-		break;
-	case ID_BRIGHTNESS:
-		trap_Cvar_SetValue("r_gamma", displayOptionsInfo.brightness.curvalue / 10.0f);
-		break;
-	case ID_SCREENSIZE:
-		trap_Cvar_SetValue("cg_viewsize", displayOptionsInfo.screensize.curvalue * 10);
-		break;
-	case ID_ANAGLYPH:
-		trap_Cvar_SetValue("r_anaglyphMode", displayOptionsInfo.anaglyph.curvalue);
-		break;
-	case ID_GREYSCALE:
-		break;
-	case ID_APPLY:
-		trap_Cvar_SetValue("r_greyscale", displayOptionsInfo.greyscale.curvalue);
+		case ID_GRAPHICS:
+			UI_PopMenu();
+			UI_GraphicsOptionsMenu();
+			break;
+		case ID_DISPLAY:
+			break;
+		case ID_SOUND:
+			UI_PopMenu();
+			UI_SoundOptionsMenu();
+			break;
+		case ID_NETWORK:
+			UI_PopMenu();
+			UI_NetworkOptionsMenu();
+			break;
+		case ID_BRIGHTNESS:
+			trap_Cvar_SetValue("r_gamma", displayOptionsInfo.brightness.curvalue / 10.0f);
+			break;
+		case ID_SCREENSIZE:
+			trap_Cvar_SetValue("cg_viewsize", displayOptionsInfo.screensize.curvalue * 10);
+			break;
+		case ID_ANAGLYPH:
+			trap_Cvar_SetValue("r_anaglyphMode", displayOptionsInfo.anaglyph.curvalue);
+			break;
+		case ID_GREYSCALE:
+			break;
+		case ID_APPLY:
+			trap_Cvar_SetValue("r_greyscale", displayOptionsInfo.greyscale.curvalue);
 
-		UI_ForceMenuOff();
-		trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
-		break;
-	case ID_BACK:
-		UI_PopMenu();
-		break;
+			UI_ForceMenuOff();
+			trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
+			break;
+		case ID_BACK:
+			UI_PopMenu();
+			break;
 	}
 }
 
@@ -259,7 +255,7 @@ static void UI_DisplayOptionsMenu_Init(void) {
 	displayOptionsInfo.screensize.generic.x = 400;
 	displayOptionsInfo.screensize.generic.y = y;
 	displayOptionsInfo.screensize.minvalue = 3;
-    displayOptionsInfo.screensize.maxvalue = 10;
+	displayOptionsInfo.screensize.maxvalue = 10;
 
 	y += BIGCHAR_HEIGHT + 2;
 	// references / modifies "r_anaglyphMode"
@@ -323,13 +319,13 @@ static void UI_DisplayOptionsMenu_Init(void) {
 	displayOptionsInfo.screensize.curvalue = trap_Cvar_VariableValue("cg_viewsize") / 10;
 	displayOptionsInfo.anaglyph.curvalue = trap_Cvar_VariableValue("r_anaglyphMode");
 
-	if (displayOptionsInfo.anaglyph.curvalue < 0)
+	if (displayOptionsInfo.anaglyph.curvalue < 0) {
 		displayOptionsInfo.anaglyph.curvalue = 0;
-	} else if (displayOptionsInfo.anaglyph.curvalue > numAnaglyphModes)
+	} else if (displayOptionsInfo.anaglyph.curvalue > numAnaglyphModes) {
 		displayOptionsInfo.anaglyph.curvalue = numAnaglyphModes;
+	}
 
-	displayOptionsInfo.greyscale.curvalue = displayOptionsInfo.greyscale_default
- = (trap_Cvar_VariableValue("r_greyscale") != 0);
+	displayOptionsInfo.greyscale.curvalue = displayOptionsInfo.greyscale_default = (trap_Cvar_VariableValue("r_greyscale") != 0);
 }
 
 /*

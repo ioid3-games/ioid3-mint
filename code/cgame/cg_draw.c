@@ -103,6 +103,7 @@ void CG_Draw3DModelEx(float x, float y, float w, float h, qhandle_t model, cgSki
 
 	memset(&refdef, 0, sizeof(refdef));
 	memset(&ent, 0, sizeof(ent));
+
 	AnglesToAxis(angles, ent.axis);
 	VectorCopy(origin, ent.origin);
 	ent.hModel = model;
@@ -208,7 +209,7 @@ void CG_DrawFlagModel(float x, float y, float w, float h, int team, qboolean for
 		// calculate distance so the flag nearly fills the box, assume heads are taller than wide
 		len = 0.5 * (maxs[2] - mins[2]);
 		origin[0] = len / 0.268; // len / tan(fov / 2)
-		angles[YAW] = 60 * sin(cg.time / 2000.0);;
+		angles[YAW] = 60 * sin(cg.time / 2000.0);
 
 		if (team == TEAM_RED) {
 			handle = cgs.media.redFlagModel;
@@ -518,7 +519,6 @@ static float CG_DrawSnapshot(float y) {
 	s = va("time:%i snap:%i cmd:%i", cg.snap->serverTime, cg.latestSnapshotNum, cgs.serverCommandSequence);
 
 	CG_DrawString(635, y + 2, s, UI_RIGHT|UI_DROPSHADOW|UI_BIGFONT, NULL);
-
 	return y + 2 + CG_DrawStringLineHeight(UI_BIGFONT);
 }
 
@@ -718,7 +718,6 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 
 		if (pi->infoValid && pi->team == team) {
 			hcolor[0] = hcolor[1] = hcolor[2] = hcolor[3] = 1.0;
-
 			xx = x + iconWidth;
 
 			CG_DrawStringExt(xx, y, pi->name, UI_TINYFONT, NULL, 0, TEAM_OVERLAY_MAXNAME_WIDTH, 0);
@@ -727,8 +726,10 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 			if (lwidth) {
 				p = CG_ConfigString(CS_LOCATIONS + pi->location);
 
-				if (!p || !*p)
+				if (!p || !*p) {
 					p = "unknown";
+				}
+
 				xx += iconWidth; // not icon related
 				CG_DrawStringExt(xx, y, p, UI_TINYFONT, NULL, 0, TEAM_OVERLAY_MAXLOCATION_WIDTH, 0);
 				xx += lwidth;
@@ -739,6 +740,7 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 			xx += iconWidth; // not icon related
 
 			Com_sprintf(st, sizeof(st), "%3i", pi->health);
+
 			CG_DrawString(xx, y, st, UI_TINYFONT, hcolor);
 			// draw weapon icon
 			xx += healthWidth;
@@ -752,6 +754,7 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 			xx += iconWidth;
 
 			Com_sprintf(st, sizeof(st), "%3i", pi->armor);
+
 			CG_DrawString(xx, y, st, UI_TINYFONT, hcolor);
 			// Draw powerup icons
 			if (right) {
@@ -824,10 +827,10 @@ static void CG_DrawUpperRight(stereoFrame_t stereoFrame) {
 
 =======================================================================================================================================
 */
-#ifndef MISSIONPACK
+
 /*
 =======================================================================================================================================
-CG_DrawUpperRight
+CG_DrawScores
 
 Draw the small two score display.
 =======================================================================================================================================
@@ -1358,7 +1361,7 @@ static void CG_DrawReward(void) {
 		}
 	}
 
-	count = cg.cur_lc->rewardCount[0] - count * 10;		// number of small rewards to draw
+	count = cg.cur_lc->rewardCount[0] - count * 10; // number of small rewards to draw
 	*/
 	if (cg.cur_lc->rewardCount[0] >= 10) {
 		y = 56;
@@ -1821,7 +1824,6 @@ static void CG_DrawCrosshair(void) {
 	hShader = cgs.media.crosshairShader[ca % NUM_CROSSHAIRS];
 
 	CG_DrawPic(((SCREEN_WIDTH - w) * 0.5f) + x, ((SCREEN_HEIGHT - h) * 0.5f) + y, w, h, hShader);
-
 	trap_R_SetColor(NULL);
 }
 

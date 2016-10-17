@@ -724,6 +724,7 @@ void InitMover(gentity_t *ent) {
 	vec3_t color;
 	qboolean lightSet, colorSet;
 	char *sound;
+
 	// if the "model2" key is set, use a separate model for drawing, but clip against the brushes
 	if (ent->model2) {
 		ent->s.modelindex2 = G_ModelIndex(ent->model2);
@@ -949,7 +950,7 @@ void Think_MatchTeam(gentity_t *ent) {
 
 /*QUAKED func_door (0 .5 .8) ? START_OPEN x CRUSHER
 TOGGLE		wait in both the start and end states for a trigger event.
-START_OPEN	the door to moves to its destination when spawned, and operate in reverse. It is used to temporarily or permanently close off an area when triggered(not useful for touch or takedamage doors).
+START_OPEN	the door to moves to its destination when spawned, and operate in reverse. It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
 NOMONSTER	monsters will not trigger this door
 
 "model2"	.md3 model to also draw
@@ -990,6 +991,7 @@ void SP_func_door(gentity_t *ent) {
 	VectorCopy(ent->s.origin, ent->pos1);
 	// calculate second position
 	G_SetBrushModel(ent, ent->model);
+
 	G_SetMovedir(ent->s.angles, ent->movedir);
 
 	abs_movedir[0] = fabs(ent->movedir[0]);
@@ -1254,10 +1256,9 @@ void SP_func_button(gentity_t *ent) {
 =======================================================================================================================================
 */
 
-
-#define TRAIN_START_ON 1
-#define TRAIN_TOGGLE 2
-#define TRAIN_BLOCK_STOPS 4
+#define TRAIN_START_ON		1
+#define TRAIN_TOGGLE		2
+#define TRAIN_BLOCK_STOPS	4
 
 /*
 =======================================================================================================================================
@@ -1435,6 +1436,7 @@ void SP_func_train(gentity_t *self) {
 	}
 
 	G_SetBrushModel(self, self->model);
+
 	InitMover(self);
 
 	self->reached = Reached_Train;
@@ -1450,7 +1452,6 @@ void SP_func_train(gentity_t *self) {
 
 =======================================================================================================================================
 */
-
 
 /*QUAKED func_static (0 .5 .8) ?
 A bmodel that just sits there, doing nothing. Can be used for conditional walls and models.

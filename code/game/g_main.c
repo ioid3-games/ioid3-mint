@@ -45,8 +45,8 @@ typedef struct {
 
 #define RANGE_ALL 0, 0, qfalse
 #define RANGE_BOOL 0, 1, qtrue
-#define RANGE_INT (min, max) min, max, qtrue
-#define RANGE_FLOAT (min, max) min, max, qfalse
+#define RANGE_INT(min, max) min, max, qtrue
+#define RANGE_FLOAT(min, max) min, max, qfalse
 
 gentity_t g_entities[MAX_GENTITIES];
 gplayer_t g_players[MAX_CLIENTS];
@@ -111,7 +111,8 @@ static cvarTable_t gameCvarTable[] = {
 	// don't override the cheat state set by the system
 	{&g_cheats, "sv_cheats", "", 0, 0, RANGE_ALL},
 	// noset vars
-	{NULL, "gameversion", GAME_VERSION, CVAR_SERVERINFO|CVAR_ROM, 0, RANGE_ALL}, {NULL, "gamedate", __DATE__, CVAR_ROM, 0, RANGE_ALL},
+	{NULL, "gameversion", GAME_VERSION, CVAR_SERVERINFO|CVAR_ROM, 0, RANGE_ALL},
+	{NULL, "gamedate", __DATE__, CVAR_ROM, 0, RANGE_ALL},
 	{&g_restarted, "g_restarted", "0", CVAR_ROM, 0, RANGE_ALL},
 	// latched vars
 	{&g_gametype, "g_gametype", "0", CVAR_SERVERINFO|CVAR_USERINFO|CVAR_LATCH, GCF_DO_RESTART, RANGE_INT(0, GT_MAX_GAME_TYPE - 1)},
@@ -150,7 +151,7 @@ static cvarTable_t gameCvarTable[] = {
 	{&g_podiumDrop, "g_podiumDrop", "70", 0, 0, RANGE_ALL},
 	{&g_allowVote, "g_allowVote", "1", CVAR_ARCHIVE, 0, RANGE_BOOL},
 	{&g_listEntity, "g_listEntity", "0", 0, 0, RANGE_ALL},
-	{&g_singlePlayer, "ui_singlePlayerActive", "0", CVAR_SYSTEMINFO|CVAR_ROM, 0, RANGE_ALL}, 
+	{&g_singlePlayer, "ui_singlePlayerActive", "0", CVAR_SYSTEMINFO|CVAR_ROM, 0, RANGE_ALL},
 #ifdef MISSIONPACK
 	{&g_obeliskHealth, "g_obeliskHealth", "2500", 0, 0, RANGE_ALL},
 	{&g_obeliskRegenPeriod, "g_obeliskRegenPeriod", "1", 0, 0, RANGE_ALL},
@@ -318,7 +319,7 @@ void G_FindTeams(void) {
 			continue;
 		}
 
-		if (e->flags & FL_TEAMSLAVE {
+		if (e->flags & FL_TEAMSLAVE) {
 			continue;
 		}
 
@@ -577,7 +578,7 @@ G_ShutdownGame
 */
 void G_ShutdownGame(int restart) {
 
-	G_DPrintf("==== ShutdownGame ====\n"
+	G_DPrintf("==== ShutdownGame ====\n");
 
 	if (level.logFile) {
 		G_LogPrintf("ShutdownGame:\n");
@@ -791,7 +792,7 @@ void AddTournamentPlayer(void) {
 	}
 
 	level.warmupTime = -1;
-	// set them to free - for - all team
+	// set them to free-for-all team
 	SetTeam(&g_entities[nextInLine - level.players], "f");
 }
 
@@ -894,8 +895,8 @@ SortRanks
 int QDECL SortRanks(const void *a, const void *b) {
 	gplayer_t *ca, *cb;
 
-	ca = &level.players[* (int *)a];
-	cb = &level.players[* (int *)b];
+	ca = &level.players[*(int *)a];
+	cb = &level.players[*(int *)b];
 	// sort special players last
 	if (ca->sess.spectatorState == SPECTATOR_SCOREBOARD || ca->sess.spectatorPlayer < 0) {
 		return 1;
@@ -977,7 +978,7 @@ void CalculateRanks(void) {
 
 			if (level.players[i].sess.sessionTeam != TEAM_SPECTATOR) {
 				level.numNonSpectatorPlayers++;
-				// decide if this should be auto - followed
+				// decide if this should be auto-followed
 				if (level.players[i].pers.connected == CON_CONNECTED) {
 					level.numPlayingPlayers++;
 
@@ -1005,7 +1006,7 @@ void CalculateRanks(void) {
 	// set the rank value for all players that are connected and not spectators
 	if (g_gametype.integer >= GT_TEAM) {
 		// in team games, rank is just the order of the teams, 0 = red, 1 = blue, 2 = tied
-		for (i = 0;  i < level.numConnectedPlayers; i++) {
+		for (i = 0; i < level.numConnectedPlayers; i++) {
 			cl = &level.players[level.sortedPlayers[i]];
 
 			if (level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE]) {
@@ -1178,7 +1179,7 @@ void BeginIntermission(void) {
 	for (i = 0; i < level.maxplayers; i++) {
 		player = g_entities + i;
 
-		if (!player->inuse {
+		if (!player->inuse) {
 			continue;
 		}
 		// respawn if dead
@@ -1220,7 +1221,7 @@ void ExitLevel(void) {
 
 	// bot interbreeding
 	BotInterbreedEndMatch();
-	// if we are running a tournement map, kick the loser to spectator status, // which will automatically grab the next spectator and restart
+	// if we are running a tournament map, kick the loser to spectator status, which will automatically grab the next spectator and restart
 	if (g_gametype.integer == GT_TOURNAMENT) {
 		if (!level.restarted) {
 			RemoveTournamentLoser();
@@ -1260,8 +1261,7 @@ void ExitLevel(void) {
 	}
 	// we need to do this here before changing to CON_CONNECTING
 	G_WriteSessionData();
-	// change all client states to connecting, so the early players into the
-	// next level will know the others aren't done reconnecting
+	// change all client states to connecting, so the early players into the next level will know the others aren't done reconnecting
 	for (i = 0; i < g_maxplayers.integer; i++) {
 		if (level.players[i].pers.connected == CON_CONNECTED) {
 			level.players[i].pers.connected = CON_CONNECTING;
@@ -1584,12 +1584,12 @@ void CheckExitRules(void) {
 =======================================================================================================================================
 CheckTournament
 
-Once a frame, check for changes in tournement player state.
+Once a frame, check for changes in tournament player state.
 =======================================================================================================================================
 */
 void CheckTournament(void) {
-	// check because we run 3 game frames before calling PlayerConnect and/or PlayerBegin
-	// for players on a map_restart
+
+	// check because we run 3 game frames before calling PlayerConnect and/or PlayerBegin for players on a map_restart
 	if (level.numPlayingPlayers == 0) {
 		return;
 	}

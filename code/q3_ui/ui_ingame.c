@@ -25,29 +25,29 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-INGAME MENU
+	INGAME MENU
+
 =======================================================================================================================================
 */
-
 
 #include "ui_local.h"
 
 
 #define INGAME_FRAME "menu/art/addbotframe"
 //#define INGAME_FRAME "menu/art/cut_frame"
-#define INGAME_MENU_VERTICAL_SPACING	28
+#define INGAME_MENU_VERTICAL_SPACING 28
 
-#define ID_TEAM					10
-#define ID_ADDBOTS				11
-#define ID_REMOVEBOTS			12
-#define ID_SETUP				13
-#define ID_SERVERINFO			14
-#define ID_LEAVEARENA			15
-#define ID_RESTART				16
-#define ID_QUIT					17
-#define ID_RESUME				18
-#define ID_TEAMORDERS			19
-#define ID_LOCALPLAYERS			20
+#define ID_TEAM			10
+#define ID_ADDBOTS		11
+#define ID_REMOVEBOTS	12
+#define ID_SETUP		13
+#define ID_SERVERINFO	14
+#define ID_LEAVEARENA	15
+#define ID_RESTART		16
+#define ID_QUIT			17
+#define ID_RESUME		18
+#define ID_TEAMORDERS	19
+#define ID_LOCALPLAYERS	20
 
 
 typedef struct {
@@ -125,39 +125,39 @@ void InGame_Event(void *ptr, int notification) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_TEAM:
-		InSelectPlayerMenu(UI_TeamMainMenu, "CHANGE TEAM", qtrue);
-		break;
-	case ID_SETUP:
-		UI_SetupMenu();
-		break;
-	case ID_LEAVEARENA:
-		trap_Cmd_ExecuteText(EXEC_APPEND, "disconnect\n");
-		break;
-	case ID_RESTART:
-		UI_ConfirmMenu("RESTART ARENA?", 0, InGame_RestartAction);
-		break;
-	case ID_QUIT:
-		UI_ConfirmMenu("EXIT GAME?", 0, InGame_QuitAction);
-		break;
-	case ID_SERVERINFO:
-		UI_ServerInfoMenu();
-		break;
-	case ID_ADDBOTS:
-		UI_AddBotsMenu();
-		break;
-	case ID_REMOVEBOTS:
-		UI_RemoveBotsMenu();
-		break;
-	case ID_TEAMORDERS:
-		UI_TeamOrdersMenu();
-		break;
-	case ID_RESUME:
-		UI_PopMenu();
-		break;
-	case ID_LOCALPLAYERS:
-		InSelectPlayerMenu(UI_TogglePlayerIngame, "ADD OR DROP", qfalse);
-		break;
+		case ID_TEAM:
+			InSelectPlayerMenu(UI_TeamMainMenu, "CHANGE TEAM", qtrue);
+			break;
+		case ID_SETUP:
+			UI_SetupMenu();
+			break;
+		case ID_LEAVEARENA:
+			trap_Cmd_ExecuteText(EXEC_APPEND, "disconnect\n");
+			break;
+		case ID_RESTART:
+			UI_ConfirmMenu("RESTART ARENA?", 0, InGame_RestartAction);
+			break;
+		case ID_QUIT:
+			UI_ConfirmMenu("EXIT GAME?", 0, InGame_QuitAction);
+			break;
+		case ID_SERVERINFO:
+			UI_ServerInfoMenu();
+			break;
+		case ID_ADDBOTS:
+			UI_AddBotsMenu();
+			break;
+		case ID_REMOVEBOTS:
+			UI_RemoveBotsMenu();
+			break;
+		case ID_TEAMORDERS:
+			UI_TeamOrdersMenu();
+			break;
+		case ID_RESUME:
+			UI_PopMenu();
+			break;
+		case ID_LOCALPLAYERS:
+			InSelectPlayerMenu(UI_TogglePlayerIngame, "ADD OR DROP", qfalse);
+			break;
 	}
 }
 
@@ -375,6 +375,7 @@ UI_InGameMenu
 */
 void UI_InGameMenu(void) {
 	float ax, ay, aw, ah;
+
 	// force as top level menu
 	uis.menusp = 0;
 

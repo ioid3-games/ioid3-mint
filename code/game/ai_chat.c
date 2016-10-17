@@ -235,7 +235,9 @@ char *BotRandomOpponentName(bot_state_t *bs) {
 			continue;
 		}
 		// skip team mates
-		if (BotSameTeam(bs, i)) continue;
+		if (BotSameTeam(bs, i)) {
+			continue;
+		}
 
 		opponents[numopponents] = i;
 		numopponents++;

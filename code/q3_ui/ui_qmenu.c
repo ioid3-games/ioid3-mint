@@ -122,16 +122,19 @@ static void Text_Draw(menutext_s *t) {
 
 	buff[0] = '\0';
 	// possible label
-	if (t->generic.name)
+	if (t->generic.name) {
 		Q_strncpyz(buff, t->generic.name, sizeof(buff));
+	}
 	// possible value
-	if (t->string)
+	if (t->string) {
 		Q_strcat(buff, sizeof(buff), t->string);
+	}
 
-	if (t->generic.flags & QMF_GRAYED)
+	if (t->generic.flags & QMF_GRAYED) {
 		color = text_color_disabled;
 	} else {
 		color = t->color;
+	}
 
 	UI_DrawString(x, y, buff, t->style, color);
 }
@@ -153,15 +156,16 @@ BText_Draw
 static void BText_Draw(menutext_s *t) {
 	int x;
 	int y;
-	float * 	color;
+	float *color;
 
 	x = t->generic.x;
 	y = t->generic.y;
 
-	if (t->generic.flags & QMF_GRAYED)
+	if (t->generic.flags & QMF_GRAYED) {
 		color = text_color_disabled;
 	} else {
 		color = t->color;
+	}
 
 	UI_DrawBannerString(x, y, t->string, t->style, color);
 }
@@ -205,16 +209,17 @@ PText_Draw
 static void PText_Draw(menutext_s *t) {
 	int x;
 	int y;
-	float *	color;
+	float *color;
 	int style;
 
 	x = t->generic.x;
 	y = t->generic.y;
 
-	if (t->generic.flags & QMF_GRAYED)
+	if (t->generic.flags & QMF_GRAYED) {
 		color = text_color_disabled;
 	} else {
 		color = t->color;
+	}
 
 	style = t->style;
 
@@ -279,7 +284,7 @@ void Bitmap_Draw(menubitmap_s *b) {
 	float w;
 	float h;
 	vec4_t tempcolor;
-	float * 	color;
+	float *color;
 
 	x = b->generic.x;
 	y = b->generic.y;
@@ -295,12 +300,14 @@ void Bitmap_Draw(menubitmap_s *b) {
 	if (b->generic.name && !b->shader) {
 		b->shader = trap_R_RegisterShaderNoMip(b->generic.name);
 
-		if (!b->shader && b->errorpic)
+		if (!b->shader && b->errorpic) {
 			b->shader = trap_R_RegisterShaderNoMip(b->errorpic);
+		}
 	}
 
-	if (b->focuspic && !b->focusshader)
+	if (b->focuspic && !b->focusshader) {
 		b->focusshader = trap_R_RegisterShaderNoMip(b->focuspic);
+	}
 
 	if (b->generic.flags & QMF_GRAYED) {
 		if (b->shader) {
@@ -309,19 +316,20 @@ void Bitmap_Draw(menubitmap_s *b) {
 			trap_R_SetColor(NULL);
 		}
 	} else {
-		if (b->shader)
+		if (b->shader) {
 			CG_DrawPic(x, y, w, h, b->shader);
+		}
 
-		if (((b->generic.flags & QMF_PULSE) || (b->generic.flags & QMF_PULSEIFFOCUS))
-		 && (Menu_ItemAtCursor(b->generic.parent) == b)) {
-			if (b->focuscolor)			
-			{
+		if (((b->generic.flags & QMF_PULSE) || (b->generic.flags & QMF_PULSEIFFOCUS)) && (Menu_ItemAtCursor(b->generic.parent) == b)) {
+			if (b->focuscolor) {
 				tempcolor[0] = b->focuscolor[0];
 				tempcolor[1] = b->focuscolor[1];
 				tempcolor[2] = b->focuscolor[2];
 				color = tempcolor;
-			} else
+			} else {
 				color = pulse_color;
+			}
+
 			color[3] = 0.5 + 0.5 * sin(uis.realtime / PULSE_DIVISOR);
 
 			trap_R_SetColor(color);
@@ -332,8 +340,9 @@ void Bitmap_Draw(menubitmap_s *b) {
 				trap_R_SetColor(b->focuscolor);
 				CG_DrawPic(x, y, w, h, b->focusshader);
 				trap_R_SetColor(NULL);
-			} else
+			} else {
 				CG_DrawPic(x, y, w, h, b->focusshader);
+			}
 		}
 	}
 }
@@ -397,6 +406,7 @@ RadioButton_Init
 */
 static void RadioButton_Init(menuradiobutton_s *rb) {
 	int len;
+
 	// calculate bounds
 	len = CG_DrawStrlen(rb->generic.name, UI_SMALLFONT);
 
@@ -412,6 +422,7 @@ RadioButton_Key
 =======================================================================================================================================
 */
 static sfxHandle_t RadioButton_Key(menuradiobutton_s *rb, int key) {
+
 	switch (key) {
 		case K_MOUSE1:
 			if (!(rb->generic.flags & QMF_HASMOUSEFOCUS)) {
@@ -446,8 +457,9 @@ static sfxHandle_t RadioButton_Key(menuradiobutton_s *rb, int key) {
 		case K_RIGHTARROW:
 			rb->curvalue = !rb->curvalue;
 
-			if (rb->generic.callback)
+			if (rb->generic.callback) {
 				rb->generic.callback(rb, QM_ACTIVATED);
+			}
 
 			return (menu_move_sound);
 	}
@@ -490,11 +502,11 @@ static void RadioButton_Draw(menuradiobutton_s *rb) {
 		UI_DrawChar(x, y, GLYPH_ARROW, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
 	}
 
-	if (rb->generic.name)
+	if (rb->generic.name) {
 		UI_DrawString(x - SMALLCHAR_WIDTH, y, rb->generic.name, UI_RIGHT|UI_SMALLFONT, color);
+	}
 	// center ratio button on box and move down 2 pixels at 16 pt size
-	picY = rb->generic.top + (rb->generic.bottom - rb->generic.top) / 2 - 16 / 2
-				 + 2.0f * SMALLCHAR_HEIGHT / 16.0f;
+	picY = rb->generic.top + (rb->generic.bottom - rb->generic.top) / 2 - 16 / 2 + 2.0f * SMALLCHAR_HEIGHT / 16.0f;
 
 	if (!rb->curvalue) {
 		CG_DrawPic(x + SMALLCHAR_WIDTH, picY, 16, 16, uis.rb_off);
@@ -537,42 +549,49 @@ static sfxHandle_t Slider_Key(menuslider_s *s, int key) {
 			oldvalue = s->curvalue;
 			s->curvalue = (x /  (float) (SLIDER_RANGE * SMALLCHAR_WIDTH)) * (s->maxvalue - s->minvalue) + s->minvalue;
 
-			if (s->curvalue < s->minvalue)
+			if (s->curvalue < s->minvalue) {
 				s->curvalue = s->minvalue;
-			else if (s->curvalue > s->maxvalue)
+			} else if (s->curvalue > s->maxvalue) {
 				s->curvalue = s->maxvalue;
+			}
 
-			if (s->curvalue != oldvalue)
+
+			if (s->curvalue != oldvalue) {
 				sound = menu_move_sound;
 			} else {
 				sound = 0;
+			}
+
 			break;
 		case K_KP_LEFTARROW:
 		case K_LEFTARROW:
 			if (s->curvalue > s->minvalue) {
 				s->curvalue--;
 				sound = menu_move_sound;
-			} else
+			} else {
 				sound = menu_buzz_sound;
-			break;			
+			}
 
+			break;
 		case K_KP_RIGHTARROW:
 		case K_RIGHTARROW:
 			if (s->curvalue < s->maxvalue) {
 				s->curvalue++;
 				sound = menu_move_sound;
-			} else
+			} else {
 				sound = menu_buzz_sound;
-			break;			
+			}
 
+			break;
 		default:
 			// key not handled
 			sound = 0;
 			break;
 	}
 
-	if (sound && s->generic.callback)
+	if (sound && s->generic.callback) {
 		s->generic.callback(s, QM_ACTIVATED);
+	}
 
 	return (sound);
 }
@@ -678,12 +697,14 @@ static void Slider_Draw(menuslider_s *s) {
 	if (s->maxvalue > s->minvalue) {
 		s->range = (s->curvalue - s->minvalue) / (float) (s->maxvalue - s->minvalue);
 
-		if (s->range < 0)
+		if (s->range < 0) {
 			s->range = 0;
-		else if (s->range > 1)
+		} else if (s->range > 1) {
 			s->range = 1;
+		}
 	} else {
 		s->range = 0;
+	}
 	// draw thumb
 	if (style & UI_PULSE) {
 		style &= ~UI_PULSE;
@@ -713,8 +734,9 @@ static void SpinControl_Init(menulist_s *s) {
 	while ((str = s->itemnames[s->numitems]) != 0) {
 		l = CG_DrawStrlen(str, UI_SMALLFONT);
 
-		if (l > len)
+		if (l > len) {
 			len = l;
+		}
 
 		s->numitems++;
 	}		
@@ -794,7 +816,7 @@ static void SpinControl_Draw(menulist_s *s) {
 	style = UI_SMALLFONT;
 	focus = (s->generic.parent->cursor == s->generic.menuPosition);
 
-	if (s->generic.flags & QMF_GRAYED)
+	if (s->generic.flags & QMF_GRAYED) {
 		color = text_color_disabled;
 	} else if (focus) {
 		color = text_color_highlight;
@@ -804,6 +826,7 @@ static void SpinControl_Draw(menulist_s *s) {
 		style |= UI_BLINK;
 	} else {
 		color = text_color_normal;
+	}
 
 	if (focus) {
 		// draw cursor

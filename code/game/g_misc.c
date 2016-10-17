@@ -286,7 +286,7 @@ void locateCamera(gentity_t *ent) {
 	ent->s.eventParm = DirToByte(dir);
 }
 
-/*QUAKED misc_portal_surface (0 0 1) (-8 - 8 - 8) (8 8 8)
+/*QUAKED misc_portal_surface (0 0 1) (-8 -8 -8) (8 8 8)
 The portal surface nearest this entity will show a view from the targeted misc_portal_camera, or a mirror view if untargeted.
 This must be within 64 world units of the surface!
 */

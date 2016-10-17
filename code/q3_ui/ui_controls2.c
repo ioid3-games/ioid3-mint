@@ -37,7 +37,6 @@ CONTROLS MENU
 #define ART_FRAMEL "menu/art/frame2_l"
 #define ART_FRAMER "menu/art/frame1_r"
 
-
 typedef struct {
 	char *command;
 	char *label;
@@ -55,17 +54,17 @@ typedef struct {
 	float value;
 } configcvar_t;
 
-#define SAVE_NOOP		0
-#define SAVE_YES		1
-#define SAVE_NO			2
-#define SAVE_CANCEL		3
+#define SAVE_NOOP	0
+#define SAVE_YES	1
+#define SAVE_NO		2
+#define SAVE_CANCEL	3
 
 // control sections
-#define C_MOVEMENT		0
-#define C_LOOKING		1
-#define C_WEAPONS		2
-#define C_MISC			3
-#define C_JOYSTICK		4
+#define C_MOVEMENT	0
+#define C_LOOKING	1
+#define C_WEAPONS	2
+#define C_MISC		3
+#define C_JOYSTICK	4
 
 #define ID_MOVEMENT		100
 #define ID_LOOKING		101
@@ -79,37 +78,103 @@ typedef struct {
 
 enum {
 	// bindable actions
-	ID_SHOWSCORES, ID_USEITEM, ID_SPEED, ID_FORWARD, ID_BACKPEDAL, ID_MOVELEFT, ID_MOVERIGHT, ID_MOVEUP, ID_MOVEDOWN, ID_LEFT, ID_RIGHT, ID_STRAFE, ID_LOOKUP, ID_LOOKDOWN, ID_MOUSELOOK, ID_CENTERVIEW, ID_ZOOMVIEW, ID_WEAPON1, ID_WEAPON2, ID_WEAPON3, ID_WEAPON4, ID_WEAPON5, ID_WEAPON6, ID_WEAPON7, ID_WEAPON8, ID_WEAPON9,
+	ID_SHOWSCORES,
+	ID_USEITEM,
+	ID_SPEED,
+	ID_FORWARD,
+	ID_BACKPEDAL,
+	ID_MOVELEFT,
+	ID_MOVERIGHT,
+	ID_MOVEUP,
+	ID_MOVEDOWN,
+	ID_LEFT,
+	ID_RIGHT,
+	ID_STRAFE,
+	ID_LOOKUP,
+	ID_LOOKDOWN,
+	ID_MOUSELOOK,
+	ID_CENTERVIEW,
+	ID_ZOOMVIEW,
+	ID_WEAPON1,
+	ID_WEAPON2,
+	ID_WEAPON3,
+	ID_WEAPON4,
+	ID_WEAPON5,
+	ID_WEAPON6,
+	ID_WEAPON7,
+	ID_WEAPON8,
+	ID_WEAPON9,
 #ifdef MISSIONPACK
-	ID_WEAPON11, ID_WEAPON12, ID_WEAPON13,
+	ID_WEAPON11,
+	ID_WEAPON12,
+	ID_WEAPON13,
 #endif
-	ID_ATTACK, ID_WEAPPREV, ID_WEAPNEXT, ID_GESTURE, ID_CHAT, ID_CHAT2, ID_CHAT3, ID_CHAT4, ID_TOGGLEMENU,
+	ID_ATTACK,
+	ID_WEAPPREV,
+	ID_WEAPNEXT,
+	ID_GESTURE,
+	ID_CHAT,
+	ID_CHAT2,
+	ID_CHAT3,
+	ID_CHAT4,
+	ID_TOGGLEMENU,
 	// all others
-	ID_FREELOOK, ID_INVERTMOUSE, ID_ALWAYSRUN, ID_AUTOSWITCH, ID_MOUSESPEED, ID_SELECTJOY, ID_JOYANALOG, ID_JOYTHRESHOLD, ID_SMOOTHMOUSE
+	ID_FREELOOK,
+	ID_INVERTMOUSE,
+	ID_ALWAYSRUN,
+	ID_AUTOSWITCH,
+	ID_MOUSESPEED,
+	ID_SELECTJOY,
+	ID_JOYANALOG,
+	ID_JOYTHRESHOLD,
+	ID_SMOOTHMOUSE
 };
 
 enum {
-	ANIM_IDLE, ANIM_RUN, ANIM_WALK, ANIM_BACK, ANIM_JUMP, ANIM_CROUCH, ANIM_STEPLEFT, ANIM_STEPRIGHT, ANIM_TURNLEFT, ANIM_TURNRIGHT, ANIM_LOOKUP, ANIM_LOOKDOWN, ANIM_WEAPON1, ANIM_WEAPON2, ANIM_WEAPON3, ANIM_WEAPON4, ANIM_WEAPON5, ANIM_WEAPON6, ANIM_WEAPON7, ANIM_WEAPON8, ANIM_WEAPON9, ANIM_WEAPON10,
+	ANIM_IDLE,
+	ANIM_RUN,
+	ANIM_WALK,
+	ANIM_BACK,
+	ANIM_JUMP,
+	ANIM_CROUCH,
+	ANIM_STEPLEFT,
+	ANIM_STEPRIGHT,
+	ANIM_TURNLEFT,
+	ANIM_TURNRIGHT,
+	ANIM_LOOKUP,
+	ANIM_LOOKDOWN,
+	ANIM_WEAPON1,
+	ANIM_WEAPON2,
+	ANIM_WEAPON3,
+	ANIM_WEAPON4,
+	ANIM_WEAPON5,
+	ANIM_WEAPON6,
+	ANIM_WEAPON7,
+	ANIM_WEAPON8,
+	ANIM_WEAPON9,
+	ANIM_WEAPON10,
 #ifdef MISSIONPACK
-	ANIM_WEAPON11, ANIM_WEAPON12, ANIM_WEAPON13,
+	ANIM_WEAPON11,
+	ANIM_WEAPON12,
+	ANIM_WEAPON13,
 #endif
-	ANIM_ATTACK, ANIM_GESTURE, ANIM_DIE, ANIM_CHAT
+	ANIM_ATTACK,
+	ANIM_GESTURE,
+	ANIM_DIE,
+	ANIM_CHAT
 };
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
 	menubitmap_s player;
-
 	menutext_s movement;
 	menutext_s looking;
 	menutext_s weapons;
 	menutext_s misc;
 	menutext_s joystick;
-
 	menuaction_s walkforward;
 	menuaction_s backpedal;
 	menuaction_s stepleft;
@@ -158,7 +223,6 @@ typedef struct {
 	menuaction_s chat3;
 	menuaction_s chat4;
 	menuaction_s togglemenu;
-
 	menutext_s selectjoy;
 	menuradiobutton_s joyanalog;
 	menuslider_s joythreshold;
@@ -226,31 +290,139 @@ static bind_t g_bindings[] = {
 #define MINIBIND(id, d1, d2) {(char *)NULL, (char *)NULL, (id), 0, (d1), (d2), -1, -1}
 
 static bind_t g_bindings2[] = {
-	MINIBIND(ID_SHOWSCORES, -1, -1), MINIBIND(ID_USEITEM, -1, -1), MINIBIND(ID_SPEED, -1, -1), MINIBIND(ID_FORWARD, -1, -1), MINIBIND(ID_BACKPEDAL, -1, -1), MINIBIND(ID_MOVELEFT, -1, -1), MINIBIND(ID_MOVERIGHT, -1, -1), MINIBIND(ID_MOVEUP, -1, -1), MINIBIND(ID_MOVEDOWN, -1, -1), MINIBIND(ID_LEFT, -1, -1), MINIBIND(ID_RIGHT, -1, -1), MINIBIND(ID_STRAFE, -1, -1), MINIBIND(ID_LOOKUP, -1, -1), MINIBIND(ID_LOOKDOWN, -1, -1), MINIBIND(ID_MOUSELOOK, -1, -1), MINIBIND(ID_CENTERVIEW, -1, -1), MINIBIND(ID_ZOOMVIEW, -1, -1), MINIBIND(ID_WEAPON1, -1, -1), MINIBIND(ID_WEAPON2, -1, -1), MINIBIND(ID_WEAPON3, -1, -1), MINIBIND(ID_WEAPON4, -1, -1), MINIBIND(ID_WEAPON5, -1, -1), MINIBIND(ID_WEAPON6, -1, -1), MINIBIND(ID_WEAPON7, -1, -1), MINIBIND(ID_WEAPON8, -1, -1), MINIBIND(ID_WEAPON9, -1, -1),
+	MINIBIND(ID_SHOWSCORES, -1, -1),
+	MINIBIND(ID_USEITEM, -1, -1),
+	MINIBIND(ID_SPEED, -1, -1),
+	MINIBIND(ID_FORWARD, -1, -1),
+	MINIBIND(ID_BACKPEDAL, -1, -1),
+	MINIBIND(ID_MOVELEFT, -1, -1),
+	MINIBIND(ID_MOVERIGHT, -1, -1),
+	MINIBIND(ID_MOVEUP, -1, -1),
+	MINIBIND(ID_MOVEDOWN, -1, -1),
+	MINIBIND(ID_LEFT, -1, -1),
+	MINIBIND(ID_RIGHT, -1, -1),
+	MINIBIND(ID_STRAFE, -1, -1),
+	MINIBIND(ID_LOOKUP, -1, -1),
+	MINIBIND(ID_LOOKDOWN, -1, -1),
+	MINIBIND(ID_MOUSELOOK, -1, -1),
+	MINIBIND(ID_CENTERVIEW, -1, -1),
+	MINIBIND(ID_ZOOMVIEW, -1, -1),
+	MINIBIND(ID_WEAPON1, -1, -1),
+	MINIBIND(ID_WEAPON2, -1, -1),
+	MINIBIND(ID_WEAPON3, -1, -1),
+	MINIBIND(ID_WEAPON4, -1, -1),
+	MINIBIND(ID_WEAPON5, -1, -1),
+	MINIBIND(ID_WEAPON6, -1, -1),
+	MINIBIND(ID_WEAPON7, -1, -1),
+	MINIBIND(ID_WEAPON8, -1, -1),
+	MINIBIND(ID_WEAPON9, -1, -1),
 #ifdef MISSIONPACK
-	MINIBIND(ID_WEAPON11, -1, -1), MINIBIND(ID_WEAPON12, -1, -1), MINIBIND(ID_WEAPON13, -1, -1),
+	MINIBIND(ID_WEAPON11, -1, -1),
+	MINIBIND(ID_WEAPON12, -1, -1),
+	MINIBIND(ID_WEAPON13, -1, -1),
 #endif
-	MINIBIND(ID_ATTACK, -1, -1), MINIBIND(ID_WEAPPREV, -1, -1), MINIBIND(ID_WEAPNEXT, -1, -1), MINIBIND(ID_GESTURE, -1, -1), MINIBIND(ID_CHAT, -1, -1), MINIBIND(ID_CHAT2, -1, -1), MINIBIND(ID_CHAT3, -1, -1), MINIBIND(ID_CHAT4, -1, -1), MINIBIND(0, -1, -1),
+	MINIBIND(ID_ATTACK, -1, -1),
+	MINIBIND(ID_WEAPPREV, -1, -1),
+	MINIBIND(ID_WEAPNEXT, -1, -1),
+	MINIBIND(ID_GESTURE, -1, -1),
+	MINIBIND(ID_CHAT, -1, -1),
+	MINIBIND(ID_CHAT2, -1, -1),
+	MINIBIND(ID_CHAT3, -1, -1),
+	MINIBIND(ID_CHAT4, -1, -1),
+	MINIBIND(0, -1, -1),
 };
 
 static bind_t g_bindings3[] = {
-	MINIBIND(ID_SHOWSCORES, -1, -1), MINIBIND(ID_USEITEM, -1, -1), MINIBIND(ID_SPEED, -1, -1), MINIBIND(ID_FORWARD, -1, -1), MINIBIND(ID_BACKPEDAL, -1, -1), MINIBIND(ID_MOVELEFT, -1, -1), MINIBIND(ID_MOVERIGHT, -1, -1), MINIBIND(ID_MOVEUP, -1, -1), MINIBIND(ID_MOVEDOWN, -1, -1), MINIBIND(ID_LEFT, -1, -1), MINIBIND(ID_RIGHT, -1, -1), MINIBIND(ID_STRAFE, -1, -1), MINIBIND(ID_LOOKUP, -1, -1), MINIBIND(ID_LOOKDOWN, -1, -1), MINIBIND(ID_MOUSELOOK, -1, -1), MINIBIND(ID_CENTERVIEW, -1, -1), MINIBIND(ID_ZOOMVIEW, -1, -1), MINIBIND(ID_WEAPON1, -1, -1), MINIBIND(ID_WEAPON2, -1, -1), MINIBIND(ID_WEAPON3, -1, -1), MINIBIND(ID_WEAPON4, -1, -1), MINIBIND(ID_WEAPON5, -1, -1), MINIBIND(ID_WEAPON6, -1, -1), MINIBIND(ID_WEAPON7, -1, -1), MINIBIND(ID_WEAPON8, -1, -1), MINIBIND(ID_WEAPON9, -1, -1),
+	MINIBIND(ID_SHOWSCORES, -1, -1),
+	MINIBIND(ID_USEITEM, -1, -1),
+	MINIBIND(ID_SPEED, -1, -1),
+	MINIBIND(ID_FORWARD, -1, -1),
+	MINIBIND(ID_BACKPEDAL, -1, -1),
+	MINIBIND(ID_MOVELEFT, -1, -1),
+	MINIBIND(ID_MOVERIGHT, -1, -1),
+	MINIBIND(ID_MOVEUP, -1, -1),
+	MINIBIND(ID_MOVEDOWN, -1, -1),
+	MINIBIND(ID_LEFT, -1, -1),
+	MINIBIND(ID_RIGHT, -1, -1),
+	MINIBIND(ID_STRAFE, -1, -1),
+	MINIBIND(ID_LOOKUP, -1, -1),
+	MINIBIND(ID_LOOKDOWN, -1, -1),
+	MINIBIND(ID_MOUSELOOK, -1, -1),
+	MINIBIND(ID_CENTERVIEW, -1, -1),
+	MINIBIND(ID_ZOOMVIEW, -1, -1),
+	MINIBIND(ID_WEAPON1, -1, -1),
+	MINIBIND(ID_WEAPON2, -1, -1),
+	MINIBIND(ID_WEAPON3, -1, -1),
+	MINIBIND(ID_WEAPON4, -1, -1),
+	MINIBIND(ID_WEAPON5, -1, -1),
+	MINIBIND(ID_WEAPON6, -1, -1),
+	MINIBIND(ID_WEAPON7, -1, -1),
+	MINIBIND(ID_WEAPON8, -1, -1),
+	MINIBIND(ID_WEAPON9, -1, -1),
 #ifdef MISSIONPACK
-	MINIBIND(ID_WEAPON11, -1, -1), MINIBIND(ID_WEAPON12, -1, -1), MINIBIND(ID_WEAPON13, -1, -1),
+	MINIBIND(ID_WEAPON11, -1, -1),
+	MINIBIND(ID_WEAPON12, -1, -1),
+	MINIBIND(ID_WEAPON13, -1, -1),
 #endif
-	MINIBIND(ID_ATTACK, -1, -1), MINIBIND(ID_WEAPPREV, -1, -1), MINIBIND(ID_WEAPNEXT, -1, -1), MINIBIND(ID_GESTURE, -1, -1), MINIBIND(ID_CHAT, -1, -1), MINIBIND(ID_CHAT2, -1, -1), MINIBIND(ID_CHAT3, -1, -1), MINIBIND(ID_CHAT4, -1, -1), MINIBIND(0, -1, -1),
+	MINIBIND(ID_ATTACK, -1, -1),
+	MINIBIND(ID_WEAPPREV, -1, -1),
+	MINIBIND(ID_WEAPNEXT, -1, -1),
+	MINIBIND(ID_GESTURE, -1, -1),
+	MINIBIND(ID_CHAT, -1, -1),
+	MINIBIND(ID_CHAT2, -1, -1),
+	MINIBIND(ID_CHAT3, -1, -1),
+	MINIBIND(ID_CHAT4, -1, -1),
+	MINIBIND(0, -1, -1),
 };
 
 static bind_t g_bindings4[] = {
-	MINIBIND(ID_SHOWSCORES, -1, -1), MINIBIND(ID_USEITEM, -1, -1), MINIBIND(ID_SPEED, -1, -1), MINIBIND(ID_FORWARD, -1, -1), MINIBIND(ID_BACKPEDAL, -1, -1), MINIBIND(ID_MOVELEFT, -1, -1), MINIBIND(ID_MOVERIGHT, -1, -1), MINIBIND(ID_MOVEUP, -1, -1), MINIBIND(ID_MOVEDOWN, -1, -1), MINIBIND(ID_LEFT, -1, -1), MINIBIND(ID_RIGHT, -1, -1), MINIBIND(ID_STRAFE, -1, -1), MINIBIND(ID_LOOKUP, -1, -1), MINIBIND(ID_LOOKDOWN, -1, -1), MINIBIND(ID_MOUSELOOK, -1, -1), MINIBIND(ID_CENTERVIEW, -1, -1), MINIBIND(ID_ZOOMVIEW, -1, -1), MINIBIND(ID_WEAPON1, -1, -1), MINIBIND(ID_WEAPON2, -1, -1), MINIBIND(ID_WEAPON3, -1, -1), MINIBIND(ID_WEAPON4, -1, -1), MINIBIND(ID_WEAPON5, -1, -1), MINIBIND(ID_WEAPON6, -1, -1), MINIBIND(ID_WEAPON7, -1, -1), MINIBIND(ID_WEAPON8, -1, -1), MINIBIND(ID_WEAPON9, -1, -1),
+	MINIBIND(ID_SHOWSCORES, -1, -1),
+	MINIBIND(ID_USEITEM, -1, -1),
+	MINIBIND(ID_SPEED, -1, -1),
+	MINIBIND(ID_FORWARD, -1, -1),
+	MINIBIND(ID_BACKPEDAL, -1, -1),
+	MINIBIND(ID_MOVELEFT, -1, -1),
+	MINIBIND(ID_MOVERIGHT, -1, -1),
+	MINIBIND(ID_MOVEUP, -1, -1),
+	MINIBIND(ID_MOVEDOWN, -1, -1),
+	MINIBIND(ID_LEFT, -1, -1),
+	MINIBIND(ID_RIGHT, -1, -1),
+	MINIBIND(ID_STRAFE, -1, -1),
+	MINIBIND(ID_LOOKUP, -1, -1),
+	MINIBIND(ID_LOOKDOWN, -1, -1),
+	MINIBIND(ID_MOUSELOOK, -1, -1),
+	MINIBIND(ID_CENTERVIEW, -1, -1),
+	MINIBIND(ID_ZOOMVIEW, -1, -1),
+	MINIBIND(ID_WEAPON1, -1, -1),
+	MINIBIND(ID_WEAPON2, -1, -1),
+	MINIBIND(ID_WEAPON3, -1, -1),
+	MINIBIND(ID_WEAPON4, -1, -1),
+	MINIBIND(ID_WEAPON5, -1, -1),
+	MINIBIND(ID_WEAPON6, -1, -1),
+	MINIBIND(ID_WEAPON7, -1, -1),
+	MINIBIND(ID_WEAPON8, -1, -1),
+	MINIBIND(ID_WEAPON9, -1, -1),
 #ifdef MISSIONPACK
-	MINIBIND(ID_WEAPON11, -1, -1), MINIBIND(ID_WEAPON12, -1, -1), MINIBIND(ID_WEAPON13, -1, -1),
+	MINIBIND(ID_WEAPON11, -1, -1),
+	MINIBIND(ID_WEAPON12, -1, -1),
+	MINIBIND(ID_WEAPON13, -1, -1),
 #endif
-	MINIBIND(ID_ATTACK, -1, -1), MINIBIND(ID_WEAPPREV, -1, -1), MINIBIND(ID_WEAPNEXT, -1, -1), MINIBIND(ID_GESTURE, -1, -1), MINIBIND(ID_CHAT, -1, -1), MINIBIND(ID_CHAT2, -1, -1), MINIBIND(ID_CHAT3, -1, -1), MINIBIND(ID_CHAT4, -1, -1), MINIBIND(0, -1, -1),
+	MINIBIND(ID_ATTACK, -1, -1),
+	MINIBIND(ID_WEAPPREV, -1, -1),
+	MINIBIND(ID_WEAPNEXT, -1, -1),
+	MINIBIND(ID_GESTURE, -1, -1),
+	MINIBIND(ID_CHAT, -1, -1),
+	MINIBIND(ID_CHAT2, -1, -1),
+	MINIBIND(ID_CHAT3, -1, -1),
+	MINIBIND(ID_CHAT4, -1, -1),
+	MINIBIND(0, -1, -1),
 };
 
 bind_t *g_bindings_list[MAX_SPLITVIEW] = {
-	g_bindings, g_bindings2, g_bindings3, g_bindings4
+	g_bindings,
+	g_bindings2,
+	g_bindings3,
+	g_bindings4
 };
 
 static configcvar_t g_configcvars[] = {
@@ -273,71 +445,124 @@ static configcvar_t g_configcvars[] = {
 	{"3in_joystickThreshold", 0, 0},
 	{"4in_joystickThreshold", 0, 0},
 	{"m_filter", 0, 0},
-	{"cl_freelook", 0, 0}, {NULL, 0, 0}
+	{"cl_freelook", 0, 0},
+	{NULL, 0, 0}
 };
 
 static menucommon_s *g_movement_controls[] = {
-	(menucommon_s *)&s_controls.alwaysrun, 
-	(menucommon_s *)&s_controls.run, 
-	(menucommon_s *)&s_controls.walkforward, (menucommon_s *)&s_controls.backpedal, (menucommon_s *)&s_controls.stepleft, 
-	(menucommon_s *)&s_controls.stepright, 
-	(menucommon_s *)&s_controls.moveup, 
-	(menucommon_s *)&s_controls.movedown, 
-	(menucommon_s *)&s_controls.turnleft, 
-	(menucommon_s *)&s_controls.turnright, 
-	(menucommon_s *)&s_controls.sidestep, NULL
+	(menucommon_s *)&s_controls.alwaysrun,
+	(menucommon_s *)&s_controls.run,
+	(menucommon_s *)&s_controls.walkforward,
+	(menucommon_s *)&s_controls.backpedal,
+	(menucommon_s *)&s_controls.stepleft,
+	(menucommon_s *)&s_controls.stepright,
+	(menucommon_s *)&s_controls.moveup,
+	(menucommon_s *)&s_controls.movedown,
+	(menucommon_s *)&s_controls.turnleft,
+	(menucommon_s *)&s_controls.turnright,
+	(menucommon_s *)&s_controls.sidestep,
+	NULL
 };
 
 static menucommon_s *g_weapons_controls[] = {
-	(menucommon_s *)&s_controls.attack, 
-	(menucommon_s *)&s_controls.nextweapon, (menucommon_s *)&s_controls.prevweapon, (menucommon_s *)&s_controls.autoswitch, 
-	(menucommon_s *)&s_controls.gauntlet, 
-	(menucommon_s *)&s_controls.machinegun, (menucommon_s *)&s_controls.shotgun, 
-	(menucommon_s *)&s_controls.grenadelauncher, (menucommon_s *)&s_controls.rocketlauncher, 
-	(menucommon_s *)&s_controls.lightning, 
-	(menucommon_s *)&s_controls.railgun, 
-	(menucommon_s *)&s_controls.plasma, 
-	(menucommon_s *)&s_controls.bfg,  
+	(menucommon_s *)&s_controls.attack,
+	(menucommon_s *)&s_controls.nextweapon,
+	(menucommon_s *)&s_controls.prevweapon,
+	(menucommon_s *)&s_controls.autoswitch,
+	(menucommon_s *)&s_controls.gauntlet,
+	(menucommon_s *)&s_controls.machinegun,
+	(menucommon_s *)&s_controls.shotgun,
+	(menucommon_s *)&s_controls.grenadelauncher,
+	(menucommon_s *)&s_controls.rocketlauncher,
+	(menucommon_s *)&s_controls.lightning,
+	(menucommon_s *)&s_controls.railgun,
+	(menucommon_s *)&s_controls.plasma,
+	(menucommon_s *)&s_controls.bfg,
 #ifdef MISSIONPACK
-	(menucommon_s *)&s_controls.nailgun, (menucommon_s *)&s_controls.proxylauncher, (menucommon_s *)&s_controls.chaingun,
+	(menucommon_s *)&s_controls.nailgun,
+	(menucommon_s *)&s_controls.proxylauncher,
+	(menucommon_s *)&s_controls.chaingun,
 #endif
 	NULL,
 };
 
 static menucommon_s *g_looking_controls[] = {
-	(menucommon_s *)&s_controls.sensitivity, (menucommon_s *)&s_controls.smoothmouse, (menucommon_s *)&s_controls.invertmouse, (menucommon_s *)&s_controls.lookup, (menucommon_s *)&s_controls.lookdown, (menucommon_s *)&s_controls.mouselook, (menucommon_s *)&s_controls.freelook, (menucommon_s *)&s_controls.centerview, (menucommon_s *)&s_controls.zoomview, NULL,
+	(menucommon_s *)&s_controls.sensitivity,
+	(menucommon_s *)&s_controls.smoothmouse,
+	(menucommon_s *)&s_controls.invertmouse,
+	(menucommon_s *)&s_controls.lookup,
+	(menucommon_s *)&s_controls.lookdown,
+	(menucommon_s *)&s_controls.mouselook,
+	(menucommon_s *)&s_controls.freelook,
+	(menucommon_s *)&s_controls.centerview,
+	(menucommon_s *)&s_controls.zoomview,
+	NULL,
 };
 
 static menucommon_s *g_misc_controls[] = {
-	(menucommon_s *)&s_controls.showscores, 
-	(menucommon_s *)&s_controls.useitem, (menucommon_s *)&s_controls.gesture, (menucommon_s *)&s_controls.chat, (menucommon_s *)&s_controls.chat2, (menucommon_s *)&s_controls.chat3, (menucommon_s *)&s_controls.chat4, (menucommon_s *)&s_controls.togglemenu, NULL,
+	(menucommon_s *)&s_controls.showscores,
+	(menucommon_s *)&s_controls.useitem,
+	(menucommon_s *)&s_controls.gesture,
+	(menucommon_s *)&s_controls.chat,
+	(menucommon_s *)&s_controls.chat2,
+	(menucommon_s *)&s_controls.chat3,
+	(menucommon_s *)&s_controls.chat4,
+	(menucommon_s *)&s_controls.togglemenu,
+	NULL,
 };
 
 static menucommon_s *g_joystick_controls[] = {
-	(menucommon_s *)&s_controls.selectjoy, (menucommon_s *)&s_controls.joythreshold, (menucommon_s *)&s_controls.joyanalog, NULL,
+	(menucommon_s *)&s_controls.selectjoy,
+	(menucommon_s *)&s_controls.joythreshold,
+	(menucommon_s *)&s_controls.joyanalog,
+	NULL,
 };
 
 static menucommon_s **g_controls[] = {
-	g_movement_controls, g_looking_controls, g_weapons_controls, g_misc_controls, g_joystick_controls, NULL
+	g_movement_controls,
+	g_looking_controls,
+	g_weapons_controls, g_misc_controls,
+	g_joystick_controls,
+	NULL
 };
 
 static menucommon_s *g_looking_mini_controls[] = {
-	(menucommon_s *)&s_controls.lookup, (menucommon_s *)&s_controls.lookdown, (menucommon_s *)&s_controls.centerview, (menucommon_s *)&s_controls.zoomview, NULL,
+	(menucommon_s *)&s_controls.lookup,
+	(menucommon_s *)&s_controls.lookdown,
+	(menucommon_s *)&s_controls.centerview,
+	(menucommon_s *)&s_controls.zoomview,
+	NULL,
 };
 
 static menucommon_s *g_misc_mini_controls[] = {
-	(menucommon_s *)&s_controls.showscores, (menucommon_s *)&s_controls.useitem, (menucommon_s *)&s_controls.gesture, NULL,
+	(menucommon_s *)&s_controls.showscores,
+	(menucommon_s *)&s_controls.useitem,
+	(menucommon_s *)&s_controls.gesture,
+	NULL,
 };
 
 static menucommon_s *g_unused_controls[] = {
 	// looking
-	(menucommon_s *)&s_controls.sensitivity, (menucommon_s *)&s_controls.smoothmouse, (menucommon_s *)&s_controls.invertmouse, (menucommon_s *)&s_controls.mouselook, (menucommon_s *)&s_controls.freelook,
+	(menucommon_s *)&s_controls.sensitivity,
+	(menucommon_s *)&s_controls.smoothmouse,
+	(menucommon_s *)&s_controls.invertmouse,
+	(menucommon_s *)&s_controls.mouselook,
+	(menucommon_s *)&s_controls.freelook,
 	// misc
-	(menucommon_s *)&s_controls.chat, (menucommon_s *)&s_controls.chat2, (menucommon_s *)&s_controls.chat3, (menucommon_s *)&s_controls.chat4, NULL,
+	(menucommon_s *)&s_controls.chat,
+	(menucommon_s *)&s_controls.chat2,
+	(menucommon_s *)&s_controls.chat3,
+	(menucommon_s *)&s_controls.chat4,
+	NULL,
 };
 
 static menucommon_s **g_mini_controls[] = {
-	g_movement_controls, g_looking_mini_controls, g_weapons_controls, g_misc_mini_controls, g_joystick_controls, g_unused_controls, // dummy controls that are not used but are disabled so they are not seen.
+	g_movement_controls,
+	g_looking_mini_controls,
+	g_weapons_controls,
+	g_misc_mini_controls,
+	g_joystick_controls,
+	g_unused_controls, // dummy controls that are not used but are disabled so they are not seen.
 	NULL
 };
 
@@ -430,98 +655,98 @@ static void Controls_UpdateModel(int anim) {
 	s_controls.playerChat = qfalse;
 
 	switch (anim) {
-	case ANIM_RUN:
-		s_controls.playerLegs = LEGS_RUN;
-		break;
-	case ANIM_WALK:
-		s_controls.playerLegs = LEGS_WALK;
-		break;
-	case ANIM_BACK:
-		s_controls.playerLegs = LEGS_BACK;
-		break;
-	case ANIM_JUMP:
-		s_controls.playerLegs = LEGS_JUMP;
-		break;
-	case ANIM_CROUCH:
-		s_controls.playerLegs = LEGS_IDLECR;
-		break;
-	case ANIM_TURNLEFT:
-		s_controls.playerViewangles[YAW] += 90;
-		break;
-	case ANIM_TURNRIGHT:
-		s_controls.playerViewangles[YAW] -= 90;
-		break;
-	case ANIM_STEPLEFT:
-		s_controls.playerLegs = LEGS_WALK;
-		s_controls.playerMoveangles[YAW] = s_controls.playerViewangles[YAW] + 90;
-		break;
-	case ANIM_STEPRIGHT:
-		s_controls.playerLegs = LEGS_WALK;
-		s_controls.playerMoveangles[YAW] = s_controls.playerViewangles[YAW] - 90;
-		break;
-	case ANIM_LOOKUP:
-		s_controls.playerViewangles[PITCH] = -45;
-		break;
-	case ANIM_LOOKDOWN:
-		s_controls.playerViewangles[PITCH] = 45;
-		break;
-	case ANIM_WEAPON1:
-		s_controls.playerWeapon = WP_GAUNTLET;
-		break;
-	case ANIM_WEAPON2:
-		s_controls.playerWeapon = WP_MACHINEGUN;
-		break;
-	case ANIM_WEAPON3:
-		s_controls.playerWeapon = WP_SHOTGUN;
-		break;
-	case ANIM_WEAPON4:
-		s_controls.playerWeapon = WP_GRENADE_LAUNCHER;
-		break;
-	case ANIM_WEAPON5:
-		s_controls.playerWeapon = WP_ROCKET_LAUNCHER;
-		break;
-	case ANIM_WEAPON6:
-		s_controls.playerWeapon = WP_LIGHTNING;
-		break;
-	case ANIM_WEAPON7:
-		s_controls.playerWeapon = WP_RAILGUN;
-		break;
-	case ANIM_WEAPON8:
-		s_controls.playerWeapon = WP_PLASMAGUN;
-		break;
-	case ANIM_WEAPON9:
-		s_controls.playerWeapon = WP_BFG;
-		break;
-	case ANIM_WEAPON10:
-		s_controls.playerWeapon = WP_GRAPPLING_HOOK;
-		break;
+		case ANIM_RUN:
+			s_controls.playerLegs = LEGS_RUN;
+			break;
+		case ANIM_WALK:
+			s_controls.playerLegs = LEGS_WALK;
+			break;
+		case ANIM_BACK:
+			s_controls.playerLegs = LEGS_BACK;
+			break;
+		case ANIM_JUMP:
+			s_controls.playerLegs = LEGS_JUMP;
+			break;
+		case ANIM_CROUCH:
+			s_controls.playerLegs = LEGS_IDLECR;
+			break;
+		case ANIM_TURNLEFT:
+			s_controls.playerViewangles[YAW] += 90;
+			break;
+		case ANIM_TURNRIGHT:
+			s_controls.playerViewangles[YAW] -= 90;
+			break;
+		case ANIM_STEPLEFT:
+			s_controls.playerLegs = LEGS_WALK;
+			s_controls.playerMoveangles[YAW] = s_controls.playerViewangles[YAW] + 90;
+			break;
+		case ANIM_STEPRIGHT:
+			s_controls.playerLegs = LEGS_WALK;
+			s_controls.playerMoveangles[YAW] = s_controls.playerViewangles[YAW] - 90;
+			break;
+		case ANIM_LOOKUP:
+			s_controls.playerViewangles[PITCH] = -45;
+			break;
+		case ANIM_LOOKDOWN:
+			s_controls.playerViewangles[PITCH] = 45;
+			break;
+		case ANIM_WEAPON1:
+			s_controls.playerWeapon = WP_GAUNTLET;
+			break;
+		case ANIM_WEAPON2:
+			s_controls.playerWeapon = WP_MACHINEGUN;
+			break;
+		case ANIM_WEAPON3:
+			s_controls.playerWeapon = WP_SHOTGUN;
+			break;
+		case ANIM_WEAPON4:
+			s_controls.playerWeapon = WP_GRENADE_LAUNCHER;
+			break;
+		case ANIM_WEAPON5:
+			s_controls.playerWeapon = WP_ROCKET_LAUNCHER;
+			break;
+		case ANIM_WEAPON6:
+			s_controls.playerWeapon = WP_LIGHTNING;
+			break;
+		case ANIM_WEAPON7:
+			s_controls.playerWeapon = WP_RAILGUN;
+			break;
+		case ANIM_WEAPON8:
+			s_controls.playerWeapon = WP_PLASMAGUN;
+			break;
+		case ANIM_WEAPON9:
+			s_controls.playerWeapon = WP_BFG;
+			break;
+		case ANIM_WEAPON10:
+			s_controls.playerWeapon = WP_GRAPPLING_HOOK;
+			break;
 #ifdef MISSIONPACK
-	case ANIM_WEAPON11:
-		s_controls.playerWeapon = WP_NAILGUN;
-		break;
-	case ANIM_WEAPON12:
-		s_controls.playerWeapon = WP_PROX_LAUNCHER;
-		break;
-	case ANIM_WEAPON13:
-		s_controls.playerWeapon = WP_CHAINGUN;
-		break;
+		case ANIM_WEAPON11:
+			s_controls.playerWeapon = WP_NAILGUN;
+			break;
+		case ANIM_WEAPON12:
+			s_controls.playerWeapon = WP_PROX_LAUNCHER;
+			break;
+		case ANIM_WEAPON13:
+			s_controls.playerWeapon = WP_CHAINGUN;
+			break;
 #endif
-	case ANIM_ATTACK:
-		s_controls.playerTorso = TORSO_ATTACK;
-		break;
-	case ANIM_GESTURE:
-		s_controls.playerTorso = TORSO_GESTURE;
-		break;
-	case ANIM_DIE:
-		s_controls.playerLegs = BOTH_DEATH1;
-		s_controls.playerTorso = BOTH_DEATH1;
-		s_controls.playerWeapon = WP_NONE;
-		break;
-	case ANIM_CHAT:
-		s_controls.playerChat = qtrue;
-		break;
-	default:
-		break;
+		case ANIM_ATTACK:
+			s_controls.playerTorso = TORSO_ATTACK;
+			break;
+		case ANIM_GESTURE:
+			s_controls.playerTorso = TORSO_GESTURE;
+			break;
+		case ANIM_DIE:
+			s_controls.playerLegs = BOTH_DEATH1;
+			s_controls.playerTorso = BOTH_DEATH1;
+			s_controls.playerWeapon = WP_NONE;
+			break;
+		case ANIM_CHAT:
+			s_controls.playerChat = qtrue;
+			break;
+		default:
+			break;
 	}
 
 	UI_PlayerInfo_SetInfo(&s_controls.playerinfo, s_controls.playerLegs, s_controls.playerTorso, s_controls.playerViewangles, s_controls.playerMoveangles, s_controls.playerWeapon, s_controls.playerChat);
@@ -593,22 +818,22 @@ static void Controls_Update(void) {
 	s_controls.misc.generic.flags |= QMF_PULSEIFFOCUS;
 	// set buttons
 	switch (s_controls.section) {
-	case C_MOVEMENT:
-		s_controls.movement.generic.flags &= ~QMF_PULSEIFFOCUS;
-		s_controls.movement.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
-		break;
-	case C_LOOKING:
-		s_controls.looking.generic.flags &= ~QMF_PULSEIFFOCUS;
-		s_controls.looking.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
-		break;
-	case C_WEAPONS:
-		s_controls.weapons.generic.flags &= ~QMF_PULSEIFFOCUS;
-		s_controls.weapons.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
-		break;
-	case C_MISC:
-		s_controls.misc.generic.flags &= ~QMF_PULSEIFFOCUS;
-		s_controls.misc.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
-		break;
+		case C_MOVEMENT:
+			s_controls.movement.generic.flags &= ~QMF_PULSEIFFOCUS;
+			s_controls.movement.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
+			break;
+		case C_LOOKING:
+			s_controls.looking.generic.flags &= ~QMF_PULSEIFFOCUS;
+			s_controls.looking.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
+			break;
+		case C_WEAPONS:
+			s_controls.weapons.generic.flags &= ~QMF_PULSEIFFOCUS;
+			s_controls.weapons.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
+			break;
+		case C_MISC:
+			s_controls.misc.generic.flags &= ~QMF_PULSEIFFOCUS;
+			s_controls.misc.generic.flags |= (QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
+			break;
 	}
 }
 
@@ -629,17 +854,14 @@ static void Controls_DrawKeyBinding(void *self) {
 	bind_t *bindptr;
 
 	a = (menuaction_s *)self;
-
 	x = a->generic.x;
 	y = a->generic.y;
-
 	c = (Menu_ItemAtCursor(a->generic.parent) == a);
 
 	bindptr = &s_controls.bindings[a->generic.id];
-
 	b1 = bindptr->bind1;
 
-	if (b1 == -1)
+	if (b1 == -1) {
 		strcpy(name, "???");
 	} else {
 		trap_Key_KeynumToStringBuf(b1, name, 32);
@@ -663,7 +885,7 @@ static void Controls_DrawKeyBinding(void *self) {
 		UI_DrawString(x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, text_color_highlight);
 
 		if (waitingforkey) {
-			UI_DrawChar(x, y, ' = ', UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
+			UI_DrawChar(x, y, '=', UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
 			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Waiting for new key ... ESCAPE to cancel", UI_SMALLFONT|UI_CENTER|UI_PULSE, colorWhite);
 		} else {
 			UI_DrawChar(x, y, GLYPH_ARROW, UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
@@ -692,9 +914,7 @@ static void Controls_DrawSmallText(void *self) {
 	qboolean c;
 
 	text = (menutext_s *)self;
-
 	c = (Menu_ItemAtCursor(text->generic.parent) == text);
-
 	x = text->generic.x;
 	y = text->generic.y;
 
@@ -742,6 +962,7 @@ static void Controls_DrawPlayer(void *self) {
 	}
 
 	b = (menubitmap_s *)self;
+
 	UI_DrawPlayer(b->generic.x, b->generic.y, b->width, b->height, &s_controls.playerinfo, uis.realtime / 2);
 }
 
@@ -820,8 +1041,9 @@ static void Controls_SetConfig(void) {
 	bindptr = g_bindings;
 	// iterate each command, get its numeric binding
 	for (i = 0;; i++, bindptr++) {
-		if (!bindptr->label)
+		if (!bindptr->label) {
 			break;
+		}
 
 		for (j = 0; j < UI_MaxSplitView(); j++) {
 			if (g_bindings_list[j][i].bind1 != -1) {
@@ -841,10 +1063,11 @@ static void Controls_SetConfig(void) {
 		return;
 	}
 
-	if (s_controls.invertmouse.curvalue)
+	if (s_controls.invertmouse.curvalue) {
 		trap_Cvar_SetValue("m_pitch", -fabs(trap_Cvar_VariableValue("m_pitch")));
 	} else {
 		trap_Cvar_SetValue("m_pitch", fabs(trap_Cvar_VariableValue("m_pitch")));
+	}
 
 	trap_Cvar_SetValue("m_filter", s_controls.smoothmouse.curvalue);
 	trap_Cvar_SetValue("cl_run", s_controls.alwaysrun.curvalue);
@@ -867,8 +1090,9 @@ static void Controls_SetDefaults(void) {
 	bindptr = s_controls.bindings;
 	// iterate each command, set its default binding
 	for (i = 0;; i++, bindptr++) {
-		if (!g_bindings[i].label)
+		if (!g_bindings[i].label) {
 			break;
+		}
 
 		bindptr->bind1 = bindptr->defaultbind1;
 		bindptr->bind2 = bindptr->defaultbind2;
@@ -916,19 +1140,20 @@ static sfxHandle_t Controls_MenuKey(int key) {
 			case K_KP_DEL:
 				key = -1;
 				break;
-
 			case K_MOUSE2:
 			case K_ESCAPE:
-				if (s_controls.changesmade)
+				if (s_controls.changesmade) {
 					Controls_SetConfig();
-				goto ignorekey;
+				}
 
+				goto ignorekey;
 			default:
 				goto ignorekey;
 		}
 	} else {
-		if (key & K_CHAR_FLAG)
+		if (key & K_CHAR_FLAG) {
 			goto ignorekey;
+		}
 
 		switch (key) {
 			case K_ESCAPE:
@@ -983,8 +1208,9 @@ static sfxHandle_t Controls_MenuKey(int key) {
 					break;
 				}
 
-				if (bindptr->bind2 == key)
+				if (bindptr->bind2 == key) {
 					bindptr->bind2 = -1;
+				}
 
 				if (bindptr->bind1 == key) {
 					bindptr->bind1 = bindptr->bind2;
@@ -1024,11 +1250,12 @@ static sfxHandle_t Controls_MenuKey(int key) {
 				trap_Key_SetBinding(bindptr->bind2, "");
 				bindptr->bind1 = key;
 				bindptr->bind2 = -1;
-			}						
+			}
+
 			break;
 		}
-	}				
-		
+	}
+
 	waitingforkey = qfalse;
 
 	if (found) {
@@ -1072,6 +1299,7 @@ Controls_MenuEvent
 =======================================================================================================================================
 */
 static void Controls_MenuEvent(void *ptr, int event) {
+
 	switch (((menucommon_s *)ptr)->id) {
 		case ID_MOVEMENT:
 			if (event == QM_ACTIVATED) {
@@ -1147,8 +1375,7 @@ static void Controls_MenuEvent(void *ptr, int event) {
 				s_controls.changesmade = qtrue;
 			}
 
-			break;		
-
+			break;
 		case ID_SELECTJOY:
 			if (event == QM_ACTIVATED) {
 				UI_JoystickMenu(s_controls.localPlayerNum);

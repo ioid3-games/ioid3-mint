@@ -335,9 +335,7 @@ qboolean PlayerInactivityTimer(gplayer_t *player) {
 		// give everyone some time, so if the operator sets g_inactivity during gameplay, everyone isn't kicked
 		player->inactivityTime = level.time + 60 * 1000;
 		player->inactivityWarning = qfalse;
-	} else if (player->pers.cmd.forwardmove || 
-		player->pers.cmd.rightmove || 
-		player->pers.cmd.upmove || (player->pers.cmd.buttons & BUTTON_ATTACK)) {
+	} else if (player->pers.cmd.forwardmove || player->pers.cmd.rightmove || player->pers.cmd.upmove || (player->pers.cmd.buttons & BUTTON_ATTACK)) {
 		player->inactivityTime = level.time + g_inactivity.integer * 1000;
 		player->inactivityWarning = qfalse;
 	} else if (!player->pers.localClient) {
@@ -757,9 +755,8 @@ void PlayerThink_real(gentity_t *ent) {
 	if (player->pers.connected != CON_CONNECTED) {
 		return;
 	}
-	// frameOffset should be about the number of milliseconds into a frame
-	// this command packet was received, depending on how fast the server
-	// does a G_RunFrame()
+	// frameOffset should be about the number of milliseconds into a frame this command packet was received, depending on how fast the
+	// server does a G_RunFrame()
 	player->frameOffset = trap_Milliseconds() - level.frameStartTime;
 	// mark the time, so the connection sprite can be removed
 	ucmd = &ent->player->pers.cmd;
@@ -971,8 +968,7 @@ void PlayerThink_real(gentity_t *ent) {
 		// wait for the attack button to be pressed
 		if (level.time > player->respawnTime) {
 			// forcerespawn is to prevent users from waiting out powerups
-			if (g_forcerespawn.integer > 0 && 
-				(level.time - player->respawnTime) > g_forcerespawn.integer * 1000) {
+			if (g_forcerespawn.integer > 0 && (level.time - player->respawnTime) > g_forcerespawn.integer * 1000) {
 				PlayerRespawn(ent);
 				return;
 			}

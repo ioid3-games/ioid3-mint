@@ -29,7 +29,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "ui_local.h"
 
 uiStatic_t uis;
-qboolean m_entersound;		// after a frame, so caching won't disrupt the sound
+qboolean m_entersound; // after a frame, so caching won't disrupt the sound
 
 /*
 =======================================================================================================================================
@@ -121,109 +121,111 @@ void UI_ForceMenuOff(void) {
 }
 
 static int propMap[128][3] = {
-{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
+	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 	{0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1},
 	{0, 0, PROP_SPACE_WIDTH}, // SPACE
-{11, 122, 7}, // !
-{154, 181, 14}, // "
-{55, 122, 17}, //#
-{79, 122, 18}, // $
-{101, 122, 23}, // %
-{153, 122, 18}, // &
-{9, 93, 7}, // '
-{207, 122, 8}, // (
-{230, 122, 9}, //) {177, 122, 18}, // *
-{30, 152, 18}, // + 
-{85, 181, 7}, //, 
-{34, 93, 11}, // - 
-{110, 181, 6}, // .
-{130, 152, 14}, //  / 
+	{11, 122, 7}, // !
+	{154, 181, 14}, // "
+	{55, 122, 17}, //#
+	{79, 122, 18}, // $
+	{101, 122, 23}, // %
+	{153, 122, 18}, // &
+	{9, 93, 7}, // '
+	{207, 122, 8}, // (
+	{230, 122, 9}, //)
+	{177, 122, 18}, // *
+	{30, 152, 18}, // +
+	{85, 181, 7}, //, 
+	{34, 93, 11}, // -
+	{110, 181, 6}, // .
+	{130, 152, 14}, // /
 
-{22, 64, 17}, // 0
-{41, 64, 12}, // 1
-{58, 64, 17}, // 2
-{78, 64, 18}, // 3
-{98, 64, 19}, // 4
-{120, 64, 18}, // 5
-{141, 64, 18}, // 6
-{204, 64, 16}, // 7
-{162, 64, 17}, // 8
-{182, 64, 18}, // 9
-{59, 181, 7}, // :
-{35, 181, 7}, // ;
-{203, 152, 14}, // < 
-{56, 93, 14}, // = {228, 152, 14}, //>
-{177, 181, 18}, // ?
+	{22, 64, 17}, // 0
+	{41, 64, 12}, // 1
+	{58, 64, 17}, // 2
+	{78, 64, 18}, // 3
+	{98, 64, 19}, // 4
+	{120, 64, 18}, // 5
+	{141, 64, 18}, // 6
+	{204, 64, 16}, // 7
+	{162, 64, 17}, // 8
+	{182, 64, 18}, // 9
+	{59, 181, 7}, // :
+	{35, 181, 7}, // ;
+	{203, 152, 14}, // <
+	{56, 93, 14}, // =
+	{228, 152, 14}, //>
+	{177, 181, 18}, // ?
 
-{28, 122, 22}, // @
-{5, 4, 18}, // A
-{27, 4, 18}, // B
-{48, 4, 18}, // C
-{69, 4, 17}, // D
-{90, 4, 13}, // E
-{106, 4, 13}, // F
-{121, 4, 18}, // G
-{143, 4, 17}, // H
-{164, 4, 8}, // I
-{175, 4, 16}, // J
-{195, 4, 18}, // K
-{216, 4, 12}, // L
-{230, 4, 23}, // M
-{6, 34, 18}, // N
-{27, 34, 18}, // O
+	{28, 122, 22}, // @
+	{5, 4, 18}, // A
+	{27, 4, 18}, // B
+	{48, 4, 18}, // C
+	{69, 4, 17}, // D
+	{90, 4, 13}, // E
+	{106, 4, 13}, // F
+	{121, 4, 18}, // G
+	{143, 4, 17}, // H
+	{164, 4, 8}, // I
+	{175, 4, 16}, // J
+	{195, 4, 18}, // K
+	{216, 4, 12}, // L
+	{230, 4, 23}, // M
+	{6, 34, 18}, // N
+	{27, 34, 18}, // O
 
-{48, 34, 18}, // P
-{68, 34, 18}, // Q
-{90, 34, 17}, // R
-{110, 34, 18}, // S
-{130, 34, 14}, // T
-{146, 34, 18}, // U
-{166, 34, 19}, // V
-{185, 34, 29}, // W
-{215, 34, 18}, // X
-{234, 34, 18}, // Y
-{5, 64, 14}, // Z
-{60, 152, 7}, // [
-{106, 151, 13}, // '\'
-{83, 152, 7}, //]
-{128, 122, 17}, // ^ 
-{4, 152, 21}, // _
+	{48, 34, 18}, // P
+	{68, 34, 18}, // Q
+	{90, 34, 17}, // R
+	{110, 34, 18}, // S
+	{130, 34, 14}, // T
+	{146, 34, 18}, // U
+	{166, 34, 19}, // V
+	{185, 34, 29}, // W
+	{215, 34, 18}, // X
+	{234, 34, 18}, // Y
+	{5, 64, 14}, // Z
+	{60, 152, 7}, // [
+	{106, 151, 13}, // '\'
+	{83, 152, 7}, //]
+	{128, 122, 17}, // ^
+	{4, 152, 21}, // _
 
-{134, 181, 5}, // '
-{5, 4, 18}, // A
-{27, 4, 18}, // B
-{48, 4, 18}, // C
-{69, 4, 17}, // D
-{90, 4, 13}, // E
-{106, 4, 13}, // F
-{121, 4, 18}, // G
-{143, 4, 17}, // H
-{164, 4, 8}, // I
-{175, 4, 16}, // J
-{195, 4, 18}, // K
-{216, 4, 12}, // L
-{230, 4, 23}, // M
-{6, 34, 18}, // N
-{27, 34, 18}, // O
+	{134, 181, 5}, // '
+	{5, 4, 18}, // A
+	{27, 4, 18}, // B
+	{48, 4, 18}, // C
+	{69, 4, 17}, // D
+	{90, 4, 13}, // E
+	{106, 4, 13}, // F
+	{121, 4, 18}, // G
+	{143, 4, 17}, // H
+	{164, 4, 8}, // I
+	{175, 4, 16}, // J
+	{195, 4, 18}, // K
+	{216, 4, 12}, // L
+	{230, 4, 23}, // M
+	{6, 34, 18}, // N
+	{27, 34, 18}, // O
 
-{48, 34, 18}, // P
-{68, 34, 18}, // Q
-{90, 34, 17}, // R
-{110, 34, 18}, // S
-{130, 34, 14}, // T
-{146, 34, 18}, // U
-{166, 34, 19}, // V
-{185, 34, 29}, // W
-{215, 34, 18}, // X
-{234, 34, 18}, // Y
-{5, 64, 14}, // Z
-{153, 152, 13}, // {
-{11, 181, 5}, // |
-{180, 152, 13}, //}
-{79, 93, 17}, // ~
-{0, 0, -1}		// DEL
+	{48, 34, 18}, // P
+	{68, 34, 18}, // Q
+	{90, 34, 17}, // R
+	{110, 34, 18}, // S
+	{130, 34, 14}, // T
+	{146, 34, 18}, // U
+	{166, 34, 19}, // V
+	{185, 34, 29}, // W
+	{215, 34, 18}, // X
+	{234, 34, 18}, // Y
+	{5, 64, 14}, // Z
+	{153, 152, 13}, // {
+	{11, 181, 5}, // |
+	{180, 152, 13}, //}
+	{79, 93, 17}, // ~
+	{0, 0, -1} // DEL
 };
 
 static int propMapB[26][3] = {
@@ -255,6 +257,11 @@ static int propMapB[26][3] = {
 	{158, 139, 25},
 };
 
+/*
+=======================================================================================================================================
+UI_InitBannerFont
+=======================================================================================================================================
+*/
 void UI_InitBannerFont(fontInfo_t *font) {
 	int i, aw, xSkip;
 	float fcol, frow, fwidth, fheight;
@@ -347,6 +354,11 @@ int UI_ProportionalStringWidth(const char *str) {
 	return Text_Width(str, &uis.fontProp, PROP_HEIGHT / 48.0f, 0);
 }
 
+/*
+=======================================================================================================================================
+UI_InitPropFont
+=======================================================================================================================================
+*/
 void UI_InitPropFont(fontInfo_t *font, qboolean glow) {
 	int i, aw, xSkip;
 	float fcol, frow, fwidth, fheight;
@@ -519,6 +531,7 @@ void UI_DrawProportionalString_AutoWrapped(int x, int y, int xmax, int ystep, co
 		do {
 			s3++;
 		} while (*s3 != ' ' && *s3 != '\0');
+
 		c_bcp = *s3;
 		*s3 = '\0';
 		width = UI_ProportionalStringWidth(s1) * sizeScale;
@@ -534,17 +547,19 @@ void UI_DrawProportionalString_AutoWrapped(int x, int y, int xmax, int ystep, co
 			UI_DrawProportionalString(x, y, s1, style, color);
 			y += ystep;
 
-			if (c_bcp == '\0')
-      {
-       // that was the last word
-       // we could start a new loop, but that wouldn't be much use
-       // even if the word is too long, we would overflow it(see above)
-       // so just print it now if needed
-        s2++;
-        if (*s2 != '\0') // if we are printing an overflowing line we have s2 == s3
-          UI_DrawProportionalString(x, y, s2, style, color);
-				break; 
-    }
+			if (c_bcp == '\0') {
+				// that was the last word
+				// we could start a new loop, but that wouldn't be much use even if the word is too long, we would overflow it(see above)
+				// so just print it now if needed
+				s2++;
+
+				if (*s2 != '\0') { // if we are printing an overflowing line we have s2 == s3
+					UI_DrawProportionalString(x, y, s2, style, color);
+				}
+
+				break;
+				
+			}
 
 			s2++;
 			s1 = s2;
@@ -552,8 +567,7 @@ void UI_DrawProportionalString_AutoWrapped(int x, int y, int xmax, int ystep, co
 		} else {
 			s2 = s3;
 
-			if (c_bcp == '\0') // we reached the end
-			{
+			if (c_bcp == '\0') { // we reached the end
 				UI_DrawProportionalString(x, y, s1, style, color);
 				break;
 			}
@@ -604,21 +618,22 @@ UI_SetActiveMenu
 =======================================================================================================================================
 */
 void UI_SetActiveMenu(uiMenuCommand_t menu) {
+
 	switch (menu) {
-	case UIMENU_NONE:
-		UI_ForceMenuOff();
-		return;
-	case UIMENU_MAIN:
-		UI_MainMenu();
-		return;
-	case UIMENU_INGAME:
-		trap_Cvar_SetValue("cl_paused", 1);
-		UI_InGameMenu();
-		return;
-	case UIMENU_TEAM:
-	case UIMENU_POSTGAME:
-	default:
-		Com_Printf("UI_SetActiveMenu: unknown enum %d\n", menu);
+		case UIMENU_NONE:
+			UI_ForceMenuOff();
+			return;
+		case UIMENU_MAIN:
+			UI_MainMenu();
+			return;
+		case UIMENU_INGAME:
+			trap_Cvar_SetValue("cl_paused", 1);
+			UI_InGameMenu();
+			return;
+		case UIMENU_TEAM:
+		case UIMENU_POSTGAME:
+		default:
+			Com_Printf("UI_SetActiveMenu: unknown enum %d\n", menu);
 	}
 }
 
@@ -638,13 +653,15 @@ void UI_KeyEvent(int key, qboolean down) {
 		return;
 	}
 
-	if (uis.activemenu->key)
+	if (uis.activemenu->key) {
 		s = uis.activemenu->key(key);
 	} else {
 		s = Menu_DefaultKey(uis.activemenu, key);
+	}
 
-	if ((s > 0) && (s != menu_null_sound))
+	if ((s > 0) && (s != menu_null_sound)) {
 		trap_S_StartLocalSound(s, CHAN_LOCAL_SOUND);
+	}
 }
 
 /*
@@ -719,14 +736,22 @@ void UI_GetCursorPos(int localPlayerNum, int *x, int *y) {
 
 	if (localPlayerNum != 0) {
 		// ui currently only supports one cursor
-		if (x) *x = 0;
+		if (x) {
+			*x = 0;
+		}
 
-		if (y) *y = 0;
+		if (y) {
+			*y = 0;
+		}
 	}
 
-	if (x) *x = uis.cursorx;
+	if (x) {
+		*x = uis.cursorx;
+	}
 
-	if (y) *y = uis.cursory;
+	if (y) {
+		*y = uis.cursory;
+	}
 }
 
 /*
@@ -792,7 +817,6 @@ void UI_Cache_f(void) {
 	UI_ModsMenu_Cache();
 }
 
-
 consoleCommand_t ui_commands[] = {
 	{"iamacheater", UI_SPUnlock_f, 0},
 	{"iamamonkey", UI_SPUnlockMedals_f, 0},
@@ -836,7 +860,6 @@ void UI_Init(qboolean inGameLoad, int maxSplitView) {
 	uis.maxSplitView = Com_Clamp(1, MAX_SPLITVIEW, maxSplitView);
 
 	UI_RegisterCvars();
-
 	UI_InitGameinfo();
 	// initialize the menu system
 	Menu_Cache();

@@ -256,7 +256,6 @@ static void ProximityMine_Player(gentity_t *mine, gentity_t *player) {
 	}
 }
 #endif
-
 /*
 =======================================================================================================================================
 G_MissileImpact
@@ -322,7 +321,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 		if (ent->s.pos.trType != TR_GRAVITY) {
 			return;
 		}
-		// if it's a player, stick it on to them(flag them and remove this entity)
+		// if it's a player, stick it on to them (flag them and remove this entity)
 		if (other->s.eType == ET_PLAYER && other->health > 0) {
 			ProximityMine_Player(ent, other);
 			return;
@@ -361,6 +360,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 
 		if (other->takedamage && other->player) {
 			G_AddEvent(nent, EV_MISSILE_HIT, DirToByte(trace->plane.normal));
+
 			nent->s.otherEntityNum = other->s.number;
 
 			v[0] = other->r.currentOrigin[0] + (other->s.mins[0] + other->s.maxs[0]) * 0.5;
@@ -395,7 +395,6 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 
 		trap_LinkEntity(ent);
 		trap_LinkEntity(nent);
-
 		return;
 	}
 	// is it cheaper in bandwidth to just remove this ent and create a new one, rather than changing the missile into the explosion?
@@ -415,7 +414,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 	SnapVectorTowards(trace->endpos, ent->s.pos.trBase); // save net bandwidth
 
 	G_SetOrigin(ent, trace->endpos);
-	// splash damage(doesn't apply to person directly hit)
+	// splash damage (doesn't apply to person directly hit)
 	if (ent->splashDamage) {
 		if (G_RadiusDamage(trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius, other, ent->splashMethodOfDeath)) {
 			if (!hitPlayer) {
@@ -445,7 +444,7 @@ void G_RunMissile(gentity_t *ent) {
 	}
 #ifdef MISSIONPACK
 	// prox mines that left the owner bbox will attach to anything, even the owner
-	} else if (ent->s.weapon == WP_PROX_LAUNCHER && ent->count) {
+	else if (ent->s.weapon == WP_PROX_LAUNCHER && ent->count) {
 		passent = ENTITYNUM_NONE;
 	}
 #endif

@@ -188,7 +188,7 @@ static void CG_TransitionSnapshot(void) {
 			ps = &cg.snap->pss[i];
 			// teleporting checks are irrespective of prediction
 			if ((ps->eFlags ^ ops->eFlags) & EF_TELEPORT_BIT) {
-				cg.thisFrameTeleport = qtrue;	// will be cleared by prediction code
+				cg.thisFrameTeleport = qtrue; // will be cleared by prediction code
 			}
 			// if we are not doing client side movement prediction for any reason, then the player events and view changes will be issued now
 			if (cg.demoPlayback || (ps->pm_flags & PMF_FOLLOW) || cg_nopredict.integer || cg_synchronousClients.integer) {

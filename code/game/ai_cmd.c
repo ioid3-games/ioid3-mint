@@ -547,8 +547,7 @@ void BotMatch_HelpAccompany(bot_state_t *bs, bot_match_t *match) {
 	// get the team mate name
 	BotMatchVariable(match, TEAMMATE, teammate, sizeof(teammate));
 	// get the player to help
-	if (BotFindMatch(teammate, &teammatematch, MTCONTEXT_TEAMMATE) && // if someone asks for him or herself
-			teammatematch.type == MSG_ME) {
+	if (BotFindMatch(teammate, &teammatematch, MTCONTEXT_TEAMMATE) && teammatematch.type == MSG_ME) { // if someone asks for him or herself
 		// get the netname
 		BotMatchVariable(match, NETNAME, netname, sizeof(netname));
 		playernum = PlayerFromName(netname);
@@ -1924,8 +1923,12 @@ void BotMatch_CTF(bot_state_t *bs, bot_match_t *match) {
 			bs->flagcarrier = 0;
 			bs->flagstatuschanged = 1;
 		} else if (match->subtype & ST_RETURNEDFLAG) {
-			if (!Q_stricmp(flag, "red")) bs->redflagstatus = 0;
-			else bs->blueflagstatus = 0;
+			if (!Q_stricmp(flag, "red")) {
+				bs->redflagstatus = 0;
+			} else {
+				bs->blueflagstatus = 0;
+			}
+
 			bs->flagstatuschanged = 1;
 		}
 	}

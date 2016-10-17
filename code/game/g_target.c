@@ -202,6 +202,7 @@ void Use_Target_Speaker(gentity_t *ent, gentity_t *other, gentity_t *activator) 
 			ent->s.loopSound = 0; // turn it off
 		} else {
 			ent->s.loopSound = ent->noise_index; // start it
+		}
 	} else { // normal sound
 		if (ent->spawnflags & 8) {
 			G_AddEvent(activator, EV_GENERAL_SOUND, ent->noise_index);
@@ -258,8 +259,7 @@ void SP_target_speaker(gentity_t *ent) {
 		G_FreeEntity(ent);
 		return;
 	}
-	// force all player relative sounds to be "activator" speakers that
-	// play on the entity that activates it
+	// force all player relative sounds to be "activator" speakers that play on the entity that activates it
 	if (s[0] == '*') {
 		ent->spawnflags |= 8;
 	}
@@ -317,8 +317,7 @@ void target_laser_think(gentity_t *self) {
 
 	if (tr.entityNum) {
 		// hurt it if we can
-		G_Damage(&g_entities[tr.entityNum], self, self->activator, self->movedir, 
-			tr.endpos, self->damage, DAMAGE_NO_KNOCKBACK, MOD_TARGET_LASER);
+		G_Damage(&g_entities[tr.entityNum], self, self->activator, self->movedir, tr.endpos, self->damage, DAMAGE_NO_KNOCKBACK, MOD_TARGET_LASER);
 	}
 
 	VectorCopy(tr.endpos, self->s.origin2);
@@ -334,8 +333,10 @@ Target_Laser_On
 */
 void target_laser_on(gentity_t *self) {
 
-	if (!self->activator)
+	if (!self->activator) {
 		self->activator = self;
+	}
+
 	target_laser_think(self);
 }
 
@@ -345,6 +346,7 @@ Target_Laser_Off
 =======================================================================================================================================
 */
 void target_laser_off(gentity_t *self) {
+
 	trap_UnlinkEntity(self);
 	self->nextthink = 0;
 }
@@ -355,6 +357,7 @@ Use_Target_Laser
 =======================================================================================================================================
 */
 void target_laser_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
+
 	self->activator = activator;
 
 	if (self->nextthink > 0) {
@@ -432,7 +435,7 @@ void target_teleporter_use(gentity_t *self, gentity_t *other, gentity_t *activat
 	TeleportPlayer(activator, dest->s.origin, dest->s.angles);
 }
 
-/*QUAKED target_teleporter(1 0 0) (-8 -8 -8) (8 8 8)
+/*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8)
 The activator will be teleported away.
 */
 void SP_target_teleporter(gentity_t *self) {
@@ -499,7 +502,7 @@ void SP_target_kill(gentity_t *self) {
 	self->use = target_kill_use;
 }
 
-/*QUAKED target_position(0 0.5 0) (-4 -4 -4) (4 4 4)
+/*QUAKED target_position (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for in-game calculation, like jumppad targets.
 */
 void SP_target_position(gentity_t *self) {
@@ -537,7 +540,7 @@ static void target_location_linkup(gentity_t *ent) {
 	// All linked together now
 }
 
-/*QUAKED target_location(0 0.5 0) (-8 -8 -8) (8 8 8)
+/*QUAKED target_location (0 0.5 0) (-8 -8 -8) (8 8 8)
 Set "message" to the name of this location.
 Set "count" to 0-7 for color.
 	0: white

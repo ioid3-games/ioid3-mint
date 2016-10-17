@@ -586,7 +586,6 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
 				break;
 			}
-
 			case 3:
 			{
 				// everyone go for the flag
@@ -672,7 +671,6 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 			BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
 			break;
 		}
-
 		case 3:
 		{
 			// tell the one closest to the base not carrying the flag to defend the base

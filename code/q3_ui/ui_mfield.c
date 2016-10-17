@@ -86,12 +86,13 @@ void MenuField_Draw(menufield_s *f) {
 		focus = qfalse;
 	}
 
-	if (f->generic.flags & QMF_GRAYED)
+	if (f->generic.flags & QMF_GRAYED) {
 		color = text_color_disabled;
-	} else if (focus)
+	} else if (focus) {
 		color = text_color_highlight;
 	} else {
 		color = text_color_normal;
+	}
 
 	if (focus) {
 		// draw cursor

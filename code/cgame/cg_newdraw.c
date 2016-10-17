@@ -631,6 +631,7 @@ CG_DrawPlayerStatus
 =======================================================================================================================================
 */
 static void CG_DrawPlayerStatus(rectDef_t *rect) {
+
 	playerInfo_t *pi = &cgs.playerinfo[cg.cur_ps->playerNum];
 
 	if (pi) {
@@ -685,6 +686,7 @@ CG_DrawPlayerLocation
 =======================================================================================================================================
 */
 static void CG_DrawPlayerLocation(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
+
 	playerInfo_t *pi = &cgs.playerinfo[cg.cur_ps->playerNum];
 
 	if (pi) {
@@ -945,7 +947,7 @@ static void CG_DrawBlueFlagName(rectDef_t *rect, float scale, vec4_t color, int 
 	int i;
 
 	for (i = 0; i < cgs.maxplayers; i++) {
-		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_RED && cgs.playerinfo[i].powerups & (1 << PW_BLUEFLAG)) {
+		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_RED && cgs.playerinfo[i].powerups &(1 << PW_BLUEFLAG)) {
 			CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cgs.playerinfo[i].name, 0, 0, textStyle);
 			return;
 		}
@@ -999,7 +1001,7 @@ static void CG_DrawBlueFlagHead(rectDef_t *rect) {
 	int i;
 
 	for (i = 0; i < cgs.maxplayers; i++) {
-		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_RED && cgs.playerinfo[i].powerups & (1 << PW_BLUEFLAG)) {
+		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_RED && cgs.playerinfo[i].powerups &(1 << PW_BLUEFLAG)) {
 			vec3_t angles;
 
 			VectorClear(angles);
@@ -1019,7 +1021,7 @@ static void CG_DrawRedFlagName(rectDef_t *rect, float scale, vec4_t color, int t
 	int i;
 
 	for (i = 0; i < cgs.maxplayers; i++) {
-		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_BLUE && cgs.playerinfo[i].powerups & (1 << PW_REDFLAG)) {
+		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_BLUE && cgs.playerinfo[i].powerups &(1 << PW_REDFLAG)) {
 			CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cgs.playerinfo[i].name, 0, 0, textStyle);
 			return;
 		}
@@ -1073,7 +1075,7 @@ static void CG_DrawRedFlagHead(rectDef_t *rect) {
 	int i;
 
 	for (i = 0; i < cgs.maxplayers; i++) {
-		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_BLUE && cgs.playerinfo[i].powerups & (1 << PW_REDFLAG)) {
+		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_BLUE && cgs.playerinfo[i].powerups &(1 << PW_REDFLAG)) {
 			vec3_t angles;
 
 			VectorClear(angles);

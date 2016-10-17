@@ -1472,7 +1472,7 @@ int PlayerOnSameTeamFromName(bot_state_t *bs, char *name) {
 	char buf[MAX_INFO_STRING];
 
 	for (i = 0; i < level.maxplayers; i++) {
-		if (!BotSameTeam(bs, i) {
+		if (!BotSameTeam(bs, i)) {
 			continue;
 		}
 
@@ -1775,7 +1775,7 @@ void BotCheckItemPickup(bot_state_t *bs, int *oldinventory) {
 					//BotAI_BotInitialChat(bs, "wantoffence", NULL);
 					//BotEnterChat(bs->cs, leader, CHAT_TELL);
 				} else if (g_spSkill.integer <= 3) {
-					if (bs->ltgtype != LTG_GETFLAG && bs->ltgtype != LTG_ATTACKENEMYBASE && bs->ltgtype != LTG_HARVEST) { 
+					if (bs->ltgtype != LTG_GETFLAG && bs->ltgtype != LTG_ATTACKENEMYBASE && bs->ltgtype != LTG_HARVEST) {
 						if ((gametype != GT_CTF || (bs->redflagstatus == 0 && bs->blueflagstatus == 0)) && (gametype != GT_1FCTF || bs->neutralflagstatus == 0)) {
 							// tell the leader we want to be on offence
 							BotVoiceChat(bs, leader, VOICECHAT_WANTONOFFENSE);
@@ -2429,8 +2429,10 @@ qboolean BotCanCamp(bot_state_t *bs) {
 	}
 	// the bot should have at least have a good weapon with some ammo
 	if (!(bs->inventory[INVENTORY_ROCKETLAUNCHER] > 0 && bs->inventory[INVENTORY_ROCKETS] > 10) && !(bs->inventory[INVENTORY_RAILGUN] > 0 && bs->inventory[INVENTORY_SLUGS] > 10) && !(bs->inventory[INVENTORY_PLASMAGUN] > 0 && bs->inventory[INVENTORY_CELLS] > 80)
-#ifdef MISSIONPACK && !(bs->inventory[INVENTORY_CHAINGUN] > 0 && bs->inventory[INVENTORY_BELT] > 80)
-#endif && !(bs->inventory[INVENTORY_BFG10K] > 0 && bs->inventory[INVENTORY_BFGAMMO] > 10)) {
+#ifdef MISSIONPACK
+		&& !(bs->inventory[INVENTORY_CHAINGUN] > 0 && bs->inventory[INVENTORY_BELT] > 80)
+#endif
+		&& !(bs->inventory[INVENTORY_BFG10K] > 0 && bs->inventory[INVENTORY_BFGAMMO] > 10)) {
 		return qfalse;
 	}
 
@@ -3003,6 +3005,7 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 	}
 
 	memset(&moveresult, 0, sizeof(bot_moveresult_t));
+
 	attack_skill = Characteristic_BFloat(bs->character, CHARACTERISTIC_ATTACK_SKILL, 0, 1);
 	jumper = Characteristic_BFloat(bs->character, CHARACTERISTIC_JUMPER, 0, 1);
 	croucher = Characteristic_BFloat(bs->character, CHARACTERISTIC_CROUCHER, 0, 1);
@@ -3430,7 +3433,8 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		squaredist = VectorLengthSquared(dir);
 		// if this entity is not carrying a flag or cubes
 		if (!EntityCarriesFlag(&entinfo)
-#ifdef MISSIONPACK && !EntityCarriesCubes(&entinfo)
+#ifdef MISSIONPACK
+			&& !EntityCarriesCubes(&entinfo)
 #endif
 		) {
 			// if this enemy is further away than the current one
@@ -3456,7 +3460,8 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		}
 		// if the enemy is quite far away and doesn't have a flag or cubes and the bot is not damaged try to ignore this enemy
 		if (curenemy < 0 && squaredist > Square(100) && !healthdecrease && !EntityCarriesFlag(&entinfo)
-#ifdef MISSIONPACK && !EntityCarriesCubes(&entinfo)
+#ifdef MISSIONPACK
+			&& !EntityCarriesCubes(&entinfo)
 #endif
 		) {
 			BotEntityInfo(bs->playernum, &curbotinfo);
@@ -3516,15 +3521,15 @@ int BotTeamFlagCarrierVisible(bot_state_t *bs) {
 
 		BotEntityInfo(i, &entinfo);
 		// if this player is active
-		if (!entinfo.valid {
+		if (!entinfo.valid) {
 			continue;
 		}
 		// if this player is carrying a flag
-		if (!EntityCarriesFlag(&entinfo) {
+		if (!EntityCarriesFlag(&entinfo)) {
 			continue;
 		}
 		// if the flag carrier is not on the same team
-		if (!BotSameTeam(bs, i) {
+		if (!BotSameTeam(bs, i)) {
 			continue;
 		}
 		// if the flag carrier is not visible
@@ -3556,11 +3561,11 @@ int BotTeamFlagCarrier(bot_state_t *bs) {
 
 		BotEntityInfo(i, &entinfo);
 		// if this player is active
-		if (!entinfo.valid {
+		if (!entinfo.valid) {
 			continue;
 		}
 		// if this player is carrying a flag
-		if (!EntityCarriesFlag(&entinfo) {
+		if (!EntityCarriesFlag(&entinfo)) {
 			continue;
 		}
 		// if the flag carrier is not on the same team
@@ -3591,15 +3596,15 @@ int BotEnemyFlagCarrierVisible(bot_state_t *bs) {
 
 		BotEntityInfo(i, &entinfo);
 		// if this player is active
-		if (!entinfo.valid {
+		if (!entinfo.valid) {
 			continue;
 		}
 		// if this player is carrying a flag
-		if (!EntityCarriesFlag(&entinfo) {
+		if (!EntityCarriesFlag(&entinfo)) {
 			continue;
 		}
 		// if the flag carrier is on the same team
-		if (BotSameTeam(bs, i) {
+		if (BotSameTeam(bs, i)) {
 			continue;
 		}
 		// if the flag carrier is not visible
@@ -3949,7 +3954,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 					//AAS_ClearShownDebugLines();
 					trap_AAS_PredictPlayerMovement(&move, bs->enemy, origin, PRESENCE_CROUCH, qfalse, dir, cmdmove, 0, dist * 10 / wi.speed, 0.1f, 0, 0, qfalse, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
 					VectorCopy(move.endpos, bestorigin);
-					// BotAI_Print(PRT_MESSAGE, "%1.1f predicted speed = %f, frames = %f\n", FloatTime(), VectorLength(dir), dist * 10 / wi.speed);
+					//BotAI_Print(PRT_MESSAGE, "%1.1f predicted speed = %f, frames = %f\n", FloatTime(), VectorLength(dir), dist * 10 / wi.speed);
 				// if not that skilled do linear prediction
 				} else if (aim_skill > 0.4) {
 					VectorSubtract(entinfo.origin, bs->origin, dir);
@@ -5194,6 +5199,7 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, bot_aienter_t a
 	gentity_t *ent;
 	bot_activategoal_t activategoal;
 	trace_t trace;
+
 	// if the bot is not blocked by anything
 	if (!moveresult->blocked) {
 		bs->notblocked_time = FloatTime();
@@ -5280,6 +5286,7 @@ void BotAIBlocked(bot_state_t *bs, bot_moveresult_t *moveresult, bot_aienter_t a
 		VectorSet(angles, 0, 360 * random(), 0);
 		AngleVectors(angles, hordir, NULL, NULL);
 	}
+
 	//if (moveresult->flags & MOVERESULT_ONTOPOFOBSTACLE) movetype = MOVE_JUMP;
 	//else
 	movetype = MOVE_WALK;
@@ -5836,7 +5843,8 @@ void BotCheckSnapshot(bot_state_t *bs) {
 	while ((ent = BotAI_GetSnapshotEntity(bs->playernum, ent, &state)) != -1) {
 		// check the entity state for events
 		BotCheckEvents(bs, &state);
-		// check for grenades the bot should avoid BotCheckForGrenades(bs, &state);
+		// check for grenades the bot should avoid
+		BotCheckForGrenades(bs, &state);
 #ifdef MISSIONPACK
 		// check for proximity mines which the bot should deactivate
 		BotCheckForProxMines(bs, &state);

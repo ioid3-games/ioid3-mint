@@ -223,7 +223,6 @@ void CG_CalcVrect(void) {
 				cg.viewportY += cg.viewportHeight;
 			}
 		}
-	}
 	// if third view port should be half of the window instead of a quarter
 	} else if (cg.numViewports == 3 && !cg_splitviewThirdEqual.integer) {
 		if (cg_splitviewVertical.integer) {
@@ -505,7 +504,7 @@ static void CG_OffsetFirstPersonView(void) {
 	timeDelta = cg.time - cg.cur_lc->duckTime;
 
 	if (timeDelta < DUCK_TIME) {
-		origin[2] -= cg.cur_lc->duckChange *(DUCK_TIME - timeDelta) / DUCK_TIME;
+		origin[2] -= cg.cur_lc->duckChange * (DUCK_TIME - timeDelta) / DUCK_TIME;
 	}
 	// add fall height
 	delta = cg.time - cg.cur_lc->landTime;
@@ -539,7 +538,8 @@ static void CG_OffsetFirstPersonView(void) {
 CG_ZoomDown_f
 =======================================================================================================================================
 */
-void CG_ZoomDown_fint localPlayerNum) {
+void CG_ZoomDown_f(int localPlayerNum) {
+
 	localPlayer_t *player = &cg.localPlayers[localPlayerNum];
 
 	if (player->zoomed) {
@@ -556,6 +556,7 @@ CG_ZoomUp_f
 =======================================================================================================================================
 */
 void CG_ZoomUp_f(int localPlayerNum) {
+
 	localPlayer_t *player = &cg.localPlayers[localPlayerNum];
 
 	if (!player->zoomed) {
@@ -622,7 +623,7 @@ static int CG_CalcFov(void) {
 		// Based on LordHavoc's code for Darkplaces
 		// http://www.quakeworld.nu/forum/topic/53/what-does-your-qw-look-like/page/30
 		const float baseAspect = 0.75f; // 3 / 4
-		const float aspect = (float)cg.refdef.width /  (float)cg.refdef.height;
+		const float aspect = (float)cg.refdef.width / (float)cg.refdef.height;
 		const float desiredFov = fov_x;
 
 		fov_x = atan(tan(desiredFov * M_PI / 360.0f) * baseAspect * aspect) * 360.0f / M_PI;
@@ -732,7 +733,7 @@ static void CG_DamageBlendBlob(void) {
 	ent.renderfx = RF_NO_MIRROR;
 
 	VectorMA(cg.refdef.vieworg, 8, cg.refdef.viewaxis[0], ent.origin);
-	VectorMA(ent.origin, cg.cur_lc->damageX * - 8, cg.refdef.viewaxis[1], ent.origin);
+	VectorMA(ent.origin, cg.cur_lc->damageX * -8, cg.refdef.viewaxis[1], ent.origin);
 	VectorMA(ent.origin, cg.cur_lc->damageY * 8, cg.refdef.viewaxis[2], ent.origin);
 
 	ent.radius = cg.cur_lc->damageValue * 3;

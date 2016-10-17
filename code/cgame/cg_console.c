@@ -25,34 +25,32 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "cg_local.h"
 #include "../qcommon/q_unicode.h"
 
-#define CON_MAXLINES	512
-#define CON_LINELENGTH	128
+#define CON_MAXLINES 512
+#define CON_LINELENGTH 128
 typedef struct {
 	qboolean initialized;
 
 	char lines[CON_MAXLINES][CON_LINELENGTH];
-	int current;		// line where next message will be printed
-	int display;		// bottom of console displays this line
-	int x;			// offset in current line for next print
-	int startx;		// initial index in current line. it's 2 if colored line wrapped around
-	int topline; // 0 <= topline < CON_MAXLINES
-	float displayFrac;	// aproaches finalFrac at scr_conspeed
+	int current;			// line where next message will be printed
+	int display;			// bottom of console displays this line
+	int x;					// offset in current line for next print
+	int startx;				// initial index in current line. it's 2 if colored line wrapped around
+	int topline;			// 0 <= topline < CON_MAXLINES
+	float displayFrac;		// aproaches finalFrac at scr_conspeed
 	float finalFrac;		// 0.0 to 1.0 lines of console to display
-
 	char version[80];
 	int sideMargin;
-	int screenFakeWidth; // width in fake 640x480, it can be more than 640
-	int lineSplit;		// current line wrapped around without a terminating newline
+	int screenFakeWidth;	// width in fake 640x480, it can be more than 640
+	int lineSplit;			// current line wrapped around without a terminating newline
 } console_t;
 
 console_t con;
 
-#define DEFAULT_CONSOLE_WIDTH	78
-
-#define COMMAND_HISTORY		32
+#define DEFAULT_CONSOLE_WIDTH 78
+#define COMMAND_HISTORY 32
 
 mfield_t historyEditLines[COMMAND_HISTORY];
-int nextHistoryLine;		// the last line in the history buffer, not masked
+int nextHistoryLine; // the last line in the history buffer, not masked
 int historyLine; // the line being displayed from history buffer will be <= nextHistoryLine
 
 mfield_t g_consoleField;
@@ -197,8 +195,7 @@ void CG_ConsolePrint(const char *p) {
 			wordLen = i;
 		}
 		// check if word fits in buffer / on screen
-		if (con.x + wordLen > CON_LINELENGTH
-			|| lineDrawLen + wordDrawLen >= con.screenFakeWidth - (con.sideMargin * 2)) {
+		if (con.x + wordLen > CON_LINELENGTH || lineDrawLen + wordDrawLen >= con.screenFakeWidth - (con.sideMargin * 2)) {
 			// check if this is appending to text
 			if (con.lineSplit && con.x > con.startx /*&& con.lines[con.current % CON_MAXLINES][strlen(con.lines[con.current % CON_MAXLINES]) - 1] != ' '*/) {
 				qboolean foundBreak = qfalse;
@@ -283,8 +280,9 @@ void Con_DrawSolidConsole(connstate_t state, float frac) {
 	int lines;
 	vec4_t color;
 
-	if (frac > 1)
+	if (frac > 1) {
 		frac = 1;
+	}
 
 	lines = cgs.glconfig.vidHeight * frac / cgs.screenYScale;
 
@@ -306,23 +304,24 @@ void Con_DrawSolidConsole(connstate_t state, float frac) {
 	color[1] = 0;
 	color[2] = 0;
 	color[3] = 1;
-	CG_FillRect(0, y, SCREEN_WIDTH, 2, color);
 
+	CG_FillRect(0, y, SCREEN_WIDTH, 2, color);
 	CG_SetScreenPlacement(PLACE_RIGHT, PLACE_TOP);
 	// draw the version number
 	CG_DrawString(SCREEN_WIDTH, lines - SMALLCHAR_HEIGHT, con.version, UI_RIGHT|UI_SMALLFONT, color);
-
 	CG_SetScreenPlacement(PLACE_LEFT, PLACE_TOP);
 	// draw the text
-	rows = (lines - SMALLCHAR_HEIGHT) / SMALLCHAR_HEIGHT;		// rows of text to draw
+	rows = (lines - SMALLCHAR_HEIGHT) / SMALLCHAR_HEIGHT; // rows of text to draw
 
 	y = lines - (SMALLCHAR_HEIGHT * 3);
 	// draw from the bottom up
 	if (con.display != con.current) {
 		int linewidth = con.screenFakeWidth / SMALLCHAR_WIDTH;
 		// draw arrows to show the buffer is backscrolled
-		for (x = 0; x < linewidth; x += 4)
+		for (x = 0; x < linewidth; x += 4) {
 			CG_DrawString((x + 1) * SMALLCHAR_WIDTH, y, "^", UI_CENTER|UI_SMALLFONT, color);
+		}
+
 		y -= SMALLCHAR_HEIGHT;
 		rows--;
 	}
@@ -356,6 +355,7 @@ Con_DrawConsole
 =======================================================================================================================================
 */
 void Con_DrawConsole(connstate_t state) {
+
 	// if disconnected, render console full screen
 	if (state == CA_DISCONNECTED) {
 		if (!(Key_GetCatcher() & KEYCATCH_UI)) {
@@ -369,8 +369,6 @@ void Con_DrawConsole(connstate_t state) {
 	}
 }
 
-// ================================================================
-
 /*
 =======================================================================================================================================
 CG_RunConsole
@@ -379,22 +377,26 @@ Scroll it up or down and draw it
 =======================================================================================================================================
 */
 void CG_RunConsole(connstate_t state) {
+
 	// decide on the destination height of the console
-	if (Key_GetCatcher() & KEYCATCH_CONSOLE)
-		con.finalFrac = 0.5;		// half screen
+	if (Key_GetCatcher() & KEYCATCH_CONSOLE) {
+		con.finalFrac = 0.5; // half screen
 	} else {
-		con.finalFrac = 0;				// none visible
+		con.finalFrac = 0; // none visible
+	}
 	// scroll towards the destination height
 	if (con.finalFrac < con.displayFrac) {
 		con.displayFrac -= con_conspeed.value * cg.realFrameTime * 0.001;
 
-		if (con.finalFrac > con.displayFrac)
+		if (con.finalFrac > con.displayFrac) {
 			con.displayFrac = con.finalFrac;
+		}
 	} else if (con.finalFrac > con.displayFrac) {
 		con.displayFrac += con_conspeed.value * cg.realFrameTime * 0.001;
 
-		if (con.finalFrac < con.displayFrac)
+		if (con.finalFrac < con.displayFrac) {
 			con.displayFrac = con.finalFrac;
+		}
 	}
 
 	Con_DrawConsole(state);
@@ -448,11 +450,18 @@ void Con_Bottom(void) {
 	con.display = con.current;
 }
 
-
+/*
+=======================================================================================================================================
+CG_CloseConsole
+=======================================================================================================================================
+*/
 void CG_CloseConsole(void) {
+
 	MField_Clear(&g_consoleField);
+
 	Key_SetCatcher(Key_GetCatcher() & ~KEYCATCH_CONSOLE);
-	con.finalFrac = 0;				// none visible
+
+	con.finalFrac = 0; // none visible
 	con.displayFrac = 0;
 }
 
@@ -508,7 +517,7 @@ void Console_Key(int key, qboolean down) {
 		} else {
 			// other text will be chat messages
 			if (!editLine[0]) {
-				return;	// empty lines just scroll the console without adding to history
+				return; // empty lines just scroll the console without adding to history
 			} else {
 				if (con_autochat.integer) {
 					trap_Cmd_ExecuteText(EXEC_APPEND, "cmd say ");
@@ -531,10 +540,11 @@ void Console_Key(int key, qboolean down) {
 
 		if (cg.connState == CA_DISCONNECTED) {
 			trap_UpdateScreen(); // force an update, because the command may take some time
+		}
+
 		return;
 	}
 	// command completion
-
 	if (key == K_TAB) {
 		char newbuf[MAX_EDIT_LINE * 4];
 		const char *editLine;
@@ -550,7 +560,6 @@ void Console_Key(int key, qboolean down) {
 		return;
 	}
 	// command history (ctrl-p ctrl-n for unix style)
-
 	if ((key == K_MWHEELUP && trap_Key_IsDown(K_SHIFT)) || (key == K_UPARROW) || (key == K_KP_UPARROW) || ((tolower(key) == 'p') && trap_Key_IsDown(K_CTRL))) {
 		if (nextHistoryLine - historyLine < COMMAND_HISTORY && historyLine > 0) {
 			historyLine--;
@@ -619,10 +628,10 @@ void Console_Key(int key, qboolean down) {
 	MField_KeyDownEvent(&g_consoleField, key);
 }
 
-
 // This must not exceed MAX_CMD_LINE
-#define MAX_CONSOLE_SAVE_BUFFER	1024
+#define MAX_CONSOLE_SAVE_BUFFER 1024
 #define CONSOLE_HISTORY_FILE "consolehistory.dat"
+
 static char consoleSaveBuffer[MAX_CONSOLE_SAVE_BUFFER];
 static int consoleSaveBufferSize = 0;
 
@@ -686,12 +695,14 @@ void CG_LoadConsoleHistory(void) {
 
 		memmove(&historyEditLines[0], &historyEditLines[i + 1], numLines * sizeof(mfield_t));
 
-		for (i = numLines; i < COMMAND_HISTORY; i++)
+		for (i = numLines; i < COMMAND_HISTORY; i++) {
 			MField_Clear(&historyEditLines[i]);
+		}
 
 		historyLine = nextHistoryLine = numLines;
 	} else {
 		Com_Printf("Couldn't read %s.\n", CONSOLE_HISTORY_FILE);
+	}
 
 	trap_FS_FCloseFile(f);
 }
@@ -724,8 +735,9 @@ void CG_SaveConsoleHistory(void) {
 
 			if (saveBufferLength + additionalLength < MAX_CONSOLE_SAVE_BUFFER) {
 				Q_strcat(consoleSaveBuffer, MAX_CONSOLE_SAVE_BUFFER, va("%d %d %d %s ", historyEditLines[i].cursor, historyEditLines[i].scroll, lineLength, lineBuffer));
-			} else
+			} else {
 				break;
+			}
 		}
 
 		i = (i - 1 + COMMAND_HISTORY) % COMMAND_HISTORY;
@@ -742,8 +754,9 @@ void CG_SaveConsoleHistory(void) {
 		return;
 	}
 
-	if (trap_FS_Write(consoleSaveBuffer, consoleSaveBufferSize, f) < consoleSaveBufferSize)
+	if (trap_FS_Write(consoleSaveBuffer, consoleSaveBufferSize, f) < consoleSaveBufferSize) {
 		Com_Printf("Couldn't write %s.\n", CONSOLE_HISTORY_FILE);
+	}
 
 	trap_FS_FCloseFile(f);
 }

@@ -606,8 +606,7 @@ static void AddBotToSpawnQueue(int playerNum, int delay) {
 =======================================================================================================================================
 G_RemoveQueuedBotBegin
 
-Called on player disconnect to make sure the delayed spawn
-doesn't happen on a freed index
+Called on player disconnect to make sure the delayed spawn doesn't happen on a freed index.
 =======================================================================================================================================
 */
 void G_RemoveQueuedBotBegin(int playerNum) {
@@ -682,6 +681,7 @@ static void G_AddBot(const char *name, float skill, const char *team, int delay,
 	char *headmodel;
 	char userinfo[MAX_INFO_STRING];
 	qboolean modelSet;
+
 	// have the server allocate a client slot
 	value = trap_BotAllocateClient();
 
@@ -871,8 +871,7 @@ void Svcmd_AddBot_f(void) {
 
 	G_AddBot(name, skill, team, delay, altname);
 	// if this was issued during gameplay and we are playing locally, go ahead and load the bot's media immediately
-	if (level.time - level.startTime > 1000 &&
-		trap_Cvar_VariableIntegerValue("cl_running")) {
+	if (level.time - level.startTime > 1000 && trap_Cvar_VariableIntegerValue("cl_running")) {
 		trap_SendServerCommand(-1, "loaddeferred\n");
 	}
 }

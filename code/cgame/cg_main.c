@@ -376,12 +376,14 @@ static cvarTable_t cgameCvarTable[] = {
 	{&cg_predictItems, "cg_predictItems", "1", CVAR_ARCHIVE|CVAR_USERINFO_ALL, RANGE_BOOL},
 #ifdef MISSIONPACK
 	{&cg_deferPlayers, "cg_deferPlayers", "0", CVAR_ARCHIVE, RANGE_BOOL},
-#else {&cg_deferPlayers, "cg_deferPlayers", "1", CVAR_ARCHIVE, RANGE_BOOL},
+#else
+	{&cg_deferPlayers, "cg_deferPlayers", "1", CVAR_ARCHIVE, RANGE_BOOL},
 #endif
 	{&cg_drawTeamOverlay, "cg_drawTeamOverlay", "0", CVAR_ARCHIVE, RANGE_INT(0, 3)},
 #ifdef MISSIONPACK_HUD
 	{&cg_teamOverlayUserinfo, "teamoverlay", "1", CVAR_ROM|CVAR_USERINFO_ALL, RANGE_ALL},
-#else {&cg_teamOverlayUserinfo, "teamoverlay", "0", CVAR_ROM|CVAR_USERINFO_ALL, RANGE_ALL},
+#else
+	{&cg_teamOverlayUserinfo, "teamoverlay", "0", CVAR_ROM|CVAR_USERINFO_ALL, RANGE_ALL},
 #endif
 	{&cg_stats, "cg_stats", "0", 0, RANGE_ALL},
 	{&cg_drawFriend, "cg_drawFriend", "1", CVAR_ARCHIVE, RANGE_BOOL},
@@ -449,7 +451,7 @@ static cvarTable_t cgameCvarTable[] = {
 	{&cg_forceBitmapFonts, "cg_forceBitmapFonts", "0", CVAR_ARCHIVE|CVAR_LATCH, RANGE_BOOL},
 	{&cg_drawGrappleHook, "cg_drawGrappleHook", "1", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_drawBBox, "cg_drawBBox", "0", CVAR_CHEAT, RANGE_BOOL}, 
-// 	{&cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO|CVAR_ARCHIVE, RANGE_BOOL}
+//	{&cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO|CVAR_ARCHIVE, RANGE_BOOL}
 	{&cg_introPlayed, "com_introPlayed", "0", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_joystickDebug, "in_joystickDebug", "0", CVAR_TEMP, RANGE_BOOL},
 	{&ui_stretch, "ui_stretch", "0", CVAR_ARCHIVE, RANGE_BOOL},
@@ -1153,8 +1155,8 @@ static void CG_RegisterSounds(void) {
 #endif
 	if (cgs.gametype >= GT_TEAM || cg_buildScript.integer) {
 		// ZTM: Disabled capture award sound because it causes capture sound to play twice
-		//      this might make sense if it was a different sound, but you'd probably want to
-		//      silence GTS_ * _CAPTURE which is a callange of its own
+		//		this might make sense if it was a different sound, but you'd probably want to
+		//		silence GTS_*_CAPTURE which is a callange of its own
 		// cgs.media.captureAwardSound = trap_S_RegisterSound("sound/teamplay/flagcapture_yourteam.wav", qtrue);
 		cgs.media.redLeadsSound = trap_S_RegisterSound("sound/feedback/redleads.wav", qtrue);
 		cgs.media.blueLeadsSound = trap_S_RegisterSound("sound/feedback/blueleads.wav", qtrue);
@@ -1575,7 +1577,7 @@ static void CG_RegisterGraphics(void) {
 		vec3_t mins, maxs;
 		int j;
 
-		Com_sprintf(name, sizeof(name), " * %i", i);
+		Com_sprintf(name, sizeof(name), "*%i", i);
 		cgs.inlineDrawModel[i] = trap_R_RegisterModel(name);
 		trap_R_ModelBounds(cgs.inlineDrawModel[i], mins, maxs, 0, 0, 0);
 
@@ -2237,7 +2239,7 @@ static const char *CG_FeederItemText(float feederID, int index, int column, qhan
 					if (info->botSkill > 0 && info->botSkill <= 5) {
 						*handle = cgs.media.botSkillShaders[info->botSkill - 1];
 					} else if (info->handicap < 100) {
-					return va("%i", info->handicap);
+						return va("%i", info->handicap);
 					}
 				}
 
@@ -2500,7 +2502,7 @@ CG_AssetCache
 void CG_AssetCache(void) {
 
 	//if (Assets.textFont == NULL) {
-	// trap_R_RegisterFont("fonts/arial.ttf", 72, &Assets.textFont);
+	//	trap_R_RegisterFont("fonts/arial.ttf", 72, &Assets.textFont);
 	//}
 
 	//Assets.background = trap_R_RegisterShaderNoMip(ASSET_BACKGROUND);
@@ -3147,7 +3149,7 @@ void CG_KeyEvent(int key, qboolean down) {
 CG_MouseEvent
 =======================================================================================================================================
 */
-void CG_MouseEvent(int x, int y) {
+void CG_MouseEvent(int localPlayerNum, int x, int y) {
 
 }
 #endif

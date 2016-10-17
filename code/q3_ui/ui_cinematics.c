@@ -30,7 +30,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define ART_FRAMEL "menu/art/frame2_l"
 #define ART_FRAMER "menu/art/frame1_r"
 
-#define VERTICAL_SPACING	30
+#define VERTICAL_SPACING 30
 
 #define ID_BACK			10
 #define ID_CIN_IDLOGO	11
@@ -62,6 +62,7 @@ typedef struct {
 	menutext_s cin_end;
 	menubitmap_s back;
 } cinematicsMenuInfo_t;
+
 static cinematicsMenuInfo_t cinematicsMenuInfo;
 static char *cinematics[] = {
 	"idlogo", "intro", "tier1", "tier2", "tier3", "tier4", "tier5", "tier6", "tier7", "end"

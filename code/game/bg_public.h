@@ -312,7 +312,7 @@ extern int bg_numPlayerStateFields;
 #define BUTTON_WALKING		(1 << 14) // walking can't just be infered from MOVE_RUN because a key pressed late in the frame will only generate a small move value for that frame walking will use different animations and won't generate footsteps
 #define BUTTON_ANY			(1 << 15) // any key whatsoever
 
-#define BUTTONS_GENERATED(BUTTON_TALK|BUTTON_WALKING|BUTTON_ANY)
+#define BUTTONS_GENERATED (BUTTON_TALK|BUTTON_WALKING|BUTTON_ANY)
 
 #define MOVE_RUN			120			// if forwardmove or rightmove are >= MOVE_RUN, // then BUTTON_WALKING should be set
 

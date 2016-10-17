@@ -635,6 +635,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 			DEBUGNAME("EV_FALL_FAR");
 			trap_S_StartSound(NULL, es->number, CHAN_AUTO, CG_CustomSound(es->number, "*fall1.wav"));
 			cent->pe.painTime = cg.time; // don't play a pain sound right after this
+
 			for (i = 0; i < CG_MaxSplitView(); i++) {
 				if (playerNum == cg.snap->pss[i].playerNum) {
 					// smooth landing z changes
@@ -649,46 +650,45 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 		case EV_STEP_12:
 		case EV_STEP_16: // smooth out step up transitions
 			DEBUGNAME("EV_STEP");
-		{
-			float oldStep;
-			int delta;
-			int step;
-			localPlayer_t *player;
-			playerState_t *ps;
+			{
+				float oldStep;
+				int delta;
+				int step;
+				localPlayer_t *player;
+				playerState_t *ps;
 
-			for (i = 0; i < CG_MaxSplitView(); i++) {
-				player = &cg.localPlayers[i];
-				ps = &cg.snap->pss[i];
+				for (i = 0; i < CG_MaxSplitView(); i++) {
+					player = &cg.localPlayers[i];
+					ps = &cg.snap->pss[i];
 
-				if (playerNum != ps->playerNum) {
-					continue;
+					if (playerNum != ps->playerNum) {
+						continue;
+					}
+					// if we are interpolating, we don't need to smooth steps
+					if (cg.demoPlayback || (ps->pm_flags & PMF_FOLLOW) || cg_nopredict.integer || cg_synchronousClients.integer) {
+						continue;
+					}
+					// check for stepping up before a previous step is completed
+					delta = cg.time - player->stepTime;
+
+					if (delta < STEP_TIME) {
+						oldStep = player->stepChange * (STEP_TIME - delta) / STEP_TIME;
+					} else {
+						oldStep = 0;
+					}
+					// add this amount
+					step = 4 * (event - EV_STEP_4 + 1);
+					player->stepChange = oldStep + step;
+
+					if (player->stepChange > MAX_STEP_CHANGE) {
+						player->stepChange = MAX_STEP_CHANGE;
+					}
+
+					player->stepTime = cg.time;
 				}
-				// if we are interpolating, we don't need to smooth steps
-				if (cg.demoPlayback || (ps->pm_flags & PMF_FOLLOW) || cg_nopredict.integer || cg_synchronousClients.integer) {
-					continue;
-				}
-				// check for stepping up before a previous step is completed
-				delta = cg.time - player->stepTime;
 
-				if (delta < STEP_TIME) {
-					oldStep = player->stepChange * (STEP_TIME - delta) / STEP_TIME;
-				} else {
-					oldStep = 0;
-				}
-				// add this amount
-				step = 4 * (event - EV_STEP_4 + 1);
-				player->stepChange = oldStep + step;
-
-				if (player->stepChange > MAX_STEP_CHANGE) {
-					player->stepChange = MAX_STEP_CHANGE;
-				}
-
-				player->stepTime = cg.time;
+				break;
 			}
-
-			break;
-		}
-
 		case EV_JUMP_PAD:
 			DEBUGNAME("EV_JUMP_PAD");
 //			CG_Printf("EV_JUMP_PAD w/effect #%i\n", es->eventParm);
@@ -954,7 +954,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 			if (es->playerNum >= 0 && es->playerNum < MAX_CLIENTS) {
 				for (i = 0; i < CG_MaxSplitView(); i++) {
 					if (es->playerNum == cg.snap->pss[i].playerNum && !cg.localPlayers[i].renderingThirdPerson) {
-						if (cg_drawGun[i].integer == 2)
+						if (cg_drawGun[i].integer == 2) {
 							VectorMA(es->origin2, 8, cg.refdef.viewaxis[1], es->origin2);
 						} else if (cg_drawGun[i].integer == 3) {
 							VectorMA(es->origin2, 4, cg.refdef.viewaxis[1], es->origin2);
@@ -1043,9 +1043,8 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 					}
 				}
 				// ZTM: NOTE: Some of these sounds don't really work with local player on different teams.
-				//     New games might want to replace you / enemy sounds with red / blue.
-				//     See http:// github.com/zturtleman / spearmint / wiki / New - Sounds
-
+				//		New games might want to replace you/enemy sounds with red/blue.
+				//		See http:// github.com/zturtleman/spearmint/wiki/New - Sounds
 				switch (es->eventParm) {
 					case GTS_RED_CAPTURE: // CTF: red team captured the blue flag, 1FCTF: red team captured the neutral flag
 						if (redTeam) {

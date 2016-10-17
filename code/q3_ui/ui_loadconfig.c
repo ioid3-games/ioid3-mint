@@ -25,12 +25,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-LOAD CONFIG MENU
+	LOAD CONFIG MENU
+
 =======================================================================================================================================
 */
 
 #include "ui_local.h"
-
 
 #define ART_BACK0 "menu/art/back_0"
 #define ART_BACK1 "menu/art/back_1"
@@ -42,33 +42,29 @@ LOAD CONFIG MENU
 #define ART_ARROWLEFT "menu/art/arrows_horz_left"
 #define ART_ARROWRIGHT "menu/art/arrows_horz_right"
 
-#define MAX_CONFIGS			128
-#define NAMEBUFSIZE			(MAX_CONFIGS * 16)
+#define MAX_CONFIGS 128
+#define NAMEBUFSIZE (MAX_CONFIGS * 16)
 
-#define ID_BACK				10
-#define ID_GO				11
-#define ID_LIST				12
-#define ID_LEFT				13
-#define ID_RIGHT			14
+#define ID_BACK		10
+#define ID_GO		11
+#define ID_LIST		12
+#define ID_LEFT		13
+#define ID_RIGHT	14
 
-#define ARROWS_WIDTH		128
-#define ARROWS_HEIGHT		48
-
+#define ARROWS_WIDTH 128
+#define ARROWS_HEIGHT 48
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
-
 	menulist_s list;
 	menubitmap_s arrows;
 	menubitmap_s left;
 	menubitmap_s right;
 	menubitmap_s back;
 	menubitmap_s go;
-
 	char names[NAMEBUFSIZE];
 	char *configlist[MAX_CONFIGS];
 } configs_t;
@@ -86,19 +82,19 @@ static void LoadConfig_MenuEvent(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_GO:
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("exec %s\n", s_configs.list.itemnames[s_configs.list.curvalue]));
-		UI_PopMenu();
-		break;
-	case ID_BACK:
-		UI_PopMenu();
-		break;
-	case ID_LEFT:
-		ScrollList_Key(&s_configs.list, K_LEFTARROW);
-		break;
-	case ID_RIGHT:
-		ScrollList_Key(&s_configs.list, K_RIGHTARROW);
-		break;
+		case ID_GO:
+			trap_Cmd_ExecuteText(EXEC_APPEND, va("exec %s\n", s_configs.list.itemnames[s_configs.list.curvalue]));
+			UI_PopMenu();
+			break;
+		case ID_BACK:
+			UI_PopMenu();
+			break;
+		case ID_LEFT:
+			ScrollList_Key(&s_configs.list, K_LEFTARROW);
+			break;
+		case ID_RIGHT:
+			ScrollList_Key(&s_configs.list, K_RIGHTARROW);
+			break;
 	}
 }
 
@@ -208,8 +204,9 @@ static void LoadConfig_MenuInit(void) {
 		s_configs.list.numitems = 1;
 		// degenerate case, not selectable
 		s_configs.go.generic.flags |= (QMF_INACTIVE|QMF_HIDDEN);
-	} else if (s_configs.list.numitems > MAX_CONFIGS)
+	} else if (s_configs.list.numitems > MAX_CONFIGS) {
 		s_configs.list.numitems = MAX_CONFIGS;
+	}
 
 	configname = s_configs.names;
 
@@ -218,8 +215,9 @@ static void LoadConfig_MenuInit(void) {
 		// strip extension
 		len = strlen(configname);
 
-		if (!Q_stricmp(configname +  len - 4, ".cfg"))
+		if (!Q_stricmp(configname +  len - 4, ".cfg")) {
 			configname[len - 4] = '\0';
+		}
 
 		configname += len + 1;
 	}
@@ -241,6 +239,7 @@ UI_LoadConfig_Cache
 =======================================================================================================================================
 */
 void UI_LoadConfig_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_BACK0);
 	trap_R_RegisterShaderNoMip(ART_BACK1);
 	trap_R_RegisterShaderNoMip(ART_FIGHT0);
@@ -258,7 +257,7 @@ UI_LoadConfigMenu
 =======================================================================================================================================
 */
 void UI_LoadConfigMenu(void) {
+
 	LoadConfig_MenuInit();
 	UI_PushMenu(&s_configs.menu);
 }
-

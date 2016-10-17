@@ -698,7 +698,7 @@ void ArenaServers_LoadFavorites(void) {
 	for (i = 0; i < MAX_FAVORITESERVERS; i++) {
 		trap_Cvar_VariableStringBuffer(va("server%d", i + 1), adrstr, MAX_ADDRESSLENGTH);
 
-		if (!adrstr[0] {
+		if (!adrstr[0]) {
 			continue;
 		}
 		// favorite server addresses must be maintained outside refresh list

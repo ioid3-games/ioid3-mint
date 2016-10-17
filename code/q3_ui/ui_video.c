@@ -302,7 +302,7 @@ static InitialVideoOptions_s s_ivo_templates[] = {
 	}
 };
 
-#define NUM_IVO_TEMPLATES(ARRAY_LEN(s_ivo_templates))
+#define NUM_IVO_TEMPLATES (ARRAY_LEN(s_ivo_templates))
 
 static const char *builtinResolutions[] = {
 	"320x240", "400x300", "512x384", "640x480", "800x600", "960x720", "1024x768", "1152x864", "1280x1024", "1600x1200", "2048x1536", "856x480", NULL
@@ -624,14 +624,15 @@ static void GraphicsOptions_ApplyChanges(void *unused, int notification) {
 		// search for builtin mode that matches the detected mode
 		int mode;
 
-		if (s_graphicsoptions.mode.curvalue == -1
-			|| s_graphicsoptions.mode.curvalue >= ARRAY_LEN(detectedResolutions))
+		if (s_graphicsoptions.mode.curvalue == -1 || s_graphicsoptions.mode.curvalue >= ARRAY_LEN(detectedResolutions)) {
 			s_graphicsoptions.mode.curvalue = 0;
+		}
 
 		mode = GraphicsOptions_FindBuiltinResolution(s_graphicsoptions.mode.curvalue);
 
 		if (mode == -1) {
 			char w[16], h[16];
+
 			Q_strncpyz(w, detectedResolutions[s_graphicsoptions.mode.curvalue], sizeof(w));
 			*strchr(w, 'x') = 0;
 			Q_strncpyz(h, strchr(detectedResolutions[s_graphicsoptions.mode.curvalue], 'x') + 1, sizeof(h));
@@ -642,6 +643,7 @@ static void GraphicsOptions_ApplyChanges(void *unused, int notification) {
 		trap_Cvar_SetValue("r_mode", mode);
 	} else {
 		trap_Cvar_SetValue("r_mode", s_graphicsoptions.mode.curvalue);
+	}
 
 	trap_Cvar_SetValue("r_fullscreen", s_graphicsoptions.fs.curvalue);
 

@@ -285,7 +285,7 @@ int BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal) {
 
 	// if the bot has no goal
 	if (!BotGetTopGoal(bs->gs, goal)) {
-		// BotAI_Print(PRT_MESSAGE, "no ltg on stack\n");
+		//BotAI_Print(PRT_MESSAGE, "no ltg on stack\n");
 		bs->ltg_time = 0;
 	// if the bot touches the current goal
 	} else if (BotReachedGoal(bs, goal)) {
@@ -1581,7 +1581,7 @@ int AINode_Seek_ActivateEntityy(bot_state_t *bs) {
 	// initialize target being visible to false
 	targetvisible = qfalse;
 	// if the bot has to shoot at a target to activate something
-	if (bs->activatestack->shoot) { 
+	if (bs->activatestack->shoot) {
 		BotAI_Trace(&bsptrace, bs->eye, NULL, NULL, bs->activatestack->target, bs->entitynum, MASK_SHOT);
 		// if the shootable entity is visible from the current position
 		if (bsptrace.fraction >= 1.0 || bsptrace.entityNum == goal->entitynum) {
@@ -1831,7 +1831,7 @@ int AINode_Seek_NBG(bot_state_t *bs) {
 		return qfalse;
 	}
 	// predict obstacles
-	if (BotAIPredictObstacles(bs, &goal, AIEnter_Seek_NBG))
+	if (BotAIPredictObstacles(bs, &goal, AIEnter_Seek_NBG)) {
 		return qfalse;
 	}
 	// initialize the movement state
@@ -2019,7 +2019,7 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 				range = 80;
 			}
 		}
-#endif 
+#endif
 		if (BotNearbyGoal(bs, bs->tfl, &goal, range)) {
 			BotResetLastAvoidReach(bs->ms);
 			// get the goal at the top of the stack
@@ -2033,7 +2033,7 @@ int AINode_Seek_LTG(bot_state_t *bs) {
 		}
 	}
 	// predict obstacles
-	if (BotAIPredictObstacles(bs, &goal, AIEnter_Seek_LTG))
+	if (BotAIPredictObstacles(bs, &goal, AIEnter_Seek_LTG)) {
 		return qfalse;
 	}
 	// initialize the movement state
@@ -2378,7 +2378,7 @@ int AINode_Battle_Chase(bot_state_t *bs) {
 
 	BotUpdateBattleInventory(bs, bs->enemy);
 	// predict obstacles
-	if (BotAIPredictObstacles(bs, &goal, AIEnter_Battle_Chase))
+	if (BotAIPredictObstacles(bs, &goal, AIEnter_Battle_Chase)) {
 		return qfalse;
 	}
 	// initialize the movement state
@@ -2389,7 +2389,7 @@ int AINode_Battle_Chase(bot_state_t *bs) {
 	if (moveresult.failure) {
 		// reset the avoid reach, otherwise bot is stuck in current area
 		BotResetAvoidReach(bs->ms);
-		// BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
+		//BotAI_Print(PRT_MESSAGE, "movement failure %d\n", moveresult.traveltype);
 		bs->ltg_time = 0;
 	}
 
@@ -2721,7 +2721,7 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 		// pop the current goal from the stack
 		BotPopGoal(bs->gs);
 		// if the bot still has a goal
-		if (BotGetTopGoal(bs->gs, &goal))
+		if (BotGetTopGoal(bs->gs, &goal)) {
 			AIEnter_Battle_Retreat(bs, "battle nbg: time out");
 		} else {
 			AIEnter_Battle_Fight(bs, "battle nbg: time out");

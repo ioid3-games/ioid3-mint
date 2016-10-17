@@ -49,31 +49,30 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "ai_vcmd.h"
 #include "ai_dmnet.h"
 #include "ai_team.h"
-#include "chars.h"				// characteristics
-#include "inv.h"				// indexes into the inventory
-#include "syn.h"				// synonyms
-#include "match.h"				// string matching types and vars
+#include "chars.h" // characteristics
+#include "inv.h" // indexes into the inventory
+#include "syn.h" // synonyms
+#include "match.h" // string matching types and vars
 
-#define CT_INTEGER				1
-#define CT_FLOAT				2
-#define CT_STRING				3
+#define CT_INTEGER	1
+#define CT_FLOAT	2
+#define CT_STRING	3
 
-#define DEFAULT_CHARACTER		"bots / default_c.c"
+#define DEFAULT_CHARACTER "bots/default_c.c"
 
 // interpolation requires 3 slots per - character plus 2 default character slots, and account for handle 0 being a dummy
-#define MAX_BOT_CHARACTERS(3 * MAX_CLIENTS + 2 + 1)
+#define MAX_BOT_CHARACTERS (3 * MAX_CLIENTS + 2 + 1)
 
 // characteristic value
-union cvalue
-{
+union cvalue {
 	int integer;
 	float _float;
 	char *string;
 };
 // a characteristic
 typedef struct bot_characteristic_s {
-	char type;						// characteristic type
-	union cvalue value;				// characteristic value
+	char type;			// characteristic type
+	union cvalue value;	// characteristic value
 } bot_characteristic_t;
 
 // a bot character
@@ -519,9 +518,13 @@ int BotInterpolateCharacters(int handle1, int handle2, float desiredskill) {
 // ===========================================================================
 int BotLoadCharacter(char *charfile, float skill) {
 	int firstskill, secondskill, handle;
+
 	// make sure the skill is in the valid range
-	if (skill < 1.0) skill = 1.0;
-	} else if (skill > 5.0) skill = 5.0;
+	if (skill < 1.0) {
+		skill = 1.0;
+	} else if (skill > 5.0) {
+		skill = 5.0;
+	}
 	// skill 1, 4 and 5 should be available in the character files
 	if (skill == 1.0 || skill == 4.0 || skill == 5.0) {
 		return BotLoadCharacterSkill(charfile, skill);
@@ -609,13 +612,11 @@ float Characteristic_Float(int character, int index) {
 	// an integer will be converted to a float
 	if (ch->c[index].type == CT_INTEGER) {
 		return (float)ch->c[index].value.integer;
-	}
 	// floats are just returned
 	} else if (ch->c[index].type == CT_FLOAT) {
 		return ch->c[index].value._float;
-	}
 	// cannot convert a string pointer to a float
-	else {
+	} else {
 		BotAI_Print(PRT_ERROR, "characteristic %d is not a float\n", index);
 		return 0;
 	}
@@ -675,7 +676,6 @@ int Characteristic_Integer(int character, int index) {
 	// an integer will just be returned
 	if (ch->c[index].type == CT_INTEGER) {
 		return ch->c[index].value.integer;
-	}
 	// floats are casted to integers
 	} else if (ch->c[index].type == CT_FLOAT) {
 		return (int)ch->c[index].value._float;

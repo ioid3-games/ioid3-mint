@@ -125,7 +125,9 @@ field_t fields[] = {
 	{"angle", FOFS(s.angles), F_ANGLEHACK},
 	{"targetShaderName", FOFS(targetShaderName), F_STRING},
 	{"targetShaderNewName", FOFS(targetShaderNewName), F_STRING},
-	// dlight lightstyles(made all these unique variables for testing) {"_color", FOFS(dl_color), F_VECTOR}, // color of the light	(the underscore is inserted by the color picker in QER) {"color", FOFS(dl_color), F_VECTOR}, // color of the light
+	// dlight lightstyles(made all these unique variables for testing)
+	{"_color", FOFS(dl_color), F_VECTOR}, // color of the light (the underscore is inserted by the color picker in QER)
+	{"color", FOFS(dl_color), F_VECTOR}, // color of the light
 	{"stylestring", FOFS(dl_stylestring), F_STRING}, // user defined stylestring "fffndlsfaaaaaa" for example
 	{"shader", FOFS(dl_shader), F_STRING}, // shader to use for a target_effect or dlight
 	{NULL}
@@ -539,9 +541,8 @@ void SP_worldspawn(void) {
 	trap_Cvar_Set("g_gravity", s);
 #if 0 // ZTM: Currently game doesn't need the tracemap
 	level.mapcoordsValid = qfalse;
-
-	if (G_SpawnVector2D("mapcoordsmins", " -128 128", level.mapcoordsMins) && // top left
-		 G_SpawnVector2D("mapcoordsmaxs", "128 -128", level.mapcoordsMaxs)) { // bottom right
+	// top left/bottom right
+	if (G_SpawnVector2D("mapcoordsmins", "-128 128", level.mapcoordsMins) && G_SpawnVector2D("mapcoordsmaxs", "128 -128", level.mapcoordsMaxs)) {
 		level.mapcoordsValid = qtrue;
 	}
 #endif

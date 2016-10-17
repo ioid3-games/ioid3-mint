@@ -583,7 +583,6 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	}
 
 	self->enemy = attacker;
-
 	self->player->ps.persistant[PERS_KILLED]++;
 
 	if (attacker && attacker->player) {
@@ -1242,7 +1241,7 @@ qboolean G_RadiusDamage(vec3_t origin, gentity_t *attacker, float damage, float 
 			continue;
 		}
 
-		if (!ent->takedamage {
+		if (!ent->takedamage) {
 			continue;
 		}
 		// find the distance from the edge of the bounding box

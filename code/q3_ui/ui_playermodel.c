@@ -135,15 +135,17 @@ static void PlayerModel_UpdateGrid(void) {
 	}
 
 	if (s_playermodel.numpages > 1) {
-		if (s_playermodel.modelpage > 0)
+		if (s_playermodel.modelpage > 0) {
 			s_playermodel.left.generic.flags &= ~QMF_INACTIVE;
 		} else {
 			s_playermodel.left.generic.flags |= QMF_INACTIVE;
+		}
 
-		if (s_playermodel.modelpage < s_playermodel.numpages - 1)
+		if (s_playermodel.modelpage < s_playermodel.numpages - 1) {
 			s_playermodel.right.generic.flags &= ~QMF_INACTIVE;
 		} else {
 			s_playermodel.right.generic.flags |= QMF_INACTIVE;
+		}
 	} else {
 		// hide left / right markers
 		s_playermodel.left.generic.flags |= QMF_INACTIVE;
@@ -449,23 +451,28 @@ static void PlayerModel_SetMenuItems(void) {
 			Q_strcat(modelskin, sizeof(modelskin), pdest + 5);
 		} else {
 			continue;
+		}
 
 		if (!Q_stricmp(s_playermodel.modelskin, modelskin)) {
-			// found pic, set selection here		
+			// found pic, set selection here
 			s_playermodel.selectedmodel = i;
 			s_playermodel.modelpage = i / MAX_MODELSPERPAGE;
 			// separate the model name
 			maxlen = pdest - buffptr;
 
-			if (maxlen > 16)
+			if (maxlen > 16) {
 				maxlen = 16;
+			}
+
 			Q_strncpyz(s_playermodel.modelname.string, buffptr, maxlen);
 			Q_strupr(s_playermodel.modelname.string);
 			// separate the skin name
 			maxlen = strlen(pdest + 5) + 1;
 
-			if (maxlen > 16)
+			if (maxlen > 16) {
 				maxlen = 16;
+			}
+
 			Q_strncpyz(s_playermodel.skinname.string, pdest + 5, maxlen);
 			Q_strupr(s_playermodel.skinname.string);
 			break;

@@ -1272,7 +1272,7 @@ static void PlayerName_Draw(void *item) {
 	style = UI_SMALLFONT;
 	focus = (s->generic.parent->cursor == s->generic.menuPosition);
 
-	if (s->generic.flags & QMF_GRAYED)
+	if (s->generic.flags & QMF_GRAYED) {
 		color = text_color_disabled;
 	} else if (focus) {
 		color = text_color_highlight;
@@ -1282,6 +1282,7 @@ static void PlayerName_Draw(void *item) {
 		style |= UI_BLINK;
 	} else {
 		color = text_color_normal;
+	}
 
 	if (focus) {
 		// draw cursor
@@ -1444,10 +1445,11 @@ static void ServerOptions_MenuInit(qboolean multiplayer) {
 		s_serveroptions.playerType[n].generic.x = 32;
 		s_serveroptions.playerType[n].generic.y = y;
 
-		if (n < UI_MaxSplitView())
+		if (n < UI_MaxSplitView()) {
 			s_serveroptions.playerType[n].itemnames = humanPlayerType_list;
 		} else {
 			s_serveroptions.playerType[n].itemnames = playerType_list;
+		}
 
 		s_serveroptions.playerName[n].generic.type = MTYPE_TEXT;
 		s_serveroptions.playerName[n].generic.flags = QMF_SMALLFONT;
@@ -1459,13 +1461,15 @@ static void ServerOptions_MenuInit(qboolean multiplayer) {
 		s_serveroptions.playerName[n].color = color_orange;
 		s_serveroptions.playerName[n].style = UI_SMALLFONT;
 
-		if (n == 0)
+		if (n == 0) {
 			s_serveroptions.playerName[n].string = s_serveroptions.playerNameBuffers[n];
 		} else {
 			s_serveroptions.playerName[n].string = s_serveroptions.botNameBuffers[n];
+		}
+
 		s_serveroptions.playerName[n].generic.top = s_serveroptions.playerName[n].generic.y;
 		s_serveroptions.playerName[n].generic.bottom = s_serveroptions.playerName[n].generic.y + SMALLCHAR_HEIGHT;
-		s_serveroptions.playerName[n].generic.left = s_serveroptions.playerName[n].generic.x - SMALLCHAR_HEIGHT /  2;
+		s_serveroptions.playerName[n].generic.left = s_serveroptions.playerName[n].generic.x - SMALLCHAR_HEIGHT / 2;
 		s_serveroptions.playerName[n].generic.right = s_serveroptions.playerName[n].generic.x + 16 * SMALLCHAR_WIDTH;
 
 		s_serveroptions.playerTeam[n].generic.type = MTYPE_SPINCONTROL;

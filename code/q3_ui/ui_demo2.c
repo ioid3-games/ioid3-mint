@@ -25,13 +25,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-DEMOS MENU
+	DEMOS MENU
+
 =======================================================================================================================================
 */
 
-
 #include "ui_local.h"
-
 
 #define ART_BACK0 "menu/art/back_0"
 #define ART_BACK1 "menu/art/back_1"
@@ -43,26 +42,24 @@ DEMOS MENU
 #define ART_ARROWLEFT "menu/art/arrows_horz_left"
 #define ART_ARROWRIGHT "menu/art/arrows_horz_right"
 
-#define MAX_DEMOS			1024
-#define NAMEBUFSIZE			(MAX_DEMOS * 32)
+#define MAX_DEMOS 1024
+#define NAMEBUFSIZE (MAX_DEMOS * 32)
 
-#define ID_BACK				10
-#define ID_GO				11
-#define ID_LIST				12
-#define ID_RIGHT			13
-#define ID_LEFT				14
+#define ID_BACK		10
+#define ID_GO		11
+#define ID_LIST		12
+#define ID_RIGHT	13
+#define ID_LEFT		14
 
-#define ARROWS_WIDTH		128
-#define ARROWS_HEIGHT		48
+#define ARROWS_WIDTH 128
+#define ARROWS_HEIGHT 48
 
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
-
 	menulist_s list;
 	menubitmap_s arrows;
 	menubitmap_s left;
@@ -71,7 +68,6 @@ typedef struct {
 	menubitmap_s go;
 	int numDemos;
 	char names[NAMEBUFSIZE];
-
 	char *demolist[MAX_DEMOS];
 } demos_t;
 static demos_t s_demos;
@@ -88,19 +84,19 @@ static void Demos_MenuEvent(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_GO:
-		UI_ForceMenuOff();
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("demo %s\n", s_demos.list.itemnames[s_demos.list.curvalue]));
-		break;
-	case ID_BACK:
-		UI_PopMenu();
-		break;
-	case ID_LEFT:
-		ScrollList_Key(&s_demos.list, K_LEFTARROW);
-		break;
-	case ID_RIGHT:
-		ScrollList_Key(&s_demos.list, K_RIGHTARROW);
-		break;
+		case ID_GO:
+			UI_ForceMenuOff();
+			trap_Cmd_ExecuteText(EXEC_APPEND, va("demo %s\n", s_demos.list.itemnames[s_demos.list.curvalue]));
+			break;
+		case ID_BACK:
+			UI_PopMenu();
+			break;
+		case ID_LEFT:
+			ScrollList_Key(&s_demos.list, K_LEFTARROW);
+			break;
+		case ID_RIGHT:
+			ScrollList_Key(&s_demos.list, K_RIGHTARROW);
+			break;
 	}
 }
 
@@ -213,8 +209,9 @@ static void Demos_MenuInit(void) {
 
 	demoname = s_demos.names;
 
-	if (s_demos.numDemos > MAX_DEMOS)
+	if (s_demos.numDemos > MAX_DEMOS) {
 		s_demos.numDemos = MAX_DEMOS;
+	}
 
 	for (i = 0; i < s_demos.numDemos; i++) {
 		// information to build into new UI...
@@ -222,9 +219,7 @@ static void Demos_MenuInit(void) {
 		Com_Printf("Demo: %s%s, protocol %d, %dKB, %d seconds, %s ->%s\n", demoname, valid ? "" : "(unsupported)", protocol, length / 1024, runTime / 1000, startTime, endTime);
 
 		s_demos.list.itemnames[i] = demoname;
-
 		len = strlen(demoname);
-
 		demoname += len + 1;
 	}
 

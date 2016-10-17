@@ -424,8 +424,10 @@ void CopyToBodyQue(gentity_t *ent) {
 				continue;
 			}
 
-			if (strcmp(e->classname, "kamikaze timer"))
+			if (strcmp(e->classname, "kamikaze timer")) {
 				continue;
+			}
+
 			e->activator = body;
 			break;
 		}
@@ -437,6 +439,7 @@ void CopyToBodyQue(gentity_t *ent) {
 	body->timestamp = level.time;
 	body->physicsObject = qtrue;
 	body->physicsBounce = 0; // don't bounce
+
 	if (body->s.groundEntityNum == ENTITYNUM_NONE) {
 		body->s.pos.trType = TR_GRAVITY;
 		VectorCopy(ent->player->ps.velocity, body->s.pos.trDelta);
@@ -446,27 +449,28 @@ void CopyToBodyQue(gentity_t *ent) {
 
 	body->s.pos.trTime = level.time;
 	body->s.event = 0;
-	// change the animation to the last-frame only, so the sequence
-	// doesn't repeat anew for the body
+	// change the animation to the last-frame only, so the sequence doesn't repeat anew for the body
 	switch (body->s.legsAnim & ~ANIM_TOGGLEBIT) {
-	case BOTH_DEATH1:
-	case BOTH_DEAD1:
-		body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD1;
-		break;
-	case BOTH_DEATH2:
-	case BOTH_DEAD2:
-		body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD2;
-		break;
-	case BOTH_DEATH3:
-	case BOTH_DEAD3:
-	default:
-		body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD3;
-		break;
+		case BOTH_DEATH1:
+		case BOTH_DEAD1:
+			body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD1;
+			break;
+		case BOTH_DEATH2:
+		case BOTH_DEAD2:
+			body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD2;
+			break;
+		case BOTH_DEATH3:
+		case BOTH_DEAD3:
+		default:
+			body->s.torsoAnim = body->s.legsAnim = BOTH_DEAD3;
+			break;
 	}
 
 	body->r.svFlags = ent->r.svFlags;
+
 	VectorCopy(ent->s.mins, body->s.mins);
 	VectorCopy(ent->s.maxs, body->s.maxs);
+
 	VectorCopy(ent->r.absmin, body->r.absmin);
 	VectorCopy(ent->r.absmax, body->r.absmax);
 
@@ -799,7 +803,7 @@ Return NULL if the player should be allowed, otherwise return a string with the 
 
 Otherwise, the player will be sent the current gamestate and will eventually get to PlayerBegin.
 
-firstTime will be qtrue the very first time a player connects to the server machine, but qfalse on map changes and tournement
+'firstTime' will be qtrue the very first time a player connects to the server machine, but qfalse on map changes and tournament
 restarts.
 =======================================================================================================================================
 */
@@ -903,6 +907,7 @@ char *PlayerConnect(int playerNum, qboolean firstTime, qboolean isBot, int conne
 //	player->areabits = areabits;
 //	if (!player->areabits)
 //		player->areabits = trap_Alloc((trap_AAS_PointReachabilityAreaIndex(NULL) + 7) / 8, NULL);
+//	}
 
 	return NULL;
 }
@@ -978,7 +983,8 @@ void PlayerBegin(int playerNum) {
 PlayerSpawn
 
 Called every time a player is placed fresh in the world: After the first PlayerBegin, and after each respawn.
-Initializes all non-persistant parts of playerState
+
+Initializes all non-persistant parts of playerState.
 =======================================================================================================================================
 */
 void PlayerSpawn(gentity_t *ent) {
@@ -1021,12 +1027,10 @@ void PlayerSpawn(gentity_t *ent) {
 	player->pers.teamState.state = TEAM_ACTIVE;
 	// always clear the kamikaze flag
 	ent->s.eFlags &= ~EF_KAMIKAZE;
-	// toggle the teleport bit so the client knows to not lerp
-	// and never clear the voted flag
+	// toggle the teleport bit so the client knows to not lerp and never clear the voted flag
 	flags = ent->player->ps.eFlags & (EF_TELEPORT_BIT|EF_VOTED|EF_TEAMVOTED);
 	flags ^= EF_TELEPORT_BIT;
 	// clear everything but the persistant data
-
 	saved = player->pers;
 	savedSess = player->sess;
 	savedPing = player->ps.ping;
@@ -1145,6 +1149,7 @@ void PlayerSpawn(gentity_t *ent) {
 	// run a player frame to drop exactly to the floor, initialize animations and other things
 	player->ps.commandTime = level.time - 100;
 	ent->player->pers.cmd.serverTime = level.time;
+
 	PlayerThink(ent - g_entities);
 	// run the presend to set anything else, follow spectators wait until all players have been reconnected after map_restart
 	if (ent->player->sess.spectatorState != SPECTATOR_FOLLOW) {

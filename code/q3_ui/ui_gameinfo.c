@@ -22,18 +22,13 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-
 // gameinfo.c
-
 
 #include "ui_local.h"
 
-
-
 // arena and bot info
 
-
-#define POOLSIZE	128 * 1024
+#define POOLSIZE 128 * 1024
 
 int ui_numBots;
 static char *ui_botInfos[MAX_BOTS];
@@ -448,11 +443,7 @@ char *UI_GetBotInfoByName(const char *name) {
 	return NULL;
 }
 
-
-
 // single player game info
-
-
 /*
 =======================================================================================================================================
 UI_GetBestScore

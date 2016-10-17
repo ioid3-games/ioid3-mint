@@ -955,7 +955,8 @@ static qboolean CG_ScanForExistingPlayerInfo(playerInfo_t *pi) {
 		if (!Q_stricmp(pi->modelName, match->modelName) && !Q_stricmp(pi->skinName, match->skinName) && !Q_stricmp(pi->headModelName, match->headModelName) && !Q_stricmp(pi->headSkinName, match->headSkinName) 
 #ifdef MISSIONPACK
 			&& !Q_stricmp(pi->blueTeam, match->blueTeam) && !Q_stricmp(pi->redTeam, match->redTeam)
-#endif && (cgs.gametype < GT_TEAM || pi->team == match->team)) {
+#endif
+			&& (cgs.gametype < GT_TEAM || pi->team == match->team)) {
 			// this playerinfo is identical, so use its handles
 			pi->deferred = qfalse;
 
@@ -986,10 +987,10 @@ static void CG_SetDeferredPlayerInfo(int playerNum, playerInfo_t *pi) {
 			continue;
 		}
 
-		if (Q_stricmp(pi->skinName, match->skinName) ||
-			 Q_stricmp(pi->modelName, match->modelName) ||
-// 		 Q_stricmp(pi->headModelName, match->headModelName) ||
-// 		 Q_stricmp(pi->headSkinName, match->headSkinName) || (cgs.gametype >= GT_TEAM && pi->team != match->team)) {
+		if (Q_stricmp(pi->skinName, match->skinName) || Q_stricmp(pi->modelName, match->modelName) ||
+//			Q_stricmp(pi->headModelName, match->headModelName) ||
+//			Q_stricmp(pi->headSkinName, match->headSkinName) ||
+			(cgs.gametype >= GT_TEAM && pi->team != match->team)) {
 			continue;
 		}
 		// just load the real info cause it uses the same models and skins

@@ -511,6 +511,7 @@ void CG_DrawStringDirect(int x, int y, const char *str, int style, const vec4_t 
 		drawcolor = newcolor;
 	} else {
 		drawcolor = color;
+	}
 
 	if (wrapX <= 0) {
 		switch (style & UI_FORMATMASK) {
@@ -531,7 +532,7 @@ void CG_DrawStringDirect(int x, int y, const char *str, int style, const vec4_t 
 		switch (style & UI_VA_FORMATMASK) {
 			case UI_VA_CENTER:
 				// center justify at y
-				y = y - charh /*Text_Height(str, font, scale, 0) *//  2;
+				y = y - charh /*Text_Height(str, font, scale, 0) *// 2;
 				break;
 			case UI_VA_BOTTOM:
 				// bottom justify at y

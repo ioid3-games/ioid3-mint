@@ -27,7 +27,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-CONNECTION SCREEN
+	CONNECTION SCREEN
+
 =======================================================================================================================================
 */
 
@@ -35,6 +36,12 @@ qboolean passwordNeeded = qtrue;
 menufield_s passwordField;
 static connstate_t lastConnState;
 static char lastLoadingText[MAX_INFO_VALUE];
+
+/*
+=======================================================================================================================================
+UI_ReadableSize
+=======================================================================================================================================
+*/
 static void UI_ReadableSize(char *buf, int bufsize, int value) {
 
 	if (value > 1024 * 1024 * 1024) { // gigs
@@ -50,7 +57,13 @@ static void UI_ReadableSize(char *buf, int bufsize, int value) {
 	}
 }
 
-// Assumes time is in msec
+/*
+=======================================================================================================================================
+UI_PrintTime
+
+Assumes time is in msec.
+=======================================================================================================================================
+*/
 static void UI_PrintTime(char *buf, int bufsize, int time) {
 	time /= 1000; // change to seconds
 
@@ -63,6 +76,11 @@ static void UI_PrintTime(char *buf, int bufsize, int time) {
 	}
 }
 
+/*
+=======================================================================================================================================
+UI_DisplayDownloadInfo
+=======================================================================================================================================
+*/
 static void UI_DisplayDownloadInfo(const char *downloadName) {
 	static char dlText[] = "Downloading:";
 	static char etaText[] = "Estimated time left:";
@@ -109,7 +127,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName) {
 		UI_DrawProportionalString(leftWidth, 192, 
 			va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white);
 	} else {
-	  if ((uis.realtime - downloadTime) / 1000) {
+		if ((uis.realtime - downloadTime) / 1000) {
 			xferRate = downloadCount / ((uis.realtime - downloadTime) / 1000);
 		// xferRate = (int)(((float)downloadCount) / elapsedTime);
 		} else {
@@ -124,9 +142,8 @@ static void UI_DisplayDownloadInfo(const char *downloadName) {
 			// We do it in K(/ 1024) because we'd overflow around 4MB
 			n = (n - (((downloadCount / 1024) * n) / (downloadSize / 1024))) * 1000;
 
-	UI_PrintTime(dlTimeBuf, sizeof dlTimeBuf, n);
-				// (n - (((downloadCount / 1024) * n) / (downloadSize / 1024))) * 1000);
-
+			UI_PrintTime(dlTimeBuf, sizeof dlTimeBuf, n);
+			// (n - (((downloadCount / 1024) * n) / (downloadSize / 1024))) * 1000);
 			UI_DrawProportionalString(leftWidth, 160, dlTimeBuf, style, color_white);
 			UI_DrawProportionalString(leftWidth, 192, va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white);
 		} else {
@@ -182,7 +199,6 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	if (cstate.connState < CA_CONNECTED) {
 		UI_DrawProportionalString_AutoWrapped(320, 192, 630, 20, cstate.messageString, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color);
 	}
-
 #if 0
 	// display password field
 	if (passwordNeeded) {
@@ -212,31 +228,31 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	lastConnState = cstate.connState;
 
 	switch (cstate.connState) {
-	case CA_CONNECTING:
-		s = va("Awaiting challenge...%i", cstate.connectPacketCount);
-		break;
-	case CA_CHALLENGING:
-		s = va("Awaiting connection...%i", cstate.connectPacketCount);
-		break;
-	case CA_CONNECTED: {
-		char downloadName[MAX_INFO_VALUE];
+		case CA_CONNECTING:
+			s = va("Awaiting challenge...%i", cstate.connectPacketCount);
+			break;
+		case CA_CHALLENGING:
+			s = va("Awaiting connection...%i", cstate.connectPacketCount);
+			break;
+		case CA_CONNECTED: {
+			char downloadName[MAX_INFO_VALUE];
 
-			trap_Cvar_VariableStringBuffer("cl_downloadName", downloadName, sizeof(downloadName));
+				trap_Cvar_VariableStringBuffer("cl_downloadName", downloadName, sizeof(downloadName));
 
-			if (*downloadName) {
-				UI_DisplayDownloadInfo(downloadName);
-				return;
+				if (*downloadName) {
+					UI_DisplayDownloadInfo(downloadName);
+					return;
+				}
 			}
-		}
 
-		s = "Awaiting gamestate...";
-		break;
-	case CA_LOADING:
-		return;
-	case CA_PRIMED:
-		return;
-	default:
-		return;
+			s = "Awaiting gamestate...";
+			break;
+		case CA_LOADING:
+			return;
+		case CA_PRIMED:
+			return;
+		default:
+			return;
 	}
 
 	UI_DrawProportionalString(320, 128, s, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, color_white);

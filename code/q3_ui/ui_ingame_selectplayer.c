@@ -38,6 +38,7 @@ This is a general select local player menu. Used for accessing menus for a speci
 It runs a function, passing the selected player to the function.
 Automaticly disables players not in the game, so the function can expect that the player is ingame.
 If there is only one local player simply runs the function.
+
 =======================================================================================================================================
 */
 
@@ -46,24 +47,21 @@ If there is only one local player simply runs the function.
 
 //#define INGAME_FRAME "menu/art/addbotframe"
 #define INGAME_FRAME "menu/art/cut_frame"
-#define INGAME_MENU_VERTICAL_SPACING	28
+#define INGAME_MENU_VERTICAL_SPACING 28
 
-#define ID_BACK					10
-#define ID_CUSTOMIZEPLAYER		11 // + MAX_SPLITVIEW
-
-
+#define ID_BACK				10
+#define ID_CUSTOMIZEPLAYER	11 // + MAX_SPLITVIEW
 
 typedef struct {
 	menuframework_s menu;
 	menubitmap_s frame;
 	menutext_s player[MAX_SPLITVIEW];
-
 	menutext_s back;
-
 	char bannerString[32];
 	char playerString[MAX_SPLITVIEW][12];
-	void 	(*playerfunc)(int);
+	void (*playerfunc)(int);
 } setupplayersmenu_t;
+
 static setupplayersmenu_t s_setupplayers;
 
 /*
@@ -83,9 +81,9 @@ void InSelectPlayer_Event(void *ptr, int notification) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_BACK:
-		UI_PopMenu();
-		break;
+		case ID_BACK:
+			UI_PopMenu();
+			break;
 	}
 }
 
@@ -219,4 +217,3 @@ void InSelectPlayerMenu(void (*playerfunc)(int), const char *banner, qboolean di
 	s_setupplayers.playerfunc = playerfunc;
 	UI_PushMenu(&s_setupplayers.menu);
 }
-

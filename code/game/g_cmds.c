@@ -71,8 +71,9 @@ void DeathmatchScoreboardMessage(gentity_t *ent) {
 
 		perfect = (cl->ps.persistant[PERS_RANK] == 0 && cl->ps.persistant[PERS_KILLED] == 0) ? 1 : 0;
 
-		Com_sprintf(entry, sizeof(entry), " %i %i %i %i %i %i %i %i %i %i %i %i %i %i", level.sortedPlayers[i], cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime) / 60000, scoreFlags, g_entities[level.sortedPlayers[i]].s.powerups, accuracy, cl->ps.persistant[PERS_IMPRESSIVE_COUNT], cl->ps.persistant[PERS_EXCELLENT_COUNT], cl->ps.persistant[PERS_GAUNTLET_FRAG_COUNT], cl->ps.persistant[PERS_DEFEND_COUNT], cl->ps.persistant[PERS_ASSIST_COUNT], 
-			perfect, cl->ps.persistant[PERS_CAPTURES]);
+		Com_sprintf(entry, sizeof(entry), " %i %i %i %i %i %i %i %i %i %i %i %i %i %i", level.sortedPlayers[i], cl->ps.persistant[PERS_SCORE], ping, (level.time - cl->pers.enterTime) / 60000,
+			scoreFlags, g_entities[level.sortedPlayers[i]].s.powerups, accuracy, cl->ps.persistant[PERS_IMPRESSIVE_COUNT], cl->ps.persistant[PERS_EXCELLENT_COUNT],
+			cl->ps.persistant[PERS_GAUNTLET_FRAG_COUNT], cl->ps.persistant[PERS_DEFEND_COUNT], cl->ps.persistant[PERS_ASSIST_COUNT], perfect, cl->ps.persistant[PERS_CAPTURES]);
 		j = strlen(entry);
 
 		if (stringlength + j >= sizeof(string)) {
@@ -494,7 +495,7 @@ void Cmd_Kill_f(gentity_t *ent) {
 =======================================================================================================================================
 BroadcastTeamChange
 
-Let everyone know about a team change
+Let everyone know about a team change.
 =======================================================================================================================================
 */
 void BroadcastTeamChange(gplayer_t *player, int oldTeam) {
@@ -605,12 +606,12 @@ void SetTeam(gentity_t *ent, const char *s) {
 	player->pers.teamState.state = TEAM_BEGIN;
 
 	if (oldTeam != TEAM_SPECTATOR) {
-		// Kill him(makes sure he loses flags, etc.)
+		// Kill him (makes sure he loses flags, etc.)
 		ent->flags &= ~FL_GODMODE;
 		ent->player->ps.stats[STAT_HEALTH] = ent->health = 0;
 		player_die(ent, ent, ent, 100000, MOD_SUICIDE_TEAM_CHANGE);
 	}
-	// they go to the end of the line for tournements
+	// they go to the end of the line for tournaments
 	if (team == TEAM_SPECTATOR && oldTeam != team) {
 		AddTournamentQueue(player);
 	}
@@ -686,7 +687,7 @@ void Cmd_Team_f(gentity_t *ent) {
 		trap_SendServerCommand(ent - g_entities, "print \"May not switch teams more than once per 5 seconds.\n\"");
 		return;
 	}
-	// if they are playing a tournement game, count as a loss
+	// if they are playing a tournament game, count as a loss
 	if ((g_gametype.integer == GT_TOURNAMENT) && ent->player->sess.sessionTeam == TEAM_FREE) {
 		ent->player->sess.losses++;
 	}
@@ -736,7 +737,7 @@ void Cmd_Follow_f(gentity_t *ent) {
 	if (level.players[i].pers.connectionNum == ent->player->pers.connectionNum) {
 		return;
 	}
-	// if they are playing a tournement game, count as a loss
+	// if they are playing a tournament game, count as a loss
 	if ((g_gametype.integer == GT_TOURNAMENT) && ent->player->sess.sessionTeam == TEAM_FREE) {
 		ent->player->sess.losses++;
 	}
@@ -840,7 +841,7 @@ static qboolean G_SayTo(gentity_t *ent, gentity_t *other, int mode) {
 	if (mode == SAY_TEAM && !OnSameTeam(ent, other)) {
 		return qfalse;
 	}
-	// no chatting to players in tournements
+	// no chatting to players in tournaments
 	if ((g_gametype.integer == GT_TOURNAMENT) && other->player->sess.sessionTeam == TEAM_FREE && ent->player->sess.sessionTeam != TEAM_FREE) {
 		return qfalse;
 	}
@@ -1004,7 +1005,7 @@ static void Cmd_Tell_f(gentity_t *ent) {
 	char arg[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 3) {
-		trap_SendServerCommand(ent - g_entities, "print \"Usage: tell <player id > < message >\n\"");
+		trap_SendServerCommand(ent - g_entities, "print \"Usage: tell <player id> <message>\n\"");
 		return;
 	}
 
@@ -1619,7 +1620,7 @@ void Cmd_CallTeamVote_f(gentity_t *ent) {
 		Com_sprintf(arg2, sizeof(arg2), "%d", i);
 	} else {
 		trap_SendServerCommand(ent - g_entities, "print \"Invalid vote string.\n\"");
-		trap_SendServerCommand(ent - g_entities, "print \"Team vote commands are: leader <player> .\n\"");
+		trap_SendServerCommand(ent - g_entities, "print \"Team vote commands are: leader <player>.\n\"");
 		return;
 	}
 
@@ -1807,7 +1808,7 @@ void ClientCommand(int connectionNum) {
 	ent = g_entities + playerNum;
 
 	if (!ent->player || ent->player->pers.connected != CON_CONNECTED) {
-		return;		// not fully in game yet
+		return; // not fully in game yet
 	}
 
 	if (Q_stricmp(cmd, "say") == 0) {

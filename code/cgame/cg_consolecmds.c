@@ -765,13 +765,13 @@ CG_TeamMenu_f
 /*
 static void CG_TeamMenu_f(void) {
 
-  if (Key_GetCatcher() & KEYCATCH_CGAME) {
-    CG_EventHandling(CGAME_EVENT_NONE);
-    Key_SetCatcher(0);
-} else {
-    CG_EventHandling(CGAME_EVENT_TEAMMENU);
-   // Key_SetCatcher(KEYCATCH_CGAME);
-}
+	if (Key_GetCatcher() & KEYCATCH_CGAME) {
+		CG_EventHandling(CGAME_EVENT_NONE);
+		Key_SetCatcher(0);
+	} else {
+		CG_EventHandling(CGAME_EVENT_TEAMMENU);
+		//Key_SetCatcher(KEYCATCH_CGAME);
+	}
 }
 */
 /*
@@ -781,8 +781,9 @@ CG_EditHud_f
 */
 /*
 static void CG_EditHud_f(void) {
- // cls.keyCatchers ^= KEYCATCH_CGAME;
- // VM_Call(cgvm, CG_EVENT_HANDLING, (cls.keyCatchers & KEYCATCH_CGAME) ? CGAME_EVENT_EDITHUD : CGAME_EVENT_NONE);
+
+	//cls.keyCatchers ^= KEYCATCH_CGAME;
+	//VM_Call(cgvm, CG_EVENT_HANDLING, (cls.keyCatchers & KEYCATCH_CGAME) ? CGAME_EVENT_EDITHUD : CGAME_EVENT_NONE);
 }
 */
 #endif
@@ -806,6 +807,7 @@ static void CG_StartOrbit_f(void) {
 		CG_CameraOrbit(5, -1);
 	}
 }
+
 /*
 =======================================================================================================================================
 CG_Camera_f
@@ -1051,6 +1053,7 @@ typedef struct {
 	void (*function)(int);
 	int flags;
 } playerConsoleCommand_t;
+
 static playerConsoleCommand_t playerCommands[] = {
 	{"+attack", IN_Button0Down, 0},
 	{"-attack", IN_Button0Up, 0},

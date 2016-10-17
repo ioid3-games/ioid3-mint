@@ -391,26 +391,30 @@ static void UI_SoundOptionsMenu_Init(void) {
 	soundOptionsInfo.sfxvolume.curvalue = soundOptionsInfo.sfxvolume_original = trap_Cvar_VariableValue("s_volume") * 10;
 	soundOptionsInfo.musicvolume.curvalue = soundOptionsInfo.musicvolume_original = trap_Cvar_VariableValue("s_musicvolume") * 10;
 
-	if (trap_Cvar_VariableValue("s_useOpenAL"))
+	if (trap_Cvar_VariableValue("s_useOpenAL")) {
 		soundOptionsInfo.soundSystem_original = UISND_OPENAL;
 	} else {
 		soundOptionsInfo.soundSystem_original = UISND_SDL;
+	}
 
 	soundOptionsInfo.soundSystem.curvalue = soundOptionsInfo.soundSystem_original;
 
 	speed = trap_Cvar_VariableValue("s_sdlSpeed");
 
-	if (!speed) // Check for default
+	if (!speed) { // Check for default
 		speed = DEFAULT_SDL_SND_SPEED;
+	}
 
-	if (speed <= 11025)
+	if (speed <= 11025) {
 		soundOptionsInfo.quality_original = 0;
-	} else if (speed <= 22050)
+	} else if (speed <= 22050) {
 		soundOptionsInfo.quality_original = 1;
-	} else if (speed <= 44100)
+	} else if (speed <= 44100) {
 		soundOptionsInfo.quality_original = 2;
-	else // 48000
+	} else { // 48000
 		soundOptionsInfo.quality_original = 3;
+	}
+
 	soundOptionsInfo.quality.curvalue = soundOptionsInfo.quality_original;
 
 // soundOptionsInfo.a3d.curvalue = (int)trap_Cvar_VariableValue("s_usingA3D");

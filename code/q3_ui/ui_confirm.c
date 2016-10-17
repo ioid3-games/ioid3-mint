@@ -30,19 +30,15 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-
 #include "ui_local.h"
-
 
 #define ART_CONFIRM_FRAME "menu/art/cut_frame"
 
-#define ID_CONFIRM_NO		10
-#define ID_CONFIRM_YES		11
-
+#define ID_CONFIRM_NO	10
+#define ID_CONFIRM_YES	11
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s no;
 	menutext_s yes;
 	int slashX;
@@ -52,7 +48,6 @@ typedef struct {
 	int style;
 	const char **lines;
 } confirmMenu_t;
-
 
 static confirmMenu_t s_confirm;
 
@@ -87,21 +82,22 @@ ConfirmMenu_Key
 =======================================================================================================================================
 */
 static sfxHandle_t ConfirmMenu_Key(int key) {
+
 	switch (key) {
-	case K_KP_LEFTARROW:
-	case K_LEFTARROW:
-	case K_KP_RIGHTARROW:
-	case K_RIGHTARROW:
-		key = K_TAB;
-		break;
-	case 'n':
-	case 'N':
-		ConfirmMenu_Event(&s_confirm.no, QM_ACTIVATED);
-		break;
-	case 'y':
-	case 'Y':
-		ConfirmMenu_Event(&s_confirm.yes, QM_ACTIVATED);
-		break;
+		case K_KP_LEFTARROW:
+		case K_LEFTARROW:
+		case K_KP_RIGHTARROW:
+		case K_RIGHTARROW:
+			key = K_TAB;
+			break;
+		case 'n':
+		case 'N':
+			ConfirmMenu_Event(&s_confirm.no, QM_ACTIVATED);
+			break;
+		case 'y':
+		case 'Y':
+			ConfirmMenu_Event(&s_confirm.yes, QM_ACTIVATED);
+			break;
 	}
 
 	return Menu_DefaultKey(&s_confirm.menu, key);
@@ -137,6 +133,7 @@ ConfirmMenu_Draw
 =======================================================================================================================================
 */
 static void ConfirmMenu_Draw(void) {
+
 	CG_DrawNamedPic(142, 118, 359, 256, ART_CONFIRM_FRAME);
 	UI_DrawProportionalString(320, 204, s_confirm.question, s_confirm.style, text_big_color);
 	UI_DrawProportionalString(s_confirm.slashX, 265, "/", UI_LEFT|UI_INVERSE, text_big_color);
@@ -165,6 +162,7 @@ UI_ConfirmMenu_Style
 void UI_ConfirmMenu_Style(const char *question, int style, void (*draw) (void), void (*action) (qboolean result)) {
 	int n1, n2, n3;
 	int l1, l2, l3;
+
 	// zero set all our globals
 	memset(&s_confirm, 0, sizeof(s_confirm));
 
@@ -193,7 +191,7 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw) (void), 
 		s_confirm.menu.fullscreen = qtrue;
 	}
 
-	s_confirm.yes.generic.type = MTYPE_PTEXT;      
+	s_confirm.yes.generic.type = MTYPE_PTEXT;
 	s_confirm.yes.generic.flags = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_confirm.yes.generic.callback = ConfirmMenu_Event;
 	s_confirm.yes.generic.id = ID_CONFIRM_YES;
@@ -203,7 +201,7 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw) (void), 
 	s_confirm.yes.color = text_big_color;
 	s_confirm.yes.style = UI_LEFT;
 
-	s_confirm.no.generic.type = MTYPE_PTEXT;      
+	s_confirm.no.generic.type = MTYPE_PTEXT;
 	s_confirm.no.generic.flags = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_confirm.no.generic.callback = ConfirmMenu_Event;
 	s_confirm.no.generic.id = ID_CONFIRM_NO;
@@ -213,7 +211,7 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw) (void), 
 	s_confirm.no.color = text_big_color;
 	s_confirm.no.style = UI_LEFT;
 
-	Menu_AddItem(&s_confirm.menu, &s_confirm.yes);             
+	Menu_AddItem(&s_confirm.menu, &s_confirm.yes);
 	Menu_AddItem(&s_confirm.menu, &s_confirm.no);
 
 	UI_PushMenu(&s_confirm.menu);
@@ -261,7 +259,7 @@ void UI_Message(const char **lines) {
 		s_confirm.menu.fullscreen = qtrue;
 	}
 
-	s_confirm.yes.generic.type = MTYPE_PTEXT;      
+	s_confirm.yes.generic.type = MTYPE_PTEXT;
 	s_confirm.yes.generic.flags = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_confirm.yes.generic.callback = ConfirmMenu_Event;
 	s_confirm.yes.generic.id = ID_CONFIRM_YES;

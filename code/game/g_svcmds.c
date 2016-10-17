@@ -279,7 +279,7 @@ void Svcmd_AddIP_f(void) {
 	char str[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 2) {
-		G_Printf("Usage: addip <ip - mask >\n");
+		G_Printf("Usage: addip <ip-mask>\n");
 		return;
 	}
 
@@ -299,7 +299,7 @@ void Svcmd_RemoveIP_f(void) {
 	char str[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 2) {
-		G_Printf("Usage: removeip <ip - mask >\n");
+		G_Printf("Usage: removeip <ip-mask>\n");
 		return;
 	}
 
@@ -442,7 +442,7 @@ gplayer_t *PlayerForString(const char *s) {
 =======================================================================================================================================
 Svcmd_ForceTeam_f
 
-forceTeam <player> <team>
+forceTeam <player> <team>.
 =======================================================================================================================================
 */
 void Svcmd_ForceTeam_f(void) {

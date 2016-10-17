@@ -371,10 +371,12 @@ void CG_SurfaceBeam(const refEntity_t *originEnt) {
 
 	for (i = 0; i < NUM_BEAM_SEGS; i++) {
 		for (j = 0; j < 4; j++) {
-			if (j && j != 3)
+			if (j && j != 3) {
 				VectorCopy(end_points[(i + (j > 1)) % NUM_BEAM_SEGS], verts[numVerts].xyz);
 			} else {
 				VectorCopy(start_points[(i + (j > 1)) % NUM_BEAM_SEGS], verts[numVerts].xyz);
+			}
+
 			verts[numVerts].st[0] = (j < 2);
 			verts[numVerts].st[1] = (j && j != 3);
 			verts[numVerts].modulate[0] = 0xff;
@@ -406,7 +408,6 @@ void CG_SurfaceText(const refEntity_t *originEnt, const fontInfo_t *font, float 
 	const char *s;
 	float yadj, xadj;
 	float useScale;
-
 	vec3_t baseline;
 	refEntity_t re;
 	polyVert_t verts[4];
@@ -421,9 +422,11 @@ void CG_SurfaceText(const refEntity_t *originEnt, const fontInfo_t *font, float 
 
 	re = *originEnt;
 	re.reType = RT_POLY_LOCAL;
+
 	VectorCopy(re.origin, re.oldorigin);
 	// center justify at origin
 	VectorCopy(vec3_origin, baseline);
+
 	x = 0 - Text_Width(text, font, scale, 0) / 2;
 	y = 0;
 
@@ -516,4 +519,3 @@ void CG_SurfaceText(const refEntity_t *originEnt, const fontInfo_t *font, float 
 	// re.hModel = 0;
 	// trap_R_AddRefEntityToScene(&re);
 }
-

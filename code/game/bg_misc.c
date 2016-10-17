@@ -1987,7 +1987,9 @@ fielddef_t *FindField(fielddef_t *defs, char *name) {
 	int i;
 
 	for (i = 0; defs[i].name; i++) {
-		if (!strcmp(defs[i].name, name)) return &defs[i];
+		if (!strcmp(defs[i].name, name)) {
+			return &defs[i];
+		}
 	}
 
 	return NULL;
@@ -2073,7 +2075,7 @@ qboolean ReadNumber(int source, fielddef_t *fd, void *p) {
 		if (fd->type & FT_UNSIGNED) {
 			intmin = 0; intmax = 65535;
 		} else {
-			intmin = -32768; intmax = 32767;}
+			intmin = -32768; intmax = 32767;
 		}
 	}
 

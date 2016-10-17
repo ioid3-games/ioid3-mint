@@ -182,7 +182,7 @@ qboolean CG_InitTrueTypeFont(const char *name, int pointSize, float borderWidth,
 		// Team Arena pre - rendered fonts don't have cursor characters(they're just transparent space)
 
 		// character 13 is used as a selection marker in q3_ui
-		Com_Memcpy(&font->glyphs[GLYPH_ARROW], &font->glyphs[(int)' > '], sizeof(glyphInfo_t));
+		Com_Memcpy(&font->glyphs[GLYPH_ARROW], &font->glyphs[(int)'>'], sizeof(glyphInfo_t));
 	}
 	// Most TrueType fonts don't contain the glyphs used for text input
 	// cursors, so just hard code them. There is no easy way to hard code

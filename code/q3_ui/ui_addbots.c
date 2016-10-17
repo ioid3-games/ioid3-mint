@@ -25,13 +25,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-ADD BOTS MENU
+	ADD BOTS MENU
+
 =======================================================================================================================================
 */
 
-
 #include "ui_local.h"
-
 
 #define ART_BACK0 "menu/art/back_0"
 #define ART_BACK1 "menu/art/back_1"
@@ -42,20 +41,20 @@ ADD BOTS MENU
 #define ART_ARROWUP "menu/art/arrows_vert_top"
 #define ART_ARROWDOWN "menu/art/arrows_vert_bot"
 
-#define ID_BACK				10
-#define ID_GO				11
-#define ID_LIST				12
-#define ID_UP				13
-#define ID_DOWN				14
-#define ID_SKILL			15
-#define ID_TEAM				16
-#define ID_BOTNAME0			20
-#define ID_BOTNAME1			21
-#define ID_BOTNAME2			22
-#define ID_BOTNAME3			23
-#define ID_BOTNAME4			24
-#define ID_BOTNAME5			25
-#define ID_BOTNAME6			26
+#define ID_BACK		10
+#define ID_GO		11
+#define ID_LIST		12
+#define ID_UP		13
+#define ID_DOWN		14
+#define ID_SKILL	15
+#define ID_TEAM		16
+#define ID_BOTNAME0	20
+#define ID_BOTNAME1	21
+#define ID_BOTNAME2	22
+#define ID_BOTNAME3	23
+#define ID_BOTNAME4	24
+#define ID_BOTNAME5	25
+#define ID_BOTNAME6	26
 
 
 typedef struct {
@@ -66,9 +65,7 @@ typedef struct {
 	menubitmap_s arrows;
 	menubitmap_s up;
 	menubitmap_s down;
-
 	menutext_s bots[7];
-
 	menulist_s skill;
 	menulist_s team;
 	menubitmap_s go;
@@ -212,6 +209,11 @@ static int QDECL UI_AddBotsMenu_SortCompare(const void *arg1, const void *arg2) 
 	return Q_stricmp(name1, name2);
 }
 
+/*
+=======================================================================================================================================
+UI_AddBotsMenu_GetSortedBotNums
+=======================================================================================================================================
+*/
 static void UI_AddBotsMenu_GetSortedBotNums(void) {
 	int n;
 	// initialize the array
@@ -228,15 +230,23 @@ UI_AddBotsMenu_Init
 =======================================================================================================================================
 */
 static const char *skillNames[] = {
-	"I Can Win", "Bring It On", "Hurt Me Plenty", "Hardcore", "Nightmare!", NULL
+	"I Can Win",
+	"Bring It On",
+	"Hurt Me Plenty",
+	"Hardcore",
+	"Nightmare!",
+	NULL
 };
 
 static const char *teamNames1[] = {
-	"Free", NULL
+	"Free",
+	NULL
 };
 
 static const char *teamNames2[] = {
-	"Red", "Blue", NULL
+	"Red",
+	"Blue",
+	NULL
 };
 
 static void UI_AddBotsMenu_Init(void) {
@@ -246,10 +256,11 @@ static void UI_AddBotsMenu_Init(void) {
 	int count;
 	char info[MAX_INFO_STRING];
 
-	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
+	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);
 	gametype = atoi(Info_ValueForKey(info, "g_gametype"));
 
 	memset(&addBotsMenuInfo, 0, sizeof(addBotsMenuInfo));
+
 	addBotsMenuInfo.menu.fullscreen = qfalse;
 	addBotsMenuInfo.menu.wrapAround = qtrue;
 	addBotsMenuInfo.delay = 1000;

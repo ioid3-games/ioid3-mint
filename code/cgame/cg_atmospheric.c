@@ -752,7 +752,7 @@ void CG_EffectParse(const char *effectstr) {
 	Q_strncpyz(workbuff, effectstr, sizeof(workbuff));
 
 	for (startptr = workbuff; *startptr;) {
-		for (eqptr = startptr; *eqptr && *eqptr != ' = ' && *eqptr != ','; eqptr++);
+		for (eqptr = startptr; *eqptr && *eqptr != '=' && *eqptr != ','; eqptr++);
 
 		if (!*eqptr) {
 			break;         // No more string

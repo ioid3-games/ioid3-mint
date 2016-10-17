@@ -55,8 +55,10 @@ int numbots;
 float floattime;
 // time to do a regular update
 float regularupdate_time;
+
 int bot_interbreed;
 int bot_interbreedmatchcount;
+
 vmCvar_t bot_thinktime;
 vmCvar_t bot_memorydump;
 vmCvar_t bot_saveroutingcache;
@@ -362,6 +364,7 @@ void BotSetInfoConfigString(bot_state_t *bs) {
 	char action[MAX_MESSAGE_SIZE];
 	char *leader, carrying[32], *cs;
 	bot_goal_t goal;
+
 	PlayerName(bs->playernum, netname, sizeof(netname));
 
 	if (Q_stricmp(netname, bs->teamleader) == 0) {
@@ -972,8 +975,8 @@ void BotInputToUserCommand(bot_input_t *bi, usercmd_t *ucmd, int delta_angles[3]
 			// don't let the player look up or down more than 90 degrees
 			if (temp > 16000) {
 				temp = 16000;
-			} else if {
-				(temp < -16000) temp = -16000;
+			} else if (temp < -16000) {
+				temp = -16000;
 			}
 		}
 		*/
@@ -1413,6 +1416,7 @@ int BotAIShutdownPlayer(int playernum, qboolean restart) {
 	BotFreeWeaponState(bs->ws);
 	// free the bot character
 	BotFreeCharacter(bs->character);
+
 	BotFreeWaypoints(bs->checkpoints);
 	BotFreeWaypoints(bs->patrolpoints);
 	// clear activate goal stack

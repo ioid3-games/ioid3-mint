@@ -649,7 +649,7 @@ static void CG_Mover(centity_t *cent) {
 
 	ent.reType = RT_MODEL;
 	ent.renderfx = RF_NOSHADOW;
-	// flicker between two skins(FIXME?)
+	// flicker between two skins (FIXME?)
 	ent.skinNum = (cg.time >> 6) & 1;
 	// get the model, either as a bmodel or a modelindex
 	if (s1->collisionType == CT_SUBMODEL) {
@@ -1056,7 +1056,7 @@ CG_AddCEntity
 */
 static void CG_AddCEntity(centity_t *cent) {
 
-	// event - only entities will have been dealt with already
+	// event-only entities will have been dealt with already
 	if (cent->currentState.eType >= ET_EVENTS) {
 		return;
 	}

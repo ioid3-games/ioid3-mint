@@ -62,13 +62,13 @@ at the same time.
 */
 
 typedef struct {
-	int down[2];		// key nums holding it down
-	int joystickNum[2];	// player joystick number or - 1 if key is not on a joystick
-	int axisNum[2];		// analog joystick axis + 1(possibly negated for negative axis)
+	int down[2];			// key nums holding it down
+	int joystickNum[2];		// player joystick number or - 1 if key is not on a joystick
+	int axisNum[2];			// analog joystick axis + 1(possibly negated for negative axis)
 	unsigned downtime;		// msec timestamp
 	unsigned msec;			// msec down this frame if both a down and up happened
-	qboolean active;			// current state
-	qboolean wasPressed;		// set when down, not cleared when up
+	qboolean active;		// current state
+	qboolean wasPressed;	// set when down, not cleared when up
 	float lastFraction[2];	// last fraction
 } kbutton_t;
 
@@ -77,7 +77,6 @@ typedef struct {
 	kbutton_t in_lookup, in_lookdown, in_moveleft, in_moveright;
 	kbutton_t in_strafe, in_speed;
 	kbutton_t in_up, in_down;
-
 	kbutton_t in_buttons[15];
 	qboolean in_mlooking;
 } clientInput_t;
@@ -86,6 +85,11 @@ clientInput_t cis[MAX_SPLITVIEW];
 
 float CL_AxisFraction(int localPlayerNum, int joystickNum, int axisNum);
 
+/*
+=======================================================================================================================================
+IN_MLookDown
+=======================================================================================================================================
+*/
 void IN_MLookDown(int localPlayerNum) {
 	cis[localPlayerNum].in_mlooking = qtrue;
 }
@@ -96,6 +100,7 @@ IN_MLookUp
 =======================================================================================================================================
 */
 void IN_MLookUp(int localPlayerNum) {
+
 	cis[localPlayerNum].in_mlooking = qfalse;
 
 	if (!cg_freelook.integer) {
@@ -103,7 +108,13 @@ void IN_MLookUp(int localPlayerNum) {
 	}
 }
 
-// arg1 keynum, arg2 frametime, arg3 analog joystick axis number
+/*
+=======================================================================================================================================
+IN_KeyDown
+
+arg1 keynum, arg2 frametime, arg3 analog joystick axis number.
+=======================================================================================================================================
+*/
 void IN_KeyDown(kbutton_t *b) {
 	int k;
 	int localPlayerNum;
@@ -116,11 +127,11 @@ void IN_KeyDown(kbutton_t *b) {
 	if (c[0]) {
 		k = atoi(c);
 	} else {
-		k = -1;		// typed manually at the console for continuous down
+		k = -1; // typed manually at the console for continuous down
 	}
 
 	if (k == b->down[0] || k == b->down[1]) {
-		return;		// repeating key
+		return; // repeating key
 	}
 
 	trap_Argv(3, c, sizeof(c));
@@ -152,12 +163,12 @@ void IN_KeyDown(kbutton_t *b) {
 	}
 
 	if (b->active) {
-		return;		// still down
+		return; // still down
 	}
 	// save timestamp for partial frame summing
 	trap_Argv(2, c, sizeof(c));
-	b->downtime = atoi(c);
 
+	b->downtime = atoi(c);
 	b->active = qtrue;
 	b->wasPressed = qtrue;
 }
@@ -192,7 +203,7 @@ void IN_KeyUp(kbutton_t *b) {
 	}
 
 	if (b->down[0] || b->down[1]) {
-		return;		// some other key is still holding it down
+		return; // some other key is still holding it down
 	}
 
 	b->active = qfalse;
@@ -219,6 +230,7 @@ Returns the fraction of the axis press
 float CL_AxisFraction(int localPlayerNum, int joystickNum, int axisNum) {
 	float fraction;
 	int axis;
+
 	// non - analog keystate or analog disabled
 	if (axisNum == 0 || !cg_joystickUseAnalog[joystickNum].integer) {
 		return 1;
@@ -390,6 +402,11 @@ void IN_Button13Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons
 void IN_Button14Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[14]);}
 void IN_Button14Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[14]);}
 
+/*
+=======================================================================================================================================
+IN_CenterView
+=======================================================================================================================================
+*/
 void IN_CenterView(int localPlayerNum) {
 	playerState_t *ps;
 
@@ -401,8 +418,6 @@ void IN_CenterView(int localPlayerNum) {
 
 	cg.localPlayers[localPlayerNum].viewangles[PITCH] = -SHORT2ANGLE(ps->delta_angles[PITCH]);
 }
-
-// ========================================================================== 
 
 /*
 =======================================================================================================================================
@@ -451,6 +466,7 @@ Sets the usercmd_t based on key states
 void CG_KeyMove(localPlayer_t *player, clientInput_t *ci, usercmd_t *cmd) {
 	int movespeed;
 	int forward, side, up;
+
 	// adjust for speed key / running
 	// the walking flag is to keep animations consistent even during acceleration and deceleration
 	if (ci->in_speed.active ^ cg_run[ci - cis].integer) {
@@ -477,7 +493,6 @@ void CG_KeyMove(localPlayer_t *player, clientInput_t *ci, usercmd_t *cmd) {
 	up -= movespeed * CL_KeyState(player, &ci->in_down);
 
 	forward += movespeed * CL_KeyState(player, &ci->in_forward);
-
 	forward -= movespeed * CL_KeyState(player, &ci->in_back);
 
 	cmd->forwardmove = ClampChar(forward);
@@ -491,6 +506,7 @@ CG_MouseMove
 =======================================================================================================================================
 */
 void CG_MouseMove(localPlayer_t *player, clientInput_t *ci, usercmd_t *cmd, float mx, float my) {
+
 	// ingame FOV
 	mx *= player->zoomSensitivity;
 	my *= player->zoomSensitivity;
@@ -499,11 +515,13 @@ void CG_MouseMove(localPlayer_t *player, clientInput_t *ci, usercmd_t *cmd, floa
 		cmd->rightmove = ClampChar(cmd->rightmove + m_side.value * mx);
 	} else {
 		player->viewangles[YAW] -= m_yaw.value * mx;
+	}
 
-	if ((ci->in_mlooking || cg_freelook.integer) && !ci->in_strafe.active)
+	if ((ci->in_mlooking || cg_freelook.integer) && !ci->in_strafe.active) {
 		player->viewangles[PITCH] += m_pitch.value * my;
 	} else {
 		cmd->forwardmove = ClampChar(cmd->forwardmove - m_forward.value * my);
+	}
 }
 
 /*
@@ -516,7 +534,6 @@ void CG_CmdButtons(clientInput_t *ci, usercmd_t *cmd, qboolean anykeydown) {
 
 	// figure button bits
 	// send a button bit even if the key was pressed and released in less than a frame
-	// 	
 	for (i = 0; i < 15; i++) {
 		if (ci->in_buttons[i].active || ci->in_buttons[i].wasPressed) {
 			cmd->buttons |= 1 << i;
@@ -527,7 +544,6 @@ void CG_CmdButtons(clientInput_t *ci, usercmd_t *cmd, qboolean anykeydown) {
 
 	if (Key_GetCatcher()) {
 		cmd->buttons |= BUTTON_TALK;
-	}
 	// allow the game to know if any key at all is currently pressed, even if it isn't bound to anything
 	} else if (anykeydown) {
 		cmd->buttons |= BUTTON_ANY;
@@ -598,7 +614,6 @@ void CG_RegisterInputCvars(void) {
 	int i;
 
 	trap_Cvar_Register(&cg_freelook, "cl_freelook", "1", CVAR_ARCHIVE); // ZTM: NOTE: changing name breaks team arena menu scripts
-
 	trap_Cvar_Register(&m_pitch, "m_pitch", "0.022", CVAR_ARCHIVE);
 	trap_Cvar_Register(&m_yaw, "m_yaw", "0.022", CVAR_ARCHIVE);
 	trap_Cvar_Register(&m_forward, "m_forward", "0.25", CVAR_ARCHIVE);
@@ -625,7 +640,6 @@ void CG_UpdateInputCvars(void) {
 	int i;
 
 	trap_Cvar_Update(&cg_freelook);
-
 	trap_Cvar_Update(&m_pitch);
 	trap_Cvar_Update(&m_yaw);
 	trap_Cvar_Update(&m_forward);
@@ -642,4 +656,3 @@ void CG_UpdateInputCvars(void) {
 		trap_Cvar_Update(&cg_joystickThreshold[i]);
 	}
 }
-
