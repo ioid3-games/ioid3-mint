@@ -60,7 +60,7 @@ int UI_ParseInfos(char *buf, int max, char *infos[]) {
 		}
 
 		if (strcmp(token, "{")) {
-			Com_Printf("Missing {in info file\n");
+			Com_Printf("Missing { in info file\n");
 			break;
 		}
 
@@ -88,7 +88,7 @@ int UI_ParseInfos(char *buf, int max, char *infos[]) {
 			token = COM_ParseExt(&buf, qfalse);
 
 			if (!token[0]) {
-				strcpy(token, " < NULL > ");
+				strcpy(token, "<NULL>");
 			}
 
 			Info_SetValueForKey(info, key, token);
@@ -174,7 +174,7 @@ void UI_LoadArenas(void) {
 	trap_Print(va("%i arenas parsed\n", ui_numArenas));
 
 	if (UI_OutOfMemory()) {
-		trap_Print(S_COLOR_YELLOW"WARNING: not enough memory in pool to load all arenas\n");
+		trap_Print(S_COLOR_YELLOW "WARNING: not enough memory in pool to load all arenas\n");
 	}
 
 	for (n = 0; n < ui_numArenas; n++) {

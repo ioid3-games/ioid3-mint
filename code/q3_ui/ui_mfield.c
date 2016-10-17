@@ -29,7 +29,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 MenuField_Init
 =======================================================================================================================================
 */
-void MenuField_Init(menufield_s * m) {
+void MenuField_Init(menufield_s *m) {
 	int l;
 	int w;
 	int h;
@@ -112,7 +112,7 @@ void MenuField_Draw(menufield_s *f) {
 MenuField_Key
 =======================================================================================================================================
 */
-sfxHandle_t MenuField_Key(menufield_s * m, int *key) {
+sfxHandle_t MenuField_Key(menufield_s *m, int *key) {
 	int keycode;
 
 	keycode = *key;
@@ -140,7 +140,7 @@ sfxHandle_t MenuField_Key(menufield_s * m, int *key) {
 				if ((m->generic.flags & QMF_UPPERCASE) && Q_islower(keycode))
 					keycode -= 'a' - 'A';
 				else if ((m->generic.flags & QMF_LOWERCASE) && Q_isupper(keycode))
-					keycode -= 'A'-'a';
+					keycode -= 'A' - 'a';
 				else if ((m->generic.flags & QMF_NUMBERSONLY) && Q_isalpha(keycode))
 					return (menu_buzz_sound);
 

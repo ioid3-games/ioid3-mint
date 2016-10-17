@@ -41,7 +41,7 @@ It runs a function, passing the selected player to the function.
 
 #include "ui_local.h"
 
-#define SETUP_MENU_VERTICAL_SPACING		34
+#define SETUP_MENU_VERTICAL_SPACING 34
 
 #define ART_BACK0 "menu/art/back_0"
 #define ART_BACK1 "menu/art/back_1"
@@ -51,14 +51,11 @@ It runs a function, passing the selected player to the function.
 #define ID_BACK					10
 #define ID_CUSTOMIZECONTROLS	11 // + MAX_SPLITVIEW
 
-
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
-
 	menutext_s player[MAX_SPLITVIEW];
 	menubitmap_s back;
 

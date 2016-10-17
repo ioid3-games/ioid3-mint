@@ -108,13 +108,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define SLIDER_HEIGHT 16.0
 #define SLIDER_THUMB_WIDTH 12.0
 #define SLIDER_THUMB_HEIGHT 20.0
-#define NUM_CROSSHAIRS			10
+#define NUM_CROSSHAIRS 10
 
 typedef struct {
   const char *command;
   const char *args[MAX_SCRIPT_ARGS];
 } scriptDef_t;
-
 
 typedef struct {
   float x;   // horiz position
@@ -336,7 +335,7 @@ typedef struct {
   void (*drawRect) (float x, float y, float w, float h, float size, const vec4_t color);
   void (*drawSides) (float x, float y, float w, float h, float size);
   void (*drawTopBottom) (float x, float y, float w, float h, float size);
-  void (*clearScene) (void);
+  void (*clearScene)(void);
   void (*addRefEntityToScene) (const refEntity_t *re);
   void (*renderScene) (const refdef_t *fd);
   void (*registerFont) (const char *pFontname, int pointSize, float borderWidth, qboolean forceAutoHint, fontInfo_t *font);
@@ -350,7 +349,7 @@ typedef struct {
   void (*setCVar) (const char *cvar, const char *value);
   void (*drawTextWithCursor) (float x, float y, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style);
   void (*setOverstrikeMode) (qboolean b);
-  qboolean(*getOverstrikeMode) (void);
+  qboolean(*getOverstrikeMode)(void);
   void (*startLocalSound) (sfxHandle_t sfx, int channelNum);
   qboolean(*ownerDrawHandleKey)(int ownerDraw, int flags, float *special, int key);
 	int (*feederCount) (float feederID);
@@ -366,9 +365,9 @@ typedef struct {
 	void (*Print) (const char *msg, ...) __attribute__((format(printf, 1, 2)));
 	void (*Pause) (qboolean b);
 	int (*ownerDrawWidth)(int ownerDraw, float scale);
-	sfxHandle_t(*registerSound) (const char *name, qboolean compressed);
+	sfxHandle_t (*registerSound) (const char *name, qboolean compressed);
 	void (*startBackgroundTrack) (const char *intro, const char *loop, float volume, float loopVolume);
-	void (*stopBackgroundTrack) (void);
+	void (*stopBackgroundTrack)(void);
 	int (*playCinematic) (const char *name, float x, float y, float w, float h);
 	void (*stopCinematic)(int handle);
 	void (*drawCinematic)(int handle, float x, float y, float w, float h);

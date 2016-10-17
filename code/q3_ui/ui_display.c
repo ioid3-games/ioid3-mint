@@ -67,6 +67,7 @@ typedef struct {
 	menubitmap_s apply;
 	int greyscale_default;
 } displayOptionsInfo_t;
+
 static displayOptionsInfo_t displayOptionsInfo;
 
 /*
@@ -152,12 +153,24 @@ static void UI_DisplayOptionsMenu_Init(void) {
 	int y;
 
 	static const char *anaglyph_names[] = {
-		"Off", "red - cyan", "red - blue", "red - green", "green - magenta", "cyan - red", "blue - red", "green - red", "magenta - green", NULL
+		"Off",
+		"red-cyan",
+		"red-blue",
+		"red-green",
+		"green-magenta",
+		"cyan-red",
+		"blue-red",
+		"green-red",
+		"magenta-green",
+		NULL
 	};
+
 	const int numAnaglyphModes = ARRAY_LEN(anaglyph_names) - 2;
 
 	static const char *offOn_names[] = {
-		"Off", "On", NULL
+		"Off",
+		"On",
+		NULL
 	};
 
 	memset(&displayOptionsInfo, 0, sizeof(displayOptionsInfo));
@@ -258,7 +271,7 @@ static void UI_DisplayOptionsMenu_Init(void) {
 	displayOptionsInfo.screensize.maxvalue = 10;
 
 	y += BIGCHAR_HEIGHT + 2;
-	// references / modifies "r_anaglyphMode"
+	// references/modifies "r_anaglyphMode"
 	displayOptionsInfo.anaglyph.generic.type = MTYPE_SPINCONTROL;
 	displayOptionsInfo.anaglyph.generic.name = "Anaglyph:";
 	displayOptionsInfo.anaglyph.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -269,7 +282,7 @@ static void UI_DisplayOptionsMenu_Init(void) {
 	displayOptionsInfo.anaglyph.itemnames = anaglyph_names;
 
 	y += BIGCHAR_HEIGHT + 2;
-	// references / modifies "r_greyscale"
+	// references/modifies "r_greyscale"
 	displayOptionsInfo.greyscale.generic.type = MTYPE_SPINCONTROL;
 	displayOptionsInfo.greyscale.generic.name = "Grey Scale:";
 	displayOptionsInfo.greyscale.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -334,6 +347,7 @@ UI_DisplayOptionsMenu_Cache
 =======================================================================================================================================
 */
 void UI_DisplayOptionsMenu_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_FRAMEL);
 	trap_R_RegisterShaderNoMip(ART_FRAMER);
 	trap_R_RegisterShaderNoMip(ART_BACK0);
@@ -346,7 +360,9 @@ UI_DisplayOptionsMenu
 =======================================================================================================================================
 */
 void UI_DisplayOptionsMenu(void) {
+
 	UI_DisplayOptionsMenu_Init();
 	UI_PushMenu(&displayOptionsInfo.menu);
+
 	Menu_SetCursorToItem(&displayOptionsInfo.menu, &displayOptionsInfo.display);
 }

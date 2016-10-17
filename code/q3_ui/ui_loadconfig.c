@@ -68,6 +68,7 @@ typedef struct {
 	char names[NAMEBUFSIZE];
 	char *configlist[MAX_CONFIGS];
 } configs_t;
+
 static configs_t s_configs;
 
 /*
@@ -111,6 +112,7 @@ static void LoadConfig_MenuInit(void) {
 	UI_LoadConfig_Cache();
 
 	memset(&s_configs, 0, sizeof(configs_t));
+
 	s_configs.menu.wrapAround = qtrue;
 	s_configs.menu.fullscreen = qtrue;
 
@@ -215,7 +217,7 @@ static void LoadConfig_MenuInit(void) {
 		// strip extension
 		len = strlen(configname);
 
-		if (!Q_stricmp(configname +  len - 4, ".cfg")) {
+		if (!Q_stricmp(configname + len - 4, ".cfg")) {
 			configname[len - 4] = '\0';
 		}
 

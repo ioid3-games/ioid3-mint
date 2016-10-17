@@ -317,7 +317,6 @@ void CL_KeyStateSeparate(localPlayer_t *player, kbutton_t *key, float *pDigitalF
 	if (digitalFrac > 1) {
 		digitalFrac = 1;
 	}
-
 #if 0
 	if (msec) {
 		Com_Printf("%i ", msec);

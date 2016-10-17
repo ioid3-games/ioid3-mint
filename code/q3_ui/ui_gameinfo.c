@@ -22,12 +22,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-// gameinfo.c
-
 #include "ui_local.h"
-
 // arena and bot info
-
 #define POOLSIZE 128 * 1024
 
 int ui_numBots;
@@ -65,6 +61,7 @@ UI_InitMemory
 =======================================================================================================================================
 */
 void UI_InitMemory(void) {
+
 	allocPoint = 0;
 	outOfMemory = qfalse;
 }
@@ -90,7 +87,7 @@ int UI_ParseInfos(char *buf, int max, char *infos[]) {
 		}
 
 		if (strcmp(token, "{")) {
-			Com_Printf("Missing {in info file\n");
+			Com_Printf("Missing { in info file\n");
 			break;
 		}
 
@@ -118,7 +115,7 @@ int UI_ParseInfos(char *buf, int max, char *infos[]) {
 			token = COM_ParseExt(&buf, qfalse);
 
 			if (!token[0]) {
-				strcpy(token, " < NULL > ");
+				strcpy(token, "<NULL>");
 			}
 
 			Info_SetValueForKey(info, key, token);
@@ -204,7 +201,9 @@ static void UI_LoadArenas(void) {
 
 	Com_DPrintf("%i arenas parsed\n", ui_numArenas);
 
-	if (outOfMemory) trap_Print(S_COLOR_YELLOW"WARNING: not enough memory in pool to load all arenas\n");
+	if (outOfMemory) {
+		trap_Print(S_COLOR_YELLOW "WARNING: not enough memory in pool to load all arenas\n");
+	}
 	// set initial numbers
 	for (n = 0; n < ui_numArenas; n++) {
 		Info_SetValueForKey(ui_arenaInfos[n], "num", va("%i", n));
@@ -222,7 +221,7 @@ static void UI_LoadArenas(void) {
 		}
 
 		if (strstr(type, "single")) {
-			// check for special single player arenas(training, final)
+			// check for special single player arenas (training, final)
 			tag = Info_ValueForKey(ui_arenaInfos[n], "special");
 
 			if (*tag) {
@@ -251,7 +250,7 @@ static void UI_LoadArenas(void) {
 		// if no type specified, it will be treated as "ffa"
 		if (*type) {
 			if (strstr(type, "single")) {
-				// check for special single player arenas(training, final)
+				// check for special single player arenas (training, final)
 				tag = Info_ValueForKey(ui_arenaInfos[n], "special");
 
 				if (*tag) {
@@ -295,7 +294,7 @@ const char *UI_GetArenaInfoByNumber(int num) {
 
 /*
 =======================================================================================================================================
-UI_GetArenaInfoByNumber
+UI_GetArenaInfoByMap
 =======================================================================================================================================
 */
 const char *UI_GetArenaInfoByMap(const char *map) {
@@ -356,7 +355,9 @@ static void UI_LoadBotsFromFile(char *filename) {
 
 	ui_numBots += UI_ParseInfos(buf, MAX_BOTS - ui_numBots, &ui_botInfos[ui_numBots]);
 
-	if (outOfMemory) trap_Print(S_COLOR_YELLOW"WARNING: not enough memory in pool to load all bots\n");
+	if (outOfMemory) {
+		trap_Print(S_COLOR_YELLOW "WARNING: not enough memory in pool to load all bots\n");
+	}
 }
 
 /*
@@ -377,6 +378,7 @@ static void UI_LoadBots(void) {
 	ui_numBots = 0;
 	// setup random bot option
 	memset(info, 0, MAX_INFO_STRING);
+
 	Info_SetValueForKey(info, "name", "Random");
 	Info_SetValueForKey(info, "model", "random");
 	ui_botInfos[ui_numBots] = UI_Alloc(strlen(info) + strlen("\\num\\") + strlen(va("%d", MAX_ARENAS)) + 1);
@@ -444,11 +446,12 @@ char *UI_GetBotInfoByName(const char *name) {
 }
 
 // single player game info
+
 /*
 =======================================================================================================================================
 UI_GetBestScore
 
-Returns the player's best finish on a given level, 0 if the have not played the level
+Returns the player's best finish on a given level, 0 if they have not played the level.
 =======================================================================================================================================
 */
 void UI_GetBestScore(int level, int *score, int *skill) {
@@ -494,7 +497,7 @@ void UI_GetBestScore(int level, int *score, int *skill) {
 =======================================================================================================================================
 UI_SetBestScore
 
-Set the player's best finish for a level
+Set the player's best finish for a level.
 =======================================================================================================================================
 */
 void UI_SetBestScore(int level, int score) {
@@ -502,6 +505,7 @@ void UI_SetBestScore(int level, int score) {
 	int oldScore;
 	char arenaKey[16];
 	char scores[MAX_INFO_VALUE];
+
 	// validate score
 	if (score < 1 || score > 8) {
 		return;
@@ -671,7 +675,7 @@ qboolean UI_CanShowTierVideo(int tier) {
 =======================================================================================================================================
 UI_GetCurrentGame
 
-Returns the next level the player has not won
+Returns the next level the player has not won.
 =======================================================================================================================================
 */
 int UI_GetCurrentGame(void) {
@@ -712,7 +716,7 @@ int UI_GetCurrentGame(void) {
 =======================================================================================================================================
 UI_NewGame
 
-Clears the scores and sets the difficutly level
+Clears the scores and sets the difficutly level.
 =======================================================================================================================================
 */
 void UI_NewGame(void) {
@@ -771,6 +775,7 @@ void UI_SPUnlock_f(void) {
 	char scores[MAX_INFO_VALUE];
 	int level;
 	int tier;
+
 	// get scores for skill 1
 	trap_Cvar_VariableStringBuffer("g_spScores1", scores, MAX_INFO_VALUE);
 	// update scores
@@ -808,7 +813,6 @@ void UI_SPUnlockMedals_f(void) {
 	}
 
 	trap_Cvar_Set("g_spAwards", awardData);
-
 	trap_Print("All awards unlocked at 100\n");
 }
 

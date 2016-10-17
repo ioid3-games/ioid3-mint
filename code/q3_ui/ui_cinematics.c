@@ -24,7 +24,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "ui_local.h"
 
-
 #define ART_BACK0 "menu/art/back_0"
 #define ART_BACK1 "menu/art/back_1"
 #define ART_FRAMEL "menu/art/frame2_l"
@@ -43,7 +42,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define ID_CIN_TIER6	18
 #define ID_CIN_TIER7	19
 #define ID_CIN_END		20
-
 
 typedef struct {
 	menuframework_s menu;
@@ -64,8 +62,18 @@ typedef struct {
 } cinematicsMenuInfo_t;
 
 static cinematicsMenuInfo_t cinematicsMenuInfo;
+
 static char *cinematics[] = {
-	"idlogo", "intro", "tier1", "tier2", "tier3", "tier4", "tier5", "tier6", "tier7", "end"
+	"idlogo",
+	"intro",
+	"tier1",
+	"tier2",
+	"tier3",
+	"tier4",
+	"tier5",
+	"tier6",
+	"tier7",
+	"end"
 };
 
 /*

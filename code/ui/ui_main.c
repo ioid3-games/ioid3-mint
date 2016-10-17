@@ -25,7 +25,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-USER INTERFACE MAIN
+	USER INTERFACE MAIN
+
 =======================================================================================================================================
 */
 
@@ -36,9 +37,19 @@ USER INTERFACE MAIN
 
 uiInfo_t uiInfo;
 static const char *MonthAbbrev[] = {
-	"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec"
 };
-
 
 static const char *skillLevels[] = {
 	"I Can Win",
@@ -56,27 +67,34 @@ static const int numSkillLevels = ARRAY_LEN(skillLevels);
 #define COLUMN_GAME			3
 #define COLUMN_PING			4
 
-#define UIAS_LOCAL				0
-#define UIAS_GLOBAL1			1
-#define UIAS_GLOBAL2			2
-#define UIAS_GLOBAL3			3
-#define UIAS_GLOBAL4			4
-#define UIAS_GLOBAL5			5
-#define UIAS_FAVORITES			6
+#define UIAS_LOCAL		0
+#define UIAS_GLOBAL1	1
+#define UIAS_GLOBAL2	2
+#define UIAS_GLOBAL3	3
+#define UIAS_GLOBAL4	4
+#define UIAS_GLOBAL5	5
+#define UIAS_FAVORITES	6
 
 static const char *netSources[] = {
-	"Local", "Internet1", "Internet2", "Internet3", "Internet4", "Internet5", "Favorites"
+	"Local",
+	"Internet1",
+	"Internet2",
+	"Internet3",
+	"Internet4",
+	"Internet5",
+	"Favorites"
 };
 
 static const int numNetSources = ARRAY_LEN(netSources);
 
 
 static char *netnames[] = {
-	"???", "UDP", "UDP6"
+	"???",
+	"UDP",
+	"UDP6"
 };
 
 static int gamecodetoui[NUM_COLOR_EFFECTS] = {8, 4, 6, 0, 10, 2, 12, 1, 3, 5, 7, 9, 11};
-
 static int uitogamecode[NUM_COLOR_EFFECTS] = {4, 8, 6, 9, 2, 10, 3, 11, 1, 12, 5, 13, 7};
 
 
@@ -557,7 +575,7 @@ void UI_ParseMenu(const char *menuFile) {
 			break;
 		}
 		// if (Q_stricmp(token, "{")) {
-		// 	Com_Printf("Missing {in menu file\n");
+		// 	Com_Printf("Missing { in menu file\n");
 		// 	break;
 		//}
 		// if (uiInfo.uiDC.menuCount == MAX_MENUS) {
@@ -704,7 +722,7 @@ void UI_Load(void) {
 	}
 }
 
-// Convert ui's net source to AS_ * used by trap calls.
+// Convert ui's net source to AS_* used by trap calls.
 int UI_SourceForLAN(void) {
 	switch (ui_netSource.integer) {
 		default:
@@ -2556,7 +2574,7 @@ static void UI_LoadMods(void) {
 	int numdirs;
 	char dirlist[2048];
 	char *dirptr;
-  char *descptr;
+	char *descptr;
 	int i;
 	int dirlen;
 
@@ -2566,7 +2584,7 @@ static void UI_LoadMods(void) {
 
 	for (i = 0; i < numdirs; i++) {
 		dirlen = strlen(dirptr) + 1;
-    descptr = dirptr + dirlen;
+		descptr = dirptr + dirlen;
 		uiInfo.modList[uiInfo.modCount].modName = String_Alloc(dirptr);
 		uiInfo.modList[uiInfo.modCount].modDescr = String_Alloc(descptr);
     dirptr += dirlen + strlen(descptr) + 1;
@@ -4085,7 +4103,7 @@ static const char *UI_FeederItemText(float feederID, int index, int column, qhan
 
 			if (ping == -1) {
 				// if we ever see a ping that is out of date, do a server refresh
-				// UI_UpdatePendingPings();
+				//UI_UpdatePendingPings();
 			}
 
 			switch (column) {
@@ -4553,13 +4571,13 @@ static qboolean GameType_Parse(char **p, qboolean join) {
 					uiInfo.numJoinGameTypes++;
 				} else {
 					Com_Printf("Too many net game types, last one replace!\n");
-				}		
+				}
 			} else {
 				if (uiInfo.numGameTypes < MAX_GAMETYPES) {
 					uiInfo.numGameTypes++;
 				} else {
 					Com_Printf("Too many game types, last one replace!\n");
-				}		
+				}
 			}
      
 			token = COM_ParseExt(p, qtrue);
@@ -4772,16 +4790,18 @@ static void UI_BuildQ3Model_List(void) {
 	for (i = 0; i < numdirs && uiInfo.q3HeadCount < MAX_PLAYERMODELS; i++, dirptr += dirlen + 1) {
 		dirlen = strlen(dirptr);
 
-		if (dirlen && dirptr[dirlen - 1] == '/') dirptr[dirlen - 1] = '\0';
+		if (dirlen && dirptr[dirlen - 1] == '/') {
+			dirptr[dirlen - 1] = '\0';
+		}
 
 		if (!strcmp(dirptr, ".") || !strcmp(dirptr, "..")) {
 			continue;
 		}
 		// iterate all skin files in directory
-		numfiles = trap_FS_GetFileList(va("models/players/ %s", dirptr), "$images", filelist, 2048);
+		numfiles = trap_FS_GetFileList(va("models/players/%s", dirptr), "$images", filelist, 2048);
 		fileptr = filelist;
 
-		for (j = 0; j < numfiles && uiInfo.q3HeadCount < MAX_PLAYERMODELS;j++, fileptr += filelen + 1) {
+		for (j = 0; j < numfiles && uiInfo.q3HeadCount < MAX_PLAYERMODELS; j++, fileptr += filelen + 1) {
 			filelen = strlen(fileptr);
 
 			COM_StripExtension(fileptr, skinname, sizeof(skinname));
@@ -4826,7 +4846,7 @@ void UI_Init(qboolean inGameLoad, int maxSplitView) {
 	UI_RegisterCvars();
 	UI_InitMemory();
 
- // UI_Load();
+ //UI_Load();
 	uiInfo.uiDC.registerShaderNoMip = &trap_R_RegisterShaderNoMip;
 	uiInfo.uiDC.setColor = &trap_R_SetColor;
 	uiInfo.uiDC.drawHandlePic = &CG_DrawPic;
@@ -4903,7 +4923,6 @@ void UI_Init(qboolean inGameLoad, int maxSplitView) {
 	if (menuSet == NULL || menuSet[0] == '\0') {
 		menuSet = "ui/menus.txt";
 	}
-
 #if 0
 	if (uiInfo.inGameLoad) {
 		UI_LoadMenus("ui/ingame.txt", qtrue);
@@ -5159,13 +5178,14 @@ static void UI_ReadableSize(char *buf, int bufsize, int value) {
 
 // Assumes time is in msec
 static void UI_PrintTime(char *buf, int bufsize, int time) {
+
 	time /= 1000; // change to seconds
 
 	if (time > 3600) { // in the hours range
 		Com_sprintf(buf, bufsize, "%d hr %d min", time / 3600, (time % 3600) / 60);
 	} else if (time > 60) { // mins
 		Com_sprintf(buf, bufsize, "%d min %d sec", time / 60, time % 60);
-	} else  { // secs
+	} else { // secs
 		Com_sprintf(buf, bufsize, "%d sec", time);
 	}
 }
@@ -5245,9 +5265,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 	const char *s;
 
 	downloadSize = trap_Cvar_VariableValue("cl_downloadSize");
-
 	downloadCount = trap_Cvar_VariableValue("cl_downloadCount");
-
 	downloadTime = trap_Cvar_VariableValue("cl_downloadTime");
 
 	leftWidth = 320;
@@ -5258,7 +5276,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 	UI_Text_PaintCenter(centerPoint, yStart + 248, scale, colorWhite, xferText, 0);
 
 	if (downloadSize > 0) {
-		s = va("%s(%d%%)", downloadName, (int)((float)downloadCount * 100.0f / downloadSize));
+		s = va("%s (%d%%)", downloadName, (int)((float)downloadCount * 100.0f / downloadSize));
 	} else {
 		s = downloadName;
 	}
@@ -5281,9 +5299,8 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 		UI_ReadableSize(xferRateBuf, sizeof xferRateBuf, xferRate);
 		// Extrapolate estimated completion time
 		if (downloadSize && xferRate) {
-			int n = downloadSize / xferRate; // estimated time for entire d / l in secs
-
-			// We do it in K(/ 1024) because we'd overflow around 4MB
+			int n = downloadSize / xferRate; // estimated time for entire d/l in secs
+			// We do it in K (/1024) because we'd overflow around 4MB
 			UI_PrintTime(dlTimeBuf, sizeof dlTimeBuf, (n - (((downloadCount / 1024) * n) / (downloadSize / 1024))) * 1000);
 
 			UI_Text_PaintCenter(leftWidth, yStart + 216, scale, colorWhite, dlTimeBuf, 0);
@@ -5299,7 +5316,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 		}
 
 		if (xferRate) {
-			UI_Text_PaintCenter(leftWidth, yStart + 272, scale, colorWhite, va("%s / Sec", xferRateBuf), 0);
+			UI_Text_PaintCenter(leftWidth, yStart + 272, scale, colorWhite, va("%s/Sec", xferRateBuf), 0);
 		}
 	}
 }
@@ -5308,8 +5325,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 =======================================================================================================================================
 UI_DrawConnectScreen
 
-This will also be overlaid on the cgame info screen during loading
-to prevent it from blinking away too rapidly on local or lan games.
+This will also be overlaid on the cgame info screen during loading to prevent it from blinking away too rapidly on local or lan games.
 =======================================================================================================================================
 */
 void UI_DrawConnectScreen(qboolean overlay) {
@@ -5349,8 +5365,7 @@ void UI_DrawConnectScreen(qboolean overlay) {
 		UI_Text_PaintCenter(centerPoint, yStart + 48, scale, colorWhite, text, ITEM_TEXTSTYLE_SHADOWEDMORE);
 	}
 	// display global MOTD at bottom
-	UI_Text_PaintCenter(centerPoint, 600, scale, colorWhite, Info_ValueForKey(cstate.updateInfoString, "motd"), 0);
-	// print any server info(server full, bad version, etc)
+	UI_Text_PaintCenter(centerPoint, 600, scale, colorWhite, Info_ValueForKey(cstate.updateInfoString, "motd"), 0);	// print any server info (server full, bad version, etc.)
 	if (cstate.connState < CA_CONNECTED) {
 		UI_Text_PaintCenter_AutoWrapped(centerPoint, yStart + 176, 630, 20, scale, colorWhite, cstate.messageString, 0);
 	}

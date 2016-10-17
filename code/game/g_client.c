@@ -778,10 +778,10 @@ void PlayerUserinfoChanged(int playerNum) {
 	strcpy(c2, Info_ValueForKey(userinfo, "color2"));
 	// send over a subset of the userinfo keys so other clients can print scoreboards, display models, and play custom sounds
 	if (ent->r.svFlags & SVF_BOT) {
-		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d", player->pers.netname, player->sess.sessionTeam, model, headModel, c1, c2, 
+		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d", player->pers.netname, player->sess.sessionTeam, model, headModel, c1, c2,
 			player->pers.maxHealth, player->sess.wins, player->sess.losses, Info_ValueForKey(userinfo, "skill"), teamTask, teamLeader);
 	} else {
-		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d", player->pers.netname, player->sess.sessionTeam, model, headModel, c1, c2, 
+		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d", player->pers.netname, player->sess.sessionTeam, model, headModel, c1, c2,
 			player->pers.maxHealth, player->sess.wins, player->sess.losses, teamTask, teamLeader);
 	}
 

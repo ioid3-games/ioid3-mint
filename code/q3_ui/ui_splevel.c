@@ -25,12 +25,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-SINGLE PLAYER LEVEL SELECT MENU
+	SINGLE PLAYER LEVEL SELECT MENU
+
 =======================================================================================================================================
 */
 
 #include "ui_local.h"
-
 
 #define ART_LEVELFRAME_FOCUS "menu/art/maps_select"
 #define ART_LEVELFRAME_SELECTED "menu/art/maps_selected"
@@ -51,29 +51,28 @@ SINGLE PLAYER LEVEL SELECT MENU
 #define ART_CUSTOM0 "menu/art/skirmish_0"
 #define ART_CUSTOM1 "menu/art/skirmish_1"
 
-#define ID_LEFTARROW		10
-#define ID_PICTURE0			11
-#define ID_PICTURE1			12
-#define ID_PICTURE2			13
-#define ID_PICTURE3			14
-#define ID_RIGHTARROW		15
-#define ID_PLAYERPIC		16
-#define ID_AWARD1			17
-#define ID_AWARD2			18
-#define ID_AWARD3			19
-#define ID_AWARD4			20
-#define ID_AWARD5			21
-#define ID_AWARD6			22
-#define ID_BACK				23
-#define ID_RESET			24
-#define ID_CUSTOM			25
-#define ID_NEXT				26
+#define ID_LEFTARROW	10
+#define ID_PICTURE0		11
+#define ID_PICTURE1		12
+#define ID_PICTURE2		13
+#define ID_PICTURE3		14
+#define ID_RIGHTARROW	15
+#define ID_PLAYERPIC	16
+#define ID_AWARD1		17
+#define ID_AWARD2		18
+#define ID_AWARD3		19
+#define ID_AWARD4		20
+#define ID_AWARD5		21
+#define ID_AWARD6		22
+#define ID_BACK			23
+#define ID_RESET		24
+#define ID_CUSTOM		25
+#define ID_NEXT			26
 
-#define PLAYER_Y			314
-#define AWARDS_Y			(PLAYER_Y + 26)
+#define PLAYER_Y 314
+#define AWARDS_Y (PLAYER_Y + 26)
 
-#define MAX_UI_AWARDS		6
-
+#define MAX_UI_AWARDS 6
 
 typedef struct {
 	menuframework_s menu;
@@ -98,7 +97,6 @@ typedef struct {
 	qhandle_t levelSelectedPic;
 	qhandle_t levelFocusPic;
 	qhandle_t levelCompletePic[5];
-
 	char playerModel[MAX_QPATH];
 	char playerPicName[MAX_QPATH];
 	int awardLevels[MAX_UI_AWARDS];
@@ -107,6 +105,7 @@ typedef struct {
 	qhandle_t botPics[7];
 	char botNames[7][10];
 } levelMenuInfo_t;
+
 static levelMenuInfo_t levelMenuInfo;
 static int selectedArenaSet;
 static int selectedArena;
@@ -144,7 +143,7 @@ static void PlayerIcon(const char *modelAndSkin, char *iconName, int iconNameMax
 
 /*
 =======================================================================================================================================
-PlayerIconhandle
+PlayerIconHandle
 =======================================================================================================================================
 */
 static qhandle_t PlayerIconHandle(const char *modelAndSkin) {
@@ -216,14 +215,13 @@ static void UI_SPLevelMenu_SetBots(void) {
 
 /*
 =======================================================================================================================================
-UI_SPLevelMenu_SetMenuItems
+UI_SPLevelMenu_SetMenuArena
 =======================================================================================================================================
 */
 static void UI_SPLevelMenu_SetMenuArena(int n, int level, const char *arenaInfo) {
 	char map[MAX_QPATH];
 
 	Q_strncpyz(map, Info_ValueForKey(arenaInfo, "map"), sizeof(map));
-
 	Q_strncpyz(levelMenuInfo.levelNames[n], map, sizeof(levelMenuInfo.levelNames[n]));
 	Q_strupr(levelMenuInfo.levelNames[n]);
 
@@ -254,6 +252,11 @@ static void UI_SPLevelMenu_SetMenuArena(int n, int level, const char *arenaInfo)
 	levelMenuInfo.item_maps[n].generic.flags &= ~QMF_INACTIVE;
 }
 
+/*
+=======================================================================================================================================
+UI_SPLevelMenu_SetMenuItems
+=======================================================================================================================================
+*/
 static void UI_SPLevelMenu_SetMenuItems(void) {
 	int n;
 	int level;
@@ -276,11 +279,14 @@ static void UI_SPLevelMenu_SetMenuItems(void) {
 	if (selectedArenaSet == trainingTier) {
 		arenaInfo = UI_GetSpecialArenaInfo("training");
 		level = atoi(Info_ValueForKey(arenaInfo, "num"));
-		UI_SPLevelMenu_SetMenuArena(0, level, arenaInfo);
-		levelMenuInfo.selectedArenaInfo = arenaInfo;
 
+		UI_SPLevelMenu_SetMenuArena(0, level, arenaInfo);
+
+		levelMenuInfo.selectedArenaInfo = arenaInfo;
 		levelMenuInfo.item_maps[0].generic.x = 256;
+
 		Bitmap_Init(&levelMenuInfo.item_maps[0]);
+
 		levelMenuInfo.item_maps[0].generic.bottom += 32;
 		levelMenuInfo.numMaps = 1;
 
@@ -292,11 +298,14 @@ static void UI_SPLevelMenu_SetMenuItems(void) {
 	} else if (selectedArenaSet == finalTier) {
 		arenaInfo = UI_GetSpecialArenaInfo("final");
 		level = atoi(Info_ValueForKey(arenaInfo, "num"));
-		UI_SPLevelMenu_SetMenuArena(0, level, arenaInfo);
-		levelMenuInfo.selectedArenaInfo = arenaInfo;
 
+		UI_SPLevelMenu_SetMenuArena(0, level, arenaInfo);
+
+		levelMenuInfo.selectedArenaInfo = arenaInfo;
 		levelMenuInfo.item_maps[0].generic.x = 256;
+
 		Bitmap_Init(&levelMenuInfo.item_maps[0]);
+
 		levelMenuInfo.item_maps[0].generic.bottom += 32;
 		levelMenuInfo.numMaps = 1;
 
@@ -307,7 +316,9 @@ static void UI_SPLevelMenu_SetMenuItems(void) {
 		}
 	} else {
 		levelMenuInfo.item_maps[0].generic.x = 46;
+
 		Bitmap_Init(&levelMenuInfo.item_maps[0]);
+
 		levelMenuInfo.item_maps[0].generic.bottom += 18;
 		levelMenuInfo.numMaps = ARENAS_PER_TIER;
 
@@ -321,7 +332,7 @@ static void UI_SPLevelMenu_SetMenuItems(void) {
 			levelMenuInfo.selectedArenaInfo = UI_GetArenaInfoByNumber(selectedArenaSet * ARENAS_PER_TIER + selectedArena);
 		}
 	}
-	// enable / disable arrows when they are valid / invalid
+	// enable/disable arrows when they are valid/invalid
 	if (selectedArenaSet == minTier) {
 		levelMenuInfo.item_leftarrow.generic.flags |= (QMF_INACTIVE|QMF_HIDDEN);
 	} else {
@@ -339,16 +350,22 @@ static void UI_SPLevelMenu_SetMenuItems(void) {
 
 /*
 =======================================================================================================================================
-UI_SPLevelMenu_ResetEvent
+UI_SPLevelMenu_ResetDraw
 =======================================================================================================================================
 */
 static void UI_SPLevelMenu_ResetDraw(void) {
+
 	UI_DrawProportionalString(SCREEN_WIDTH / 2, 356 + PROP_HEIGHT * 0, "WARNING: This resets all of the", UI_CENTER|UI_SMALLFONT, color_yellow);
 	UI_DrawProportionalString(SCREEN_WIDTH / 2, 356 + PROP_HEIGHT * 1, "single player game variables.", UI_CENTER|UI_SMALLFONT, color_yellow);
 	UI_DrawProportionalString(SCREEN_WIDTH / 2, 356 + PROP_HEIGHT * 2, "Do this only if you want to", UI_CENTER|UI_SMALLFONT, color_yellow);
 	UI_DrawProportionalString(SCREEN_WIDTH / 2, 356 + PROP_HEIGHT * 3, "start over from the beginning.", UI_CENTER|UI_SMALLFONT, color_yellow);
 }
 
+/*
+=======================================================================================================================================
+UI_SPLevelMenu_ResetAction
+=======================================================================================================================================
+*/
 static void UI_SPLevelMenu_ResetAction(qboolean result) {
 
 	if (!result) {
@@ -362,11 +379,16 @@ static void UI_SPLevelMenu_ResetAction(qboolean result) {
 	} else {
 		trap_Cvar_SetValue("ui_spSelection", 0);
 	}
-	// make the level select menu re - initialize
+	// make the level select menu re-initialize
 	UI_PopMenu();
 	UI_SPLevelMenu();
 }
 
+/*
+=======================================================================================================================================
+UI_SPLevelMenu_ResetEvent
+=======================================================================================================================================
+*/
 static void UI_SPLevelMenu_ResetEvent(void *ptr, int event) {
 
 	if (event != QM_ACTIVATED) {
@@ -525,14 +547,14 @@ static void UI_SPLevelMenu_CustomEvent(void *ptr, int notification) {
 UI_SPLevelMenu_MenuDraw
 =======================================================================================================================================
 */
-#define LEVEL_DESC_LEFT_MARGIN		332
+#define LEVEL_DESC_LEFT_MARGIN 332
 
 static void UI_SPLevelMenu_MenuDraw(void) {
 	int n, i;
 	int x, y;
 	vec4_t color;
 	int level;
-// 	int fraglimit;
+//	int fraglimit;
 	int pad;
 	char buf[MAX_INFO_VALUE];
 	char string[64];
@@ -634,8 +656,8 @@ static void UI_SPLevelMenu_MenuDraw(void) {
 	Com_sprintf(string, sizeof(string), "%s: %s", buf, Info_ValueForKey(levelMenuInfo.selectedArenaInfo, "longname"));
 	UI_DrawProportionalString(320, y, string, UI_CENTER|UI_SMALLFONT, color_orange);
 
-// 	fraglimit = atoi(Info_ValueForKey(levelMenuInfo.selectedArenaInfo, "fraglimit"));
-// 	UI_DrawString(18, 212, va("Frags %i", fraglimit), UI_LEFT|UI_SMALLFONT, color_orange);
+//	fraglimit = atoi(Info_ValueForKey(levelMenuInfo.selectedArenaInfo, "fraglimit"));
+//	UI_DrawString(18, 212, va("Frags %i", fraglimit), UI_LEFT|UI_SMALLFONT, color_orange);
 	// draw bot opponents
 	y += 24;
 	pad = (7 - levelMenuInfo.numBots) * (64 + 26) / 2;
@@ -714,6 +736,7 @@ static void UI_SPLevelMenu_Init(void) {
 	}
 
 	memset(&levelMenuInfo, 0, sizeof(levelMenuInfo));
+
 	levelMenuInfo.menu.fullscreen = qtrue;
 	levelMenuInfo.menu.wrapAround = qtrue;
 	levelMenuInfo.menu.draw = UI_SPLevelMenu_MenuDraw;
@@ -883,7 +906,6 @@ static void UI_SPLevelMenu_Init(void) {
 	levelMenuInfo.item_null.height = 480;
 
 	Menu_AddItem(&levelMenuInfo.menu, &levelMenuInfo.item_banner);
-
 	Menu_AddItem(&levelMenuInfo.menu, &levelMenuInfo.item_leftarrow);
 
 	for (n = 0; n < ARENAS_PER_TIER; n++) {
@@ -892,7 +914,6 @@ static void UI_SPLevelMenu_Init(void) {
 	}
 
 	Menu_AddItem(&levelMenuInfo.menu, &levelMenuInfo.item_rightarrow);
-
 	Menu_AddItem(&levelMenuInfo.menu, &levelMenuInfo.item_player);
 
 	for (n = 0; n < count; n++) {
@@ -982,6 +1003,7 @@ UI_SPLevelMenu_f
 =======================================================================================================================================
 */
 void UI_SPLevelMenu_f(void) {
+
 	uis.menusp = 0;
 	UI_SPLevelMenu();
 }

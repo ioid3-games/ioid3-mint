@@ -929,7 +929,7 @@ side_t *SelectSplitSide(bspbrush_t *brushes, node_t *node) {
 				if (side->flags & SFL_TESTED)
 					continue;	// we allready have metrics for this plane
 // 			if (side->surf & SURF_SKIP)
-// 				continue;	// skip surfaces are never chosen
+// 				continue; // skip surfaces are never chosen
 
 // 			if (!(side->flags & SFL_VISIBLE) && (pass < 2))
 // 				continue;	// only check visible faces on first pass

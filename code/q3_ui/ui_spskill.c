@@ -25,12 +25,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-SINGLE PLAYER SKILL MENU
+	SINGLE PLAYER SKILL MENU
+
 =======================================================================================================================================
 */
 
 #include "ui_local.h"
-
 
 #define ART_FRAME "menu/art/cut_frame"
 #define ART_BACK "menu/art/back_0.tga"
@@ -43,20 +43,18 @@ SINGLE PLAYER SKILL MENU
 #define ART_MAP_COMPLETE4 "menu/art/level_complete4"
 #define ART_MAP_COMPLETE5 "menu/art/level_complete5"
 
-#define ID_BABY						10
-#define ID_EASY						11
-#define ID_MEDIUM					12
-#define ID_HARD						13
-#define ID_NIGHTMARE				14
-#define ID_BACK						15
-#define ID_FIGHT					16
-
+#define ID_BABY			10
+#define ID_EASY			11
+#define ID_MEDIUM		12
+#define ID_HARD			13
+#define ID_NIGHTMARE	14
+#define ID_BACK			15
+#define ID_FIGHT		16
 
 typedef struct {
 	menuframework_s menu;
 	menubitmap_s art_frame;
 	menutext_s art_banner;
-
 	menutext_s item_baby;
 	menutext_s item_easy;
 	menutext_s item_medium;
@@ -70,28 +68,34 @@ typedef struct {
 	sfxHandle_t nightmareSound;
 	sfxHandle_t silenceSound;
 } skillMenuInfo_t;
+
 static skillMenuInfo_t skillMenuInfo;
 
-
+/*
+=======================================================================================================================================
+SetSkillColor
+=======================================================================================================================================
+*/
 static void SetSkillColor(int skill, vec4_t color) {
+
 	switch (skill) {
-	case 1:
-		skillMenuInfo.item_baby.color = color;
-		break;
-	case 2:
-		skillMenuInfo.item_easy.color = color;
-		break;
-	case 3:
-		skillMenuInfo.item_medium.color = color;
-		break;
-	case 4:
-		skillMenuInfo.item_hard.color = color;
-		break;
-	case 5:
-		skillMenuInfo.item_nightmare.color = color;
-		break;
-	default:
-		break;
+		case 1:
+			skillMenuInfo.item_baby.color = color;
+			break;
+		case 2:
+			skillMenuInfo.item_easy.color = color;
+			break;
+		case 3:
+			skillMenuInfo.item_medium.color = color;
+			break;
+		case 4:
+			skillMenuInfo.item_hard.color = color;
+			break;
+		case 5:
+			skillMenuInfo.item_nightmare.color = color;
+			break;
+		default:
+			break;
 	}
 }
 
@@ -115,6 +119,7 @@ static void UI_SPSkillMenu_SkillEvent(void *ptr, int notification) {
 	trap_Cvar_SetValue("g_spSkill", skill);
 
 	SetSkillColor(skill, color_white);
+
 	skillMenuInfo.art_skillPic.shader = skillMenuInfo.skillpics[skill - 1];
 
 	if (id == ID_NIGHTMARE) {
@@ -173,17 +178,18 @@ UI_SPSkillMenu_Cache
 =======================================================================================================================================
 */
 void UI_SPSkillMenu_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_FRAME);
 	trap_R_RegisterShaderNoMip(ART_BACK);
 	trap_R_RegisterShaderNoMip(ART_BACK_FOCUS);
 	trap_R_RegisterShaderNoMip(ART_FIGHT);
 	trap_R_RegisterShaderNoMip(ART_FIGHT_FOCUS);
+
 	skillMenuInfo.skillpics[0] = trap_R_RegisterShaderNoMip(ART_MAP_COMPLETE1);
 	skillMenuInfo.skillpics[1] = trap_R_RegisterShaderNoMip(ART_MAP_COMPLETE2);
 	skillMenuInfo.skillpics[2] = trap_R_RegisterShaderNoMip(ART_MAP_COMPLETE3);
 	skillMenuInfo.skillpics[3] = trap_R_RegisterShaderNoMip(ART_MAP_COMPLETE4);
 	skillMenuInfo.skillpics[4] = trap_R_RegisterShaderNoMip(ART_MAP_COMPLETE5);
-
 	skillMenuInfo.nightmareSound = trap_S_RegisterSound("sound/misc/nightmare.wav", qfalse);
 	skillMenuInfo.silenceSound = trap_S_RegisterSound("sound/misc/silence.wav", qfalse);
 }
@@ -197,6 +203,7 @@ static void UI_SPSkillMenu_Init(void) {
 	int skill;
 
 	memset(&skillMenuInfo, 0, sizeof(skillMenuInfo));
+
 	skillMenuInfo.menu.fullscreen = qtrue;
 	skillMenuInfo.menu.key = UI_SPSkillMenu_Key;
 
@@ -309,7 +316,9 @@ static void UI_SPSkillMenu_Init(void) {
 	Menu_AddItem(&skillMenuInfo.menu, (void *)&skillMenuInfo.item_fight);
 
 	skill = (int)Com_Clamp(1, 5, trap_Cvar_VariableValue("g_spSkill"));
+
 	SetSkillColor(skill, color_white);
+
 	skillMenuInfo.art_skillPic.shader = skillMenuInfo.skillpics[skill - 1];
 
 	if (skill == 5) {
@@ -317,8 +326,13 @@ static void UI_SPSkillMenu_Init(void) {
 	}
 }
 
-
+/*
+=======================================================================================================================================
+UI_SPSkillMenu
+=======================================================================================================================================
+*/
 void UI_SPSkillMenu(const char *arenaInfo) {
+
 	UI_SPSkillMenu_Init();
 	skillMenuInfo.arenaInfo = arenaInfo;
 	UI_PushMenu(&skillMenuInfo.menu);

@@ -56,10 +56,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define ID_BOTNAME5	25
 #define ID_BOTNAME6	26
 
-
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s background;
 	menubitmap_s arrows;
@@ -77,6 +75,7 @@ typedef struct {
 	int sortedBotNums[MAX_BOTS];
 	char botnames[7][32];
 } addBotsMenuInfo_t;
+
 static addBotsMenuInfo_t addBotsMenuInfo;
 
 /*
@@ -181,7 +180,7 @@ static void UI_AddBotsMenu_DownEvent(void *ptr, int event) {
 
 /*
 =======================================================================================================================================
-UI_AddBotsMenu_GetSortedBotNums
+UI_AddBotsMenu_SortCompare
 =======================================================================================================================================
 */
 static int QDECL UI_AddBotsMenu_SortCompare(const void *arg1, const void *arg2) {
@@ -216,6 +215,7 @@ UI_AddBotsMenu_GetSortedBotNums
 */
 static void UI_AddBotsMenu_GetSortedBotNums(void) {
 	int n;
+
 	// initialize the array
 	for (n = 0; n < addBotsMenuInfo.numBots; n++) {
 		addBotsMenuInfo.sortedBotNums[n] = n;
@@ -224,11 +224,6 @@ static void UI_AddBotsMenu_GetSortedBotNums(void) {
 	qsort(addBotsMenuInfo.sortedBotNums, addBotsMenuInfo.numBots, sizeof(addBotsMenuInfo.sortedBotNums[0]), UI_AddBotsMenu_SortCompare);
 }
 
-/*
-=======================================================================================================================================
-UI_AddBotsMenu_Init
-=======================================================================================================================================
-*/
 static const char *skillNames[] = {
 	"I Can Win",
 	"Bring It On",
@@ -249,6 +244,11 @@ static const char *teamNames2[] = {
 	NULL
 };
 
+/*
+=======================================================================================================================================
+UI_AddBotsMenu_Init
+=======================================================================================================================================
+*/
 static void UI_AddBotsMenu_Init(void) {
 	int n;
 	int y;
@@ -401,6 +401,7 @@ UI_AddBots_Cache
 =======================================================================================================================================
 */
 void UI_AddBots_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_BACK0);
 	trap_R_RegisterShaderNoMip(ART_BACK1);
 	trap_R_RegisterShaderNoMip(ART_FIGHT0);
@@ -417,6 +418,7 @@ UI_AddBotsMenu
 =======================================================================================================================================
 */
 void UI_AddBotsMenu(void) {
+
 	UI_AddBotsMenu_Init();
 	UI_PushMenu(&addBotsMenuInfo.menu);
 }

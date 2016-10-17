@@ -25,13 +25,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-START SERVER MENU *****
+	START SERVER MENU
+
 =======================================================================================================================================
 */
 
-
 #include "ui_local.h"
-
 
 #define GAMESERVER_BACK0 "menu/art/back_0"
 #define GAMESERVER_BACK1 "menu/art/back_1"
@@ -48,25 +47,23 @@ START SERVER MENU *****
 #define GAMESERVER_ARROWSL "menu/art/gs_arrows_l"
 #define GAMESERVER_ARROWSR "menu/art/gs_arrows_r"
 
-#define MAX_MAPROWS		2
-#define MAX_MAPCOLS		2
-#define MAX_MAPSPERPAGE	4
+#define MAX_MAPROWS 2
+#define MAX_MAPCOLS 2
+#define MAX_MAPSPERPAGE 4
+#define MAX_NAMELENGTH 16
 
-#define MAX_NAMELENGTH	16
-#define ID_GAMETYPE				10
-#define ID_PICTURES				11	// 12, 13, 14
-#define ID_PREVPAGE				15
-#define ID_NEXTPAGE				16
-#define ID_STARTSERVERBACK		17
-#define ID_STARTSERVERNEXT		18
+#define ID_GAMETYPE			10
+#define ID_PICTURES			11 // 12, 13, 14
+#define ID_PREVPAGE			15
+#define ID_NEXTPAGE			16
+#define ID_STARTSERVERBACK	17
+#define ID_STARTSERVERNEXT	18
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
-
 	menulist_s gametype;
 	menubitmap_s mappics[MAX_MAPSPERPAGE];
 	menubitmap_s mapbuttons[MAX_MAPSPERPAGE];
@@ -75,7 +72,6 @@ typedef struct {
 	menubitmap_s nextpage;
 	menubitmap_s back;
 	menubitmap_s next;
-
 	menutext_s mapname;
 	menubitmap_s item_null;
 	qboolean multiplayer;
@@ -85,11 +81,18 @@ typedef struct {
 	int maxpages;
 	int maplist[MAX_ARENAS];
 } startserver_t;
+
 static startserver_t s_startserver;
+
 static const char *gametype_items[] = {
-	"Free For All", "Team Deathmatch", "Tournament", "Capture the Flag",
+	"Free For All",
+	"Team Deathmatch",
+	"Tournament",
+	"Capture the Flag",
 #ifdef MISSIONPACK
-	"1 Flag CTF", "Overload", "Harvester",
+	"1 Flag CTF",
+	"Overload",
+	"Harvester",
 #endif
 	NULL
 };
@@ -280,7 +283,6 @@ static void StartServer_GametypeEvent(void *ptr, int event) {
 
 	for (i = 0; i < count; i++) {
 		info = UI_GetArenaInfoByNumber(i);
-
 		gamebits = GametypeBits(Info_ValueForKey(info, "type"));
 
 		if (!(gamebits & matchbits)) {
@@ -310,27 +312,27 @@ static void StartServer_MenuEvent(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_PREVPAGE:
-		if (s_startserver.page > 0) {
-			s_startserver.page--;
-			StartServer_Update();
-		}
+		case ID_PREVPAGE:
+			if (s_startserver.page > 0) {
+				s_startserver.page--;
+				StartServer_Update();
+			}
 
-		break;
-	case ID_NEXTPAGE:
-		if (s_startserver.page < s_startserver.maxpages - 1) {
-			s_startserver.page++;
-			StartServer_Update();
-		}
+			break;
+		case ID_NEXTPAGE:
+			if (s_startserver.page < s_startserver.maxpages - 1) {
+				s_startserver.page++;
+				StartServer_Update();
+			}
 
-		break;
-	case ID_STARTSERVERNEXT:
-		trap_Cvar_SetValue("g_gameType", gametype_remap[s_startserver.gametype.curvalue]);
-		UI_ServerOptionsMenu(s_startserver.multiplayer);
-		break;
-	case ID_STARTSERVERBACK:
-		UI_PopMenu();
-		break;
+			break;
+		case ID_STARTSERVERNEXT:
+			trap_Cvar_SetValue("g_gameType", gametype_remap[s_startserver.gametype.curvalue]);
+			UI_ServerOptionsMenu(s_startserver.multiplayer);
+			break;
+		case ID_STARTSERVERBACK:
+			UI_PopMenu();
+			break;
 	}
 }
 
@@ -377,13 +379,14 @@ static void StartServer_LevelshotDraw(void *self) {
 
 	x = b->generic.x;
 	y = b->generic.y + b->height;
+
 	CG_FillRect(x, y, b->width, 28, colorBlack);
 
 	x += b->width / 2;
 	y += 4;
 	n = s_startserver.page * MAX_MAPSPERPAGE + b->generic.id - ID_PICTURES;
-
 	info = UI_GetArenaInfoByNumber(s_startserver.maplist[n]);
+
 	UI_DrawString(x, y, Info_ValueForKey(info, "map"), UI_CENTER|UI_SMALLFONT, color_orange);
 
 	x = b->generic.x;
@@ -406,13 +409,13 @@ static void StartServer_MenuInit(qboolean multiplayer) {
 	int x;
 	int y;
 	static char mapnamebuffer[64];
+
 	// zero set all our globals
 	memset(&s_startserver, 0, sizeof(startserver_t));
 
 	StartServer_Cache();
 
 	s_startserver.multiplayer = multiplayer;
-
 	s_startserver.menu.wrapAround = qtrue;
 	s_startserver.menu.fullscreen = qtrue;
 
@@ -546,7 +549,6 @@ static void StartServer_MenuInit(qboolean multiplayer) {
 	Menu_AddItem(&s_startserver.menu, &s_startserver.banner);
 	Menu_AddItem(&s_startserver.menu, &s_startserver.framel);
 	Menu_AddItem(&s_startserver.menu, &s_startserver.framer);
-
 	Menu_AddItem(&s_startserver.menu, &s_startserver.gametype);
 
 	for (i = 0; i < MAX_MAPSPERPAGE; i++) {
@@ -613,6 +615,7 @@ UI_StartServerMenu
 =======================================================================================================================================
 */
 void UI_StartServerMenu(qboolean multiplayer) {
+
 	StartServer_MenuInit(multiplayer);
 	UI_PushMenu(&s_startserver.menu);
 }
@@ -620,26 +623,24 @@ void UI_StartServerMenu(qboolean multiplayer) {
 /*
 =======================================================================================================================================
 
-SERVER OPTIONS MENU *****
+	SERVER OPTIONS MENU
+
 =======================================================================================================================================
 */
 
-#define ID_MAXCLIENTS			20
-#define ID_DEDICATED			21
-#define ID_GO					22
-#define ID_BACK					23
-#define ID_PLAYER_TYPE			24 // Goes up to ID_PLAYER_TYPE + PLAYER_SLOTS
+#define ID_MAXCLIENTS	20
+#define ID_DEDICATED	21
+#define ID_GO			22
+#define ID_BACK			23
+#define ID_PLAYER_TYPE	24 // Goes up to ID_PLAYER_TYPE + PLAYER_SLOTS
 
-#define PLAYER_SLOTS			12
-
+#define PLAYER_SLOTS 12
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s mappic;
 	menubitmap_s picframe;
-
 	menuradiobutton_s publicserver;
 	menuradiobutton_s dedicated;
 	menufield_s timelimit;
@@ -649,7 +650,6 @@ typedef struct {
 	menufield_s hostname;
 	menuradiobutton_s pure;
 	menulist_s botSkill;
-
 	menutext_s player0;
 	menulist_s playerType[PLAYER_SLOTS];
 	menutext_s playerName[PLAYER_SLOTS];
@@ -666,27 +666,42 @@ typedef struct {
 	int newBotIndex;
 	char newBotName[16];
 } serveroptions_t;
+
 static serveroptions_t s_serveroptions;
 
-#define PT_BOT 0
-#define PT_CLOSED 1
-#define PT_OPEN 2
-#define PT_HUMAN 3
+#define PT_BOT		0
+#define PT_CLOSED	1
+#define PT_OPEN		2
+#define PT_HUMAN	3
 
 static const char *playerType_list[] = {
-	"Bot", "----", "Open", NULL
+	"Bot",
+	"----",
+	"Open",
+	NULL
 };
 
 static const char *humanPlayerType_list[] = {
-	"Bot", "----", "Open", "Human", NULL
+	"Bot",
+	"----",
+	"Open",
+	"Human",
+	NULL
 };
 
 static const char *playerTeam_list[] = {
-	"Blue", "Red", NULL
+	"Blue",
+	"Red",
+	NULL
 };
 
 static const char *botSkill_list[] = {
-	"I Can Win", "Bring It On", "Hurt Me Plenty", "Hardcore", "Nightmare!", NULL
+	"I Can Win",
+	"Bring It On",
+	"Hurt Me Plenty",
+	"Hardcore",
+	"Nightmare!",
+	NULL
 };
 
 /*
@@ -766,41 +781,41 @@ static void ServerOptions_Start(void) {
 	trap_Cvar_SetValue("cl_localPlayers", localPlayerBits);
 
 	switch (s_serveroptions.gametype) {
-	case GT_FFA:
-	default:
-		trap_Cvar_SetValue("ui_ffa_fraglimit", fraglimit);
-		trap_Cvar_SetValue("ui_ffa_timelimit", timelimit);
-		break;
-	case GT_TOURNAMENT:
-		trap_Cvar_SetValue("ui_tourney_fraglimit", fraglimit);
-		trap_Cvar_SetValue("ui_tourney_timelimit", timelimit);
-		break;
-	case GT_TEAM:
-		trap_Cvar_SetValue("ui_team_fraglimit", fraglimit);
-		trap_Cvar_SetValue("ui_team_timelimit", timelimit);
-		trap_Cvar_SetValue("ui_team_friendly", friendlyfire);
-		break;
-	case GT_CTF:
-		trap_Cvar_SetValue("ui_ctf_capturelimit", flaglimit);
-		trap_Cvar_SetValue("ui_ctf_timelimit", timelimit);
-		trap_Cvar_SetValue("ui_ctf_friendly", friendlyfire);
-		break;
+		case GT_FFA:
+		default:
+			trap_Cvar_SetValue("ui_ffa_fraglimit", fraglimit);
+			trap_Cvar_SetValue("ui_ffa_timelimit", timelimit);
+			break;
+		case GT_TOURNAMENT:
+			trap_Cvar_SetValue("ui_tourney_fraglimit", fraglimit);
+			trap_Cvar_SetValue("ui_tourney_timelimit", timelimit);
+			break;
+		case GT_TEAM:
+			trap_Cvar_SetValue("ui_team_fraglimit", fraglimit);
+			trap_Cvar_SetValue("ui_team_timelimit", timelimit);
+			trap_Cvar_SetValue("ui_team_friendly", friendlyfire);
+			break;
+		case GT_CTF:
+			trap_Cvar_SetValue("ui_ctf_capturelimit", flaglimit);
+			trap_Cvar_SetValue("ui_ctf_timelimit", timelimit);
+			trap_Cvar_SetValue("ui_ctf_friendly", friendlyfire);
+			break;
 #ifdef MISSIONPACK
-	case GT_1FCTF:
-		trap_Cvar_SetValue("ui_1flag_capturelimit", flaglimit);
-		trap_Cvar_SetValue("ui_1flag_timelimit", timelimit);
-		trap_Cvar_SetValue("ui_1flag_friendly", friendlyfire);
-		break;
-	case GT_OBELISK:
-		trap_Cvar_SetValue("ui_obelisk_capturelimit", flaglimit);
-		trap_Cvar_SetValue("ui_obelisk_timelimit", timelimit);
-		trap_Cvar_SetValue("ui_obelisk_friendly", friendlyfire);
-		break;
-	case GT_HARVESTER:
-		trap_Cvar_SetValue("ui_harvester_capturelimit", flaglimit);
-		trap_Cvar_SetValue("ui_harvester_timelimit", timelimit);
-		trap_Cvar_SetValue("ui_harvester_friendly", friendlyfire);
-		break;
+		case GT_1FCTF:
+			trap_Cvar_SetValue("ui_1flag_capturelimit", flaglimit);
+			trap_Cvar_SetValue("ui_1flag_timelimit", timelimit);
+			trap_Cvar_SetValue("ui_1flag_friendly", friendlyfire);
+			break;
+		case GT_OBELISK:
+			trap_Cvar_SetValue("ui_obelisk_capturelimit", flaglimit);
+			trap_Cvar_SetValue("ui_obelisk_timelimit", timelimit);
+			trap_Cvar_SetValue("ui_obelisk_friendly", friendlyfire);
+			break;
+		case GT_HARVESTER:
+			trap_Cvar_SetValue("ui_harvester_capturelimit", flaglimit);
+			trap_Cvar_SetValue("ui_harvester_timelimit", timelimit);
+			trap_Cvar_SetValue("ui_harvester_friendly", friendlyfire);
+			break;
 #endif
 	}
 
@@ -861,11 +876,12 @@ ServerOptions_InitPlayerItems
 static void ServerOptions_InitPlayerItems(void) {
 	int n;
 	int v;
+
 	// init types
 	if (s_serveroptions.multiplayer) {
-		v = PT_OPEN;	// open
+		v = PT_OPEN; // open
 	} else {
-		v = PT_BOT;		// bot
+		v = PT_BOT; // bot
 	}
 
 	for (n = 0; n < PLAYER_SLOTS; n++) {
@@ -915,12 +931,13 @@ ServerOptions_SetPlayerItems
 static void ServerOptions_SetPlayerItems(int playerType) {
 	int start;
 	int n;
+
 	// types
-// 	for (n = 0; n < PLAYER_SLOTS; n++) {
-// 		if ((!s_serveroptions.multiplayer) && (n > 0) && (s_serveroptions.playerType[n].curvalue == 0)) {
-// 			s_serveroptions.playerType[n].curvalue = PT_BOT;
-// 		}
-// 	}
+//	for (n = 0; n < PLAYER_SLOTS; n++) {
+//		if ((!s_serveroptions.multiplayer) && (n > 0) && (s_serveroptions.playerType[n].curvalue == 0)) {
+//			s_serveroptions.playerType[n].curvalue = PT_BOT;
+//		}
+//	}
 	// names
 	if (s_serveroptions.dedicated.curvalue == 0) {
 		s_serveroptions.player0.string = "Human";
@@ -995,38 +1012,42 @@ static void ServerOptions_Event(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	// if (event != QM_ACTIVATED && event != QM_LOSTFOCUS) {
-	// 	return;
-	//}
+		//if (event != QM_ACTIVATED && event != QM_LOSTFOCUS) {
+		//	return;
+		//}
 
-	case ID_MAXCLIENTS:
-	case ID_DEDICATED:
-		ServerOptions_SetPlayerItems(-2);
-		break;
-	case ID_GO:
-		if (event != QM_ACTIVATED) {
+		case ID_MAXCLIENTS:
+		case ID_DEDICATED:
+			ServerOptions_SetPlayerItems(-2);
 			break;
-		}
+		case ID_GO:
+			if (event != QM_ACTIVATED) {
+				break;
+			}
 
-		ServerOptions_Start();
-		break;
-	case ID_STARTSERVERNEXT:
-		if (event != QM_ACTIVATED) {
+			ServerOptions_Start();
 			break;
-		}
+		case ID_STARTSERVERNEXT:
+			if (event != QM_ACTIVATED) {
+				break;
+			}
 
-		break;
-	case ID_BACK:
-		if (event != QM_ACTIVATED) {
 			break;
-		}
+		case ID_BACK:
+			if (event != QM_ACTIVATED) {
+				break;
+			}
 
-		UI_PopMenu();
-		break;
+			UI_PopMenu();
+			break;
 	}
 }
 
-
+/*
+=======================================================================================================================================
+ServerOptions_PlayerNameEvent
+=======================================================================================================================================
+*/
 static void ServerOptions_PlayerNameEvent(void *ptr, int event) {
 	int n;
 
@@ -1036,6 +1057,7 @@ static void ServerOptions_PlayerNameEvent(void *ptr, int event) {
 
 	n = ((menutext_s *)ptr)->generic.id;
 	s_serveroptions.newBotIndex = n;
+
 	UI_BotSelectMenu(s_serveroptions.botNameBuffers[n]);
 }
 
@@ -1045,10 +1067,11 @@ ServerOptions_StatusBar
 =======================================================================================================================================
 */
 static void ServerOptions_StatusBar(void *ptr) {
+
 	switch (((menucommon_s *)ptr)->id) {
-	default:
-		UI_DrawString(320, 440, "0 = NO LIMIT", UI_CENTER|UI_SMALLFONT, colorWhite);
-		break;
+		default:
+			UI_DrawString(320, 440, "0 = NO LIMIT", UI_CENTER|UI_SMALLFONT, colorWhite);
+			break;
 	}
 }
 
@@ -1061,6 +1084,7 @@ static void ServerOptions_LevelshotDraw(void *self) {
 	menubitmap_s *b;
 	int x;
 	int y;
+
 	// strange place for this, but it works
 	if (s_serveroptions.newBot) {
 		Q_strncpyz(s_serveroptions.botNameBuffers[s_serveroptions.newBotIndex], s_serveroptions.newBotName, 16);
@@ -1083,7 +1107,11 @@ static void ServerOptions_LevelshotDraw(void *self) {
 	UI_DrawString(x, y, gametype_items[gametype_remap2[s_serveroptions.gametype]], UI_CENTER|UI_SMALLFONT, color_orange);
 }
 
-
+/*
+=======================================================================================================================================
+ServerOptions_InitBotNames
+=======================================================================================================================================
+*/
 static void ServerOptions_InitBotNames(void) {
 	int count;
 	int n;
@@ -1092,6 +1120,7 @@ static void ServerOptions_InitBotNames(void) {
 	char *p;
 	char *bot;
 	char bots[MAX_INFO_STRING];
+
 	// set the bot slots to random
 	for (n = 1; n < PLAYER_SLOTS; n++) {
 		strcpy(s_serveroptions.botNameBuffers[n], "Random");
@@ -1126,8 +1155,7 @@ static void ServerOptions_InitBotNames(void) {
 		return;
 	}
 
-	count = UI_MaxSplitView();	// skip the first few slots, reserved for humans
-
+	count = UI_MaxSplitView(); // skip the first few slots, reserved for humans
 	// get info for this map
 	arenaInfo = UI_GetArenaInfoByMap(s_serveroptions.mapnamebuffer);
 	// get the bot info - we'll seed with them if any are listed
@@ -1166,11 +1194,11 @@ static void ServerOptions_InitBotNames(void) {
 		count++;
 	}
 	// pad up to #8 as open slots
-	for (; count < 8; count++) {
+	for (;count < 8; count++) {
 		s_serveroptions.playerType[count].curvalue = PT_OPEN;
 	}
 	// close off the rest by default
-	for (; count < PLAYER_SLOTS; count++) {
+	for (;count < PLAYER_SLOTS; count++) {
 		if (s_serveroptions.playerType[count].curvalue == PT_BOT) {
 			s_serveroptions.playerType[count].curvalue = PT_CLOSED;
 		}
@@ -1188,41 +1216,41 @@ static void ServerOptions_SetMenuItems(void) {
 	const char *info;
 
 	switch (s_serveroptions.gametype) {
-	case GT_FFA:
-	default:
-		MField_SetText(&s_serveroptions.fraglimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_ffa_fraglimit"))));
-		MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_ffa_timelimit"))));
-		break;
-	case GT_TOURNAMENT:
-		MField_SetText(&s_serveroptions.fraglimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_tourney_fraglimit"))));
-		MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_tourney_timelimit"))));
-		break;
-	case GT_TEAM:
-		MField_SetText(&s_serveroptions.fraglimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_team_fraglimit"))));
-		MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_team_timelimit"))));
-		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_team_friendly"));
-		break;
-	case GT_CTF:
-		MField_SetText(&s_serveroptions.flaglimit.field, va("%i", (int)Com_Clamp(0, 100, trap_Cvar_VariableValue("ui_ctf_capturelimit"))));
-		MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_ctf_timelimit"))));
-		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ctf_friendly"));
-		break;
+		case GT_FFA:
+		default:
+			MField_SetText(&s_serveroptions.fraglimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_ffa_fraglimit"))));
+			MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_ffa_timelimit"))));
+			break;
+		case GT_TOURNAMENT:
+			MField_SetText(&s_serveroptions.fraglimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_tourney_fraglimit"))));
+			MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_tourney_timelimit"))));
+			break;
+		case GT_TEAM:
+			MField_SetText(&s_serveroptions.fraglimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_team_fraglimit"))));
+			MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_team_timelimit"))));
+			s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_team_friendly"));
+			break;
+		case GT_CTF:
+			MField_SetText(&s_serveroptions.flaglimit.field, va("%i", (int)Com_Clamp(0, 100, trap_Cvar_VariableValue("ui_ctf_capturelimit"))));
+			MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_ctf_timelimit"))));
+			s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ctf_friendly"));
+			break;
 #ifdef MISSIONPACK
-	case GT_1FCTF:
-		MField_SetText(&s_serveroptions.flaglimit.field, va("%i", (int)Com_Clamp(0, 100, trap_Cvar_VariableValue("ui_1flag_capturelimit"))));
-		MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_1flag_timelimit"))));
-		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_1flag_friendly"));
-		break;
-	case GT_OBELISK:
-		MField_SetText(&s_serveroptions.flaglimit.field, va("%i", (int)Com_Clamp(0, 100, trap_Cvar_VariableValue("ui_obelisk_capturelimit"))));
-		MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_obelisk_timelimit"))));
-		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_obelisk_friendly"));
-		break;
-	case GT_HARVESTER:
-		MField_SetText(&s_serveroptions.flaglimit.field, va("%i", (int)Com_Clamp(0, 100, trap_Cvar_VariableValue("ui_harvester_capturelimit"))));
-		MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_harvester_timelimit"))));
-		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_harvester_friendly"));
-		break;
+		case GT_1FCTF:
+			MField_SetText(&s_serveroptions.flaglimit.field, va("%i", (int)Com_Clamp(0, 100, trap_Cvar_VariableValue("ui_1flag_capturelimit"))));
+			MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_1flag_timelimit"))));
+			s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_1flag_friendly"));
+			break;
+		case GT_OBELISK:
+			MField_SetText(&s_serveroptions.flaglimit.field, va("%i", (int)Com_Clamp(0, 100, trap_Cvar_VariableValue("ui_obelisk_capturelimit"))));
+			MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_obelisk_timelimit"))));
+			s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_obelisk_friendly"));
+			break;
+		case GT_HARVESTER:
+			MField_SetText(&s_serveroptions.flaglimit.field, va("%i", (int)Com_Clamp(0, 100, trap_Cvar_VariableValue("ui_harvester_capturelimit"))));
+			MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_harvester_timelimit"))));
+			s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_harvester_friendly"));
+			break;
 #endif
 	}
 
@@ -1265,10 +1293,8 @@ static void PlayerName_Draw(void *item) {
 	qboolean focus;
 
 	s = (menutext_s *)item;
-
 	x = s->generic.x;
 	y = s->generic.y;
-
 	style = UI_SMALLFONT;
 	focus = (s->generic.parent->cursor == s->generic.menuPosition);
 
@@ -1299,13 +1325,14 @@ static void PlayerName_Draw(void *item) {
 ServerOptions_MenuInit
 =======================================================================================================================================
 */
-#define OPTIONS_X	456
+#define OPTIONS_X 456
 
 static void ServerOptions_MenuInit(qboolean multiplayer) {
 	int y;
 	int n;
 
 	memset(&s_serveroptions, 0, sizeof(serveroptions_t));
+
 	s_serveroptions.multiplayer = multiplayer;
 	s_serveroptions.gametype = (int)Com_Clamp(0, ARRAY_LEN(gametype_remap2) - 1, trap_Cvar_VariableValue("g_gametype"));
 
@@ -1516,10 +1543,8 @@ static void ServerOptions_MenuInit(qboolean multiplayer) {
 	s_serveroptions.go.focuspic = GAMESERVER_FIGHT1;
 
 	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.banner);
-
 	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.mappic);
 	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.picframe);
-
 	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.botSkill);
 	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.player0);
 
@@ -1568,6 +1593,7 @@ ServerOptions_Cache
 =======================================================================================================================================
 */
 void ServerOptions_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(GAMESERVER_BACK0);
 	trap_R_RegisterShaderNoMip(GAMESERVER_BACK1);
 	trap_R_RegisterShaderNoMip(GAMESERVER_FIGHT0);
@@ -1582,6 +1608,7 @@ UI_ServerOptionsMenu
 =======================================================================================================================================
 */
 static void UI_ServerOptionsMenu(qboolean multiplayer) {
+
 	ServerOptions_MenuInit(multiplayer);
 	UI_PushMenu(&s_serveroptions.menu);
 }
@@ -1589,10 +1616,10 @@ static void UI_ServerOptionsMenu(qboolean multiplayer) {
 /*
 =======================================================================================================================================
 
-BOT SELECT MENU *****
+	BOT SELECT MENU
+
 =======================================================================================================================================
 */
-
 
 #define BOTSELECT_BACK0 "menu/art/back_0"
 #define BOTSELECT_BACK1 "menu/art/back_1"
@@ -1604,14 +1631,12 @@ BOT SELECT MENU *****
 #define BOTSELECT_ARROWSL "menu/art/gs_arrows_l"
 #define BOTSELECT_ARROWSR "menu/art/gs_arrows_r"
 
-#define PLAYERGRID_COLS			4
-#define PLAYERGRID_ROWS			4
-#define MAX_MODELSPERPAGE		(PLAYERGRID_ROWS * PLAYERGRID_COLS)
-
+#define PLAYERGRID_COLS 4
+#define PLAYERGRID_ROWS 4
+#define MAX_MODELSPERPAGE (PLAYERGRID_ROWS * PLAYERGRID_COLS)
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s pics[MAX_MODELSPERPAGE];
 	menubitmap_s picbuttons[MAX_MODELSPERPAGE];
@@ -1629,6 +1654,7 @@ typedef struct {
 	char boticons[MAX_MODELSPERPAGE][MAX_QPATH];
 	char botnames[MAX_MODELSPERPAGE][16];
 } botSelectInfo_t;
+
 static botSelectInfo_t botSelectInfo;
 
 /*
@@ -1692,6 +1718,7 @@ ServerPlayerIcon
 static void ServerPlayerIcon(const char *modelAndSkin, char *iconName, int iconNameMaxSize) {
 	char *skin;
 	char model[MAX_QPATH];
+
 	// icon for random bot option
 	if (Q_stricmp(modelAndSkin, "random") == 0) {
 		Com_sprintf(iconName, iconNameMaxSize, "menu/art/randombot_icon.tga");
@@ -1739,7 +1766,7 @@ static void UI_BotSelectMenu_UpdateGrid(void) {
 			ServerPlayerIcon(Info_ValueForKey(info, "model"), botSelectInfo.boticons[i], MAX_QPATH);
 			Q_strncpyz(botSelectInfo.botnames[i], Info_ValueForKey(info, "name"), 16);
 			Q_CleanStr(botSelectInfo.botnames[i]);
- 			botSelectInfo.pics[i].generic.name = botSelectInfo.boticons[i];
+			botSelectInfo.pics[i].generic.name = botSelectInfo.boticons[i];
 
 			if (BotAlreadySelected(botSelectInfo.botnames[i])) {
 				botSelectInfo.picnames[i].color = color_red;
@@ -1750,14 +1777,14 @@ static void UI_BotSelectMenu_UpdateGrid(void) {
 			botSelectInfo.picbuttons[i].generic.flags &= ~QMF_INACTIVE;
 		} else {
 			// dead slot
- 			botSelectInfo.pics[i].generic.name = NULL;
+			botSelectInfo.pics[i].generic.name = NULL;
 			botSelectInfo.picbuttons[i].generic.flags |= QMF_INACTIVE;
 			botSelectInfo.botnames[i][0] = 0;
 		}
 
- 		botSelectInfo.pics[i].generic.flags   &= ~QMF_HIGHLIGHT;
- 		botSelectInfo.pics[i].shader = 0;
- 		botSelectInfo.picbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
+		botSelectInfo.pics[i].generic.flags &= ~QMF_HIGHLIGHT;
+		botSelectInfo.pics[i].shader = 0;
+		botSelectInfo.picbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
 	}
 	// set selected model
 	i = botSelectInfo.selectedmodel % MAX_MODELSPERPAGE;
@@ -1777,7 +1804,7 @@ static void UI_BotSelectMenu_UpdateGrid(void) {
 			botSelectInfo.right.generic.flags |= QMF_INACTIVE;
 		}
 	} else {
-		// hide left / right markers
+		// hide left/right markers
 		botSelectInfo.left.generic.flags |= QMF_INACTIVE;
 		botSelectInfo.right.generic.flags |= QMF_INACTIVE;
 	}
@@ -1871,8 +1898,8 @@ static void UI_BotSelectMenu_BotEvent(void *ptr, int event) {
 	}
 
 	for (i = 0; i < (PLAYERGRID_ROWS * PLAYERGRID_COLS); i++) {
- 		botSelectInfo.pics[i].generic.flags &= ~QMF_HIGHLIGHT;
- 		botSelectInfo.picbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
+		botSelectInfo.pics[i].generic.flags &= ~QMF_HIGHLIGHT;
+		botSelectInfo.picbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
 	}
 	// set selected
 	i = ((menucommon_s *)ptr)->id;
@@ -1918,6 +1945,7 @@ UI_BotSelectMenu_Cache
 =======================================================================================================================================
 */
 void UI_BotSelectMenu_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(BOTSELECT_BACK0);
 	trap_R_RegisterShaderNoMip(BOTSELECT_BACK1);
 	trap_R_RegisterShaderNoMip(BOTSELECT_ACCEPT0);
@@ -1929,12 +1957,17 @@ void UI_BotSelectMenu_Cache(void) {
 	trap_R_RegisterShaderNoMip(BOTSELECT_ARROWSR);
 }
 
-
+/*
+=======================================================================================================================================
+UI_BotSelectMenu_Init
+=======================================================================================================================================
+*/
 static void UI_BotSelectMenu_Init(char *bot) {
 	int i, j, k;
 	int x, y;
 
 	memset(&botSelectInfo, 0, sizeof(botSelectInfo));
+
 	botSelectInfo.menu.wrapAround = qtrue;
 	botSelectInfo.menu.fullscreen = qtrue;
 
@@ -1985,7 +2018,6 @@ static void UI_BotSelectMenu_Init(char *bot) {
 			botSelectInfo.picnames[k].string = botSelectInfo.botnames[k];
 			botSelectInfo.picnames[k].color = color_orange;
 			botSelectInfo.picnames[k].style = UI_CENTER|UI_SMALLFONT;
-
 			x += (64 + 6);
 		}
 
@@ -2054,7 +2086,9 @@ static void UI_BotSelectMenu_Init(char *bot) {
 
 	UI_BotSelectMenu_BuildList();
 	UI_BotSelectMenu_Default(bot);
+
 	botSelectInfo.modelpage = botSelectInfo.selectedmodel / MAX_MODELSPERPAGE;
+
 	UI_BotSelectMenu_UpdateGrid();
 }
 
@@ -2064,6 +2098,7 @@ UI_BotSelectMenu
 =======================================================================================================================================
 */
 void UI_BotSelectMenu(char *bot) {
+
 	UI_BotSelectMenu_Init(bot);
 	UI_PushMenu(&botSelectInfo.menu);
 }

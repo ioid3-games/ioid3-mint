@@ -450,7 +450,6 @@ static void SV_InitDedicatedRef(void) {
 	re.BeginRegistration(NULL);
 }
 #endif
-
 /*
 =======================================================================================================================================
 SV_SpawnServer

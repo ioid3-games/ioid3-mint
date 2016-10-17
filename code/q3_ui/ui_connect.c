@@ -34,6 +34,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 qboolean passwordNeeded = qtrue;
 menufield_s passwordField;
+
 static connstate_t lastConnState;
 static char lastLoadingText[MAX_INFO_VALUE];
 
@@ -65,13 +66,14 @@ Assumes time is in msec.
 =======================================================================================================================================
 */
 static void UI_PrintTime(char *buf, int bufsize, int time) {
+
 	time /= 1000; // change to seconds
 
 	if (time > 3600) { // in the hours range
 		Com_sprintf(buf, bufsize, "%d hr %d min", time / 3600, (time % 3600) / 60);
 	} else if (time > 60) { // mins
 		Com_sprintf(buf, bufsize, "%d min %d sec", time / 60, time % 60);
-	} else  { // secs
+	} else { // secs
 		Com_sprintf(buf, bufsize, "%d sec", time);
 	}
 }
@@ -93,18 +95,22 @@ static void UI_DisplayDownloadInfo(const char *downloadName) {
 	const char *s;
 
 	downloadSize = trap_Cvar_VariableValue("cl_downloadSize");
-
 	downloadCount = trap_Cvar_VariableValue("cl_downloadCount");
-
 	downloadTime = trap_Cvar_VariableValue("cl_downloadTime");
 
 	leftWidth = UI_ProportionalStringWidth(dlText) * UI_ProportionalSizeScale(style);
 	width = UI_ProportionalStringWidth(etaText) * UI_ProportionalSizeScale(style);
 
-	if (width > leftWidth) leftWidth = width;
+	if (width > leftWidth) {
+		leftWidth = width;
+	}
+
 	width = UI_ProportionalStringWidth(xferText) * UI_ProportionalSizeScale(style);
 
-	if (width > leftWidth) leftWidth = width;
+	if (width > leftWidth) {
+		leftWidth = width;
+	}
+
 	leftWidth += 16;
 
 	UI_DrawProportionalString(8, 128, dlText, style, color_white);
@@ -112,24 +118,22 @@ static void UI_DisplayDownloadInfo(const char *downloadName) {
 	UI_DrawProportionalString(8, 224, xferText, style, color_white);
 
 	if (downloadSize > 0) {
-		s = va("%s(%d%%)", downloadName, (int)((float)downloadCount * 100.0f / downloadSize));
+		s = va("%s (%d%%)", downloadName, (int)((float)downloadCount * 100.0f / downloadSize));
 	} else {
 		s = downloadName;
 	}
 
 	UI_DrawProportionalString(leftWidth, 128, s, style, color_white);
-
 	UI_ReadableSize(dlSizeBuf, sizeof dlSizeBuf, downloadCount);
 	UI_ReadableSize(totalSizeBuf, sizeof totalSizeBuf, downloadSize);
 
 	if (downloadCount < 4096 || !downloadTime) {
 		UI_DrawProportionalString(leftWidth, 160, "estimating", style, color_white);
-		UI_DrawProportionalString(leftWidth, 192, 
-			va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white);
+		UI_DrawProportionalString(leftWidth, 192, va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white);
 	} else {
 		if ((uis.realtime - downloadTime) / 1000) {
 			xferRate = downloadCount / ((uis.realtime - downloadTime) / 1000);
-		// xferRate = (int)(((float)downloadCount) / elapsedTime);
+			//xferRate = (int)(((float)downloadCount) / elapsedTime);
 		} else {
 			xferRate = 0;
 		}
@@ -137,9 +141,8 @@ static void UI_DisplayDownloadInfo(const char *downloadName) {
 		UI_ReadableSize(xferRateBuf, sizeof xferRateBuf, xferRate);
 		// Extrapolate estimated completion time
 		if (downloadSize && xferRate) {
-			int n = downloadSize / xferRate; // estimated time for entire d / l in secs
-
-			// We do it in K(/ 1024) because we'd overflow around 4MB
+			int n = downloadSize / xferRate; // estimated time for entire d/l in secs
+			// We do it in K (/1024) because we'd overflow around 4MB
 			n = (n - (((downloadCount / 1024) * n) / (downloadSize / 1024))) * 1000;
 
 			UI_PrintTime(dlTimeBuf, sizeof dlTimeBuf, n);
@@ -157,7 +160,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName) {
 		}
 
 		if (xferRate) {
-			UI_DrawProportionalString(leftWidth, 224, va("%s / Sec", xferRateBuf), style, color_white);
+			UI_DrawProportionalString(leftWidth, 224, va("%s/Sec", xferRateBuf), style, color_white);
 		}
 	}
 }
@@ -166,8 +169,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName) {
 =======================================================================================================================================
 UI_DrawConnectScreen
 
-This will also be overlaid on the cgame info screen during loading
-to prevent it from blinking away too rapidly on local or lan games.
+This will also be overlaid on the cgame info screen during loading to prevent it from blinking away too rapidly on local or lan games.
 =======================================================================================================================================
 */
 void UI_DrawConnectScreen(qboolean overlay) {
@@ -190,12 +192,10 @@ void UI_DrawConnectScreen(qboolean overlay) {
 	}
 
 	UI_DrawProportionalString(320, 64, va("Connecting to %s", cstate.servername), UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color);
-	// UI_DrawProportionalString(320, 96, "Press Esc to abort", UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color);
+	//UI_DrawProportionalString(320, 96, "Press Esc to abort", UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color);
 	// display global MOTD at bottom
-	UI_DrawProportionalString(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 32, 
-		Info_ValueForKey(cstate.updateInfoString, "motd"), UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color);
-
-	// print any server info(server full, bad version, etc)
+	UI_DrawProportionalString(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 32, Info_ValueForKey(cstate.updateInfoString, "motd"), UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color);
+	// print any server info (server full, bad version, etc.)
 	if (cstate.connState < CA_CONNECTED) {
 		UI_DrawProportionalString_AutoWrapped(320, 192, 630, 20, cstate.messageString, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color);
 	}

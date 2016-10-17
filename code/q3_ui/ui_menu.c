@@ -25,32 +25,29 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-MAIN MENU
+	MAIN MENU
+
 =======================================================================================================================================
 */
 
-
 #include "ui_local.h"
 
-
-#define ID_SINGLEPLAYER			10
-#define ID_MULTIPLAYER			11
-#define ID_SETUP				12
-#define ID_DEMOS				13
-#define ID_CINEMATICS			14
+#define ID_SINGLEPLAYER	10
+#define ID_MULTIPLAYER	11
+#define ID_SETUP		12
+#define ID_DEMOS		13
+#define ID_CINEMATICS	14
 #ifndef MISSIONPACK
-#define ID_TEAMARENA			15
+#define ID_TEAMARENA	15
 #endif
-#define ID_MODS					16
-#define ID_EXIT					17
+#define ID_MODS			16
+#define ID_EXIT			17
 
 #define MAIN_BANNER_MODEL "models/mapobjects/banner/banner5.md3"
-#define MAIN_MENU_VERTICAL_SPACING		34
-
+#define MAIN_MENU_VERTICAL_SPACING 34
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s singleplayer;
 	menutext_s multiplayer;
 	menutext_s setup;
@@ -64,13 +61,13 @@ typedef struct {
 	qhandle_t bannerModel;
 } mainmenu_t;
 
-
 static mainmenu_t s_main;
 
 typedef struct {
 	menuframework_s menu;
 	char errorMessage[4096];
 } errorMessage_t;
+
 static errorMessage_t s_errorMessage;
 
 /*
@@ -100,33 +97,33 @@ void Main_MenuEvent(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_SINGLEPLAYER:
-		UI_SPLevelMenu();
-		break;
-	case ID_MULTIPLAYER:
-		UI_ArenaServersMenu();
-		break;
-	case ID_SETUP:
-		UI_SetupMenu();
-		break;
-	case ID_DEMOS:
-		UI_DemosMenu();
-		break;
-	case ID_CINEMATICS:
-		UI_CinematicsMenu();
-		break;
-	case ID_MODS:
-		UI_ModsMenu();
-		break;
+		case ID_SINGLEPLAYER:
+			UI_SPLevelMenu();
+			break;
+		case ID_MULTIPLAYER:
+			UI_ArenaServersMenu();
+			break;
+		case ID_SETUP:
+			UI_SetupMenu();
+			break;
+		case ID_DEMOS:
+			UI_DemosMenu();
+			break;
+		case ID_CINEMATICS:
+			UI_CinematicsMenu();
+			break;
+		case ID_MODS:
+			UI_ModsMenu();
+			break;
 #ifndef MISSIONPACK
-	case ID_TEAMARENA:
-		trap_Cvar_Set("fs_game", BASETA);
-		trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart;");
-		break;
+		case ID_TEAMARENA:
+			trap_Cvar_Set("fs_game", BASETA);
+			trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart;");
+			break;
 #endif
-	case ID_EXIT:
-		UI_ConfirmMenu("EXIT GAME?", 0, MainMenu_ExitAction);
-		break;
+		case ID_EXIT:
+			UI_ConfirmMenu("EXIT GAME?", 0, MainMenu_ExitAction);
+			break;
 	}
 }
 
@@ -139,7 +136,13 @@ void MainMenu_Cache(void) {
 	s_main.bannerModel = trap_R_RegisterModel(MAIN_BANNER_MODEL);
 }
 
+/*
+=======================================================================================================================================
+ErrorMessage_Key
+=======================================================================================================================================
+*/
 sfxHandle_t ErrorMessage_Key(int key) {
+
 	trap_Cvar_Set("com_errorMessage", "");
 	UI_MainMenu();
 	return (menu_null_sound);
@@ -148,7 +151,8 @@ sfxHandle_t ErrorMessage_Key(int key) {
 /*
 =======================================================================================================================================
 Main_MenuDraw
-TTimo: this function is common to the main menu and errorMessage menu
+
+TTimo: this function is common to the main menu and errorMessage menu.
 =======================================================================================================================================
 */
 static void Main_MenuDraw(void) {
@@ -159,8 +163,8 @@ static void Main_MenuDraw(void) {
 	float adjust;
 	float x, y, w, h;
 	vec4_t color = {0.5, 0, 0, 1};
-	// setup the refdef
 
+	// setup the refdef
 	memset(&refdef, 0, sizeof(refdef));
 
 	refdef.rdflags = RDF_NOWORLDMODEL;
@@ -171,16 +175,18 @@ static void Main_MenuDraw(void) {
 	y = 0;
 	w = 640;
 	h = 120;
+
 	CG_AdjustFrom640(&x, &y, &w, &h);
+
 	refdef.x = x;
 	refdef.y = y;
 	refdef.width = w;
 	refdef.height = h;
 
 	adjust = 0; // JDC: Kenneth asked me to stop this 1.0 * sin((float)uis.realtime / 1000);
+
 	refdef.fov_x = 60 + adjust;
 	refdef.fov_y = 19.6875 + adjust;
-
 	refdef.time = uis.realtime;
 
 	origin[0] = 300;
@@ -189,20 +195,23 @@ static void Main_MenuDraw(void) {
 
 	trap_R_ClearScene();
 	// add the model
-
 	memset(&ent, 0, sizeof(ent));
 
 	adjust = 5.0 * sin((float)uis.realtime / 5000);
+
 	VectorSet(angles, 0, 180 + adjust, 0);
 	AnglesToAxis(angles, ent.axis);
+
 	ent.hModel = s_main.bannerModel;
+
 	VectorCopy(origin, ent.origin);
 	VectorCopy(origin, ent.lightingOrigin);
+
 	ent.renderfx = RF_LIGHTING_ORIGIN|RF_NOSHADOW;
+
 	VectorCopy(ent.origin, ent.oldorigin);
 
 	CG_AddRefEntityWithMinLight(&ent);
-
 	trap_R_RenderScene(&refdef);
 
 	if (strlen(s_errorMessage.errorMessage)) {
@@ -219,8 +228,6 @@ static void Main_MenuDraw(void) {
 		UI_DrawString(320, 450, "Quake III Arena(c) 1999-2000, Id Software, Inc. All Rights Reserved", UI_CENTER|UI_SMALLFONT, color);
 	}
 }
-
-
 #ifndef MISSIONPACK
 /*
 =======================================================================================================================================
@@ -231,7 +238,7 @@ static qboolean UI_TeamArenaExists(void) {
 	int numdirs;
 	char dirlist[2048];
 	char *dirptr;
-  char *descptr;
+	char *descptr;
 	int i;
 	int dirlen;
 
@@ -240,26 +247,23 @@ static qboolean UI_TeamArenaExists(void) {
 
 	for (i = 0; i < numdirs; i++) {
 		dirlen = strlen(dirptr) + 1;
-    descptr = dirptr + dirlen;
+		descptr = dirptr + dirlen;
 
 		if (Q_stricmp(dirptr, BASETA) == 0) {
 			return qtrue;
 		}
-    dirptr += dirlen + strlen(descptr) + 1;
+
+		dirptr += dirlen + strlen(descptr) + 1;
 	}
 
 	return qfalse;
 }
 #endif
-
-
 /*
 =======================================================================================================================================
 UI_MainMenu
 
-The main menu only comes up when not in a game, 
-so make sure that the attract loop server is down
-and that local cinematics are killed
+The main menu only comes up when not in a game, so make sure that the attract loop server is down and that local cinematics are killed.
 =======================================================================================================================================
 */
 void UI_MainMenu(void) {
@@ -283,11 +287,11 @@ void UI_MainMenu(void) {
 		s_errorMessage.menu.key = ErrorMessage_Key;
 		s_errorMessage.menu.fullscreen = qtrue;
 		s_errorMessage.menu.wrapAround = qtrue;
-		s_errorMessage.menu.showlogo = qtrue;		
+		s_errorMessage.menu.showlogo = qtrue;
 
 		uis.menusp = 0;
-		UI_PushMenu(&s_errorMessage.menu);
 
+		UI_PushMenu(&s_errorMessage.menu);
 		return;
 	}
 
@@ -403,9 +407,9 @@ void UI_MainMenu(void) {
 		Menu_AddItem(&s_main.menu, &s_main.mods);
 	}
 
-	Menu_AddItem(&s_main.menu, &s_main.exit);             
+	Menu_AddItem(&s_main.menu, &s_main.exit);
 
 	uis.menusp = 0;
+
 	UI_PushMenu(&s_main.menu);
-		
 }

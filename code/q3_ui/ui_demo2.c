@@ -54,7 +54,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define ARROWS_WIDTH 128
 #define ARROWS_HEIGHT 48
 
-
 typedef struct {
 	menuframework_s menu;
 	menutext_s banner;
@@ -70,6 +69,7 @@ typedef struct {
 	char names[NAMEBUFSIZE];
 	char *demolist[MAX_DEMOS];
 } demos_t;
+
 static demos_t s_demos;
 
 /*
@@ -249,6 +249,7 @@ Demos_Cache
 =======================================================================================================================================
 */
 void Demos_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_BACK0);
 	trap_R_RegisterShaderNoMip(ART_BACK1);
 	trap_R_RegisterShaderNoMip(ART_GO0);
@@ -266,6 +267,7 @@ UI_DemosMenu
 =======================================================================================================================================
 */
 void UI_DemosMenu(void) {
+
 	Demos_MenuInit();
 	UI_PushMenu(&s_demos.menu);
 }

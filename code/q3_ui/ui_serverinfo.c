@@ -30,12 +30,15 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define SERVERINFO_BACK1 "menu/art/back_1"
 
 static char *serverinfo_artlist[] = {
-	SERVERINFO_FRAMEL, 
-	SERVERINFO_FRAMER, SERVERINFO_BACK0, SERVERINFO_BACK1, NULL
+	SERVERINFO_FRAMEL,
+	SERVERINFO_FRAMER,
+	SERVERINFO_BACK0,
+	SERVERINFO_BACK1,
+	NULL
 };
 
-#define ID_ADD	 100
-#define ID_BACK	 101
+#define ID_ADD	100
+#define ID_BACK	101
 
 typedef struct {
 	menuframework_s menu;
@@ -47,13 +50,14 @@ typedef struct {
 	char info[MAX_INFO_STRING];
 	int numlines;
 } serverinfo_t;
+
 static serverinfo_t s_serverinfo;
 
 /*
 =======================================================================================================================================
 Favorites_Add
 
-Add current server to favorites
+Add current server to favorites.
 =======================================================================================================================================
 */
 void Favorites_Add(void) {
@@ -78,12 +82,14 @@ void Favorites_Add(void) {
 			return;
 		}
 		// use first empty available slot
-		if (!adrstr[0] && !best)
+		if (!adrstr[0] && !best) {
 			best = i + 1;
+		}
 	}
 
-	if (best)
+	if (best) {
 		trap_Cvar_Set(va("server%d", best), serverbuff);
+	}
 }
 
 /*
@@ -92,6 +98,7 @@ ServerInfo_Event
 =======================================================================================================================================
 */
 static void ServerInfo_Event(void *ptr, int event) {
+
 	switch (((menucommon_s *)ptr)->id) {
 		case ID_ADD:
 			if (event != QM_ACTIVATED) {
@@ -122,7 +129,7 @@ static void ServerInfo_MenuDraw(void) {
 	char value[MAX_INFO_VALUE];
 	int i = 0, y;
 
-	y = SCREEN_HEIGHT / 2 - s_serverinfo.numlines *(SMALLCHAR_HEIGHT) / 2 - 20;
+	y = SCREEN_HEIGHT / 2 - s_serverinfo.numlines * (SMALLCHAR_HEIGHT) / 2 - 20;
 	s = s_serverinfo.info;
 
 	while (s && i < s_serverinfo.numlines) {
@@ -180,6 +187,7 @@ void UI_ServerInfoMenu(void) {
 	const char *s;
 	char key[MAX_INFO_KEY];
 	char value[MAX_INFO_VALUE];
+
 	// zero set all our globals
 	memset(&s_serverinfo, 0, sizeof(serverinfo_t));
 
@@ -253,8 +261,9 @@ void UI_ServerInfoMenu(void) {
 		s_serverinfo.numlines++;
 	}
 
-	if (s_serverinfo.numlines > 16)
+	if (s_serverinfo.numlines > 16) {
 		s_serverinfo.numlines = 16;
+	}
 
 	Menu_AddItem(&s_serverinfo.menu, (void *)&s_serverinfo.banner);
 	Menu_AddItem(&s_serverinfo.menu, (void *)&s_serverinfo.framel);
@@ -264,5 +273,3 @@ void UI_ServerInfoMenu(void) {
 
 	UI_PushMenu(&s_serverinfo.menu);
 }
-
-

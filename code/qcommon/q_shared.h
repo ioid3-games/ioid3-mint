@@ -73,7 +73,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #else
 #define Q_EXPORT
 #endif
-
 /**************************************************************************************************************************************
  VM Considerations
 

@@ -100,7 +100,6 @@ void ExpandWildcards(int *argc, char ***argv) {
 void ExpandWildcards(int *argc, char ***argv) {
 }
 #endif
-
 /*
 =======================================================================================================================================
 Error

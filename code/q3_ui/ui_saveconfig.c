@@ -25,12 +25,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-SAVE CONFIG MENU
+	SAVE CONFIG MENU
+
 =======================================================================================================================================
 */
 
 #include "ui_local.h"
-
 
 #define ART_BACK0 "menu/art/back_0"
 #define ART_BACK1 "menu/art/back_1"
@@ -38,20 +38,19 @@ SAVE CONFIG MENU
 #define ART_SAVE1 "menu/art/save_1"
 #define ART_BACKGROUND "menu/art/cut_frame"
 
-#define ID_NAME			10
-#define ID_BACK			11
-#define ID_SAVE			12
-
+#define ID_NAME	10
+#define ID_BACK	11
+#define ID_SAVE	12
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s background;
 	menufield_s savename;
 	menubitmap_s back;
 	menubitmap_s save;
 } saveConfig_t;
+
 static saveConfig_t saveConfig;
 
 /*
@@ -120,9 +119,11 @@ UI_SaveConfigMenu_Init
 =======================================================================================================================================
 */
 static void UI_SaveConfigMenu_Init(void) {
+
 	memset(&saveConfig, 0, sizeof(saveConfig));
 
 	UI_SaveConfigMenu_Cache();
+
 	saveConfig.menu.wrapAround = qtrue;
 	saveConfig.menu.fullscreen = qtrue;
 
@@ -188,6 +189,7 @@ UI_SaveConfigMenu_Cache
 =======================================================================================================================================
 */
 void UI_SaveConfigMenu_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_BACK0);
 	trap_R_RegisterShaderNoMip(ART_BACK1);
 	trap_R_RegisterShaderNoMip(ART_SAVE0);
@@ -201,6 +203,7 @@ UI_SaveConfigMenu
 =======================================================================================================================================
 */
 void UI_SaveConfigMenu(void) {
+
 	UI_SaveConfigMenu_Init();
 	UI_PushMenu(&saveConfig.menu);
 }

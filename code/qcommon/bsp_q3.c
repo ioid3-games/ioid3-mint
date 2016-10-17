@@ -41,96 +41,96 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define DARKS_BSP_VERSION		666 // Dark Salvation
 
 typedef struct {
-	int		fileofs, filelen;
+	int fileofs, filelen;
 } lump_t;
 
-#define	LUMP_ENTITIES		0
-#define	LUMP_SHADERS		1
-#define	LUMP_PLANES			2
-#define	LUMP_NODES			3
-#define	LUMP_LEAFS			4
-#define	LUMP_LEAFSURFACES	5
-#define	LUMP_LEAFBRUSHES	6
-#define	LUMP_MODELS			7
-#define	LUMP_BRUSHES		8
-#define	LUMP_BRUSHSIDES		9
-#define	LUMP_DRAWVERTS		10
-#define	LUMP_DRAWINDEXES	11
-#define	LUMP_FOGS			12
-#define	LUMP_SURFACES		13
-#define	LUMP_LIGHTMAPS		14
-#define	LUMP_LIGHTGRID		15
-#define	LUMP_VISIBILITY		16
-#define	HEADER_LUMPS		17
+#define LUMP_ENTITIES		0
+#define LUMP_SHADERS		1
+#define LUMP_PLANES			2
+#define LUMP_NODES			3
+#define LUMP_LEAFS			4
+#define LUMP_LEAFSURFACES	5
+#define LUMP_LEAFBRUSHES	6
+#define LUMP_MODELS			7
+#define LUMP_BRUSHES		8
+#define LUMP_BRUSHSIDES		9
+#define LUMP_DRAWVERTS		10
+#define LUMP_DRAWINDEXES	11
+#define LUMP_FOGS			12
+#define LUMP_SURFACES		13
+#define LUMP_LIGHTMAPS		14
+#define LUMP_LIGHTGRID		15
+#define LUMP_VISIBILITY		16
+#define HEADER_LUMPS		17
 
 typedef struct {
-	int			ident;
-	int			version;
+	int ident;
+	int version;
 
 	lump_t		lumps[HEADER_LUMPS];
 } dheader_t;
 
 typedef struct {
-	float		mins[3], maxs[3];
-	int			firstSurface, numSurfaces;
-	int			firstBrush, numBrushes;
+	float mins[3], maxs[3];
+	int firstSurface, numSurfaces;
+	int firstBrush, numBrushes;
 } realDmodel_t;
 
 typedef struct {
 	char		shader[MAX_QPATH];
-	int			surfaceFlags;
-	int			contentFlags;
+	int surfaceFlags;
+	int contentFlags;
 } realDshader_t;
 
 // planes x^1 is allways the opposite of plane x
 
 typedef struct {
-	float		normal[3];
-	float		dist;
+	float normal[3];
+	float dist;
 } realDplane_t;
 
 typedef struct {
-	int			planeNum;
-	int			children[2];	// negative numbers are -(leafs+1), not nodes
-	int			mins[3];		// for frustom culling
-	int			maxs[3];
+	int planeNum;
+	int children[2];	// negative numbers are -(leafs+1), not nodes
+	int mins[3];		// for frustom culling
+	int maxs[3];
 } realDnode_t;
 
 typedef struct {
-	int			cluster;			// -1 = opaque cluster (do I still store these?)
-	int			area;
+	int cluster;			// -1 = opaque cluster (do I still store these?)
+	int area;
 
-	int			mins[3];			// for frustum culling
-	int			maxs[3];
+	int mins[3];			// for frustum culling
+	int maxs[3];
 
-	int			firstLeafSurface;
-	int			numLeafSurfaces;
+	int firstLeafSurface;
+	int numLeafSurfaces;
 
-	int			firstLeafBrush;
-	int			numLeafBrushes;
+	int firstLeafBrush;
+	int numLeafBrushes;
 } realDleaf_t;
 
 typedef struct {
-	int			planeNum;			// positive plane side faces out of the leaf
-	int			shaderNum;
+	int planeNum;			// positive plane side faces out of the leaf
+	int shaderNum;
 } realDbrushside_t;
 
 typedef struct {
-	int			firstSide;
-	int			numSides;
-	int			shaderNum;		// the shader that determines the contents flags
+	int firstSide;
+	int numSides;
+	int shaderNum;		// the shader that determines the contents flags
 } realDbrush_t;
 
 typedef struct {
 	char		shader[MAX_QPATH];
-	int			brushNum;
-	int			visibleSide;	// the brush side that ray tests need to clip against (-1 == none)
+	int brushNum;
+	int visibleSide;	// the brush side that ray tests need to clip against (-1 == none)
 } realDfog_t;
 
 typedef struct {
 	vec3_t		xyz;
-	float		st[2];
-	float		lightmap[2];
+	float st[2];
+	float lightmap[2];
 	vec3_t		normal;
 	byte		color[4];
 } realDrawVert_t;
@@ -148,25 +148,25 @@ typedef enum {
 #endif
 
 typedef struct {
-	int			shaderNum;
-	int			fogNum;
-	int			surfaceType;
+	int shaderNum;
+	int fogNum;
+	int surfaceType;
 
-	int			firstVert;
-	int			numVerts; // ydnar: num verts + foliage origins (for cleaner lighting code in q3map)
+	int firstVert;
+	int numVerts; // ydnar: num verts + foliage origins (for cleaner lighting code in q3map)
 
-	int			firstIndex;
-	int			numIndexes;
+	int firstIndex;
+	int numIndexes;
 
-	int			lightmapNum;
-	int			lightmapX, lightmapY;
-	int			lightmapWidth, lightmapHeight;
+	int lightmapNum;
+	int lightmapX, lightmapY;
+	int lightmapWidth, lightmapHeight;
 
 	vec3_t		lightmapOrigin;
 	vec3_t		lightmapVecs[3];	// for patches, [0] and [1] are lodbounds
 
-	int			patchWidth; // ydnar: num foliage instances
-	int			patchHeight; // ydnar: num foliage mesh verts
+	int patchWidth; // ydnar: num foliage instances
+	int patchHeight; // ydnar: num foliage mesh verts
 } realDsurface_t;
 
 #define VIS_HEADER 8
@@ -175,7 +175,7 @@ typedef struct {
 #define LIGHTING_GRIDSIZE_Y 64
 #define LIGHTING_GRIDSIZE_Z 128
 
-#define	SUBDIVIDE_DISTANCE	16	//4	// never more than this units away from curve
+#define SUBDIVIDE_DISTANCE	16	//4	// never more than this units away from curve
 
 /****************************************************
 */
@@ -235,14 +235,14 @@ static void AddLump( dheader_t *header, int *filePos, int lump, int elements, in
 }
 
 static void *GetLump( dheader_t *header, const void *src, int lump ) {
-	return (void*)( (byte*) src + header->lumps[ lump ].fileofs );
+	return (void *)( (byte*) src + header->lumps[ lump ].fileofs );
 }
 
 /****************************************************
 */
 
 bspFile_t *BSP_LoadQ3( const bspFormat_t *format, const char *name, const void *data, int length ) {
-	int				i, j, k;
+	int i, j, k;
 	dheader_t		header;
 	bspFile_t		*bsp;
 
@@ -515,11 +515,11 @@ bspFile_t *BSP_LoadQ3( const bspFormat_t *format, const char *name, const void *
 // ZTM: TODO: convert ET foliage surfaces if Q3 format? how to check if Q3 or RTCW and not ET?
 // ZTM: TODO: handle different default light grid sizes?
 int BSP_SaveQ3( const bspFormat_t *format, const char *name, const bspFile_t *bsp, void **dataOut ) {
-	int				i, j, k;
+	int i, j, k;
 	dheader_t		header;
 	byte			*data;
-	int				dataLength;
-	int				numGridPoints;
+	int dataLength;
+	int numGridPoints;
 
 	*dataOut = NULL;
 

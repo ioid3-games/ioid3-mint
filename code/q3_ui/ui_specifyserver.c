@@ -24,9 +24,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "ui_local.h"
 
-/*********************************************************************************
-	SPECIFY SERVER
- ******************************************************************************* **/
+/**************************************************************************************************************************************
+ SPECIFY SERVER.
+**************************************************************************************************************************************/
 
 #define SPECIFYSERVER_FRAMEL "menu/art/frame2_l"
 #define SPECIFYSERVER_FRAMER "menu/art/frame1_r"
@@ -39,9 +39,13 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define ID_SPECIFYSERVERGO		103
 
 static char *specifyserver_artlist[] = {
-	SPECIFYSERVER_FRAMEL, SPECIFYSERVER_FRAMER, SPECIFYSERVER_BACK0, 
-	SPECIFYSERVER_BACK1, 
-	SPECIFYSERVER_FIGHT0, SPECIFYSERVER_FIGHT1, NULL
+	SPECIFYSERVER_FRAMEL,
+	SPECIFYSERVER_FRAMER,
+	SPECIFYSERVER_BACK0,
+	SPECIFYSERVER_BACK1,
+	SPECIFYSERVER_FIGHT0,
+	SPECIFYSERVER_FIGHT1,
+	NULL
 };
 
 typedef struct {
@@ -54,6 +58,7 @@ typedef struct {
 	menubitmap_s go;
 	menubitmap_s back;
 } specifyserver_t;
+
 static specifyserver_t s_specifyserver;
 
 /*
@@ -73,8 +78,9 @@ static void SpecifyServer_Event(void *ptr, int event) {
 			if (s_specifyserver.domain.field.buffer[0]) {
 				Q_strncpyz(buff, MField_Buffer(&s_specifyserver.domain.field), sizeof(buff));
 
-				if (s_specifyserver.port.field.buffer[0])
+				if (s_specifyserver.port.field.buffer[0]) {
 					Q_strcat(buff, sizeof(buff), va(":%s", MField_Buffer(&s_specifyserver.port.field)));
+				}
 
 				trap_Cmd_ExecuteText(EXEC_APPEND, va("connect %s\n", buff));
 			}
@@ -201,7 +207,7 @@ UI_SpecifyServerMenu
 =======================================================================================================================================
 */
 void UI_SpecifyServerMenu(void) {
+
 	SpecifyServer_MenuInit();
 	UI_PushMenu(&s_specifyserver.menu);
 }
-

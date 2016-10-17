@@ -91,11 +91,11 @@ typedef struct {
 	char messageString[MAX_STRING_CHARS];
 } uiClientState_t;
 // Used by LAN_CompareServers
-#define SORT_HOST			0
-#define SORT_MAP			1
-#define SORT_CLIENTS		2
-#define SORT_GAMETYPE		3
-#define SORT_PING			4
+#define SORT_HOST		0
+#define SORT_MAP		1
+#define SORT_CLIENTS	2
+#define SORT_GAMETYPE	3
+#define SORT_PING		4
 #define SORT_HUMANS			5
 #define SORT_BOTS			6
 #define SORT_MAXCLIENTS		7
@@ -375,7 +375,7 @@ typedef enum {
 	// reliableCommandSequence will be 0 on fresh loads, but higher for
 	// demos, tourney restarts, or vid_restarts
 	CG_SHUTDOWN,
-// void (*CG_Shutdown) (void);
+// void (*CG_Shutdown)(void);
 	// oportunity to flush and close any open files
 	CG_CONSOLE_COMMAND,
 // qboolean(*CG_ConsoleCommand) (connstate_t state, int realTime);
@@ -393,7 +393,7 @@ typedef enum {
 	CG_LAST_ATTACKER,
 // int (*CG_LastAttacker)(int localPlayerNum);
 	CG_VOIP_STRING,
-//  char *(*CG_VoIPString) (void);
+//  char *(*CG_VoIPString)(void);
 	// pass voip target token unknown by client to cgame to convert into playerNums
 	// use Cmd_Argc() / Cmd_Argv() to read the target token, return a
 	// string of comma - delimited playerNums based on target token or

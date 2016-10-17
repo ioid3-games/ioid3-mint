@@ -35,40 +35,47 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define MODEL_ARROWSL "menu/art/gs_arrows_l"
 #define MODEL_ARROWSR "menu/art/gs_arrows_r"
 
-#define LOW_MEMORY			(5 * 1024 * 1024)
+#define LOW_MEMORY (5 * 1024 * 1024)
 
 static char *playermodel_artlist[] = {
-	MODEL_BACK0, 
-	MODEL_BACK1, 
-	MODEL_SELECT, MODEL_SELECTED, MODEL_FRAMEL, MODEL_FRAMER, MODEL_PORTS, 
-	MODEL_ARROWS, MODEL_ARROWSL, MODEL_ARROWSR, NULL
+	MODEL_BACK0,
+	MODEL_BACK1,
+	MODEL_SELECT,
+	MODEL_SELECTED,
+	MODEL_FRAMEL,
+	MODEL_FRAMER,
+	MODEL_PORTS,
+	MODEL_ARROWS,
+	MODEL_ARROWSL,
+	MODEL_ARROWSR,
+	NULL
 };
 
-#define PLAYERGRID_COLS		4
-#define PLAYERGRID_ROWS		4
-#define MAX_MODELSPERPAGE	(PLAYERGRID_ROWS * PLAYERGRID_COLS)
+#define PLAYERGRID_COLS 4
+#define PLAYERGRID_ROWS 4
 
-#define MAX_PLAYERMODELS	256
+#define MAX_MODELSPERPAGE (PLAYERGRID_ROWS * PLAYERGRID_COLS)
+#define MAX_PLAYERMODELS 256
 
-#define ID_PLAYERPIC0		0
-#define ID_PLAYERPIC1		1
-#define ID_PLAYERPIC2		2
-#define ID_PLAYERPIC3		3
-#define ID_PLAYERPIC4		4
-#define ID_PLAYERPIC5		5
-#define ID_PLAYERPIC6		6
-#define ID_PLAYERPIC7		7
-#define ID_PLAYERPIC8		8
-#define ID_PLAYERPIC9		9
-#define ID_PLAYERPIC10		10
-#define ID_PLAYERPIC11		11
-#define ID_PLAYERPIC12		12
-#define ID_PLAYERPIC13		13
-#define ID_PLAYERPIC14		14
-#define ID_PLAYERPIC15		15
-#define ID_PREVPAGE			100
-#define ID_NEXTPAGE			101
-#define ID_BACK				102
+#define ID_PLAYERPIC0	0
+#define ID_PLAYERPIC1	1
+#define ID_PLAYERPIC2	2
+#define ID_PLAYERPIC3	3
+#define ID_PLAYERPIC4	4
+#define ID_PLAYERPIC5	5
+#define ID_PLAYERPIC6	6
+#define ID_PLAYERPIC7	7
+#define ID_PLAYERPIC8	8
+#define ID_PLAYERPIC9	9
+#define ID_PLAYERPIC10	10
+#define ID_PLAYERPIC11	11
+#define ID_PLAYERPIC12	12
+#define ID_PLAYERPIC13	13
+#define ID_PLAYERPIC14	14
+#define ID_PLAYERPIC15	15
+#define ID_PREVPAGE		100
+#define ID_NEXTPAGE		101
+#define ID_BACK			102
 
 typedef struct {
 	menuframework_s menu;
@@ -97,6 +104,7 @@ typedef struct {
 	int localPlayerNum;
 	char bannerString[32];
 } playermodel_t;
+
 static playermodel_t s_playermodel;
 
 /*
@@ -112,24 +120,23 @@ static void PlayerModel_UpdateGrid(void) {
 
 	for (i = 0; i < PLAYERGRID_ROWS * PLAYERGRID_COLS; i++, j++) {
 		if (j < s_playermodel.nummodels) {
-			// model / skin portrait
- 			s_playermodel.pics[i].generic.name = s_playermodel.modelnames[j];
+			// model/skin portrait
+			s_playermodel.pics[i].generic.name = s_playermodel.modelnames[j];
 			s_playermodel.picbuttons[i].generic.flags &= ~QMF_INACTIVE;
 		} else {
 			// dead slot
- 			s_playermodel.pics[i].generic.name = NULL;
+			s_playermodel.pics[i].generic.name = NULL;
 			s_playermodel.picbuttons[i].generic.flags |= QMF_INACTIVE;
 		}
 
- 		s_playermodel.pics[i].generic.flags   &= ~QMF_HIGHLIGHT;
- 		s_playermodel.pics[i].shader = 0;
- 		s_playermodel.picbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
+		s_playermodel.pics[i].generic.flags &= ~QMF_HIGHLIGHT;
+		s_playermodel.pics[i].shader = 0;
+		s_playermodel.picbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
 	}
 
 	if (s_playermodel.selectedmodel / MAX_MODELSPERPAGE == s_playermodel.modelpage) {
 		// set selected model
 		i = s_playermodel.selectedmodel % MAX_MODELSPERPAGE;
-
 		s_playermodel.pics[i].generic.flags |= QMF_HIGHLIGHT;
 		s_playermodel.picbuttons[i].generic.flags &= ~QMF_PULSEIFFOCUS;
 	}
@@ -147,7 +154,7 @@ static void PlayerModel_UpdateGrid(void) {
 			s_playermodel.right.generic.flags |= QMF_INACTIVE;
 		}
 	} else {
-		// hide left / right markers
+		// hide left/right markers
 		s_playermodel.left.generic.flags |= QMF_INACTIVE;
 		s_playermodel.right.generic.flags |= QMF_INACTIVE;
 	}
@@ -167,6 +174,7 @@ static void PlayerModel_UpdateModel(void) {
 	viewangles[YAW] = 180 - 30;
 	viewangles[PITCH] = 0;
 	viewangles[ROLL] = 0;
+
 	VectorClear(moveangles);
 
 	UI_PlayerInfo_SetModel(&s_playermodel.playerinfo, s_playermodel.modelskin, s_playermodel.headmodelskin, NULL);
@@ -179,6 +187,7 @@ PlayerModel_SaveChanges
 =======================================================================================================================================
 */
 static void PlayerModel_SaveChanges(void) {
+
 	trap_Cvar_Set(Com_LocalPlayerCvarName(s_playermodel.localPlayerNum, "model"), s_playermodel.modelskin);
 	trap_Cvar_Set(Com_LocalPlayerCvarName(s_playermodel.localPlayerNum, "headmodel"), s_playermodel.headmodelskin);
 	trap_Cvar_Set(Com_LocalPlayerCvarName(s_playermodel.localPlayerNum, "team_model"), s_playermodel.modelskin);
@@ -237,14 +246,14 @@ static sfxHandle_t PlayerModel_MenuKey(int key) {
 				if (picnum > 0) {
 					Menu_SetCursor(&s_playermodel.menu, s_playermodel.menu.cursor - 1);
 					return (menu_move_sound);
-					
 				} else if (s_playermodel.modelpage > 0) {
 					s_playermodel.modelpage--;
 					Menu_SetCursor(&s_playermodel.menu, s_playermodel.menu.cursor + 15);
 					PlayerModel_UpdateGrid();
 					return (menu_move_sound);
-				} else
+				} else {
 					return (menu_buzz_sound);
+				}
 			}
 
 			break;
@@ -257,18 +266,17 @@ static sfxHandle_t PlayerModel_MenuKey(int key) {
 				if ((picnum < 15) && (s_playermodel.modelpage * MAX_MODELSPERPAGE + picnum + 1 < s_playermodel.nummodels)) {
 					Menu_SetCursor(&s_playermodel.menu, s_playermodel.menu.cursor + 1);
 					return (menu_move_sound);
-				}					
-				else if ((picnum == 15) && (s_playermodel.modelpage < s_playermodel.numpages - 1)) {
+				} else if ((picnum == 15) && (s_playermodel.modelpage < s_playermodel.numpages - 1)) {
 					s_playermodel.modelpage++;
 					Menu_SetCursor(&s_playermodel.menu, s_playermodel.menu.cursor - 15);
 					PlayerModel_UpdateGrid();
 					return (menu_move_sound);
-				} else
+				} else {
 					return (menu_buzz_sound);
+				}
 			}
 
 			break;
-
 		case K_MOUSE2:
 		case K_ESCAPE:
 			PlayerModel_SaveChanges();
@@ -296,20 +304,21 @@ static void PlayerModel_PicEvent(void *ptr, int event) {
 
 	for (i = 0; i < PLAYERGRID_ROWS * PLAYERGRID_COLS; i++) {
 		// reset
- 		s_playermodel.pics[i].generic.flags   &= ~QMF_HIGHLIGHT;
- 		s_playermodel.picbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
+		s_playermodel.pics[i].generic.flags &= ~QMF_HIGHLIGHT;
+		s_playermodel.picbuttons[i].generic.flags |= QMF_PULSEIFFOCUS;
 	}
 	// set selected
 	i = ((menucommon_s *)ptr)->id - ID_PLAYERPIC0;
+
 	s_playermodel.pics[i].generic.flags |= QMF_HIGHLIGHT;
 	s_playermodel.picbuttons[i].generic.flags &= ~QMF_PULSEIFFOCUS;
 	// get model and strip icon_
 	modelnum = s_playermodel.modelpage * MAX_MODELSPERPAGE + i;
-	buffptr = s_playermodel.modelnames[modelnum] + strlen("models/players/ ");
+	buffptr = s_playermodel.modelnames[modelnum] + strlen("models/players/");
 	pdest = strstr(buffptr, "icon_");
 
 	if (pdest) {
-		// track the whole model / skin name
+		// track the whole model/skin name
 		Q_strncpyz(s_playermodel.modelskin, buffptr, pdest - buffptr + 1);
 		Q_strcat(s_playermodel.modelskin, sizeof(s_playermodel.modelskin), pdest + 5);
 
@@ -317,15 +326,19 @@ static void PlayerModel_PicEvent(void *ptr, int event) {
 		// separate the model name
 		maxlen = pdest - buffptr;
 
-		if (maxlen > 16)
+		if (maxlen > 16) {
 			maxlen = 16;
+		}
+
 		Q_strncpyz(s_playermodel.modelname.string, buffptr, maxlen);
 		Q_strupr(s_playermodel.modelname.string);
 		// separate the skin name
 		maxlen = strlen(pdest + 5) + 1;
 
-		if (maxlen > 16)
+		if (maxlen > 16) {
 			maxlen = 16;
+		}
+
 		Q_strncpyz(s_playermodel.skinname.string, pdest + 5, maxlen);
 		Q_strupr(s_playermodel.skinname.string);
 
@@ -385,24 +398,27 @@ static void PlayerModel_BuildList(void) {
 	for (i = 0; i < numdirs && s_playermodel.nummodels < MAX_PLAYERMODELS; i++, dirptr += dirlen + 1) {
 		dirlen = strlen(dirptr);
 
-		if (dirlen && dirptr[dirlen - 1] == '/') dirptr[dirlen - 1] = '\0';
+		if (dirlen && dirptr[dirlen - 1] == '/') {
+			dirptr[dirlen - 1] = '\0';
+		}
 
 		if (!strcmp(dirptr, ".") || !strcmp(dirptr, "..")) {
 			continue;
 		}
 		// iterate all skin files in directory
-		numfiles = trap_FS_GetFileList(va("models/players/ %s", dirptr), "$images", filelist, 2048);
+		numfiles = trap_FS_GetFileList(va("models/players/%s", dirptr), "$images", filelist, 2048);
 		fileptr = filelist;
 
-		for (j = 0; j < numfiles && s_playermodel.nummodels < MAX_PLAYERMODELS;j++, fileptr += filelen + 1) {
+		for (j = 0; j < numfiles && s_playermodel.nummodels < MAX_PLAYERMODELS; j++, fileptr += filelen + 1) {
 			filelen = strlen(fileptr);
 
 			COM_StripExtension(fileptr, skinname, sizeof(skinname));
 			// look for icon_????
 			if (!Q_stricmpn(skinname, "icon_", 5)) {
 				Com_sprintf(s_playermodel.modelnames[s_playermodel.nummodels++], sizeof(s_playermodel.modelnames[s_playermodel.nummodels]), "models/players/%s/%s", dirptr, skinname);
-				// if (s_playermodel.nummodels >= MAX_PLAYERMODELS)
-				// 	return;
+				//if (s_playermodel.nummodels >= MAX_PLAYERMODELS) {
+				//	return;
+				//}
 			}
 
 			if (precache) {
@@ -410,12 +426,14 @@ static void PlayerModel_BuildList(void) {
 			}
 		}
 	}
+
 	// APSFIXME - Degenerate no models case
 
 	s_playermodel.numpages = s_playermodel.nummodels / MAX_MODELSPERPAGE;
 
-	if (s_playermodel.nummodels % MAX_MODELSPERPAGE)
+	if (s_playermodel.nummodels % MAX_MODELSPERPAGE) {
 		s_playermodel.numpages++;
+	}
 }
 
 /*
@@ -429,13 +447,13 @@ static void PlayerModel_SetMenuItems(void) {
 	char modelskin[64];
 	char *buffptr;
 	char *pdest;
+
 	// name
 	trap_Cvar_VariableStringBuffer(Com_LocalPlayerCvarName(s_playermodel.localPlayerNum, "name"), s_playermodel.playername.string, 16);
 	Q_CleanStr(s_playermodel.playername.string);
 	// model
 	trap_Cvar_VariableStringBuffer(Com_LocalPlayerCvarName(s_playermodel.localPlayerNum, "model"), s_playermodel.modelskin, sizeof(s_playermodel.modelskin));
 	trap_Cvar_VariableStringBuffer(Com_LocalPlayerCvarName(s_playermodel.localPlayerNum, "headmodel"), s_playermodel.headmodelskin, sizeof(s_playermodel.headmodelskin));
-
 	// use default skin if none is set
 	if (!strchr(s_playermodel.modelskin, '/')) {
 		Q_strcat(s_playermodel.modelskin, 64, "/default");
@@ -443,7 +461,7 @@ static void PlayerModel_SetMenuItems(void) {
 	// find model in our list
 	for (i = 0; i < s_playermodel.nummodels; i++) {
 		// strip icon_
-		buffptr = s_playermodel.modelnames[i] + strlen("models/players/ ");
+		buffptr = s_playermodel.modelnames[i] + strlen("models/players/");
 		pdest = strstr(buffptr, "icon_");
 
 		if (pdest) {
@@ -494,6 +512,7 @@ static void PlayerModel_MenuInit(int localPlayerNum) {
 	static char playername[32];
 	static char modelname[32];
 	static char skinname[32];
+
 	// zero set all our globals
 	memset(&s_playermodel, 0, sizeof(playermodel_t));
 
@@ -566,7 +585,6 @@ static void PlayerModel_MenuInit(int localPlayerNum) {
 			s_playermodel.picbuttons[k].height = 128;
 			s_playermodel.picbuttons[k].focuspic = MODEL_SELECT;
 			s_playermodel.picbuttons[k].focuscolor = colorRed;
-
 			x += 64 + 6;
 		}
 
@@ -663,7 +681,7 @@ static void PlayerModel_MenuInit(int localPlayerNum) {
 	Menu_AddItem(&s_playermodel.menu, &s_playermodel.right);
 	Menu_AddItem(&s_playermodel.menu, &s_playermodel.back);
 	// find all available models
-// 	PlayerModel_BuildList();
+//	PlayerModel_BuildList();
 	// set initial states
 	PlayerModel_SetMenuItems();
 	// update user interface
@@ -690,12 +708,16 @@ void PlayerModel_Cache(void) {
 	}
 }
 
+/*
+=======================================================================================================================================
+UI_PlayerModelMenu
+=======================================================================================================================================
+*/
 void UI_PlayerModelMenu(int localPlayerNum) {
+
 	PlayerModel_MenuInit(localPlayerNum);
 
 	UI_PushMenu(&s_playermodel.menu);
 
 	Menu_SetCursorToItem(&s_playermodel.menu, &s_playermodel.pics[s_playermodel.selectedmodel % MAX_MODELSPERPAGE]);
 }
-
-

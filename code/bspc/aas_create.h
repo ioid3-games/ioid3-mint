@@ -29,7 +29,7 @@ typedef struct tmp_face_s {
 	int num;						// face number
 	int planenum;					// number of the plane the face is in
 	winding_t *winding;				// winding of the face
-	struct tmp_area_s	*frontarea;	// area at the front of the face
+	struct tmp_area_s *frontarea;	// area at the front of the face
 	struct tmp_area_s *backarea;	// area at the back of the face
 	int faceflags;					// flags of this face
 	int aasfacenum;					// the number of the aas face used for this face

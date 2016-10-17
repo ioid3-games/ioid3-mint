@@ -32,11 +32,11 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "ui_local.h"
 
-
 typedef struct {
 	menuframework_s menu;
 	int frame;
 } creditsmenu_t;
+
 static creditsmenu_t s_credits;
 
 /*
@@ -142,7 +142,7 @@ static void UI_CreditMenu_Draw(void) {
 	UI_DrawProportionalString(320, y, "Eric Webb", UI_CENTER|UI_SMALLFONT, color_white);
 
 	y += 1.35 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawString(320, y, "To order: 1 - 800 - idgames     www.quake3arena.com     www.idsoftware.com", UI_CENTER|UI_SMALLFONT, color_red);
+	UI_DrawString(320, y, "To order: 1-800-idgames     www.quake3arena.com     www.idsoftware.com", UI_CENTER|UI_SMALLFONT, color_red);
 	y += SMALLCHAR_HEIGHT;
 	UI_DrawString(320, y, "Quake III Arena(c) 1999-2000, Id Software, Inc. All Rights Reserved", UI_CENTER|UI_SMALLFONT, color_red);
 }
@@ -159,5 +159,6 @@ void UI_CreditMenu(void) {
 	s_credits.menu.draw = UI_CreditMenu_Draw;
 	s_credits.menu.key = UI_CreditMenu_Key;
 	s_credits.menu.fullscreen = qtrue;
+
 	UI_PushMenu(&s_credits.menu);
 }

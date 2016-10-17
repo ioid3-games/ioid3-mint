@@ -80,7 +80,7 @@ typedef struct bot_entitystate_s {
 // bot AI library exported functions
 typedef struct botlib_import_s {
 	// get time for measuring time lapse
-	int (*MilliSeconds) (void);
+	int (*MilliSeconds)(void);
 	// print messages from the bot library
 	void (QDECL *Print)(int type, char *fmt, ...) __attribute__((format(printf, 2, 3)));
 	// trace a bbox through the world

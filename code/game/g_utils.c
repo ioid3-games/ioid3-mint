@@ -189,7 +189,7 @@ void G_TeamCommand(team_t team, char *cmd) {
 
 			if (level.players[playerNum].sess.sessionTeam == team) {
 				break;
-			}		
+			}
 		}
 
 		if (j < MAX_SPLITVIEW) {

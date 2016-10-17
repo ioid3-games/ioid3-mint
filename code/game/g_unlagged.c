@@ -340,7 +340,7 @@ G_PredictPlayerSlideMove
 Advance the given entity frametime seconds, sliding as appropriate
 =======================================================================================================================================
 */
-#define MAX_CLIP_PLANES	5
+#define MAX_CLIP_PLANES 5
 
 qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 	int bumpcount, numbumps;

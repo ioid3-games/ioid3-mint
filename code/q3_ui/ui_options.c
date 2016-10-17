@@ -21,42 +21,42 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
+
 /*
 =======================================================================================================================================
 
-SYSTEM CONFIGURATION MENU
+	SYSTEM CONFIGURATION MENU
+
 =======================================================================================================================================
 */
 
 #include "ui_local.h"
-
 
 #define ART_FRAMEL "menu/art/frame2_l"
 #define ART_FRAMER "menu/art/frame1_r"
 #define ART_BACK0 "menu/art/back_0"
 #define ART_BACK1 "menu/art/back_1"
 
-#define ID_GRAPHICS			10
-#define ID_DISPLAY			11
-#define ID_SOUND			12
-#define ID_NETWORK			13
-#define ID_BACK				14
+#define ID_GRAPHICS	10
+#define ID_DISPLAY	11
+#define ID_SOUND	12
+#define ID_NETWORK	13
+#define ID_BACK		14
 
-#define VERTICAL_SPACING	34
+#define VERTICAL_SPACING 34
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
-
 	menutext_s graphics;
 	menutext_s display;
 	menutext_s sound;
 	menutext_s network;
 	menubitmap_s back;
 } optionsmenu_t;
+
 static optionsmenu_t s_options;
 
 /*
@@ -71,21 +71,21 @@ static void Options_Event(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_GRAPHICS:
-		UI_GraphicsOptionsMenu();
-		break;
-	case ID_DISPLAY:
-		UI_DisplayOptionsMenu();
-		break;
-	case ID_SOUND:
-		UI_SoundOptionsMenu();
-		break;
-	case ID_NETWORK:
-		UI_NetworkOptionsMenu();
-		break;
-	case ID_BACK:
-		UI_PopMenu();
-		break;
+		case ID_GRAPHICS:
+			UI_GraphicsOptionsMenu();
+			break;
+		case ID_DISPLAY:
+			UI_DisplayOptionsMenu();
+			break;
+		case ID_SOUND:
+			UI_SoundOptionsMenu();
+			break;
+		case ID_NETWORK:
+			UI_NetworkOptionsMenu();
+			break;
+		case ID_BACK:
+			UI_PopMenu();
+			break;
 	}
 }
 
@@ -95,6 +95,7 @@ SystemConfig_Cache
 =======================================================================================================================================
 */
 void SystemConfig_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_FRAMEL);
 	trap_R_RegisterShaderNoMip(ART_FRAMER);
 	trap_R_RegisterShaderNoMip(ART_BACK0);
@@ -112,6 +113,7 @@ void Options_MenuInit(void) {
 	memset(&s_options, 0, sizeof(optionsmenu_t));
 
 	SystemConfig_Cache();
+
 	s_options.menu.wrapAround = qtrue;
 
 	if (cg.connState >= CA_CONNECTED) {
@@ -215,6 +217,7 @@ UI_SystemConfigMenu
 =======================================================================================================================================
 */
 void UI_SystemConfigMenu(void) {
+
 	Options_MenuInit();
 	UI_PushMenu(&s_options.menu);
 }

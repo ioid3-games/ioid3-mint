@@ -32,7 +32,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "ui_local.h"
 
-
 #define INGAME_FRAME "menu/art/addbotframe"
 //#define INGAME_FRAME "menu/art/cut_frame"
 #define INGAME_MENU_VERTICAL_SPACING 28
@@ -49,7 +48,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define ID_TEAMORDERS	19
 #define ID_LOCALPLAYERS	20
 
-
 typedef struct {
 	menuframework_s menu;
 	menubitmap_s frame;
@@ -65,6 +63,7 @@ typedef struct {
 	menutext_s resume;
 	menutext_s localPlayers;
 } ingamemenu_t;
+
 static ingamemenu_t s_ingame;
 
 /*

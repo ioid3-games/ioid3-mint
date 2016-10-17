@@ -25,17 +25,16 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-SINGLE PLAYER POSTGAME MENU
+	SINGLE PLAYER POSTGAME MENU
+
 =======================================================================================================================================
 */
 
 #include "ui_local.h"
 
-#define MAX_UI_AWARDS		6
-
-#define MAX_SCOREBOARD_PLAYERS		8
-
-#define AWARD_PRESENTATION_TIME		2000
+#define MAX_UI_AWARDS 6
+#define MAX_SCOREBOARD_PLAYERS 8
+#define AWARD_PRESENTATION_TIME 2000
 
 #define ART_MENU0 "menu/art/menu_0"
 #define ART_MENU1 "menu/art/menu_1"
@@ -44,9 +43,9 @@ SINGLE PLAYER POSTGAME MENU
 #define ART_NEXT0 "menu/art/next_0"
 #define ART_NEXT1 "menu/art/next_1"
 
-#define ID_AGAIN		10
-#define ID_NEXT			11
-#define ID_MENU			12
+#define ID_AGAIN	10
+#define ID_NEXT		11
+#define ID_MENU		12
 
 typedef struct {
 	menuframework_s menu;
@@ -61,7 +60,6 @@ typedef struct {
 	int playerNums[MAX_SCOREBOARD_PLAYERS];
 	int ranks[MAX_SCOREBOARD_PLAYERS];
 	int scores[MAX_SCOREBOARD_PLAYERS];
-
 	char placeNames[3][64];
 	int level;
 	int numPlayers;
@@ -73,17 +71,35 @@ typedef struct {
 	int lastTier;
 	sfxHandle_t winnerSound;
 } postgameMenuInfo_t;
+
 static postgameMenuInfo_t postgameMenuInfo;
 static char arenainfo[MAX_INFO_VALUE];
 
 char *ui_medalNames[] = {
-	"Accuracy", "Impressive", "Excellent", "Gauntlet", "Frags", "Perfect"
+	"Accuracy",
+	"Impressive",
+	"Excellent",
+	"Gauntlet",
+	"Frags",
+	"Perfect"
 };
+
 char *ui_medalPicNames[] = {
- "menu/medals / medal_accuracy", "menu/medals / medal_impressive", "menu/medals / medal_excellent", "menu/medals / medal_gauntlet", "menu/medals / medal_frags", "menu/medals / medal_victory"
+	"menu/medals/medal_accuracy",
+	"menu/medals/medal_impressive",
+	"menu/medals/medal_excellent",
+	"menu/medals/medal_gauntlet",
+	"menu/medals/medal_frags",
+	"menu/medals/medal_victory"
 };
+
 char *ui_medalSounds[] = {
-	"sound/feedback/accuracy.wav", "sound/feedback/impressive_a.wav", "sound/feedback/excellent_a.wav", "sound/feedback/gauntlet.wav", "sound/feedback/frags.wav", "sound/feedback/perfect.wav"
+	"sound/feedback/accuracy.wav",
+	"sound/feedback/impressive_a.wav",
+	"sound/feedback/excellent_a.wav",
+	"sound/feedback/gauntlet.wav",
+	"sound/feedback/frags.wav",
+	"sound/feedback/perfect.wav"
 };
 
 /*
@@ -196,9 +212,13 @@ static sfxHandle_t UI_SPPostgameMenu_MenuKey(int key) {
 	return Menu_DefaultKey(&postgameMenuInfo.menu, key);
 }
 
-
 static int medalLocations[MAX_UI_AWARDS] = {144, 448, 88, 504, 32, 560};
 
+/*
+=======================================================================================================================================
+UI_SPPostgameMenu_DrawAwardsMedals
+=======================================================================================================================================
+*/
 static void UI_SPPostgameMenu_DrawAwardsMedals(int max) {
 	int n;
 	int medal;
@@ -228,7 +248,11 @@ static void UI_SPPostgameMenu_DrawAwardsMedals(int max) {
 	}
 }
 
-
+/*
+=======================================================================================================================================
+UI_SPPostgameMenu_DrawAwardsPresentation
+=======================================================================================================================================
+*/
 static void UI_SPPostgameMenu_DrawAwardsPresentation(int timer) {
 	int awardNum;
 	int atimer;
@@ -238,9 +262,9 @@ static void UI_SPPostgameMenu_DrawAwardsPresentation(int timer) {
 	atimer = timer % AWARD_PRESENTATION_TIME;
 
 	color[0] = color[1] = color[2] = 1.0f;
-	color[3] = (float) (AWARD_PRESENTATION_TIME - atimer) / (float)AWARD_PRESENTATION_TIME;
-	UI_DrawProportionalString(320, 64, ui_medalNames[postgameMenuInfo.awardsEarned[awardNum]], UI_CENTER, color);
+	color[3] = (float)(AWARD_PRESENTATION_TIME - atimer) / (float)AWARD_PRESENTATION_TIME;
 
+	UI_DrawProportionalString(320, 64, ui_medalNames[postgameMenuInfo.awardsEarned[awardNum]], UI_CENTER, color);
 	UI_SPPostgameMenu_DrawAwardsMedals(awardNum + 1);
 
 	if (!postgameMenuInfo.playedSound[awardNum]) {
@@ -275,10 +299,11 @@ static void UI_SPPostgameMenu_MenuDrawScoreLine(int n, int y) {
 	}
 
 	trap_GetConfigString(CS_PLAYERS + postgameMenuInfo.playerNums[n], info, MAX_INFO_STRING);
+
 	Q_strncpyz(name, Info_ValueForKey(info, "n"), sizeof(name));
 	Q_CleanStr(name);
 
-	UI_DrawString(640 - 25 * SMALLCHAR_WIDTH, y, va("#%i: % - 16s %2i", rank + 1, name, postgameMenuInfo.scores[n]), UI_LEFT|UI_SMALLFONT, color_white);
+	UI_DrawString(640 - 25 * SMALLCHAR_WIDTH, y, va("#%i: %-16s %2i", rank + 1, name, postgameMenuInfo.scores[n]), UI_LEFT|UI_SMALLFONT, color_white);
 }
 
 /*
@@ -408,8 +433,8 @@ void UI_SPPostgameMenu_Cache(void) {
 	}
 
 	if (buildscript) {
-		trap_S_RegisterSound("music / loss.wav", qfalse);
-		trap_S_RegisterSound("music / win.wav", qfalse);
+		trap_S_RegisterSound("music/loss.wav", qfalse);
+		trap_S_RegisterSound("music/win.wav", qfalse);
 		trap_S_RegisterSound("sound/player/announce/youwin.wav", qfalse);
 	}
 }
@@ -420,6 +445,7 @@ UI_SPPostgameMenu_Init
 =======================================================================================================================================
 */
 static void UI_SPPostgameMenu_Init(void) {
+
 	postgameMenuInfo.menu.wrapAround = qtrue;
 	postgameMenuInfo.menu.key = UI_SPPostgameMenu_MenuKey;
 	postgameMenuInfo.menu.draw = UI_SPPostgameMenu_MenuDraw;
@@ -465,15 +491,21 @@ static void UI_SPPostgameMenu_Init(void) {
 	Menu_AddItem(&postgameMenuInfo.menu, (void *)&postgameMenuInfo.item_next);
 }
 
-
+/*
+=======================================================================================================================================
+Prepname
+=======================================================================================================================================
+*/
 static void Prepname(int index) {
 	int len;
 	char name[64];
 	char info[MAX_INFO_STRING];
 
 	trap_GetConfigString(CS_PLAYERS + postgameMenuInfo.playerNums[index], info, MAX_INFO_STRING);
+
 	Q_strncpyz(name, Info_ValueForKey(info, "n"), sizeof(name));
 	Q_CleanStr(name);
+
 	len = strlen(name);
 
 	while (len && UI_ProportionalStringWidth(name) > 256) {
@@ -574,7 +606,9 @@ void UI_SPPostgameMenu_f(void) {
 	}
 
 	oldFrags = UI_GetAwardLevel(AWARD_FRAGS) / 100;
+
 	UI_LogAwardData(AWARD_FRAGS, awardValues[AWARD_FRAGS]);
+
 	newFrags = UI_GetAwardLevel(AWARD_FRAGS) / 100;
 
 	if (newFrags > oldFrags) {
@@ -616,14 +650,13 @@ void UI_SPPostgameMenu_f(void) {
 
 	if (playerGameRank != 1) {
 		postgameMenuInfo.winnerSound = trap_S_RegisterSound(va("sound/player/announce/%s_wins.wav", postgameMenuInfo.placeNames[0]), qfalse);
-		trap_Cmd_ExecuteText(EXEC_APPEND, "music music / loss\n");
+		trap_Cmd_ExecuteText(EXEC_APPEND, "music music/loss\n");
 	} else {
 		postgameMenuInfo.winnerSound = trap_S_RegisterSound("sound/player/announce/youwin.wav", qfalse);
-		trap_Cmd_ExecuteText(EXEC_APPEND, "music music / win\n");
+		trap_Cmd_ExecuteText(EXEC_APPEND, "music music/win\n");
 	}
 
 	postgameMenuInfo.phase = 1;
-
 	postgameMenuInfo.lastTier = UI_GetNumSPTiers();
 
 	if (UI_GetSpecialArenaInfo("final")) {

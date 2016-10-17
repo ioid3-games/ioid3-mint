@@ -47,7 +47,6 @@ int playerJoyRemapIndex[CL_MAX_SPLITVIEW];
 #else
 #define JOY_PLATFORM OS_STRING
 #endif
-
 /*
 =======================================================================================================================================
 CL_StringToJoyEvent

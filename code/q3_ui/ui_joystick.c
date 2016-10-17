@@ -49,7 +49,6 @@ JOYSTICK SELECT MENU
 #define ID_JOYSTICK	10
 #define ID_BACK		ID_JOYSTICK + MAX_JOYSTICKS
 
-
 typedef struct {
 	menuframework_s menu;
 	menutext_s banner;

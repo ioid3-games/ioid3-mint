@@ -21,20 +21,21 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
+
 /*
 =======================================================================================================================================
 
-RESET MENU
+	RESET MENU
+
 =======================================================================================================================================
 */
 
 #include "ui_local.h"
 
-
 #define ART_FRAME "menu/art/cut_frame"
 
-#define ID_NO		100
-#define ID_YES		101
+#define ID_NO	100
+#define ID_YES	101
 
 typedef struct {
 	menuframework_s menu;
@@ -42,6 +43,7 @@ typedef struct {
 	menutext_s yes;
 	int slashX;
 } resetMenu_t;
+
 static resetMenu_t s_reset;
 
 /*
@@ -73,21 +75,22 @@ Reset_MenuKey
 =======================================================================================================================================
 */
 static sfxHandle_t Reset_MenuKey(int key) {
+
 	switch (key) {
-	case K_KP_LEFTARROW:
-	case K_LEFTARROW:
-	case K_KP_RIGHTARROW:
-	case K_RIGHTARROW:
-		key = K_TAB;
-		break;
-	case 'n':
-	case 'N':
-		Reset_MenuEvent(&s_reset.no, QM_ACTIVATED);
-		break;
-	case 'y':
-	case 'Y':
-		Reset_MenuEvent(&s_reset.yes, QM_ACTIVATED);
-		break;
+		case K_KP_LEFTARROW:
+		case K_LEFTARROW:
+		case K_KP_RIGHTARROW:
+		case K_RIGHTARROW:
+			key = K_TAB;
+			break;
+		case 'n':
+		case 'N':
+			Reset_MenuEvent(&s_reset.no, QM_ACTIVATED);
+			break;
+		case 'y':
+		case 'Y':
+			Reset_MenuEvent(&s_reset.yes, QM_ACTIVATED);
+			break;
 	}
 
 	return Menu_DefaultKey(&s_reset.menu, key);
@@ -99,9 +102,11 @@ Reset_MenuDraw
 =======================================================================================================================================
 */
 static void Reset_MenuDraw(void) {
+
 	CG_DrawNamedPic(142, 118, 359, 256, ART_FRAME);
 	UI_DrawProportionalString(320, 194 + 10, "RESET GAME?", UI_CENTER|UI_INVERSE, text_big_color);
 	UI_DrawProportionalString(s_reset.slashX, 265, "/", UI_LEFT|UI_INVERSE, text_big_color);
+
 	Menu_Draw(&s_reset.menu);
 
 	UI_DrawProportionalString(SCREEN_WIDTH / 2, 356 + PROP_HEIGHT * 0, "WARNING: This resets all of the", UI_CENTER|UI_SMALLFONT, color_yellow);
@@ -127,6 +132,7 @@ UI_ResetMenu
 void UI_ResetMenu(void) {
 	int n1, n2, n3;
 	int l1, l2, l3;
+
 	// zero set all our globals
 	memset(&s_reset, 0, sizeof(s_reset));
 
@@ -135,11 +141,12 @@ void UI_ResetMenu(void) {
 	n1 = UI_ProportionalStringWidth("YES/NO");
 	n2 = UI_ProportionalStringWidth("YES");
 	n3 = UI_ProportionalStringWidth("/");
+
 	l1 = 320 - (n1 / 2);
 	l2 = l1 + n2;
 	l3 = l2 + n3;
-	s_reset.slashX = l2;
 
+	s_reset.slashX = l2;
 	s_reset.menu.draw = Reset_MenuDraw;
 	s_reset.menu.key = Reset_MenuKey;
 	s_reset.menu.wrapAround = qtrue;
@@ -152,7 +159,7 @@ void UI_ResetMenu(void) {
 		s_reset.menu.fullscreen = qtrue;
 	}
 
-	s_reset.yes.generic.type = MTYPE_PTEXT;      
+	s_reset.yes.generic.type = MTYPE_PTEXT;
 	s_reset.yes.generic.flags = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_reset.yes.generic.callback = Reset_MenuEvent;
 	s_reset.yes.generic.id = ID_YES;
@@ -162,7 +169,7 @@ void UI_ResetMenu(void) {
 	s_reset.yes.color = text_big_color;
 	s_reset.yes.style = UI_LEFT;
 
-	s_reset.no.generic.type = MTYPE_PTEXT;      
+	s_reset.no.generic.type = MTYPE_PTEXT;
 	s_reset.no.generic.flags = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_reset.no.generic.callback = Reset_MenuEvent;
 	s_reset.no.generic.id = ID_NO;
@@ -172,7 +179,7 @@ void UI_ResetMenu(void) {
 	s_reset.no.color = text_big_color;
 	s_reset.no.style = UI_LEFT;
 
-	Menu_AddItem(&s_reset.menu, &s_reset.yes);             
+	Menu_AddItem(&s_reset.menu, &s_reset.yes);
 	Menu_AddItem(&s_reset.menu, &s_reset.no);
 
 	UI_PushMenu(&s_reset.menu);

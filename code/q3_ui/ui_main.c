@@ -25,10 +25,10 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-USER INTERFACE MAIN
+	USER INTERFACE MAIN
+
 =======================================================================================================================================
 */
-
 
 #include "ui_local.h"
 
@@ -53,7 +53,7 @@ typedef struct {
 	char *defaultString;
 	int cvarFlags;
 } cvarTable_t;
-vmCvar_t ui_ffa_fraglimit;
+	vmCvar_t ui_ffa_fraglimit;
 vmCvar_t ui_ffa_timelimit;
 vmCvar_t ui_tourney_fraglimit;
 vmCvar_t ui_tourney_timelimit;

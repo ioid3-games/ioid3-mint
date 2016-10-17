@@ -22,20 +22,14 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-
-// ui_team.c
-
-
 #include "ui_local.h"
-
 
 #define TEAMMAIN_FRAME "menu/art/cut_frame"
 
-#define ID_JOINRED		100
-#define ID_JOINBLUE		101
-#define ID_JOINGAME		102
-#define ID_SPECTATE		103
-
+#define ID_JOINRED	100
+#define ID_JOINBLUE	101
+#define ID_JOINGAME	102
+#define ID_SPECTATE	103
 
 typedef struct {
 	menuframework_s menu;
@@ -46,6 +40,7 @@ typedef struct {
 	menutext_s spectate;
 	int localPlayerNum;
 } teammain_t;
+
 static teammain_t s_teammain;
 
 /*
@@ -63,22 +58,22 @@ static void TeamMain_MenuEvent(void *ptr, int event) {
 	teamCmd = Com_LocalPlayerCvarName(s_teammain.localPlayerNum, "team");
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_JOINRED:
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s red\n", teamCmd));
-		UI_ForceMenuOff();
-		break;
-	case ID_JOINBLUE:
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s blue\n", teamCmd));
-		UI_ForceMenuOff();
-		break;
-	case ID_JOINGAME:
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s free\n", teamCmd));
-		UI_ForceMenuOff();
-		break;
-	case ID_SPECTATE:
-		trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s spectator\n", teamCmd));
-		UI_ForceMenuOff();
-		break;
+		case ID_JOINRED:
+			trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s red\n", teamCmd));
+			UI_ForceMenuOff();
+			break;
+		case ID_JOINBLUE:
+			trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s blue\n", teamCmd));
+			UI_ForceMenuOff();
+			break;
+		case ID_JOINGAME:
+			trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s free\n", teamCmd));
+			UI_ForceMenuOff();
+			break;
+		case ID_SPECTATE:
+			trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s spectator\n", teamCmd));
+			UI_ForceMenuOff();
+			break;
 	}
 }
 
@@ -108,7 +103,6 @@ void TeamMain_MenuInit(int localPlayerNum) {
 	s_teammain.frame.generic.y = 118;
 	s_teammain.frame.width = 359;
 	s_teammain.frame.height = 256;
-
 	y = 194;
 
 	s_teammain.joinred.generic.type = MTYPE_PTEXT;
@@ -154,22 +148,21 @@ void TeamMain_MenuInit(int localPlayerNum) {
 	s_teammain.spectate.style = UI_CENTER|UI_SMALLFONT;
 	s_teammain.spectate.color = colorRed;
 
-	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
+	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);
 	gametype = atoi(Info_ValueForKey(info, "g_gametype"));
-			      
 	// set initial states
 	switch (gametype) {
-	case GT_SINGLE_PLAYER:
-	case GT_FFA:
-	case GT_TOURNAMENT:
-		s_teammain.joinred.generic.flags |= QMF_GRAYED;
-		s_teammain.joinblue.generic.flags |= QMF_GRAYED;
-		break;
-	default:
-	case GT_TEAM:
-	case GT_CTF:
-		s_teammain.joingame.generic.flags |= QMF_GRAYED;
-		break;
+		case GT_SINGLE_PLAYER:
+		case GT_FFA:
+		case GT_TOURNAMENT:
+			s_teammain.joinred.generic.flags |= QMF_GRAYED;
+			s_teammain.joinblue.generic.flags |= QMF_GRAYED;
+			break;
+		default:
+		case GT_TEAM:
+		case GT_CTF:
+			s_teammain.joingame.generic.flags |= QMF_GRAYED;
+			break;
 	}
 
 	Menu_AddItem(&s_teammain.menu, (void *)&s_teammain.frame);
@@ -194,6 +187,7 @@ UI_TeamMainMenu
 =======================================================================================================================================
 */
 void UI_TeamMainMenu(int localPlayerNum) {
+
 	TeamMain_MenuInit(localPlayerNum);
 	UI_PushMenu(&s_teammain.menu);
 }

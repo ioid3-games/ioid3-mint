@@ -142,7 +142,7 @@ extern vec4_t color_dim;
 extern vec4_t name_color;
 extern vec4_t list_color;
 extern vec4_t listbar_color;
-extern vec4_t text_color_disabled; 
+extern vec4_t text_color_disabled;
 extern vec4_t text_color_normal;
 extern vec4_t text_color_highlight;
 extern char *ui_medalNames[];
@@ -164,7 +164,6 @@ void UI_UpdateCvars(void);
 
 
 // ui_players.c
-
 
 typedef struct {
 	// model info
@@ -236,18 +235,17 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 #define MAX_SERVERSTATUS_TEXT	1024
 #define MAX_FOUNDPLAYER_SERVERS	16
 #define TEAM_MEMBERS 5
-#define GAMES_ALL			0
-#define GAMES_FFA			1
-#define GAMES_TEAMPLAY		2
-#define GAMES_TOURNEY		3
-#define GAMES_CTF			4
+#define GAMES_ALL		0
+#define GAMES_FFA		1
+#define GAMES_TEAMPLAY	2
+#define GAMES_TOURNEY	3
+#define GAMES_CTF		4
 #define MAPS_PER_TIER 3
 #define MAX_TIERS 16
 #define MAX_MODS 64
 #define MAX_DEMOS 512
 #define MAX_MOVIES 256
 #define MAX_PLAYERMODELS 256
-
 
 typedef struct {
   const char *name;
@@ -335,7 +333,6 @@ typedef struct serverStatus_s {
 	char motd[MAX_STRING_CHARS];
 } serverStatus_t;
 
-
 typedef struct {
 	char adrstr[MAX_ADDRESSLENGTH];
 	char name[MAX_ADDRESSLENGTH];
@@ -361,7 +358,6 @@ typedef struct {
 	const char *modName;
 	const char *modDescr;
 } modInfo_t;
-
 
 typedef struct {
 	displayContextDef_t uiDC;

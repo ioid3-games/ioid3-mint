@@ -27,7 +27,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #else
 #include "g_local.h"
 #endif
-
 /*
  ** Map tracemap view generation
 */

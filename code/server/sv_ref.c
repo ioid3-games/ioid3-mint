@@ -56,7 +56,7 @@ refexport_t *GetRefAPI(int apiVersion, refimport_t *rimp, qboolean headless) {
 	Com_Memset(&re, 0, sizeof(re));
 
 	if (apiVersion != REF_API_VERSION) {
-		ri.Printf(PRINT_ALL, "Mismatched REF_API_VERSION: expected %i, got %i\n", 
+		ri.Printf(PRINT_ALL, "Mismatched REF_API_VERSION: expected %i, got %i\n",
 			REF_API_VERSION, apiVersion);
 		return NULL;
 	}

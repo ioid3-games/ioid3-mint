@@ -31,35 +31,30 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define ART_FRAMEL "menu/art/frame2_l"
 #define ART_FRAMER "menu/art/frame1_r"
 
-#define MAX_MODS			64
-#define NAMEBUFSIZE			(MAX_MODS * 48)
-#define GAMEBUFSIZE			(MAX_MODS * 16)
+#define MAX_MODS 64
+#define NAMEBUFSIZE (MAX_MODS * 48)
+#define GAMEBUFSIZE (MAX_MODS * 16)
 
-#define ID_BACK				10
-#define ID_GO				11
-#define ID_LIST				12
-
+#define ID_BACK	10
+#define ID_GO	11
+#define ID_LIST	12
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
-
 	menulist_s list;
 	menubitmap_s back;
 	menubitmap_s go;
-
 	char description[NAMEBUFSIZE];
 	char fs_game[GAMEBUFSIZE];
-
 	char *descriptionPtr;
 	char *fs_gamePtr;
-
 	char *descriptionList[MAX_MODS];
 	char *fs_gameList[MAX_MODS];
 } mods_t;
+
 static mods_t s_mods;
 
 /*
@@ -74,14 +69,14 @@ static void UI_Mods_MenuEvent(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_GO:
-		trap_Cvar_Set("fs_game", s_mods.fs_gameList[s_mods.list.curvalue]);
-		trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart;");
-		UI_PopMenu();
-		break;
-	case ID_BACK:
-		UI_PopMenu();
-		break;
+		case ID_GO:
+			trap_Cvar_Set("fs_game", s_mods.fs_gameList[s_mods.list.curvalue]);
+			trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart;");
+			UI_PopMenu();
+			break;
+		case ID_BACK:
+			UI_PopMenu();
+			break;
 	}
 }
 
@@ -91,6 +86,7 @@ UI_Mods_ParseInfos
 =======================================================================================================================================
 */
 static void UI_Mods_ParseInfos(char *modDir, char *modDesc) {
+
 	s_mods.fs_gameList[s_mods.list.numitems] = s_mods.fs_gamePtr;
 	Q_strncpyz(s_mods.fs_gamePtr, modDir, 16);
 
@@ -112,7 +108,7 @@ static void UI_Mods_LoadMods(void) {
 	int numdirs;
 	char dirlist[2048];
 	char *dirptr;
-  char *descptr;
+	char *descptr;
 	int i;
 	int dirlen;
 
@@ -126,9 +122,9 @@ static void UI_Mods_LoadMods(void) {
 
 	for (i = 0; i < numdirs; i++) {
 		dirlen = strlen(dirptr) + 1;
-    descptr = dirptr + dirlen;
-  	UI_Mods_ParseInfos(dirptr, descptr);
-    dirptr += dirlen + strlen(descptr) + 1;
+		descptr = dirptr + dirlen;
+		UI_Mods_ParseInfos(dirptr, descptr);
+		dirptr += dirlen + strlen(descptr) + 1;
 	}
 
 	Com_DPrintf("%i mods parsed\n", s_mods.list.numitems);
@@ -144,9 +140,11 @@ UI_Mods_MenuInit
 =======================================================================================================================================
 */
 static void UI_Mods_MenuInit(void) {
+
 	UI_ModsMenu_Cache();
 
 	memset(&s_mods, 0, sizeof(mods_t));
+
 	s_mods.menu.wrapAround = qtrue;
 	s_mods.menu.fullscreen = qtrue;
 
@@ -216,10 +214,11 @@ static void UI_Mods_MenuInit(void) {
 
 /*
 =======================================================================================================================================
-UI_Mods_Cache
+UI_ModsMenu_Cache
 =======================================================================================================================================
 */
 void UI_ModsMenu_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_BACK0);
 	trap_R_RegisterShaderNoMip(ART_BACK1);
 	trap_R_RegisterShaderNoMip(ART_FIGHT0);
@@ -234,6 +233,7 @@ UI_ModsMenu
 =======================================================================================================================================
 */
 void UI_ModsMenu(void) {
+
 	UI_Mods_MenuInit();
 	UI_PushMenu(&s_mods.menu);
 }

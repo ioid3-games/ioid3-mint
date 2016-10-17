@@ -25,13 +25,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-REMOVE BOTS MENU
+	REMOVE BOTS MENU
+
 =======================================================================================================================================
 */
 
-
 #include "ui_local.h"
-
 
 #define ART_BACKGROUND "menu/art/addbotframe"
 #define ART_BACK0 "menu/art/back_0"
@@ -42,28 +41,26 @@ REMOVE BOTS MENU
 #define ART_ARROWUP "menu/art/arrows_vert_top"
 #define ART_ARROWDOWN "menu/art/arrows_vert_bot"
 
-#define ID_UP				10
-#define ID_DOWN				11
-#define ID_DELETE			12
-#define ID_BACK				13
-#define ID_BOTNAME0			20
-#define ID_BOTNAME1			21
-#define ID_BOTNAME2			22
-#define ID_BOTNAME3			23
-#define ID_BOTNAME4			24
-#define ID_BOTNAME5			25
-#define ID_BOTNAME6			26
+#define ID_UP		10
+#define ID_DOWN		11
+#define ID_DELETE	12
+#define ID_BACK		13
 
+#define ID_BOTNAME0	20
+#define ID_BOTNAME1	21
+#define ID_BOTNAME2	22
+#define ID_BOTNAME3	23
+#define ID_BOTNAME4	24
+#define ID_BOTNAME5	25
+#define ID_BOTNAME6	26
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s background;
 	menubitmap_s arrows;
 	menubitmap_s up;
 	menubitmap_s down;
-
 	menutext_s bots[7];
 	menubitmap_s delete;
 	menubitmap_s back;
@@ -73,6 +70,7 @@ typedef struct {
 	char botnames[7][32];
 	int botPlayerNums[MAX_BOTS];
 } removeBotsMenuInfo_t;
+
 static removeBotsMenuInfo_t removeBotsMenuInfo;
 
 /*
@@ -123,7 +121,7 @@ static void UI_RemoveBotsMenu_BotEvent(void *ptr, int event) {
 
 /*
 =======================================================================================================================================
-UI_RemoveAddBotsMenu_BackEvent
+UI_RemoveBotsMenu_BackEvent
 =======================================================================================================================================
 */
 static void UI_RemoveBotsMenu_BackEvent(void *ptr, int event) {
@@ -181,6 +179,7 @@ static void UI_RemoveBotsMenu_GetBots(void) {
 	char info[MAX_INFO_STRING];
 
 	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
+
 	numPlayers = atoi(Info_ValueForKey(info, "sv_maxclients"));
 	removeBotsMenuInfo.numBots = 0;
 
@@ -204,6 +203,7 @@ UI_RemoveBots_Cache
 =======================================================================================================================================
 */
 void UI_RemoveBots_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_BACKGROUND);
 	trap_R_RegisterShaderNoMip(ART_BACK0);
 	trap_R_RegisterShaderNoMip(ART_BACK1);
@@ -222,13 +222,14 @@ static void UI_RemoveBotsMenu_Init(void) {
 	int y;
 
 	memset(&removeBotsMenuInfo, 0, sizeof(removeBotsMenuInfo));
+
 	removeBotsMenuInfo.menu.fullscreen = qfalse;
 	removeBotsMenuInfo.menu.wrapAround = qtrue;
 
 	UI_RemoveBots_Cache();
-
 	UI_RemoveBotsMenu_GetBots();
 	UI_RemoveBotsMenu_SetBotNames();
+
 	count = removeBotsMenuInfo.numBots < 7 ? removeBotsMenuInfo.numBots : 7;
 
 	removeBotsMenuInfo.banner.generic.type = MTYPE_BTEXT;
@@ -332,6 +333,7 @@ UI_RemoveBotsMenu
 =======================================================================================================================================
 */
 void UI_RemoveBotsMenu(void) {
+
 	UI_RemoveBotsMenu_Init();
 	UI_PushMenu(&removeBotsMenuInfo.menu);
 }

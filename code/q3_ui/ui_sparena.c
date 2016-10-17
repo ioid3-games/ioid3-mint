@@ -24,6 +24,11 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "ui_local.h"
 
+/*
+=======================================================================================================================================
+UI_SPArena_Start
+=======================================================================================================================================
+*/
 void UI_SPArena_Start(const char *arenaInfo) {
 	char *map;
 	int level;
@@ -54,6 +59,11 @@ void UI_SPArena_Start(const char *arenaInfo) {
 	trap_Cmd_ExecuteText(EXEC_APPEND, va("map %s\n", map));
 }
 
+/*
+=======================================================================================================================================
+UI_SPMap_f
+=======================================================================================================================================
+*/
 void UI_SPMap_f(void) {
 	char command[16];
 	char map[MAX_QPATH];
@@ -69,8 +79,7 @@ void UI_SPMap_f(void) {
 		Com_Printf("Usage: %s <mapname>\n", command);
 		return;
 	}
-	// don't enable ui_singlePlayerActive if map does not exist because it will
-	// cause the value to be left set(won't be cleared until disconnect or server shutdown).
+	// don't enable ui_singlePlayerActive if map does not exist because it will cause the value to be left set(won't be cleared until disconnect or server shutdown).
 	Com_sprintf(expanded, sizeof(expanded), "maps/%s.bsp", map);
 
 	if (trap_FS_FOpenFile(expanded, NULL, FS_READ) <= 0) {

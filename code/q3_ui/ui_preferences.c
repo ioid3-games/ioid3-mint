@@ -25,39 +25,47 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-GAME OPTIONS MENU
+	GAME OPTIONS MENU
+
 =======================================================================================================================================
 */
 
-
 #include "ui_local.h"
-
 
 #define ART_FRAMEL "menu/art/frame2_l"
 #define ART_FRAMER "menu/art/frame1_r"
 #define ART_BACK0 "menu/art/back_0"
 #define ART_BACK1 "menu/art/back_1"
 
-#define PREFERENCES_X_POS		360
+#define PREFERENCES_X_POS 360
 
 enum {
-	ID_CROSSHAIR, ID_VIEWBOB, ID_SIMPLEITEMS, ID_HIGHQUALITYSKY, ID_EJECTINGBRASS, ID_WALLMARKS, ID_DYNAMICLIGHTS, ID_IDENTIFYTARGET, ID_SYNCEVERYFRAME, ID_FORCEMODEL, ID_DRAWTEAMOVERLAY, ID_ALLOWDOWNLOAD, ID_SPLITVERTICAL, ID_SPLITTEXTSIZE, ID_ATMEFFECTS,
-
+	ID_CROSSHAIR,
+	ID_VIEWBOB,
+	ID_SIMPLEITEMS,
+	ID_HIGHQUALITYSKY,
+	ID_EJECTINGBRASS,
+	ID_WALLMARKS,
+	ID_DYNAMICLIGHTS,
+	ID_IDENTIFYTARGET,
+	ID_SYNCEVERYFRAME,
+	ID_FORCEMODEL,
+	ID_DRAWTEAMOVERLAY,
+	ID_ALLOWDOWNLOAD,
+	ID_SPLITVERTICAL,
+	ID_SPLITTEXTSIZE,
+	ID_ATMEFFECTS,
 	ID_NUM_ITEMS,
-
 	ID_BACK
 };
 
-#define NUM_CROSSHAIRS			10
-
+#define NUM_CROSSHAIRS 10
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
-
 	menulist_s crosshair;
 	menuradiobutton_s viewbob;
 	menuradiobutton_s simpleitems;
@@ -76,23 +84,42 @@ typedef struct {
 	menubitmap_s back;
 	qhandle_t crosshairShader[NUM_CROSSHAIRS];
 } preferences_t;
+
 static preferences_t s_preferences;
+
 static const char *teamoverlay_names[] = {
-	"off", "upper right", "lower right", "lower left", NULL
+	"off",
+	"upper right",
+	"lower right",
+	"lower left",
+	NULL
 };
 
 static const char *splitvertical_names[] = {
-	"horizontal", "vertical", NULL
+	"horizontal",
+	"vertical",
+	NULL
 };
 
 static const char *splittextsize_names[] = {
-	"small", "medium", "large", NULL
+	"small",
+	"medium",
+	"large",
+	NULL
 };
 
 static const char *atmeffects_names[] = {
-	"off", "low", "high", NULL
+	"off",
+	"low",
+	"high",
+	NULL
 };
 
+/*
+=======================================================================================================================================
+Preferences_SetMenuItems
+=======================================================================================================================================
+*/
 static void Preferences_SetMenuItems(void) {
 	float textScale;
 
@@ -129,7 +156,11 @@ static void Preferences_SetMenuItems(void) {
 	}
 }
 
-
+/*
+=======================================================================================================================================
+Preferences_Event
+=======================================================================================================================================
+*/
 static void Preferences_Event(void *ptr, int notification) {
 
 	if (notification != QM_ACTIVATED) {
@@ -137,60 +168,60 @@ static void Preferences_Event(void *ptr, int notification) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_CROSSHAIR:
-		trap_Cvar_SetValue("cg_drawCrosshair", s_preferences.crosshair.curvalue);
-		break;
-	case ID_VIEWBOB:
-		trap_Cvar_SetValue("cg_viewbob", s_preferences.viewbob.curvalue);
-		break;
-	case ID_SIMPLEITEMS:
-		trap_Cvar_SetValue("cg_simpleItems", s_preferences.simpleitems.curvalue);
-		break;
-	case ID_HIGHQUALITYSKY:
-		trap_Cvar_SetValue("r_fastsky", !s_preferences.highqualitysky.curvalue);
-		break;
-	case ID_EJECTINGBRASS:
-		if (s_preferences.brass.curvalue) {
-			trap_Cvar_Reset("cg_brassTime");
-		} else {
-			trap_Cvar_SetValue("cg_brassTime", 0);
-		}
+		case ID_CROSSHAIR:
+			trap_Cvar_SetValue("cg_drawCrosshair", s_preferences.crosshair.curvalue);
+			break;
+		case ID_VIEWBOB:
+			trap_Cvar_SetValue("cg_viewbob", s_preferences.viewbob.curvalue);
+			break;
+		case ID_SIMPLEITEMS:
+			trap_Cvar_SetValue("cg_simpleItems", s_preferences.simpleitems.curvalue);
+			break;
+		case ID_HIGHQUALITYSKY:
+			trap_Cvar_SetValue("r_fastsky", !s_preferences.highqualitysky.curvalue);
+			break;
+		case ID_EJECTINGBRASS:
+			if (s_preferences.brass.curvalue) {
+				trap_Cvar_Reset("cg_brassTime");
+			} else {
+				trap_Cvar_SetValue("cg_brassTime", 0);
+			}
 
-		break;
-	case ID_WALLMARKS:
-		trap_Cvar_SetValue("cg_marks", s_preferences.wallmarks.curvalue);
-		break;
-	case ID_DYNAMICLIGHTS:
-		trap_Cvar_SetValue("r_dynamiclight", s_preferences.dynamiclights.curvalue);
-		break;
-	case ID_IDENTIFYTARGET:
-		trap_Cvar_SetValue("cg_drawCrosshairNames", s_preferences.identifytarget.curvalue);
-		break;
-	case ID_SYNCEVERYFRAME:
-		trap_Cvar_SetValue("r_finish", s_preferences.synceveryframe.curvalue);
-		break;
-	case ID_FORCEMODEL:
-		trap_Cvar_SetValue("cg_forcemodel", s_preferences.forcemodel.curvalue);
-		break;
-	case ID_DRAWTEAMOVERLAY:
-		trap_Cvar_SetValue("cg_drawTeamOverlay", s_preferences.drawteamoverlay.curvalue);
-		break;
-	case ID_ALLOWDOWNLOAD:
-		trap_Cvar_SetValue("cl_allowDownload", s_preferences.allowdownload.curvalue);
-		trap_Cvar_SetValue("sv_allowDownload", s_preferences.allowdownload.curvalue);
-		break;
-	case ID_SPLITVERTICAL:
-		trap_Cvar_SetValue("cg_splitviewVertical", s_preferences.splitvertical.curvalue);
-		break;
-	case ID_SPLITTEXTSIZE:
-		trap_Cvar_SetValue("cg_splitviewTextScale", 1.0f + (float)s_preferences.splittextsize.curvalue / 2.0f);
-		break;
-	case ID_ATMEFFECTS:
-		trap_Cvar_SetValue("cg_atmosphericEffects", (float)s_preferences.atmeffects.curvalue / 2.0f);
-		break;
-	case ID_BACK:
-		UI_PopMenu();
-		break;
+			break;
+		case ID_WALLMARKS:
+			trap_Cvar_SetValue("cg_marks", s_preferences.wallmarks.curvalue);
+			break;
+		case ID_DYNAMICLIGHTS:
+			trap_Cvar_SetValue("r_dynamiclight", s_preferences.dynamiclights.curvalue);
+			break;
+		case ID_IDENTIFYTARGET:
+			trap_Cvar_SetValue("cg_drawCrosshairNames", s_preferences.identifytarget.curvalue);
+			break;
+		case ID_SYNCEVERYFRAME:
+			trap_Cvar_SetValue("r_finish", s_preferences.synceveryframe.curvalue);
+			break;
+		case ID_FORCEMODEL:
+			trap_Cvar_SetValue("cg_forcemodel", s_preferences.forcemodel.curvalue);
+			break;
+		case ID_DRAWTEAMOVERLAY:
+			trap_Cvar_SetValue("cg_drawTeamOverlay", s_preferences.drawteamoverlay.curvalue);
+			break;
+		case ID_ALLOWDOWNLOAD:
+			trap_Cvar_SetValue("cl_allowDownload", s_preferences.allowdownload.curvalue);
+			trap_Cvar_SetValue("sv_allowDownload", s_preferences.allowdownload.curvalue);
+			break;
+		case ID_SPLITVERTICAL:
+			trap_Cvar_SetValue("cg_splitviewVertical", s_preferences.splitvertical.curvalue);
+			break;
+		case ID_SPLITTEXTSIZE:
+			trap_Cvar_SetValue("cg_splitviewTextScale", 1.0f + (float)s_preferences.splittextsize.curvalue / 2.0f);
+			break;
+		case ID_ATMEFFECTS:
+			trap_Cvar_SetValue("cg_atmosphericEffects", (float)s_preferences.atmeffects.curvalue / 2.0f);
+			break;
+		case ID_BACK:
+			UI_PopMenu();
+			break;
 	}
 }
 
@@ -209,7 +240,6 @@ static void Crosshair_Draw(void *self) {
 	s = (menulist_s *)self;
 	x = s->generic.x;
 	y = s->generic.y;
-
 	style = UI_SMALLFONT;
 	focus = (s->generic.parent->cursor == s->generic.menuPosition);
 
@@ -240,7 +270,11 @@ static void Crosshair_Draw(void *self) {
 	CG_DrawPic(x + SMALLCHAR_WIDTH, y - 4, 24, 24, s_preferences.crosshairShader[s->curvalue]);
 }
 
-
+/*
+=======================================================================================================================================
+Preferences_MenuInit
+=======================================================================================================================================
+*/
 static void Preferences_MenuInit(void) {
 	int y;
 
@@ -433,7 +467,6 @@ static void Preferences_MenuInit(void) {
 	Menu_AddItem(&s_preferences.menu, &s_preferences.banner);
 	Menu_AddItem(&s_preferences.menu, &s_preferences.framel);
 	Menu_AddItem(&s_preferences.menu, &s_preferences.framer);
-
 	Menu_AddItem(&s_preferences.menu, &s_preferences.crosshair);
 	Menu_AddItem(&s_preferences.menu, &s_preferences.viewbob);
 	Menu_AddItem(&s_preferences.menu, &s_preferences.simpleitems);
@@ -449,7 +482,6 @@ static void Preferences_MenuInit(void) {
 	Menu_AddItem(&s_preferences.menu, &s_preferences.splitvertical);
 	Menu_AddItem(&s_preferences.menu, &s_preferences.splittextsize);
 	Menu_AddItem(&s_preferences.menu, &s_preferences.atmeffects);
-
 	Menu_AddItem(&s_preferences.menu, &s_preferences.back);
 
 	Preferences_SetMenuItems();
@@ -479,6 +511,7 @@ UI_PreferencesMenu
 =======================================================================================================================================
 */
 void UI_PreferencesMenu(void) {
+
 	Preferences_MenuInit();
 	UI_PushMenu(&s_preferences.menu);
 }

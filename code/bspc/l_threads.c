@@ -1137,9 +1137,9 @@ void RunThreadsOn(int workcnt, qboolean showpacifier, void (*func)(int)) {
 	init_lock(&lck);
 
 	for (i = 0; i < numthreads - 1; i++) {
-		pid[i] = sprocsp((void (*) (void *, size_t))func, PR_SALL, (void *)i
+		pid[i] = sprocsp((void (*)(void *, size_t))func, PR_SALL, (void *)i
 			, NULL, 0x100000);
-// 		pid[i] = sprocsp((void (*) (void *, size_t))func, PR_SALL, (void *)i
+// 		pid[i] = sprocsp((void (*)(void *, size_t))func, PR_SALL, (void *)i
 // 			, NULL, 0x80000);
 
 		if (pid[i] == -1) {
@@ -1188,7 +1188,7 @@ void AddThread(void (*func)(int)) {
 
 		thread->threadid = currentthreadid;
 
-		thread->id = sprocsp((void (*) (void *, size_t))func, PR_SALL, (void *)thread->threadid, NULL, 0x100000);
+		thread->id = sprocsp((void (*)(void *, size_t))func, PR_SALL, (void *)thread->threadid, NULL, 0x100000);
 
 		if (thread->id == -1) {
 			perror("sproc");

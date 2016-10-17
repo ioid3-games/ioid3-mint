@@ -28,6 +28,11 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "ui_local.h"
 
+/*
+=======================================================================================================================================
+UI_SetBestScores
+=======================================================================================================================================
+*/
 void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 	trap_Cvar_Set("ui_scoreAccuracy", va("%i%%", newInfo->accuracy));
 	trap_Cvar_SetValue("ui_scoreImpressives", newInfo->impressives);
@@ -44,7 +49,8 @@ void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 	trap_Cvar_SetValue("ui_scoreShutoutBonus", newInfo->shutoutBonus);
 	trap_Cvar_Set("ui_scoreTime", va("%02i:%02i", newInfo->time / 60, newInfo->time % 60));
 	trap_Cvar_SetValue("ui_scoreCaptures", newInfo->captures);
-  if (postGame) {
+
+	if (postGame) {
 		trap_Cvar_Set("ui_scoreAccuracy2", va("%i%%", newInfo->accuracy));
 		trap_Cvar_SetValue("ui_scoreImpressives2", newInfo->impressives);
 		trap_Cvar_SetValue("ui_scoreExcellents2", newInfo->excellents);
@@ -63,12 +69,18 @@ void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 	}
 }
 
+/*
+=======================================================================================================================================
+UI_LoadBestScores
+=======================================================================================================================================
+*/
 void UI_LoadBestScores(const char *map, int game) {
 	char fileName[MAX_QPATH];
 	fileHandle_t f;
 	postGameInfo_t newInfo;
 
 	memset(&newInfo, 0, sizeof(postGameInfo_t));
+
 	Com_sprintf(fileName, MAX_QPATH, "games / %s_%i.game", map, game);
 
 	if (trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0) {
@@ -130,8 +142,11 @@ void UI_ClearScores(void) {
 	UI_SetBestScores(&newInfo, qfalse);
 }
 
-
-
+/*
+=======================================================================================================================================
+UI_Cache_f
+=======================================================================================================================================
+*/
 static void UI_Cache_f(void) {
 	Display_CacheAll();
 }
@@ -169,7 +184,7 @@ static void UI_CalcPostGameStats(void) {
 		}
 
 		trap_FS_FCloseFile(f);
-	}					 
+	}
 
 	newInfo.accuracy = atoi(CG_Argv(3));
 	newInfo.impressives = atoi(CG_Argv(4));
@@ -267,7 +282,7 @@ int ui_numCommands = ARRAY_LEN(ui_commands);
 =======================================================================================================================================
 UI_ConsoleCommand
 
-update frame time, commands are executed by CG_ConsoleCommand
+Update frame time, commands are executed by CG_ConsoleCommand.
 =======================================================================================================================================
 */
 void UI_ConsoleCommand(int realTime) {

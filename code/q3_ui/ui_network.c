@@ -25,53 +25,59 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-NETWORK OPTIONS MENU
+	NETWORK OPTIONS MENU
+
 =======================================================================================================================================
 */
 
 #include "ui_local.h"
-
 
 #define ART_FRAMEL "menu/art/frame2_l"
 #define ART_FRAMER "menu/art/frame1_r"
 #define ART_BACK0 "menu/art/back_0"
 #define ART_BACK1 "menu/art/back_1"
 
-#define ID_GRAPHICS			10
-#define ID_DISPLAY			11
-#define ID_SOUND			12
-#define ID_NETWORK			13
-#define ID_RATE				14
-#define ID_VOIP				15
-#define ID_ANTILAG			16
-#define ID_BACK				17
+#define ID_GRAPHICS	10
+#define ID_DISPLAY	11
+#define ID_SOUND	12
+#define ID_NETWORK	13
+#define ID_RATE		14
+#define ID_VOIP		15
+#define ID_ANTILAG	16
+#define ID_BACK		17
 
 
 static const char *rate_items[] = {
-	" <= 28.8K", "33.6K", "56K", "ISDN", "LAN / Cable / xDSL", NULL
+	"<= 28.8K",
+	"33.6K",
+	"56K",
+	"ISDN",
+	"LAN/Cable/xDSL",
+	NULL
 };
 
 static const char *antilag_items[] = {
-	"None", "One Server Frame", "Full", NULL
+	"None",
+	"One Server Frame",
+	"Full",
+	NULL
 };
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
-
 	menutext_s graphics;
 	menutext_s display;
 	menutext_s sound;
 	menutext_s network;
-
 	menulist_s rate;
 	menuradiobutton_s voip;
 	menulist_s antilag;
 	menubitmap_s back;
 } networkOptionsInfo_t;
+
 static networkOptionsInfo_t networkOptionsInfo;
 
 /*
@@ -86,49 +92,49 @@ static void UI_NetworkOptionsMenu_Event(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_GRAPHICS:
-		UI_PopMenu();
-		UI_GraphicsOptionsMenu();
-		break;
-	case ID_DISPLAY:
-		UI_PopMenu();
-		UI_DisplayOptionsMenu();
-		break;
-	case ID_SOUND:
-		UI_PopMenu();
-		UI_SoundOptionsMenu();
-		break;
-	case ID_NETWORK:
-		break;
-	case ID_RATE:
-		if (networkOptionsInfo.rate.curvalue == 4) {
-			networkOptionsInfo.voip.generic.flags &= ~QMF_GRAYED;
-		} else {
-			networkOptionsInfo.voip.generic.flags |= QMF_GRAYED;
-		}
+		case ID_GRAPHICS:
+			UI_PopMenu();
+			UI_GraphicsOptionsMenu();
+			break;
+		case ID_DISPLAY:
+			UI_PopMenu();
+			UI_DisplayOptionsMenu();
+			break;
+		case ID_SOUND:
+			UI_PopMenu();
+			UI_SoundOptionsMenu();
+			break;
+		case ID_NETWORK:
+			break;
+		case ID_RATE:
+			if (networkOptionsInfo.rate.curvalue == 4) {
+				networkOptionsInfo.voip.generic.flags &= ~QMF_GRAYED;
+			} else {
+				networkOptionsInfo.voip.generic.flags |= QMF_GRAYED;
+			}
 
-		if (networkOptionsInfo.rate.curvalue == 0) {
-			trap_Cvar_SetValue("rate", 2500);
-		} else if (networkOptionsInfo.rate.curvalue == 1) {
-			trap_Cvar_SetValue("rate", 3000);
-		} else if (networkOptionsInfo.rate.curvalue == 2) {
-			trap_Cvar_SetValue("rate", 4000);
-		} else if (networkOptionsInfo.rate.curvalue == 3) {
-			trap_Cvar_SetValue("rate", 5000);
-		} else if (networkOptionsInfo.rate.curvalue == 4) {
-			trap_Cvar_SetValue("rate", 25000);
-		}
+			if (networkOptionsInfo.rate.curvalue == 0) {
+				trap_Cvar_SetValue("rate", 2500);
+			} else if (networkOptionsInfo.rate.curvalue == 1) {
+				trap_Cvar_SetValue("rate", 3000);
+			} else if (networkOptionsInfo.rate.curvalue == 2) {
+				trap_Cvar_SetValue("rate", 4000);
+			} else if (networkOptionsInfo.rate.curvalue == 3) {
+				trap_Cvar_SetValue("rate", 5000);
+			} else if (networkOptionsInfo.rate.curvalue == 4) {
+				trap_Cvar_SetValue("rate", 25000);
+			}
 
-		break;
-	case ID_VOIP:
-		trap_Cvar_SetValue("cl_voip", (networkOptionsInfo.voip.curvalue) ? 1 : 0);
-		break;
-	case ID_ANTILAG:
-		trap_Cvar_SetValue("cg_antiLag", networkOptionsInfo.antilag.curvalue);
-		break;
-	case ID_BACK:
-		UI_PopMenu();
-		break;
+			break;
+		case ID_VOIP:
+			trap_Cvar_SetValue("cl_voip", (networkOptionsInfo.voip.curvalue) ? 1 : 0);
+			break;
+		case ID_ANTILAG:
+			trap_Cvar_SetValue("cg_antiLag", networkOptionsInfo.antilag.curvalue);
+			break;
+		case ID_BACK:
+			UI_PopMenu();
+			break;
 	}
 }
 
@@ -287,6 +293,7 @@ UI_NetworkOptionsMenu_Cache
 =======================================================================================================================================
 */
 void UI_NetworkOptionsMenu_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_FRAMEL);
 	trap_R_RegisterShaderNoMip(ART_FRAMER);
 	trap_R_RegisterShaderNoMip(ART_BACK0);
@@ -299,6 +306,7 @@ UI_NetworkOptionsMenu
 =======================================================================================================================================
 */
 void UI_NetworkOptionsMenu(void) {
+
 	UI_NetworkOptionsMenu_Init();
 	UI_PushMenu(&networkOptionsInfo.menu);
 	Menu_SetCursorToItem(&networkOptionsInfo.menu, &networkOptionsInfo.network);

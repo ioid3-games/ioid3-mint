@@ -43,8 +43,8 @@ typedef struct {
 	menutext_s yes;
 	int slashX;
 	const char *question;
-	void (*draw) (void);
-	void (*action) (qboolean result);
+	void (*draw)(void);
+	void (*action)(qboolean result);
 	int style;
 	const char **lines;
 } confirmMenu_t;
@@ -159,7 +159,7 @@ void ConfirmMenu_Cache(void) {
 UI_ConfirmMenu_Style
 =======================================================================================================================================
 */
-void UI_ConfirmMenu_Style(const char *question, int style, void (*draw) (void), void (*action) (qboolean result)) {
+void UI_ConfirmMenu_Style(const char *question, int style, void (*draw)(void), void (*action)(qboolean result)) {
 	int n1, n2, n3;
 	int l1, l2, l3;
 
@@ -174,8 +174,8 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw) (void), 
 	l1 = 320 - (n1 / 2);
 	l2 = l1 + n2;
 	l3 = l2 + n3;
-	s_confirm.slashX = l2;
 
+	s_confirm.slashX = l2;
 	s_confirm.question = question;
 	s_confirm.draw = draw;
 	s_confirm.action = action;
@@ -224,7 +224,7 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw) (void), 
 UI_ConfirmMenu
 =======================================================================================================================================
 */
-void UI_ConfirmMenu(const char *question, void (*draw) (void), void (*action) (qboolean result)) {
+void UI_ConfirmMenu(const char *question, void (*draw)(void), void (*action)(qboolean result)) {
 	UI_ConfirmMenu_Style(question, UI_CENTER|UI_INVERSE, draw, action);
 }
 
@@ -248,7 +248,6 @@ void UI_Message(const char **lines) {
 
 	s_confirm.lines = lines;
 	s_confirm.style = UI_CENTER|UI_INVERSE|UI_SMALLFONT;
-
 	s_confirm.menu.draw = MessageMenu_Draw;
 	s_confirm.menu.key = ConfirmMenu_Key;
 	s_confirm.menu.wrapAround = qtrue;

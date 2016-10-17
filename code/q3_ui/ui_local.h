@@ -28,7 +28,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "../cgame/cg_local.h"
 #include "../ui/ui_public.h"
 
-typedef void (*voidfunc_f) (void);
+typedef void (*voidfunc_f)(void);
+
 extern vmCvar_t ui_ffa_fraglimit;
 extern vmCvar_t ui_ffa_timelimit;
 extern vmCvar_t ui_tourney_fraglimit;
@@ -50,7 +51,6 @@ extern vmCvar_t ui_harvester_capturelimit;
 extern vmCvar_t ui_harvester_timelimit;
 extern vmCvar_t ui_harvester_friendly;
 #endif
-
 extern vmCvar_t ui_publicServer;
 extern vmCvar_t ui_arenasFile;
 extern vmCvar_t ui_botsFile;
@@ -90,68 +90,58 @@ extern vmCvar_t ui_server14;
 extern vmCvar_t ui_server15;
 extern vmCvar_t ui_server16;
 extern vmCvar_t ui_ioq3;
-
-
-
 // ui_qmenu.c
+#define RCOLUMN_OFFSET (BIGCHAR_WIDTH)
+#define LCOLUMN_OFFSET (-BIGCHAR_WIDTH)
+#define SLIDER_RANGE 10
+#define MAX_MENUDEPTH 8
+#define MAX_MENUITEMS 64
 
-
-#define RCOLUMN_OFFSET			(BIGCHAR_WIDTH)
-#define LCOLUMN_OFFSET			(-BIGCHAR_WIDTH)
-
-#define SLIDER_RANGE			10
-
-#define MAX_MENUDEPTH			8
-#define MAX_MENUITEMS			64
-
-#define MTYPE_NULL				0
-#define MTYPE_SLIDER			1	
-#define MTYPE_ACTION			2
-#define MTYPE_SPINCONTROL		3
-#define MTYPE_FIELD				4
-#define MTYPE_RADIOBUTTON		5
-#define MTYPE_BITMAP			6	
-#define MTYPE_TEXT				7
-#define MTYPE_SCROLLLIST		8
-#define MTYPE_PTEXT				9
-#define MTYPE_BTEXT				10
+#define MTYPE_NULL			0
+#define MTYPE_SLIDER		1
+#define MTYPE_ACTION		2
+#define MTYPE_SPINCONTROL	3
+#define MTYPE_FIELD			4
+#define MTYPE_RADIOBUTTON	5
+#define MTYPE_BITMAP		6
+#define MTYPE_TEXT			7
+#define MTYPE_SCROLLLIST	8
+#define MTYPE_PTEXT			9
+#define MTYPE_BTEXT			10
 
 #define QMF_BLINK				((unsigned int) 0x00000001)
 #define QMF_SMALLFONT			((unsigned int) 0x00000002)
 #define QMF_LEFT_JUSTIFY		((unsigned int) 0x00000004)
 #define QMF_CENTER_JUSTIFY		((unsigned int) 0x00000008)
 #define QMF_RIGHT_JUSTIFY		((unsigned int) 0x00000010)
-#define QMF_NUMBERSONLY			((unsigned int) 0x00000020)	// edit field is only numbers
+#define QMF_NUMBERSONLY			((unsigned int) 0x00000020) // edit field is only numbers
 #define QMF_HIGHLIGHT			((unsigned int) 0x00000040)
-#define QMF_HIGHLIGHT_IF_FOCUS	((unsigned int) 0x00000080)	// steady focus
-#define QMF_PULSEIFFOCUS		((unsigned int) 0x00000100)	// pulse if focus
+#define QMF_HIGHLIGHT_IF_FOCUS	((unsigned int) 0x00000080) // steady focus
+#define QMF_PULSEIFFOCUS		((unsigned int) 0x00000100) // pulse if focus
 #define QMF_HASMOUSEFOCUS		((unsigned int) 0x00000200)
 #define QMF_NOONOFFTEXT			((unsigned int) 0x00000400)
-#define QMF_MOUSEONLY			((unsigned int) 0x00000800)	// only mouse input allowed
-#define QMF_HIDDEN				((unsigned int) 0x00001000)	// skips drawing
-#define QMF_GRAYED				((unsigned int) 0x00002000)	// grays and disables
-#define QMF_INACTIVE			((unsigned int) 0x00004000)	// disables any input
-#define QMF_NODEFAULTINIT		((unsigned int) 0x00008000)	// skip default initialization
+#define QMF_MOUSEONLY			((unsigned int) 0x00000800) // only mouse input allowed
+#define QMF_HIDDEN				((unsigned int) 0x00001000) // skips drawing
+#define QMF_GRAYED				((unsigned int) 0x00002000) // grays and disables
+#define QMF_INACTIVE			((unsigned int) 0x00004000) // disables any input
+#define QMF_NODEFAULTINIT		((unsigned int) 0x00008000) // skip default initialization
 #define QMF_OWNERDRAW			((unsigned int) 0x00010000)
 #define QMF_PULSE				((unsigned int) 0x00020000)
-#define QMF_LOWERCASE			((unsigned int) 0x00040000)	// edit field is all lower case
-#define QMF_UPPERCASE			((unsigned int) 0x00080000)	// edit field is all upper case
+#define QMF_LOWERCASE			((unsigned int) 0x00040000) // edit field is all lower case
+#define QMF_UPPERCASE			((unsigned int) 0x00080000) // edit field is all upper case
 #define QMF_SILENT				((unsigned int) 0x00100000)
-
 // callback notifications
-#define QM_GOTFOCUS				1
-#define QM_LOSTFOCUS			2
-#define QM_ACTIVATED			3
+#define QM_GOTFOCUS		1
+#define QM_LOSTFOCUS	2
+#define QM_ACTIVATED	3
 
-typedef struct _tag_menuframework
-{
+typedef struct _tag_menuframework {
 	int cursor;
 	int cursor_prev;
 	int nitems;
 	void *items[MAX_MENUITEMS];
-
-	void (*draw) (void);
-	sfxHandle_t(*key)(int key);
+	void (*draw)(void);
+	sfxHandle_t (*key)(int key);
 	qboolean wrapAround;
 	qboolean fullscreen;
 	qboolean showlogo;
@@ -169,10 +159,9 @@ typedef struct {
 	menuframework_s *parent;
 	int menuPosition;
 	unsigned int flags;
-
-	void (*callback) (void *self, int event);
-	void (*statusbar) (void *self);
-	void (*ownerdraw) (void *self);
+	void (*callback)(void *self, int event);
+	void (*statusbar)(void *self);
+	void (*ownerdraw)(void *self);
 } menucommon_s;
 
 typedef struct {
@@ -218,22 +207,23 @@ typedef struct {
 	qhandle_t focusshader;
 	int width;
 	int height;
-	float *	focuscolor;
+	float *focuscolor;
 } menubitmap_s;
 
 typedef struct {
 	menucommon_s generic;
 	char *string;
 	int style;
-	float *	color;
+	float *color;
 } menutext_s;
+
 extern void Menu_Cache(void);
 extern void Menu_Focus(menucommon_s *m);
 extern void Menu_AddItem(menuframework_s *menu, void *item);
 extern void Menu_AdjustCursor(menuframework_s *menu, int dir);
 extern void Menu_Draw(menuframework_s *menu);
 extern void *Menu_ItemAtCursor(menuframework_s *m);
-extern sfxHandle_t Menu_ActivateItem(menuframework_s *s, menucommon_s * item);
+extern sfxHandle_t Menu_ActivateItem(menuframework_s *s, menucommon_s *item);
 extern void Menu_SetCursor(menuframework_s *s, int cursor);
 extern void Menu_SetCursorToItem(menuframework_s *m, void *ptr);
 extern sfxHandle_t Menu_DefaultKey(menuframework_s *s, int key);
@@ -264,7 +254,7 @@ extern vec4_t color_dim;
 extern vec4_t name_color;
 extern vec4_t list_color;
 extern vec4_t listbar_color;
-extern vec4_t text_color_disabled; 
+extern vec4_t text_color_disabled;
 extern vec4_t text_color_normal;
 extern vec4_t text_color_highlight;
 extern vec4_t text_banner_color;
@@ -273,159 +263,86 @@ extern vec4_t text_small_title_color;
 extern char *ui_medalNames[];
 extern char *ui_medalPicNames[];
 extern char *ui_medalSounds[];
-
-
 // ui_mfield.c
-
-extern void MenuField_Init(menufield_s * m);
+extern void MenuField_Init(menufield_s *m);
 extern void MenuField_Draw(menufield_s *f);
-extern sfxHandle_t MenuField_Key(menufield_s * m, int *key);
-
-
+extern sfxHandle_t MenuField_Key(menufield_s *m, int *key);
 // ui_menu.c
-
 extern void MainMenu_Cache(void);
 extern void UI_MainMenu(void);
 extern void UI_RegisterCvars(void);
 extern void UI_UpdateCvars(void);
-
-
 // ui_credits.c
-
 extern void UI_CreditMenu(void);
-
-
 // ui_ingame.c
-
 extern void InGame_Cache(void);
 extern void UI_InGameMenu(void);
-
-
 // ui_ingame_selectplayer.c
-
 extern void InSelectPlayer_Cache(void);
 extern void InSelectPlayerMenu(void (*playerfunc)(int), const char *banner, qboolean disableMissingPlayers);
-
-
 // ui_confirm.c
-
 extern void ConfirmMenu_Cache(void);
-extern void UI_ConfirmMenu(const char *question, void (*draw) (void), void (*action) (qboolean result));
-extern void UI_ConfirmMenu_Style(const char *question, int style, void (*draw) (void), void (*action) (qboolean result));
+extern void UI_ConfirmMenu(const char *question, void (*draw)(void), void (*action)(qboolean result));
+extern void UI_ConfirmMenu_Style(const char *question, int style, void (*draw)(void), void (*action)(qboolean result));
 extern void UI_Message(const char **lines);
-
-
 // ui_setup.c
-
 extern void UI_SetupMenu_Cache(void);
 extern void UI_SetupMenu(void);
-
-
 // ui_team.c
-
 extern void UI_TeamMainMenu(int localPlayerNum);
 extern void TeamMain_Cache(void);
-
-
 // ui_connect.c
-
 extern void UI_DrawConnectScreen(qboolean overlay);
-
-
 // ui_selectplayer.c
-
 extern void UI_SelectPlayerMenu(void (*playerfunc)(int), const char *banner);
 extern void UI_SelectPlayer_Cache(void);
-
-
 // ui_controls2.c
-
 extern void UI_ControlsMenu(int localPlayerNum);
 extern void Controls_Cache(void);
 extern qboolean Controls_WantsBindKeys(void);
-
-
 // ui_joystick.c
-
 void UI_JoystickMenu(int localPlayerNum);
 void UI_Joystick_Cache(void);
-
-
 // ui_demo2.c
-
 extern void UI_DemosMenu(void);
 extern void Demos_Cache(void);
-
-
 // ui_cinematics.c
-
 extern void UI_CinematicsMenu(void);
 extern void UI_CinematicsMenu_f(void);
 extern void UI_CinematicsMenu_Cache(void);
-
-
 // ui_mods.c
-
 extern void UI_ModsMenu(void);
 extern void UI_ModsMenu_Cache(void);
-
-
 // ui_playermodel.c
-
 extern void UI_PlayerModelMenu(int localPlayerNum);
 extern void PlayerModel_Cache(void);
-
-
 // ui_playersettings.c
-
 extern void UI_PlayerSettingsMenu(int localPlayerNum);
 extern void PlayerSettings_Cache(void);
-
-
 // ui_preferences.c
-
 extern void UI_PreferencesMenu(void);
 extern void Preferences_Cache(void);
-
-
 // ui_specifyserver.c
-
 extern void UI_SpecifyServerMenu(void);
 extern void SpecifyServer_Cache(void);
-
-
 // ui_servers2.c
-
 #define MAX_FAVORITESERVERS 16
-
 extern void UI_ArenaServersMenu(void);
 extern void ArenaServers_Cache(void);
-
-
 // ui_startserver.c
-
 extern void UI_StartServerMenu(qboolean multiplayer);
 extern void StartServer_Cache(void);
 extern void ServerOptions_Cache(void);
 extern void UI_BotSelectMenu(char *bot);
 extern void UI_BotSelectMenu_Cache(void);
-
-
 // ui_serverinfo.c
-
 extern void UI_ServerInfoMenu(void);
 extern void ServerInfo_Cache(void);
-
-
 // ui_video.c
-
 extern void UI_GraphicsOptionsMenu(void);
 extern void GraphicsOptions_Cache(void);
 extern void DriverInfo_Cache(void);
-
-
 // ui_players.c
-
 
 typedef struct {
 	// model info
@@ -434,16 +351,13 @@ typedef struct {
 	qhandle_t torsoModel;
 	lerpFrame_t torso;
 	qhandle_t headModel;
-
 	cgSkin_t modelSkin;
-
 	animation_t animations[MAX_ANIMATIONS];
 	qhandle_t weaponModel;
 	qhandle_t barrelModel;
 	qhandle_t flashModel;
 	vec3_t flashDlightColor;
 	int muzzleFlashTime;
-
 	vec3_t color1;
 	byte c1RGBA[4];
 	// currently in use drawing parms
@@ -475,9 +389,7 @@ void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3
 void UI_PlayerInfo_UpdateColor(uiPlayerInfo_t *pi);
 qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinName, const char *headModelSkinName, const char *teamName);
 
-
 // ui_atoms.c
-
 typedef struct {
 	int frametime;
 	int realtime;
@@ -521,87 +433,53 @@ extern void UI_Refresh(int time);
 extern int UI_MaxSplitView(void);
 extern qboolean m_entersound;
 extern uiStatic_t uis;
-
-
 // ui_spLevel.c
-
 void UI_SPLevelMenu_Cache(void);
 void UI_SPLevelMenu(void);
 void UI_SPLevelMenu_f(void);
 void UI_SPLevelMenu_ReInit(void);
-
-
 // ui_spArena.c
-
 void UI_SPArena_Start(const char *arenaInfo);
 void UI_SPMap_f(void);
-
-
 // ui_spPostgame.c
-
 void UI_SPPostgameMenu_Cache(void);
 void UI_SPPostgameMenu_f(void);
-
-
 // ui_spSkill.c
-
 void UI_SPSkillMenu(const char *arenaInfo);
 void UI_SPSkillMenu_Cache(void);
-
-
 // ui_addbots.c
-
 void UI_AddBots_Cache(void);
 void UI_AddBotsMenu(void);
-
-
 // ui_removebots.c
-
 void UI_RemoveBots_Cache(void);
 void UI_RemoveBotsMenu(void);
-
-
 // ui_teamorders.c
-
 extern void UI_TeamOrdersMenu(void);
 extern void UI_TeamOrdersMenu_f(void);
 extern void UI_TeamOrdersMenu_Cache(void);
-
-
 // ui_loadconfig.c
-
 void UI_LoadConfig_Cache(void);
 void UI_LoadConfigMenu(void);
-
-
 // ui_saveconfig.c
-
 void UI_SaveConfigMenu_Cache(void);
 void UI_SaveConfigMenu(void);
-
-
 // ui_display.c
-
 void UI_DisplayOptionsMenu_Cache(void);
 void UI_DisplayOptionsMenu(void);
-
-
 // ui_sound.c
-
 void UI_SoundOptionsMenu_Cache(void);
 void UI_SoundOptionsMenu(void);
-
-
 // ui_network.c
-
 void UI_NetworkOptionsMenu_Cache(void);
 void UI_NetworkOptionsMenu(void);
-
-
 // ui_gameinfo.c
-
 typedef enum {
-	AWARD_ACCURACY, AWARD_IMPRESSIVE, AWARD_EXCELLENT, AWARD_GAUNTLET, AWARD_FRAGS, AWARD_PERFECT
+	AWARD_ACCURACY,
+	AWARD_IMPRESSIVE,
+	AWARD_EXCELLENT,
+	AWARD_GAUNTLET,
+	AWARD_FRAGS,
+	AWARD_PERFECT
 } awardType_t;
 
 const char *UI_GetArenaInfoByNumber(int num);
@@ -610,11 +488,9 @@ const char *UI_GetSpecialArenaInfo(const char *tag);
 int UI_GetNumArenas(void);
 int UI_GetNumSPArenas(void);
 int UI_GetNumSPTiers(void);
-
 char *UI_GetBotInfoByNumber(int num);
 char *UI_GetBotInfoByName(const char *name);
 int UI_GetNumBots(void);
-
 void UI_GetBestScore(int level, int *score, int *skill);
 void UI_SetBestScore(int level, int score);
 int UI_TierCompleted(int levelWon);
@@ -624,10 +500,8 @@ int UI_GetCurrentGame(void);
 void UI_NewGame(void);
 void UI_LogAwardData(int award, int data);
 int UI_GetAwardLevel(int award);
-
 void UI_SPUnlock_f(void);
 void UI_SPUnlockMedals_f(void);
-
 void UI_InitGameinfo(void);
 
 #endif

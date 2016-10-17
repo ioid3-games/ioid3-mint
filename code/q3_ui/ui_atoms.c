@@ -58,8 +58,9 @@ void UI_PushMenu(menuframework_s *menu) {
 	}
 
 	if (i == uis.menusp) {
-		if (uis.menusp >= MAX_MENUDEPTH)
+		if (uis.menusp >= MAX_MENUDEPTH) {
 			trap_Error("UI_PushMenu: menu stack overflow");
+		}
 
 		uis.stack[uis.menusp++] = menu;
 	}
@@ -76,7 +77,7 @@ void UI_PushMenu(menuframework_s *menu) {
 	for (i = 0; i < menu->nitems; i++) {
 		item = (menucommon_s *)menu->items[i];
 
-		if (!(item->flags & (QMF_GRAYED|QMF_MOUSEONLY|QMF_INACTIVE))) {
+		if (!(item->flags &(QMF_GRAYED|QMF_MOUSEONLY|QMF_INACTIVE))) {
 			menu->cursor_prev = -1;
 			Menu_SetCursor(menu, i);
 			break;
@@ -96,8 +97,9 @@ void UI_PopMenu(void) {
 
 	uis.menusp--;
 
-	if (uis.menusp < 0)
+	if (uis.menusp < 0) {
 		trap_Error("UI_PopMenu: menu stack underflow");
+	}
 
 	if (uis.menusp) {
 		uis.activemenu = uis.stack[uis.menusp - 1];
@@ -113,6 +115,7 @@ UI_ForceMenuOff
 =======================================================================================================================================
 */
 void UI_ForceMenuOff(void) {
+
 	uis.menusp = 0;
 	uis.activemenu = NULL;
 
@@ -137,7 +140,7 @@ static int propMap[128][3] = {
 	{230, 122, 9}, //)
 	{177, 122, 18}, // *
 	{30, 152, 18}, // +
-	{85, 181, 7}, //, 
+	{85, 181, 7}, //,
 	{34, 93, 11}, // -
 	{110, 181, 6}, // .
 	{130, 152, 14}, // /
@@ -544,7 +547,9 @@ void UI_DrawProportionalString_AutoWrapped(int x, int y, int xmax, int ystep, co
 			}
 
 			*s2 = '\0';
+
 			UI_DrawProportionalString(x, y, s1, style, color);
+
 			y += ystep;
 
 			if (c_bcp == '\0') {
@@ -811,8 +816,8 @@ void UI_Cache_f(void) {
 	UI_RemoveBots_Cache();
 	UI_SetupMenu_Cache();
 	UI_SelectPlayer_Cache();
-// UI_LoadConfig_Cache();
-// UI_SaveConfigMenu_Cache();
+//UI_LoadConfig_Cache();
+//UI_SaveConfigMenu_Cache();
 	UI_BotSelectMenu_Cache();
 	UI_ModsMenu_Cache();
 }
@@ -835,7 +840,7 @@ int ui_numCommands = ARRAY_LEN(ui_commands);
 =======================================================================================================================================
 UI_ConsoleCommand
 
-update frame time, commands are executed by CG_ConsoleCommand
+Update frame time, commands are executed by CG_ConsoleCommand.
 =======================================================================================================================================
 */
 void UI_ConsoleCommand(int realTime) {

@@ -42,7 +42,6 @@ If there is only one local player simply runs the function.
 =======================================================================================================================================
 */
 
-
 #include "ui_local.h"
 
 //#define INGAME_FRAME "menu/art/addbotframe"

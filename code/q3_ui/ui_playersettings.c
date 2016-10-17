@@ -47,24 +47,21 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #define NUM_COLOR_EFFECTS 13
 
-#define ID_NAME			10
-#define ID_HANDICAP		11
-#define ID_EFFECTS		12
-#define ID_BACK			13
-#define ID_MODEL		14
-#define ID_EFFECTS2		15
+#define ID_NAME		10
+#define ID_HANDICAP	11
+#define ID_EFFECTS	12
+#define ID_BACK		13
+#define ID_MODEL	14
+#define ID_EFFECTS2	15
 
-#define MAX_NAMELENGTH	20
-
+#define MAX_NAMELENGTH 20
 
 typedef struct {
 	menuframework_s menu;
-
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
 	menubitmap_s player;
-
 	menufield_s name;
 	menulist_s handicap;
 	menulist_s effects;
@@ -81,13 +78,34 @@ typedef struct {
 	int localPlayerNum;
 	char bannerString[32];
 } playersettings_t;
-static playersettings_t s_playersettings;
-static int gamecodetoui[NUM_COLOR_EFFECTS] = {8, 4, 6, 0, 10, 2, 12, 1, 3, 5, 7, 9, 11};
 
+static playersettings_t s_playersettings;
+
+static int gamecodetoui[NUM_COLOR_EFFECTS] = {8, 4, 6, 0, 10, 2, 12, 1, 3, 5, 7, 9, 11};
 static int uitogamecode[NUM_COLOR_EFFECTS] = {4, 8, 6, 9, 2, 10, 3, 11, 1, 12, 5, 13, 7};
 
 static const char *handicap_items[] = {
-	"None", "95", "90", "85", "80", "75", "70", "65", "60", "55", "50", "45", "40", "35", "30", "25", "20", "15", "10", "5", NULL
+	"None",
+	"95",
+	"90",
+	"85",
+	"80",
+	"75",
+	"70",
+	"65",
+	"60",
+	"55",
+	"50",
+	"45",
+	"40",
+	"35",
+	"30",
+	"25",
+	"20",
+	"15",
+	"10",
+	"5",
+	NULL
 };
 
 /*
@@ -145,7 +163,6 @@ static void PlayerSettings_DrawHandicap(void *self) {
 
 	item = (menulist_s *)self;
 	focus = (item->generic.parent->cursor == item->generic.menuPosition);
-
 	style = UI_LEFT|UI_SMALLFONT;
 	color = text_color_normal;
 
@@ -175,7 +192,6 @@ static void PlayerSettings_DrawEffects(void *self) {
 	item = (menulist_s *)self;
 	focus = (item->generic.parent->cursor == item->generic.menuPosition);
 	focusedID = ((menulist_s *)item->generic.parent->items[item->generic.parent->cursor])->generic.id;
-
 	style = UI_LEFT|UI_SMALLFONT;
 	color = text_color_normal;
 	// header pulses if either color bar is in forcus
@@ -250,6 +266,7 @@ static void PlayerSettings_DrawPlayer(void *self) {
 	}
 
 	b = (menubitmap_s *)self;
+
 	UI_DrawPlayer(b->generic.x, b->generic.y, b->width, b->height, &s_playersettings.playerinfo, uis.realtime / 2);
 }
 
@@ -259,6 +276,7 @@ PlayerSettings_SaveChanges
 =======================================================================================================================================
 */
 static void PlayerSettings_SaveChanges(void) {
+
 	// name
 	trap_Cvar_Set(Com_LocalPlayerCvarName(s_playersettings.localPlayerNum, "name"), MField_Buffer(&s_playersettings.name.field));
 	// handicap
@@ -311,7 +329,7 @@ static void PlayerSettings_SetMenuItems(void) {
 	}
 
 	s_playersettings.effects2.curvalue = gamecodetoui[c];
-	// model / skin
+	// model/skin
 	memset(&s_playersettings.playerinfo, 0, sizeof(uiPlayerInfo_t));
 
 	viewangles[YAW] = 180 - 30;
@@ -340,21 +358,21 @@ static void PlayerSettings_MenuEvent(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_HANDICAP:
-		trap_Cvar_Set(Com_LocalPlayerCvarName(s_playersettings.localPlayerNum, "handicap"), va("%i", 100 - 25 * s_playersettings.handicap.curvalue));
-		break;
-	case ID_EFFECTS:
-		PlayerSettings_SaveChanges();
-		UI_PlayerInfo_UpdateColor(&s_playersettings.playerinfo);
-		break;
-	case ID_MODEL:
-		PlayerSettings_SaveChanges();
-		UI_PlayerModelMenu(s_playersettings.localPlayerNum);
-		break;
-	case ID_BACK:
-		PlayerSettings_SaveChanges();
-		UI_PopMenu();
-		break;
+		case ID_HANDICAP:
+			trap_Cvar_Set(Com_LocalPlayerCvarName(s_playersettings.localPlayerNum, "handicap"), va("%i", 100 - 25 * s_playersettings.handicap.curvalue));
+			break;
+		case ID_EFFECTS:
+			PlayerSettings_SaveChanges();
+			UI_PlayerInfo_UpdateColor(&s_playersettings.playerinfo);
+			break;
+		case ID_MODEL:
+			PlayerSettings_SaveChanges();
+			UI_PlayerModelMenu(s_playersettings.localPlayerNum);
+			break;
+		case ID_BACK:
+			PlayerSettings_SaveChanges();
+			UI_PopMenu();
+			break;
 	}
 }
 
@@ -364,19 +382,20 @@ PlayerSettings_StatusBar
 =======================================================================================================================================
 */
 static void PlayerSettings_StatusBar(void *ptr) {
+
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_HANDICAP:
-		UI_DrawString(320, 400, "Lower handicap makes you weaker", UI_CENTER|UI_SMALLFONT, colorWhite);
-		UI_DrawString(320, 420, "giving you more of a challenge", UI_CENTER|UI_SMALLFONT, colorWhite);
-		break;
-	case ID_EFFECTS:
-		UI_DrawString(320, 410, "Color of railgun core", UI_CENTER|UI_SMALLFONT, colorWhite);
-		break;
-	case ID_EFFECTS2:
-		UI_DrawString(320, 410, "Color of railgun disks", UI_CENTER|UI_SMALLFONT, colorWhite);
-		break;
-	default:
-		break;
+		case ID_HANDICAP:
+			UI_DrawString(320, 400, "Lower handicap makes you weaker", UI_CENTER|UI_SMALLFONT, colorWhite);
+			UI_DrawString(320, 420, "giving you more of a challenge", UI_CENTER|UI_SMALLFONT, colorWhite);
+			break;
+		case ID_EFFECTS:
+			UI_DrawString(320, 410, "Color of railgun core", UI_CENTER|UI_SMALLFONT, colorWhite);
+			break;
+			case ID_EFFECTS2:
+			UI_DrawString(320, 410, "Color of railgun disks", UI_CENTER|UI_SMALLFONT, colorWhite);
+			break;
+		default:
+			break;
 	}
 }
 
@@ -529,16 +548,13 @@ static void PlayerSettings_MenuInit(int localPlayerNum) {
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.banner);
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.framel);
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.framer);
-
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.name);
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.handicap);
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.effects);
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.effects2);
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.model);
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.back);
-
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.player);
-
 	Menu_AddItem(&s_playersettings.menu, &s_playersettings.item_null);
 
 	PlayerSettings_SetMenuItems();
@@ -550,6 +566,7 @@ PlayerSettings_Cache
 =======================================================================================================================================
 */
 void PlayerSettings_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_FRAMEL);
 	trap_R_RegisterShaderNoMip(ART_FRAMER);
 	trap_R_RegisterShaderNoMip(ART_MODEL0);
@@ -579,6 +596,7 @@ UI_PlayerSettingsMenu
 =======================================================================================================================================
 */
 void UI_PlayerSettingsMenu(int localPlayerNum) {
+
 	PlayerSettings_MenuInit(localPlayerNum);
 	UI_PushMenu(&s_playersettings.menu);
 }

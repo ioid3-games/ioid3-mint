@@ -136,7 +136,6 @@ static int SV_ReplacePendingServerCommands(client_t *client, const char *cmd) {
 	return qfalse;
 }
 #endif
-
 /*
 =======================================================================================================================================
 SV_AddServerCommand

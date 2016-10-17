@@ -25,9 +25,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #ifdef DEDICATED
 #ifdef _WIN32
 #include <windows.h>
-#define Sys_LoadLibrary(f) (void *)LoadLibrary(f)
+#define Sys_LoadLibrary(f)(void *)LoadLibrary(f)
 #define Sys_UnloadLibrary(h) FreeLibrary((HMODULE)h)
-#define Sys_LoadFunction(h, fn) (void *)GetProcAddress((HMODULE)h, fn)
+#define Sys_LoadFunction(h, fn)(void *)GetProcAddress((HMODULE)h, fn)
 #define Sys_LibraryError() "unknown"
 #else
 #include <dlfcn.h>

@@ -194,7 +194,6 @@ qint64 LittleLong64 (qint64 l) {return _LittleLong64(l);}
 float BigFloatPtr (const float *l) {return _BigFloat(l);}
 float LittleFloatPtr (const float *l) {return _LittleFloat(l);}
 #endif
-
 /*
 =======================================================================================================================================
 CopyShortSwap
