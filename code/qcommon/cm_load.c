@@ -59,6 +59,7 @@ cvar_t *cm_betterSurfaceNums;
 cmodel_t box_model;
 cplane_t *box_planes;
 cbrush_t *box_brush;
+
 int capsule_contents;
 
 void CM_InitBoxHull(void);
@@ -399,8 +400,8 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 	drawVert_t *vert[3];
 	winding_t *polygon;
 	cplane_t *buildPlane = &cm.planes[buildSide->planeNum];
-	// dshader_t *shaderInfo = &cm.shaders[buildSide->shaderNum];
-	// int matches = 0;
+	//dshader_t *shaderInfo = &cm.shaders[buildSide->shaderNum];
+	//int matches = 0;
 	int bestSurfaceNum = -1;
 	int surfnum;
 	dsurface_t *bspDrawSurfaces = cm_bsp->surfaces;
@@ -412,15 +413,15 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 			// ok, looks good
 			return buildSide->surfaceNum;
 		} else {
-			// Com_Printf("DEBUG: brushside surfacenum(%d) mismatch has shader %s, expected %s\n", buildSide->surfaceNum, shaderInfo->shader, cm.shaders[bspDrawSurfaces[buildSide->surfaceNum].shaderNum].shader);
+			//Com_Printf("DEBUG: brushside surfacenum(%d) mismatch has shader %s, expected %s\n", buildSide->surfaceNum, shaderInfo->shader, cm.shaders[bspDrawSurfaces[buildSide->surfaceNum].shaderNum].shader);
 		}
 	}
-	// ZTM: NOTE: Unfortunately this takes longer than is acceptable on a lot of maps, //      and it's only needed for trap_R_SetSurfaceShader / trap_R_GetSurfaceShader.
+	// ZTM: NOTE: Unfortunately this takes longer than is acceptable on a lot of maps, and it's only needed for trap_R_SetSurfaceShader/trap_R_GetSurfaceShader.
 	if (!cm_betterSurfaceNums->integer) {
 		return -1;
 	}
 	// brute force through all surfaces
-	for (s = bspDrawSurfaces, surfnum = 0; surfnum < cm.numSurfaces; ++s,++surfnum) {
+	for (s = bspDrawSurfaces, surfnum = 0; surfnum < cm.numSurfaces; ++s, ++surfnum) {
 		if (s->surfaceType != MST_PLANAR && s->surfaceType != MST_TRIANGLE_SOUP) {
 			continue;
 		}
@@ -435,15 +436,21 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 			vert[2] = &bspDrawVerts[s->firstVert + bspDrawIndexes[s->firstIndex + t + 2]];
 
 			if (s->surfaceType == MST_PLANAR && VectorCompare(vert[0]->normal, vert[1]->normal) && VectorCompare(vert[1]->normal, vert[2]->normal)) {
-				VectorSubtract(vert[0]->normal, buildPlane->normal, normdiff); if (VectorLength(normdiff) >= normalEpsilon) {
+				VectorSubtract(vert[0]->normal, buildPlane->normal, normdiff);
+
+				if (VectorLength(normdiff) >= normalEpsilon) {
 					continue;
 				}
 
-				VectorSubtract(vert[1]->normal, buildPlane->normal, normdiff); if (VectorLength(normdiff) >= normalEpsilon) {
+				VectorSubtract(vert[1]->normal, buildPlane->normal, normdiff);
+
+				if (VectorLength(normdiff) >= normalEpsilon) {
 					continue;
 				}
 
-				VectorSubtract(vert[2]->normal, buildPlane->normal, normdiff); if (VectorLength(normdiff) >= normalEpsilon) {
+				VectorSubtract(vert[2]->normal, buildPlane->normal, normdiff);
+
+				if (VectorLength(normdiff) >= normalEpsilon) {
 					continue;
 				}
 			} else {
@@ -495,7 +502,7 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 			}
 
 			thisarea = WindingArea(polygon);
-			// if (thisarea > 0) {
+			//if (thisarea > 0) {
 			// ++matches;
 			//}
 
@@ -509,8 +516,8 @@ exwinding:
 			;
 		}
 	}
-	// if (Q_stricmpn(shaderInfo->shader, "textures/common/", 16) && Q_stricmp(shaderInfo->shader, "noshader"))
-	// Com_Printf("brushside with %s: %d matches(%f area)\n", shaderInfo->shader, matches, best);
+	//if (Q_stricmpn(shaderInfo->shader, "textures/common/", 16) && Q_stricmp(shaderInfo->shader, "noshader"))
+	//	Com_Printf("brushside with %s: %d matches(%f area)\n", shaderInfo->shader, matches, best);
 
 	return bestSurfaceNum;
 #endif
@@ -854,6 +861,7 @@ void CM_ClearMap(void) {
 
 	BSP_Free(cm_bsp);
 	cm_bsp = NULL;
+
 	Com_Memset(&cm, 0, sizeof(cm));
 
 	CM_ClearLevelPatches();
@@ -919,7 +927,7 @@ int CM_NumInlineModels(void) {
 CM_EntityString
 =======================================================================================================================================
 */
-char *CM_EntityStringvoid) {
+char *CM_EntityString(void) {
 	return cm.entityString;
 }
 

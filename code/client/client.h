@@ -305,8 +305,8 @@ typedef struct {
 	int headerSize;
 	int protocol;
 	// treated as optional, assumed to exist based on headerSize
-	char startTime[20];	// "YYYY - MM - DD HH:MM:SS\0"
-	char endTime[20];	// "YYYY - MM - DD HH:MM:SS\0"
+	char startTime[20];	// "YYYY-MM-DD HH:MM:SS\0"
+	char endTime[20];	// "YYYY-MM-DD HH:MM:SS\0"
 	int runTime;		// Run time in milliseconds. Note: assumed to be directly after endTime when saving demo
 } demoHeader_t;
 extern vm_t *cgvm; // interface to cgame dll or vm

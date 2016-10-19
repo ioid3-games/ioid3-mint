@@ -254,7 +254,6 @@ typedef struct bot_state_s {
 	bot_waypoint_t *curpatrolpoint;			// current patrol point the bot is going for
 	int patrolflags;						// patrol flags
 } bot_state_t;
-
 // entity info
 typedef struct aas_entityinfo_s {
 	int valid;				// true if updated this frame
@@ -300,6 +299,7 @@ int BotAI_GetPlayerState(int playernum, playerState_t *state);
 int BotAI_GetEntityState(int entitynum, entityState_t *state);
 int BotAI_GetSnapshotEntity(int playernum, int sequence, entityState_t *state);
 int BotTeamLeader(bot_state_t *bs);
+
 extern vmCvar_t bot_developer;
 extern vmCvar_t bot_shownodechanges;
 extern vmCvar_t bot_showteamgoals;

@@ -230,7 +230,7 @@ static void PlayerIntroSound(const char *modelAndSkin) {
 =======================================================================================================================================
 G_BotsInGame
 
-Returns number of bots named 'value' on team 'team'(or whole server if 'team' is -1).
+Returns number of bots named 'value' on team 'team' (or whole server if 'team' is -1).
 =======================================================================================================================================
 */
 int G_BotsInGame(const char *value, int team) {
@@ -296,9 +296,8 @@ int G_SelectRandomBotForAdd(int team) {
 	int n, bestCount, bestNum;
 	char *value;
 
-	// To improve random bot selection when there are few bot types, duplicate bots are
-	// allowed on separate teams to try to keep each team from having duplicate bots.
-	// If there are enough bot types to fill the server, avoid duplicating bots on any team.
+	// To improve random bot selection when there are few bot types, duplicate bots are allowed on separate teams to try to keep each
+	// team from having duplicate bots. If there are enough bot types to fill the server, avoid duplicating bots on any team.
 	if (g_numBots >= level.maxplayers) {
 		team = -1;
 	}
@@ -312,7 +311,7 @@ int G_SelectRandomBotForAdd(int team) {
 		if (!value[0]) {
 			value = Info_ValueForKey(g_botInfos[n], "name");
 		}
-		// get number of bots by name / team
+		// get number of bots by name/team
 		botsInGame = G_BotsInGame(value, team);
 
 		if (botsInGame < bestCount) {
@@ -348,7 +347,6 @@ void G_AddRandomBot(int team) {
 	n = G_SelectRandomBotForAdd(team);
 	// Get name of selected bot.
 	value = Info_ValueForKey(g_botInfos[n], "name");
-
 	skill = trap_Cvar_VariableValue("g_spSkill");
 
 	if (team == TEAM_RED) {
@@ -361,6 +359,7 @@ void G_AddRandomBot(int team) {
 
 	Q_strncpyz(netname, value, sizeof(netname));
 	Q_CleanStr(netname);
+
 	trap_Cmd_ExecuteText(EXEC_INSERT, va("addbot %s %f %s %i\n", netname, skill, teamstr, 0));
 }
 
@@ -659,7 +658,7 @@ static int G_DefaultColorForName(const char *name) {
 		val += *p;
 		p++;
 	}
-	// choose value in range 1 - 13
+	// choose value in range 1-13
 	return val % 13 + 1;
 }
 
@@ -707,9 +706,9 @@ static void G_AddBot(const char *name, float skill, const char *team, int delay,
 	}
 	// get the botinfo from bots.txt
 	if (Q_stricmp(name, "random") == 0) {
-		if (Q_stricmp(team, "blue") == 0)
+		if (Q_stricmp(team, "blue") == 0) {
 			t = TEAM_BLUE;
-		else if (Q_stricmp(team, "red") == 0)
+		} else if (Q_stricmp(team, "red") == 0) {
 			t = TEAM_RED;
 		} else {
 			t = TEAM_FREE;

@@ -500,7 +500,6 @@ void PlayerTimerActions(gentity_t *ent, int msec) {
 				}
 			}
 		}
-  }
 	}
 #endif
 }
@@ -681,7 +680,7 @@ static int StuckInOtherPlayer(gentity_t *ent) {
 			continue;
 		}
 
-		if (ent2->r.absmax[2] < ent->r.absmin[2] {
+		if (ent2->r.absmax[2] < ent->r.absmin[2]) {
 			continue;
 		}
 
@@ -703,6 +702,7 @@ void SendPendingPredictableEvents(playerState_t *ps) {
 	int event, seq, i;
 	int extEvent, number;
 	gconnection_t *connection;
+
 	// if there are still events pending
 	if (ps->entityEventSequence < ps->eventSequence) {
 		// create a temporary entity for this event which is sent to everyone except the client who generated the event
@@ -737,7 +737,7 @@ void SendPendingPredictableEvents(playerState_t *ps) {
 
 /*
 =======================================================================================================================================
-PlayerThink
+PlayerThink_real
 
 This will be called once for each client frame, which will usually be a couple times for each server frame on fast clients.
 If "g_synchronousClients 1" is set, this will be called exactly once for each server frame, which makes for smooth demo recording.
@@ -770,6 +770,7 @@ void PlayerThink_real(gentity_t *ent) {
 		ucmd->serverTime = level.time - 1000;
 //		G_Printf("serverTime >>>>>\n");
 	}
+
 	player->lastCmdServerTime = ucmd->serverTime;
 
 	msec = ucmd->serverTime - player->ps.commandTime;
@@ -988,7 +989,7 @@ void PlayerThink_real(gentity_t *ent) {
 =======================================================================================================================================
 PlayerThink
 
-A new command has arrived from the client
+A new command has arrived from the client.
 =======================================================================================================================================
 */
 void PlayerThink(int playerNum) {

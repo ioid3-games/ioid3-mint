@@ -45,26 +45,22 @@ vmCvar_t cg_joystickThreshold[MAX_SPLITVIEW];
 /*
 =======================================================================================================================================
 
-KEY BUTTONS
+ KEY BUTTONS
 
-Continuous button event tracking is complicated by the fact that two different
-input sources(say, mouse button 1 and the control key) can both press the
-same button, but the button should only be released when both of the
-pressing key have been released.
+ Continuous button event tracking is complicated by the fact that two different input sources (say, mouse button 1 and the control key)
+ can both press the same button, but the button should only be released when both of the pressing key have been released.
 
-When a key event issues a button command(+forward, +attack, etc), it appends
-its key number as argv(1) so it can be matched up with the release.
+ When a key event issues a button command (+forward, +attack, etc.), it appends its key number as argv(1) so it can be matched up with
+ the release. argv(2) will be set to the time the event happened, which allows exact control even at low framerates when the down and
+ up events may both get qued at the same time.
 
-argv(2) will be set to the time the event happened, which allows exact
-control even at low framerates when the down and up events may both get qued
-at the same time.
 =======================================================================================================================================
 */
 
 typedef struct {
 	int down[2];			// key nums holding it down
-	int joystickNum[2];		// player joystick number or - 1 if key is not on a joystick
-	int axisNum[2];			// analog joystick axis + 1(possibly negated for negative axis)
+	int joystickNum[2];		// player joystick number or -1 if key is not on a joystick
+	int axisNum[2];			// analog joystick axis + 1 (possibly negated for negative axis)
 	unsigned downtime;		// msec timestamp
 	unsigned msec;			// msec down this frame if both a down and up happened
 	qboolean active;		// current state
@@ -135,7 +131,7 @@ void IN_KeyDown(kbutton_t *b) {
 	}
 
 	trap_Argv(3, c, sizeof(c));
-	joystickNum = *c ? atoi(c) : - 1;
+	joystickNum = *c ? atoi(c) : -1;
 
 	trap_Argv(4, c, sizeof(c));
 	axisNum = atoi(c);
@@ -224,14 +220,14 @@ void IN_KeyUp(kbutton_t *b) {
 =======================================================================================================================================
 CL_AxisFraction
 
-Returns the fraction of the axis press
+Returns the fraction of the axis press.
 =======================================================================================================================================
 */
 float CL_AxisFraction(int localPlayerNum, int joystickNum, int axisNum) {
 	float fraction;
 	int axis;
 
-	// non - analog keystate or analog disabled
+	// non-analog keystate or analog disabled
 	if (axisNum == 0 || !cg_joystickUseAnalog[joystickNum].integer) {
 		return 1;
 	}
@@ -258,7 +254,7 @@ float CL_AxisFraction(int localPlayerNum, int joystickNum, int axisNum) {
 =======================================================================================================================================
 CL_KeyState
 
-Gets fraction of the frame that the key was down as digital and analog input
+Gets fraction of the frame that the key was down as digital and analog input.
 =======================================================================================================================================
 */
 void CL_KeyStateSeparate(localPlayer_t *player, kbutton_t *key, float *pDigitalFrac, float *pAnalogFrac) {
@@ -343,63 +339,493 @@ float CL_KeyState(localPlayer_t *player, kbutton_t *key) {
 	return Com_Clamp(0, 1, digital + analog);
 }
 
+/*
+=======================================================================================================================================
+IN_UpDown
+=======================================================================================================================================
+*/
+void IN_UpDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_up);
+}
 
-void IN_UpDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_up);}
-void IN_UpUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_up);}
-void IN_DownDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_down);}
-void IN_DownUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_down);}
-void IN_LeftDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_left);}
-void IN_LeftUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_left);}
-void IN_RightDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_right);}
-void IN_RightUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_right);}
-void IN_ForwardDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_forward);}
-void IN_ForwardUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_forward);}
-void IN_BackDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_back);}
-void IN_BackUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_back);}
-void IN_LookupDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_lookup);}
-void IN_LookupUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_lookup);}
-void IN_LookdownDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_lookdown);}
-void IN_LookdownUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_lookdown);}
-void IN_MoveleftDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_moveleft);}
-void IN_MoveleftUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_moveleft);}
-void IN_MoverightDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_moveright);}
-void IN_MoverightUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_moveright);}
+/*
+=======================================================================================================================================
+IN_UpUp
+=======================================================================================================================================
+*/
+void IN_UpUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_up);
+}
 
-void IN_SpeedDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_speed);}
-void IN_SpeedUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_speed);}
-void IN_StrafeDown(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_strafe);}
-void IN_StrafeUp(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_strafe);}
+/*
+=======================================================================================================================================
+IN_DownDown
+=======================================================================================================================================
+*/
+void IN_DownDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_down);
+}
 
-void IN_Button0Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[0]);}
-void IN_Button0Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[0]);}
-void IN_Button1Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[1]);}
-void IN_Button1Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[1]);}
-void IN_Button2Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[2]);}
-void IN_Button2Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[2]);}
-void IN_Button3Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[3]);}
-void IN_Button3Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[3]);}
-void IN_Button4Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[4]);}
-void IN_Button4Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[4]);}
-void IN_Button5Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[5]);}
-void IN_Button5Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[5]);}
-void IN_Button6Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[6]);}
-void IN_Button6Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[6]);}
-void IN_Button7Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[7]);}
-void IN_Button7Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[7]);}
-void IN_Button8Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[8]);}
-void IN_Button8Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[8]);}
-void IN_Button9Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[9]);}
-void IN_Button9Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[9]);}
-void IN_Button10Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[10]);}
-void IN_Button10Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[10]);}
-void IN_Button11Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[11]);}
-void IN_Button11Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[11]);}
-void IN_Button12Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[12]);}
-void IN_Button12Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[12]);}
-void IN_Button13Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[13]);}
-void IN_Button13Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[13]);}
-void IN_Button14Down(int localPlayerNum) {IN_KeyDown(&cis[localPlayerNum].in_buttons[14]);}
-void IN_Button14Up(int localPlayerNum) {IN_KeyUp(&cis[localPlayerNum].in_buttons[14]);}
+/*
+=======================================================================================================================================
+IN_DownUp
+=======================================================================================================================================
+*/
+void IN_DownUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_down);
+}
+
+/*
+=======================================================================================================================================
+IN_LeftDown
+=======================================================================================================================================
+*/
+void IN_LeftDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_left);
+}
+
+/*
+=======================================================================================================================================
+IN_LeftUp
+=======================================================================================================================================
+*/
+void IN_LeftUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_left);
+}
+
+/*
+=======================================================================================================================================
+IN_RightDown
+=======================================================================================================================================
+*/
+void IN_RightDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_right);
+}
+
+/*
+=======================================================================================================================================
+IN_RightUp
+=======================================================================================================================================
+*/
+void IN_RightUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_right);
+}
+
+/*
+=======================================================================================================================================
+IN_ForwardDown
+=======================================================================================================================================
+*/
+void IN_ForwardDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_forward);
+}
+
+/*
+=======================================================================================================================================
+IN_ForwardUp
+=======================================================================================================================================
+*/
+void IN_ForwardUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_forward);
+}
+
+/*
+=======================================================================================================================================
+IN_BackDown
+=======================================================================================================================================
+*/
+void IN_BackDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_back);
+}
+
+/*
+=======================================================================================================================================
+IN_BackUp
+=======================================================================================================================================
+*/
+void IN_BackUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_back);
+}
+
+/*
+=======================================================================================================================================
+IN_LookupDown
+=======================================================================================================================================
+*/
+void IN_LookupDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_lookup);
+}
+
+/*
+=======================================================================================================================================
+IN_LookupUp
+=======================================================================================================================================
+*/
+void IN_LookupUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_lookup);
+}
+
+/*
+=======================================================================================================================================
+IN_LookdownDown
+=======================================================================================================================================
+*/
+void IN_LookdownDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_lookdown);
+}
+
+/*
+=======================================================================================================================================
+IN_LookdownUp
+=======================================================================================================================================
+*/
+void IN_LookdownUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_lookdown);
+}
+
+/*
+=======================================================================================================================================
+IN_MoveleftDown
+=======================================================================================================================================
+*/
+void IN_MoveleftDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_moveleft);
+}
+
+/*
+=======================================================================================================================================
+IN_MoveleftUp
+=======================================================================================================================================
+*/
+void IN_MoveleftUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_moveleft);
+}
+
+/*
+=======================================================================================================================================
+IN_MoverightDown
+=======================================================================================================================================
+*/
+void IN_MoverightDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_moveright);
+}
+
+/*
+=======================================================================================================================================
+IN_MoverightUp
+=======================================================================================================================================
+*/
+void IN_MoverightUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_moveright);
+}
+
+/*
+=======================================================================================================================================
+IN_SpeedDown
+=======================================================================================================================================
+*/
+
+void IN_SpeedDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_speed);
+}
+
+/*
+=======================================================================================================================================
+IN_SpeedUp
+=======================================================================================================================================
+*/
+void IN_SpeedUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_speed);
+}
+
+/*
+=======================================================================================================================================
+IN_StrafeDown
+=======================================================================================================================================
+*/
+void IN_StrafeDown(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_strafe);
+}
+
+/*
+=======================================================================================================================================
+IN_StrafeUp
+=======================================================================================================================================
+*/
+void IN_StrafeUp(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_strafe);
+}
+
+/*
+=======================================================================================================================================
+IN_Button0Down
+=======================================================================================================================================
+*/
+
+void IN_Button0Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[0]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button0Up
+=======================================================================================================================================
+*/
+void IN_Button0Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[0]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button1Down
+=======================================================================================================================================
+*/
+void IN_Button1Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[1]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button1Up
+=======================================================================================================================================
+*/
+void IN_Button1Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[1]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button2Down
+=======================================================================================================================================
+*/
+void IN_Button2Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[2]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button2Up
+=======================================================================================================================================
+*/
+void IN_Button2Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[2]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button3Down
+=======================================================================================================================================
+*/
+void IN_Button3Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[3]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button3Up
+=======================================================================================================================================
+*/
+void IN_Button3Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[3]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button4Down
+=======================================================================================================================================
+*/
+void IN_Button4Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[4]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button4Up
+=======================================================================================================================================
+*/
+void IN_Button4Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[4]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button5Down
+=======================================================================================================================================
+*/
+void IN_Button5Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[5]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button5Up
+=======================================================================================================================================
+*/
+void IN_Button5Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[5]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button6Down
+=======================================================================================================================================
+*/
+void IN_Button6Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[6]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button6Up
+=======================================================================================================================================
+*/
+void IN_Button6Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[6]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button7Down
+=======================================================================================================================================
+*/
+void IN_Button7Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[7]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button7Up
+=======================================================================================================================================
+*/
+void IN_Button7Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[7]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button8Down
+=======================================================================================================================================
+*/
+void IN_Button8Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[8]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button8Up
+=======================================================================================================================================
+*/
+void IN_Button8Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[8]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button9Down
+=======================================================================================================================================
+*/
+void IN_Button9Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[9]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button9Up
+=======================================================================================================================================
+*/
+void IN_Button9Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[9]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button10Down
+=======================================================================================================================================
+*/
+void IN_Button10Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[10]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button10Up
+=======================================================================================================================================
+*/
+void IN_Button10Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[10]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button11Down
+=======================================================================================================================================
+*/
+void IN_Button11Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[11]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button11Up
+=======================================================================================================================================
+*/
+void IN_Button11Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[11]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button12Down
+=======================================================================================================================================
+*/
+void IN_Button12Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[12]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button12Up
+=======================================================================================================================================
+*/
+void IN_Button12Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[12]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button13Down
+=======================================================================================================================================
+*/
+void IN_Button13Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[13]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button13Up
+=======================================================================================================================================
+*/
+void IN_Button13Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[13]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button14Down
+=======================================================================================================================================
+*/
+void IN_Button14Down(int localPlayerNum) {
+	IN_KeyDown(&cis[localPlayerNum].in_buttons[14]);
+}
+
+/*
+=======================================================================================================================================
+IN_Button14Up
+=======================================================================================================================================
+*/
+void IN_Button14Up(int localPlayerNum) {
+	IN_KeyUp(&cis[localPlayerNum].in_buttons[14]);
+}
 
 /*
 =======================================================================================================================================

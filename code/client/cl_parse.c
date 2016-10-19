@@ -722,6 +722,7 @@ static qboolean CL_ShouldIgnoreVoipSender(int sender) {
 		return qtrue; // just ignoring this guy.
 	} else if (clc.voipGain[sender] == 0.0f) {
 		return qtrue; // too quiet to play.
+	}
 
 	if (!clc.demoplaying) {
 		for (i = 0; i < CL_MAX_SPLITVIEW; i++) {

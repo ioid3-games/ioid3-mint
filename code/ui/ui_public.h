@@ -26,37 +26,25 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define __UI_PUBLIC_H__
 
 #include "../cgame/cg_public.h"
-
 // UI commands
 extern consoleCommand_t ui_commands[];
 extern int ui_numCommands;
-
 // UI functions used by cgame
-
 void UI_Init(qboolean inGameLoad, int maxSplitView);
 void UI_Shutdown(void);
-
 void UI_KeyEvent(int key, qboolean down);
 void UI_MouseEvent(int localPlayerNum, int dx, int dy);
-
 void UI_GetCursorPos(int localPlayerNum, int *x, int *y);
 void UI_SetCursorPos(int localPlayerNum, int x, int y);
-
 qboolean UI_IsFullscreen(void);
-
 void UI_Refresh(int time);
 void UI_SetActiveMenu(uiMenuCommand_t menu);
 void UI_ConsoleCommand(int realTime);
-
 void UI_DrawConnectScreen(qboolean overlay);
-// if !overlay, the background will be drawn, otherwise it will be
-// overlayed over whatever the cgame has drawn.
+// if !overlay, the background will be drawn, otherwise it will be overlayed over whatever the cgame has drawn.
 // a GetClientState syscall will be made to get the current strings
-
 qboolean UI_WantsBindKeys(void);
 void UI_WindowResized(void);
-
 // used by cg_info.c
 void UI_DrawProportionalString(int x, int y, const char *str, int style, vec4_t color);
-
 #endif

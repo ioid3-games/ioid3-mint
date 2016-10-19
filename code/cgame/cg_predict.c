@@ -286,8 +286,7 @@ static void CG_InterpolatePlayerState(qboolean grabAngles) {
 		return;
 	}
 
-	if (prev->playerNums[cg.cur_localPlayerNum] == -1 ||
-		next->playerNums[cg.cur_localPlayerNum] == -1) {
+	if (prev->playerNums[cg.cur_localPlayerNum] == -1 || next->playerNums[cg.cur_localPlayerNum] == -1) {
 		return;
 	}
 

@@ -22,7 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-// cg_surface.c -- procedurally generated surfaces
+/**************************************************************************************************************************************
+ Procedurally generated surfaces.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 #include "../qcommon/q_unicode.h"
@@ -33,6 +35,7 @@ CG_AddCustomSurface
 =======================================================================================================================================
 */
 qboolean CG_AddCustomSurface(const refEntity_t *re) {
+
 	switch (re->reType) {
 #if 0 // Disabled so that engine code is used. Allows spriteScale and spriteGen shader keywords to be used.
 		case RT_SPRITE:
@@ -127,8 +130,9 @@ static void CG_DoRailDiscs(qhandle_t hShader, byte color[4], int numSegs, const 
 	float scale;
 	polyVert_t verts[4];
 
-	if (numSegs > 1)
+	if (numSegs > 1) {
 		numSegs--;
+	}
 
 	if (!numSegs) {
 		return;
@@ -186,8 +190,11 @@ void CG_SurfaceRailRings(const refEntity_t *originEnt) {
 	VectorCopy(re.origin, end);
 	// compute variables
 	VectorSubtract(end, start, vec);
+
 	len = VectorNormalize(vec);
+
 	MakeNormalVectors(vec, right, up);
+
 	numSegs = (len) / cg_railSegmentLength.value;
 
 	if (numSegs <= 0) {
@@ -271,6 +278,7 @@ void CG_SurfaceRailCore(const refEntity_t *originEnt) {
 	VectorCopy(re.origin, end);
 
 	VectorSubtract(end, start, vec);
+
 	len = VectorNormalize(vec);
 	// setup start and end in local space
 	VectorMA(vec3_origin, -len / 2.0f, forward, start);
@@ -305,6 +313,7 @@ void CG_SurfaceLightningBolt(const refEntity_t *originEnt) {
 	VectorCopy(re.origin, start);
 	// compute variables
 	VectorSubtract(end, start, vec);
+
 	len = VectorNormalize(vec);
 	// setup start and end in local space
 	VectorMA(vec3_origin, -len / 2.0f, forward, start);
@@ -386,8 +395,7 @@ void CG_SurfaceBeam(const refEntity_t *originEnt) {
 			numVerts++;
 		}
 	}
-	// for acting like Q3A create a custom shader with
-	// cull none and blendfunc GL_ONE GL_ONE
+	// for acting like Q3A create a custom shader with cull none and blendfunc GL_ONE GL_ONE
 	trap_R_AddPolysToScene(re.customShader, 4, verts, NUM_BEAM_SEGS, 0, 0);
 }
 
@@ -395,9 +403,7 @@ void CG_SurfaceBeam(const refEntity_t *originEnt) {
 =======================================================================================================================================
 CG_SurfaceText
 
-Add text in 3D space. Text faces away from axis forward directory.
-
-ref entity should have origin, axis, and shaderRGBA set
+Add text in 3D space. Text faces away from axis forward directory. ref entity should have origin, axis, and shaderRGBA set.
 =======================================================================================================================================
 */
 void CG_SurfaceText(const refEntity_t *originEnt, const fontInfo_t *font, float scale, const char *text, float adjust, int limit, float gradient, qboolean forceColor) {
@@ -515,7 +521,7 @@ void CG_SurfaceText(const refEntity_t *originEnt, const fontInfo_t *font, float 
 		count++;
 	}
 	// debug axis
-	// re.reType = RT_MODEL;
-	// re.hModel = 0;
-	// trap_R_AddRefEntityToScene(&re);
+	//re.reType = RT_MODEL;
+	//re.hModel = 0;
+	//trap_R_AddRefEntityToScene(&re);
 }

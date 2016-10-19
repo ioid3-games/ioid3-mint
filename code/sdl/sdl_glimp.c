@@ -730,7 +730,7 @@ static void GLimp_InitExtensions(void) {
 				ri.Printf(PRINT_ALL, "...GL_EXT_texture_filter_anisotropic not properly supported!\n");
 				glConfig.maxAnisotropy = 0;
 			} else {
-				ri.Printf(PRINT_ALL, "...using GL_EXT_texture_filter_anisotropic(max: %i)\n", glConfig.maxAnisotropy);
+				ri.Printf(PRINT_ALL, "...using GL_EXT_texture_filter_anisotropic (max: %i)\n", glConfig.maxAnisotropy);
 				glConfig.textureFilterAnisotropic = qtrue;
 			}
 		} else {

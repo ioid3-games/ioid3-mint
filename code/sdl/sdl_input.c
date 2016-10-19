@@ -827,8 +827,9 @@ static void IN_InitJoystick(void) {
 
 		in_joystickNo[i] = Cvar_Get(Com_LocalPlayerCvarName(i, "in_joystickNo"), "0", CVAR_ARCHIVE);
 
-		if (in_joystickNo[i]->integer < 0 || in_joystickNo[i]->integer >= total)
+		if (in_joystickNo[i]->integer < 0 || in_joystickNo[i]->integer >= total) {
 			Cvar_Set(Com_LocalPlayerCvarName(i, "in_joystickNo"), "0");
+		}
 		// don't allow multiple players to use the same joystick
 		for (j = 0; j < i; j++) {
 			if (in_joystick[j]->integer && in_joystickNo[j]->integer == in_joystickNo[i]->integer) {
@@ -1095,7 +1096,7 @@ static void IN_ProcessEvents(void) {
 							utf32 |= (*c++ & 0x3F) << 6;
 							utf32 |= (*c++ & 0x3F);
 						} else {
-							Com_DPrintf("Unrecognised UTF-8 lead byte: 0x%x\n", (unsigned int) *c);
+							Com_DPrintf("Unrecognised UTF-8 lead byte: 0x%x\n", (unsigned int)*c);
 							c++;
 						}
 
@@ -1141,9 +1142,8 @@ static void IN_ProcessEvents(void) {
 						case SDL_BUTTON_X2:
 							b = K_MOUSE5;
 							break;
-							// ZTM:
-							HACK around incorrect SDL2 code
-							// SDL X11 passes the button value directly from X11 instead of remapping to SDL_BUTTON_* 
+							// ZTM: HACK around incorrect SDL2 code
+							// SDL X11 passes the button value directly from X11 instead of remapping to SDL_BUTTON_*
 							// Other than that, SDL does not use buttons aside from the above 5, so.. ignore how this would affect AUX
 						case 8:
 							b = K_MOUSE4;
@@ -1188,7 +1188,7 @@ static void IN_ProcessEvents(void) {
 
 							Cvar_SetValue("r_customwidth", width);
 							Cvar_SetValue("r_customheight", height);
-							Cvar_Set("r_mode", " -1");
+							Cvar_Set("r_mode", "-1");
 
 							re.ResizeWindow(e.window.data1, e.window.data2);
 						}

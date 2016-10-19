@@ -147,7 +147,7 @@ void CG_AddLightstyle(centity_t *cent) {
 	int r, g, b;
 	int stringlength;
 	float offset;
-	// int offsetwhole;
+	//int offsetwhole;
 	int otime;
 	int lastch, nextch;
 
@@ -167,7 +167,7 @@ void CG_AddLightstyle(centity_t *cent) {
 	cent->dl_time = cg.time;
 
 	offset = ((float)otime) / LS_FRAMETIME;
-	// offsetwhole = (int)offset;
+	//offsetwhole = (int)offset;
 
 	cent->dl_backlerp += offset;
 
@@ -194,7 +194,7 @@ void CG_AddLightstyle(centity_t *cent) {
 	nextch = cent->dl_stylestring[cent->dl_frame] - 'a';
 
 	lightval = (lastch * (1.0 - cent->dl_backlerp)) + (nextch * cent->dl_backlerp);
-	// ydnar: dlight values go from 0 - 1.5ish
+	// dlight values go from 0 - 1.5ish
 #if 0
 	lightval = (lightval * (1000.0f / 24.0f)) - 200.0f; // they want 'm' as the "middle" value as 300
 	lightval = MAX(0.0f, lightval);
@@ -208,7 +208,7 @@ void CG_AddLightstyle(centity_t *cent) {
 	r = cl & 255;
 	g = (cl >> 8) & 255;
 	b = (cl >> 16) & 255;
-	// ydnar: if the dlight has angles, then it is a directional global dlight
+	// if the dlight has angles, then it is a directional global dlight
 	if (cent->currentState.angles[0] || cent->currentState.angles[1] || cent->currentState.angles[2]) {
 		vec3_t normal;
 		// ZTM: NOTE: Lightning on ET's Radar map is too bright with multiple light passes
@@ -1030,12 +1030,12 @@ static void CG_Corona(centity_t *cent) {
 
 		dot = DotProduct(dir, cg.refdef.viewaxis[0]);
 
-		if (dot >= -0.6) {   // assumes ~90 deg fov	(SA) changed value to 0.6(screen corner at 90 fov)
-			behind = qtrue;    // use the dot to at least do trivial removal of those behind you.
+		if (dot >= -0.6) { // assumes ~90 deg fov, changed value to 0.6 (screen corner at 90 fov)
+			behind = qtrue; // use the dot to at least do trivial removal of those behind you.
 		}
 		// yeah, I could calc side planes to clip against, but would that be worth it? (much better than dumb dot >= thing?)
 
-		// 	CG_Printf("dot: %f\n", dot);
+		//CG_Printf("dot: %f\n", dot);
 	}
 
 	if (!visible && !behind && !toofar) {

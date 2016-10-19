@@ -61,11 +61,11 @@ static const char *skillLevels[] = {
 
 static const int numSkillLevels = ARRAY_LEN(skillLevels);
 
-#define COLUMN_HOST			0
-#define COLUMN_MAP			1
-#define COLUMN_CLIENTS		2
-#define COLUMN_GAME			3
-#define COLUMN_PING			4
+#define COLUMN_HOST		0
+#define COLUMN_MAP		1
+#define COLUMN_CLIENTS	2
+#define COLUMN_GAME		3
+#define COLUMN_PING		4
 
 #define UIAS_LOCAL		0
 #define UIAS_GLOBAL1	1
@@ -87,7 +87,6 @@ static const char *netSources[] = {
 
 static const int numNetSources = ARRAY_LEN(netSources);
 
-
 static char *netnames[] = {
 	"???",
 	"UDP",
@@ -96,7 +95,6 @@ static char *netnames[] = {
 
 static int gamecodetoui[NUM_COLOR_EFFECTS] = {8, 4, 6, 0, 10, 2, 12, 1, 3, 5, 7, 9, 11};
 static int uitogamecode[NUM_COLOR_EFFECTS] = {4, 8, 6, 9, 2, 10, 3, 11, 1, 12, 5, 13, 7};
-
 
 static void UI_StartServerRefresh(qboolean full);
 static void UI_StopServerRefresh(void);
@@ -121,7 +119,7 @@ int ProcessNewUI(int command, int arg0, int arg1, int arg2, int arg3, int arg4, 
 vmMain
 
 This is the only way control passes into the module.
-This must be the very first function compiled into the .qvm file
+This must be the very first function compiled into the .qvm file.
 =======================================================================================================================================
 */
 vmCvar_t ui_new;
@@ -129,18 +127,35 @@ vmCvar_t ui_debug;
 vmCvar_t ui_initialized;
 vmCvar_t ui_teamArenaFirstRun;
 
+/*
+=======================================================================================================================================
+UI_WantsBindKeys
+=======================================================================================================================================
+*/
 qboolean UI_WantsBindKeys(void) {
 	return Display_WantsBindKeys();
 }
 
+/*
+=======================================================================================================================================
+UI_WindowResized
+=======================================================================================================================================
+*/
 void UI_WindowResized(void) {
 
 }
 
+/*
+=======================================================================================================================================
+AssetCache
+=======================================================================================================================================
+*/
 void AssetCache(void) {
 	int n;
+
 	// if (Assets.textFont == NULL) {
 	//}
+
 	// Assets.background = trap_R_RegisterShaderNoMip(ASSET_BACKGROUND);
 	// Com_Printf("Menu Size: %i bytes\n", sizeof(uiInfo.uiDC.Menus));
 	uiInfo.uiDC.Assets.gradientBar = trap_R_RegisterShaderNoMip(ASSET_GRADIENTBAR);
@@ -174,6 +189,11 @@ void AssetCache(void) {
 	uiInfo.newHighScoreSound = trap_S_RegisterSound("sound/feedback/voc_newhighscore.wav", qfalse);
 }
 
+/*
+=======================================================================================================================================
+UI_FontForScale
+=======================================================================================================================================
+*/
 fontInfo_t *UI_FontForScale(float scale) {
 	fontInfo_t *font = &uiInfo.uiDC.Assets.textFont;
 
@@ -186,6 +206,11 @@ fontInfo_t *UI_FontForScale(float scale) {
 	return font;
 }
 
+/*
+=======================================================================================================================================
+UI_Text_PaintWithCursor
+=======================================================================================================================================
+*/
 void UI_Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, int limit, int textStyle) {
 	float shadowOffset;
 
@@ -200,14 +225,29 @@ void UI_Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, 
 	Text_PaintWithCursor(x, y, UI_FontForScale(scale), scale, color, text, cursorPos, cursor, 0, limit, shadowOffset, 0, qfalse);
 }
 
+/*
+=======================================================================================================================================
+UI_Text_Width
+=======================================================================================================================================
+*/
 int UI_Text_Width(const char *text, float scale, int limit) {
 	return Text_Width(text, UI_FontForScale(scale), scale, limit);
 }
 
+/*
+=======================================================================================================================================
+UI_Text_Height
+=======================================================================================================================================
+*/
 int UI_Text_Height(const char *text, float scale, int limit) {
 	return Text_Height(text, UI_FontForScale(scale), scale, limit);
 }
 
+/*
+=======================================================================================================================================
+UI_Text_Paint
+=======================================================================================================================================
+*/
 void UI_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int textStyle) {
 	float shadowOffset;
 
@@ -222,11 +262,22 @@ void UI_Text_Paint(float x, float y, float scale, const vec4_t color, const char
 	Text_Paint(x, y, UI_FontForScale(scale), scale, color, text, adjust, limit, shadowOffset, 0, qfalse);
 }
 
+/*
+=======================================================================================================================================
+UI_Text_Paint_Limit
+=======================================================================================================================================
+*/
 void UI_Text_Paint_Limit(float *maxX, float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit) {
 	Text_Paint_Limit(maxX, x, y, UI_FontForScale(scale), scale, color, text, adjust, limit);
 }
 
-// used by cgame/cg_info.c
+/*
+=======================================================================================================================================
+UI_DrawProportionalString
+
+Used by cgame/cg_info.c.
+=======================================================================================================================================
+*/
 void UI_DrawProportionalString(int x, int y, const char *str, int style, vec4_t color) {
 	int width;
 	float scale;
@@ -261,19 +312,21 @@ void UI_ShowPostGame(qboolean newHigh) {
 	uiInfo.soundHighScore = newHigh;
 	UI_SetActiveMenu(UIMENU_POSTGAME);
 }
+
+int frameCount = 0;
+int startTime;
+
+#define UI_FPS_FRAMES 4
+
 /*
 =======================================================================================================================================
 UI_Refresh
 =======================================================================================================================================
 */
-
-int frameCount = 0;
-int startTime;
-
-#define UI_FPS_FRAMES	4
 void UI_Refresh(int realtime) {
 	static int index;
 	static int previousTimes[UI_FPS_FRAMES];
+
 	// if (!(Key_GetCatcher() & KEYCATCH_UI)) {
 	// 	return;
 	//}
@@ -301,8 +354,6 @@ void UI_Refresh(int realtime) {
 
 		uiInfo.uiDC.FPS = 1000 * UI_FPS_FRAMES / (float)total;
 	}
-
-
 
 	UI_UpdateCvars();
 
@@ -344,6 +395,11 @@ void UI_Shutdown(void) {
 
 char *defaultMenu = NULL;
 
+/*
+=======================================================================================================================================
+GetMenuBuffer
+=======================================================================================================================================
+*/
 char *GetMenuBuffer(const char *filename) {
 	int len;
 	fileHandle_t f;
@@ -369,6 +425,11 @@ char *GetMenuBuffer(const char *filename) {
   return buf;
 }
 
+/*
+=======================================================================================================================================
+Asset_Parse
+=======================================================================================================================================
+*/
 qboolean Asset_Parse(int handle) {
 	pc_token_t token;
 	const char *tempStr;
@@ -542,6 +603,11 @@ qboolean Asset_Parse(int handle) {
 	return qfalse;
 }
 
+/*
+=======================================================================================================================================
+Font_Report
+=======================================================================================================================================
+*/
 void Font_Report(void) {
 	int i;
   Com_Printf("Font Info\n");
@@ -551,11 +617,21 @@ void Font_Report(void) {
 }
 }
 
+/*
+=======================================================================================================================================
+UI_Report
+=======================================================================================================================================
+*/
 void UI_Report(void) {
   String_Report();
  // Font_Report();
 }
 
+/*
+=======================================================================================================================================
+UI_ParseMenu
+=======================================================================================================================================
+*/
 void UI_ParseMenu(const char *menuFile) {
 	int handle;
 	pc_token_t token;
@@ -604,6 +680,11 @@ void UI_ParseMenu(const char *menuFile) {
 	trap_PC_FreeSource(handle);
 }
 
+/*
+=======================================================================================================================================
+Load_Menu
+=======================================================================================================================================
+*/
 qboolean Load_Menu(int handle) {
 	pc_token_t token;
 
@@ -633,6 +714,11 @@ qboolean Load_Menu(int handle) {
 	return qfalse;
 }
 
+/*
+=======================================================================================================================================
+UI_LoadMenus
+=======================================================================================================================================
+*/
 void UI_LoadMenus(const char *menuFile, qboolean reset) {
 	pc_token_t token;
 	int handle;
@@ -686,6 +772,11 @@ void UI_LoadMenus(const char *menuFile, qboolean reset) {
 	trap_PC_FreeSource(handle);
 }
 
+/*
+=======================================================================================================================================
+UI_Load
+=======================================================================================================================================
+*/
 void UI_Load(void) {
 	char lastName[1024];
 	menuDef_t *menu;
@@ -739,6 +830,11 @@ int UI_SourceForLAN(void) {
 	}
 }
 
+/*
+=======================================================================================================================================
+UI_FilterDescription
+=======================================================================================================================================
+*/
 const char *UI_FilterDescription(int value) {
 
 	if (value <= 0 || value > uiInfo.modCount) {
@@ -748,6 +844,11 @@ const char *UI_FilterDescription(int value) {
 	return uiInfo.modList[value - 1].modDescr;
 }
 
+/*
+=======================================================================================================================================
+UI_FilterDir
+=======================================================================================================================================
+*/
 const char *UI_FilterDir(int value) {
 
 	if (value <= 0 || value > uiInfo.modCount) {
@@ -760,6 +861,11 @@ const char *UI_FilterDir(int value) {
 
 static const char *handicapValues[] = {"None", "95", "90", "85", "80", "75", "70", "65", "60", "55", "50", "45", "40", "35", "30", "25", "20", "15", "10", "5", NULL};
 
+/*
+=======================================================================================================================================
+UI_DrawHandicap
+=======================================================================================================================================
+*/
 static void UI_DrawHandicap(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
 	int i, h;
 
@@ -769,11 +875,20 @@ static void UI_DrawHandicap(rectDef_t *rect, float scale, vec4_t color, int text
   UI_Text_Paint(rect->x, rect->y, scale, color, handicapValues[i], 0, 0, textStyle);
 }
 
+/*
+=======================================================================================================================================
+UI_DrawClanName
+=======================================================================================================================================
+*/
 static void UI_DrawClanName(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
   UI_Text_Paint(rect->x, rect->y, scale, color, CG_Cvar_VariableString("ui_teamName"), 0, 0, textStyle);
 }
 
-
+/*
+=======================================================================================================================================
+UI_SetCapFragLimits
+=======================================================================================================================================
+*/
 static void UI_SetCapFragLimits(qboolean uiVars) {
 	int cap = 5;
 	int frag = 10;
@@ -797,16 +912,29 @@ static void UI_DrawGameType(rectDef_t *rect, float scale, vec4_t color, int text
   UI_Text_Paint(rect->x, rect->y, scale, color, uiInfo.gameTypes[ui_gameType.integer].gameType, 0, 0, textStyle);
 }
 
+/*
+=======================================================================================================================================
+UI_DrawNetGameType
+=======================================================================================================================================
+*/
 static void UI_DrawNetGameType(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
   UI_Text_Paint(rect->x, rect->y, scale, color, uiInfo.gameTypes[ui_netGameType.integer].gameType, 0, 0, textStyle);
 }
 
+/*
+=======================================================================================================================================
+UI_DrawJoinGameType
+=======================================================================================================================================
+*/
 static void UI_DrawJoinGameType(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
   UI_Text_Paint(rect->x, rect->y, scale, color, uiInfo.joinGameTypes[ui_joinGameType.integer].gameType, 0, 0, textStyle);
 }
 
-
-
+/*
+=======================================================================================================================================
+UI_TeamIndexFromName
+=======================================================================================================================================
+*/
 static int UI_TeamIndexFromName(const char *name) {
 	int i;
 
@@ -821,6 +949,11 @@ static int UI_TeamIndexFromName(const char *name) {
   return 0;
 }
 
+/*
+=======================================================================================================================================
+UI_DrawClanLogo
+=======================================================================================================================================
+*/
 static void UI_DrawClanLogo(rectDef_t *rect, float scale, vec4_t color) {
 	int i;
   i = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_teamName"));
@@ -838,6 +971,11 @@ static void UI_DrawClanLogo(rectDef_t *rect, float scale, vec4_t color) {
 }
 }
 
+/*
+=======================================================================================================================================
+UI_DrawClanCinematic
+=======================================================================================================================================
+*/
 static void UI_DrawClanCinematic(rectDef_t *rect, float scale, vec4_t color) {
 	int i;
   i = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_teamName"));
@@ -864,6 +1002,11 @@ static void UI_DrawClanCinematic(rectDef_t *rect, float scale, vec4_t color) {
 	}
 }
 
+/*
+=======================================================================================================================================
+UI_DrawPreviewCinematic
+=======================================================================================================================================
+*/
 static void UI_DrawPreviewCinematic(rectDef_t *rect, float scale, vec4_t color) {
 
 	if (uiInfo.previewMovie > -2) {
@@ -2647,7 +2790,7 @@ static void UI_LoadMovies(void) {
 	}
 }
 
-#define NAMEBUFSIZE(MAX_DEMOS * 32)
+#define NAMEBUFSIZE (MAX_DEMOS * 32)
 
 /*
 =======================================================================================================================================

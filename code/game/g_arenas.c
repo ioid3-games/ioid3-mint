@@ -115,6 +115,7 @@ void UpdateTournamentInfo(void) {
 			perfect, score1, score2, level.time, ent->player->ps.persistant[PERS_CAPTURES]);
 #else
 		perfect = (level.players[playerNum].ps.persistant[PERS_RANK] == 0 && ent->player->ps.persistant[PERS_KILLED] == 0) ? 1 : 0;
+
 		Com_sprintf(msg, sizeof(msg), "postgame %i %i %i %i %i %i %i %i", level.numNonSpectatorPlayers, playerNum, accuracy,
 			ent->player->ps.persistant[PERS_IMPRESSIVE_COUNT], ent->player->ps.persistant[PERS_EXCELLENT_COUNT],
 			ent->player->ps.persistant[PERS_GAUNTLET_FRAG_COUNT], ent->player->ps.persistant[PERS_SCORE],

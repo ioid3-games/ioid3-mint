@@ -171,6 +171,7 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw)(void), v
 	n1 = UI_ProportionalStringWidth("YES/NO");
 	n2 = UI_ProportionalStringWidth("YES");
 	n3 = UI_ProportionalStringWidth("/");
+
 	l1 = 320 - (n1 / 2);
 	l2 = l1 + n2;
 	l3 = l2 + n3;
@@ -180,7 +181,6 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw)(void), v
 	s_confirm.draw = draw;
 	s_confirm.action = action;
 	s_confirm.style = style;
-
 	s_confirm.menu.draw = ConfirmMenu_Draw;
 	s_confirm.menu.key = ConfirmMenu_Key;
 	s_confirm.menu.wrapAround = qtrue;
@@ -236,6 +236,7 @@ Hacked over from Confirm stuff.
 =======================================================================================================================================
 */
 void UI_Message(const char **lines) {
+
 	int n1, l1;
 
 	// zero set all our globals

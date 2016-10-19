@@ -27,21 +27,17 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "q_shared.h"
 #include "qcommon.h"
 #include "bsp.h"
-
 // Implementation notes
 // - Missing new EF2 lighting system support
 // - Missing static LOD models lump support
 // - Missing dynamic LOD for MST_TRIANGLE_SOUP? (it's used by FAKK maps, I don't know if EF2 maps do though)
-
-#define BSP_IDENT	(('!' << 24) + ('2' << 16) + ('F' << 8) + 'E')
-		// little - endian "EF2!"
-
-#define BSP_VERSION			20
+#define BSP_IDENT (('!' << 24) + ('2' << 16) + ('F' << 8) + 'E')
+		// little-endian "EF2!"
+#define BSP_VERSION 20
 
 typedef struct {
 	int fileofs, filelen;
 } lump_t;
-
 // ZTM: 3, 4, 22 to 28 are 0 length(most of the time?). 28 is non-zero on dm_borgurvish
 #define LUMP_SHADERS			0
 #define LUMP_PLANES				1
@@ -95,9 +91,7 @@ typedef struct {
 	int contentFlags;
 	int subdivisions;
 } realDshader_t;
-
 // planes x ^ 1 is allways the opposite of plane x
-
 typedef struct {
 	float normal[3];
 	float dist;
@@ -111,7 +105,7 @@ typedef struct {
 } realDnode_t;
 
 typedef struct {
-	int cluster;			// - 1 = opaque cluster(do I still store these?)
+	int cluster;			// -1 = opaque cluster(do I still store these?)
 	int area;
 	int mins[3];			// for frustum culling
 	int maxs[3];
@@ -152,7 +146,7 @@ typedef struct {
 } realDrawVert_t;
 #if 0
 typedef struct {
-	byte    color[3];
+	byte color[3];
 } lightingVert_t;
 
 typedef struct {
@@ -171,19 +165,17 @@ typedef struct {
 	int lightmapNum;
 	int lightmapX, lightmapY;
 	int lightGroupNum;
-
 	byte color[3];
 } lightingSurf_t;
 
 typedef struct {
 	int lightGroupNum;
 	int firstLightingVert;
-	byte    color[3];
+	byte color[3];
 } lightingVertSurf_t;
 
 #define DYNAMIC_LIGHTMAP_BIT (1 << 30)
-
-#define MAX_LIGHT_GROUP_NAME_LENGTH  64
+#define MAX_LIGHT_GROUP_NAME_LENGTH 64
 
 typedef struct {
 	char name[MAX_LIGHT_GROUP_NAME_LENGTH];
@@ -203,11 +195,17 @@ typedef struct {
 #endif
 
 typedef enum {
-	REAL_MST_BAD, REAL_MST_PLANAR, REAL_MST_PATCH, REAL_MST_TRIANGLE_SOUP, REAL_MST_FLARE, REAL_MST_TERRAIN, REAL_MST_FOLIAGE		// ZTM: NOTE: I made this up. EF2 doesn't have ET - style foliage. But you could with a custom map compiler.
+	REAL_MST_BAD,
+	REAL_MST_PLANAR,
+	REAL_MST_PATCH,
+	REAL_MST_TRIANGLE_SOUP,
+	REAL_MST_FLARE,
+	REAL_MST_TERRAIN,
+	REAL_MST_FOLIAGE		// ZTM: NOTE: I made this up. EF2 doesn't have ET - style foliage. But you could with a custom map compiler.
 } realMapSurfaceType_t;
 
-#define LIGHTMAP_NONE		 - 1
-#define LIGHTMAP_NEEDED		 - 2
+#define LIGHTMAP_NONE		 -1
+#define LIGHTMAP_NEEDED		 -2
 #define NUMBER_TERRAIN_VERTS 9
 
 typedef struct {
@@ -221,7 +219,6 @@ typedef struct {
 	int lightmapNum;
 	int lightmapX, lightmapY;
 	int lightmapWidth, lightmapHeight;
-
 	vec3_t lightmapOrigin;
 	vec3_t lightmapVecs[3];	// for patches, [0] and [1] are lodbounds
 	int patchWidth; // ydnar: num foliage instances
@@ -239,9 +236,11 @@ typedef struct {
 #define LIGHTING_GRIDSIZE_Y 192
 #define LIGHTING_GRIDSIZE_Z 320
 
-/****************************************************
+/*
+=======================================================================================================================================
+GetLumpElements
+=======================================================================================================================================
 */
-
 static int GetLumpElements(dheader_t *header, int lump, int size) {
 	/* check for odd size */
 	if (header->lumps[lump].filelen % size) {
@@ -253,6 +252,11 @@ static int GetLumpElements(dheader_t *header, int lump, int size) {
 	return header->lumps[lump].filelen / size;
 }
 
+/*
+=======================================================================================================================================
+CopyLump
+=======================================================================================================================================
+*/
 static void CopyLump(dheader_t *header, int lump, const void *src, void *dest, int size, qboolean swap) {
 	int length;
 
@@ -264,16 +268,26 @@ static void CopyLump(dheader_t *header, int lump, const void *src, void *dest, i
 	}
 
 	if (swap) {
-		BSP_SwapBlock(dest, (int *) ((byte *)src + header->lumps[lump].fileofs), length);
+		BSP_SwapBlock(dest, (int *)((byte *)src + header->lumps[lump].fileofs), length);
 	} else {
 		Com_Memcpy(dest, (byte *)src + header->lumps[lump].fileofs, length);
 	}
 }
 
+/*
+=======================================================================================================================================
+GetLump
+=======================================================================================================================================
+*/
 static void *GetLump(dheader_t *header, const void *src, int lump) {
-	return (void *) ((byte *)src + header->lumps[lump].fileofs);
+	return (void *)((byte *)src + header->lumps[lump].fileofs);
 }
 
+/*
+=======================================================================================================================================
+BSP_LoadEF2
+=======================================================================================================================================
+*/
 bspFile_t *BSP_LoadEF2(const bspFormat_t *format, const char *name, const void *data, int length) {
 	int i, j, k;
 	dheader_t header;
@@ -343,10 +357,11 @@ bspFile_t *BSP_LoadEF2(const bspFormat_t *format, const char *name, const void *
 
 	bsp->visibilityLength = GetLumpElements(&header, LUMP_VISIBILITY, 1) - VIS_HEADER;
 
-	if (bsp->visibilityLength > 0)
+	if (bsp->visibilityLength > 0) {
 		bsp->visibility = malloc(bsp->visibilityLength);
 	} else {
 		bsp->visibilityLength = 0;
+	}
 	// copy and swap and convert data
 	CopyLump(&header, LUMP_ENTITIES, data, (void *)bsp->entityString, sizeof(*bsp->entityString), qfalse); /* NO SWAP */
 
@@ -544,10 +559,9 @@ bspFile_t *BSP_LoadEF2(const bspFormat_t *format, const char *name, const void *
 	return bsp;
 }
 
-/****************************************************
-*/
-
 bspFormat_t ef2BspFormat = {
-	"EF2", BSP_IDENT, BSP_VERSION, BSP_LoadEF2,
+	"EF2",
+	BSP_IDENT,
+	BSP_VERSION,
+	BSP_LoadEF2,
 };
-

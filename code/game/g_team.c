@@ -152,8 +152,8 @@ static __attribute__((format(printf, 2, 3))) void QDECL PrintMsg(gentity_t *ent,
 =======================================================================================================================================
 AddTeamScore
 
-For gametype GT_TEAM this is called in AddScore in g_combat.c (checks fraglimit to win).
-For gametype > GT_TEAM this is called when gametype - specific scoring happens (checks capturelimit to win).
+For gametype GT_TEAM this is called in AddScore in g_combat.c (checks fraglimit to win). For gametype > GT_TEAM this is called when
+gametype-specific scoring happens (checks capturelimit to win (e.g. capture flag, kill obelisk, return skulls)).
 =======================================================================================================================================
 */
 void AddTeamScore(vec3_t origin, int team, int score) {
@@ -172,7 +172,7 @@ void AddTeamScore(vec3_t origin, int team, int score) {
 		// teams are tied sound
 		eventParm = GTS_TEAMS_ARE_TIED;
 	} else if (level.teamScores[team] >= level.teamScores[otherTeam] && level.teamScores[team] + score < level.teamScores[otherTeam]) {
-		// other team took the lead sound(negative score)
+		// other team took the lead sound (negative score)
 		eventParm = (otherTeam == TEAM_RED) ? GTS_REDTEAM_TOOK_LEAD : GTS_BLUETEAM_TOOK_LEAD;
 	} else if (level.teamScores[team] <= level.teamScores[otherTeam] && level.teamScores[team] + score > level.teamScores[otherTeam]) {
 		// this team took the lead sound
@@ -783,7 +783,7 @@ int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 		trap_SendServerCommand(-1, va("cp \"%s" S_COLOR_WHITE "\ncaptured the flag!\n\"", cl->pers.netname));
 	} else {
 #endif
-	trap_SendServerCommand(-1, va("cp \"%s" S_COLOR_WHITE "\ncaptured the %s flag!\n\"", cl->pers.netname, TeamName(OtherTeam(team))));
+		trap_SendServerCommand(-1, va("cp \"%s" S_COLOR_WHITE "\ncaptured the %s flag!\n\"", cl->pers.netname, TeamName(OtherTeam(team))));
 #ifdef MISSIONPACK
 	}
 #endif

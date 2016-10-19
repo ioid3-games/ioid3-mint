@@ -123,6 +123,7 @@ static void UI_CinematicsMenu_Init(void) {
 	UI_CinematicsMenu_Cache();
 
 	memset(&cinematicsMenuInfo, 0, sizeof(cinematicsMenuInfo));
+
 	cinematicsMenuInfo.menu.fullscreen = qtrue;
 
 	cinematicsMenuInfo.banner.generic.type = MTYPE_BTEXT;
@@ -327,6 +328,7 @@ UI_CinematicsMenu_Cache
 =======================================================================================================================================
 */
 void UI_CinematicsMenu_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_BACK0);
 	trap_R_RegisterShaderNoMip(ART_BACK1);
 	trap_R_RegisterShaderNoMip(ART_FRAMEL);
@@ -339,6 +341,7 @@ UI_CinematicsMenu
 =======================================================================================================================================
 */
 void UI_CinematicsMenu(void) {
+
 	UI_CinematicsMenu_Init();
 	UI_PushMenu(&cinematicsMenuInfo.menu);
 }

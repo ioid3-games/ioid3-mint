@@ -302,7 +302,7 @@ void BotReportStatus(bot_state_t *bs) {
 	Q_strncpyz(carrying, Info_ValueForKey(buf, "c"), sizeof(carrying));
 	Q_strncpyz(action, Info_ValueForKey(buf, "a"), sizeof(action));
 	Q_strncpyz(node, Info_ValueForKey(buf, "n"), sizeof(node));
-	BotAI_Print(PRT_MESSAGE, "%-20s% - 1s% - 2s: %s(%s)\n", netname, leader, carrying, action, node);
+	BotAI_Print(PRT_MESSAGE, "%-20s%-1s%-2s: %s (%s)\n", netname, leader, carrying, action, node);
 }
 
 /*
@@ -345,7 +345,7 @@ void Svcmd_BotTeamplayReport_f(void) {
 	} else {
 		for (i = 0; i < level.maxplayers; i++) {
 			if (!botstates[i] || !botstates[i]->inuse) {
-			continue;
+				continue;
 			}
 
 			BotReportStatus(botstates[i]);

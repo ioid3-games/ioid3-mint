@@ -727,7 +727,7 @@ void CL_StopRecord_f(void) {
 		Com_RealTime(&now);
 		recordEndTime = Sys_Milliseconds();
 
-		Com_sprintf(header.endTime, sizeof(header.endTime), "%04d - %02d - %02d %02d:%02d:%02d", 1900 + now.tm_year, 1 + now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec);
+		Com_sprintf(header.endTime, sizeof(header.endTime), "%04d-%02d-%02d %02d:%02d:%02d", 1900 + now.tm_year, 1 + now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec);
 
 		header.runTime = LittleLong(recordEndTime - clc.demoRecordStartTime);
 
@@ -851,7 +851,7 @@ void CL_Record_f(void) {
 #endif
 		header.protocol = LittleLong(com_protocol->integer);
 
-	Com_sprintf(header.startTime, sizeof(header.startTime), "%04d - %02d - %02d %02d:%02d:%02d", 1900 + now.tm_year, 1 + now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec);
+	Com_sprintf(header.startTime, sizeof(header.startTime), "%04d-%02d-%02d %02d:%02d:%02d", 1900 + now.tm_year, 1 + now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec);
 	Com_Memset(header.endTime, 0, sizeof(header.endTime));
 	// write demo header
 	FS_Write(&header, sizeof(header), clc.demofile);
@@ -1414,7 +1414,7 @@ void CL_ShutdownAll(qboolean shutdownRef) {
 
 /*
 =======================================================================================================================================
-CL_ClearMemory(
+CL_ClearMemory
 
 Called by Com_GameRestart.
 =======================================================================================================================================
@@ -1962,7 +1962,7 @@ void CL_Connect_f(void) {
 		CL_UpdateGUID(NULL, 0);
 	}
 	// if we aren't playing on a lan, send challenge to prevent connection hijacking
-	if (NET_IsLocalAddress(clc.serverAddress))
+	if (NET_IsLocalAddress(clc.serverAddress)) {
 		CL_SetChallenging();
 	} else {
 		clc.state = CA_CONNECTING;
@@ -2233,7 +2233,7 @@ void CL_DownloadsComplete(void) {
 		// by sending the donedl command we request a new gamestate so we don't want to load stuff yet
 		return;
 	}
-	// must restart filesystem at connect to reload mint - game.settings
+	// must restart filesystem at connect to reload mint-game.settings
 	if (!clc.fsRestarted && !com_sv_running->integer) {
 		FS_Restart(qfalse);
 		clc.fsRestarted = qtrue;
@@ -2258,8 +2258,7 @@ void CL_DownloadsComplete(void) {
 =======================================================================================================================================
 CL_BeginDownload
 
-Requests a file to download from the server. Stores it in the current game
-directory.
+Requests a file to download from the server. Stores it in the current game directory.
 =======================================================================================================================================
 */
 void CL_BeginDownload(const char *localName, const char *remoteName) {
@@ -2721,7 +2720,7 @@ void CL_ConnectionlessPacket(netadr_t from, msg_t *msg) {
 			}
 		}
 #ifdef LEGACY_PROTOCOL
-		else {
+		else
 			clc.compat = qtrue;
 #endif
 		if (!*c || challenge != clc.challenge) {

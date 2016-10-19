@@ -1527,7 +1527,7 @@ void SP_func_rotating(gentity_t *ent) {
 =======================================================================================================================================
 */
 
-/*QUAKED func_bobbing(0 .5 .8) ? X_AXIS Y_AXIS
+/*QUAKED func_bobbing (0 .5 .8) ? X_AXIS Y_AXIS
 Normally bobs on the Z axis
 "model2"	.md3 model to also draw
 "height"	amplitude of bob (32 default)

@@ -147,7 +147,7 @@ static char *netnames[] = {
 	NULL
 };
 
-static char communityMessage[] = "Visit http:// clover.moe for News and Updates";
+static char communityMessage[] = "Visit http://clover.moe for News and Updates";
 
 typedef struct {
 	char adrstr[MAX_ADDRESSLENGTH];
@@ -166,7 +166,7 @@ typedef struct servernode_s {
 	int nettype;
 	int minPing;
 	int maxPing;
-} servernode_t; 
+} servernode_t;
 
 typedef struct {
 	char buff[MAX_LISTBOXWIDTH];
@@ -261,7 +261,7 @@ static int QDECL ArenaServers_Compare(const void *arg1, const void *arg2) {
 		case SORT_MAP:
 			return Q_stricmp(t1->mapname, t2->mapname);
 		case SORT_CLIENTS:
-		f1 = t1->maxclients - t1->numclients;
+			f1 = t1->maxclients - t1->numclients;
 
 			if (f1 < 0) {
 				f1 = 0;
@@ -855,6 +855,9 @@ static void ArenaServers_DoRefresh(void) {
 			ArenaServers_Insert(adrstr, info, time);
 			// clear this query from internal list
 			g_arenaservers.pinglist[j].adrstr[0] = '\0';
+		}
+		// clear this query from external list
+		trap_LAN_ClearPing(i);
 	}
 	// get results of servers query
 	// counts can increase as servers respond
@@ -1404,14 +1407,12 @@ static void ArenaServers_MenuInit(void) {
 	g_arenaservers.go.focuspic = ART_CONNECT1;
 
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.banner);
-
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.master);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.gametype);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.sortkey);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.showfull);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.showempty);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.showbots);
-
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.mappic);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.status);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.statusbar);
@@ -1419,7 +1420,6 @@ static void ArenaServers_MenuInit(void) {
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.up);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.down);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.list);
-
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.remove);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.back);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.specify);

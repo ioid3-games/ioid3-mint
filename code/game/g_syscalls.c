@@ -285,7 +285,7 @@ void trap_Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer, i
 
 /*
 =======================================================================================================================================
-rap_Cvar_InfoStringBuffer
+trap_Cvar_InfoStringBuffer
 =======================================================================================================================================
 */
 void trap_Cvar_InfoStringBuffer(int bit, char *buffer, int bufsize) {
@@ -682,9 +682,10 @@ void trap_ClientCommand(int playerNum, const char *command) {
 /*
 =======================================================================================================================================
 trap_BotLibSetup
+
+BotLib traps start here
 =======================================================================================================================================
 */
-// BotLib traps start here
 int trap_BotLibSetup(void) {
 	return syscall(BOTLIB_SETUP);
 }
@@ -722,6 +723,7 @@ trap_BotLibStartFrame
 =======================================================================================================================================
 */
 int trap_BotLibStartFrame(float time) {
+	return syscall(BOTLIB_START_FRAME, PASSFLOAT(time));
 }
 
 /*
@@ -999,7 +1001,7 @@ int trap_AAS_AreaLiquid(int areanum) {
 
 /*
 =======================================================================================================================================
-trap_BotLibUpdateEntity
+trap_AAS_AreaLava
 =======================================================================================================================================
 */
 int trap_AAS_AreaLava(int areanum) {

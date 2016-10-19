@@ -312,6 +312,7 @@ void SV_ChangeMaxClients(void) {
 	player_t *oldPlayers;
 	int count;
 	int playerNum;
+
 	// get the highest client or player number in use
 	count = 0;
 
@@ -363,7 +364,9 @@ void SV_ChangeMaxClients(void) {
 	Com_Memset(svs.clients, 0, sv_maxclients->integer * sizeof(client_t));
 
 	svs.players = Z_Malloc(sv_maxclients->integer * sizeof(player_t));
+
 	Com_Memset(svs.players, 0, sv_maxclients->integer * sizeof(player_t));
+
 	// copy the clients and players over
 	for (i = 0; i < count; i++) {
 		if (oldClients[i].state >= CS_CONNECTED) {
@@ -384,7 +387,6 @@ void SV_ChangeMaxClients(void) {
 	// free the old playes and clients on the hunk
 	Hunk_FreeTempMemory(oldPlayers);
 	Hunk_FreeTempMemory(oldClients);
-
 	// allocate new snapshot entities
 	if (!Com_GameIsSinglePlayer()) {
 		svs.numSnapshotEntities = sv_maxclients->integer * PACKET_BACKUP * MAX_SNAPSHOT_ENTITIES;
@@ -500,7 +502,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 	// set nextmap to the same map, but it may be overriden by the game startup or another console command
 	Cvar_Set("nextmap", "map_restart 0");
-	// Cvar_Set("nextmap", va("map %s", server));
+	//Cvar_Set("nextmap", va("map %s", server));
 
 	for (i = 0; i < sv_maxclients->integer; i++) {
 		// save when the server started for each client already connected
@@ -514,6 +516,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	for (i = 0; i < MAX_CONFIGSTRINGS; i++) {
 		sv.configstrings[i].s = CopyString("");
 		sv.configstrings[i].restricted = qfalse;
+
 		Com_Memset(&sv.configstrings[i].clientList, 0, sizeof(clientList_t));
 	}
 	// make sure we are not paused
@@ -577,7 +580,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 				// setup entity before connecting
 				SV_SetupPlayerEntity(player);
 				// connect the client again
-				denied = VM_ExplicitArgPtr(gvm, VM_Call(gvm, GAME_PLAYER_CONNECT, player - svs.players, qfalse, isBot, i, j));	// firstTime = qfalse
+				denied = VM_ExplicitArgPtr(gvm, VM_Call(gvm, GAME_PLAYER_CONNECT, player - svs.players, qfalse, isBot, i, j)); // firstTime = qfalse
 				player = svs.clients[i].localPlayers[j]; // may be NULL if game dropped player
 
 				if (denied && player != NULL) {
@@ -669,7 +672,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 		CL_StartHunkUsers(qfalse);
 	}
 #endif
-	Com_Printf("-----------------------------------\n");
+	Com_DPrintf("-----------------------------------\n");
 }
 
 /*
@@ -811,8 +814,9 @@ void SV_Shutdown(char *finalmsg) {
 	if (svs.players) {
 		int index;
 
-		for (index = 0; index < sv_maxclients->integer; index++)
+		for (index = 0; index < sv_maxclients->integer; index++) {
 			SV_FreePlayer(&svs.players[index]);
+		}
 
 		Z_Free(svs.players);
 	}

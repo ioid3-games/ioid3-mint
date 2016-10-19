@@ -1490,6 +1490,7 @@ Generates weapon events and modifes the weapon counter.
 static void PM_Weapon(void) {
 	int addTime;
 	int newWeapon;
+
 	// don't allow attack until all buttons are up
 	if (pm->ps->pm_flags & PMF_RESPAWNED) {
 		return;

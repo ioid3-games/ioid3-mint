@@ -1274,7 +1274,6 @@ static void NET_AddLocalAddress(char *ifname, struct sockaddr *addr, struct sock
 		numIP++;
 	}
 }
-
 #if defined(__linux__) || defined(MACOSX) || defined(__BSD__)
 /*
 =======================================================================================================================================

@@ -136,6 +136,7 @@ static void CL_GetClientState(uiClientState_t *vmState, int vmSize) {
 
 	state.connectPacketCount = clc.connectPacketCount;
 	state.connState = clc.state;
+
 	Q_strncpyz(state.servername, clc.servername, sizeof(state.servername));
 	Q_strncpyz(state.updateInfoString, cls.updateInfoString, sizeof(state.updateInfoString));
 	Q_strncpyz(state.messageString, clc.serverMessage, sizeof(state.messageString));
@@ -151,8 +152,9 @@ CL_GetConfigString
 static int CL_GetConfigString(int index, char *buf, int size) {
 	int offset;
 
-	if (index < 0 || index >= MAX_CONFIGSTRINGS)
+	if (index < 0 || index >= MAX_CONFIGSTRINGS) {
 		return qfalse;
+	}
 
 	offset = cl.gameState.stringOffsets[index];
 
@@ -267,7 +269,7 @@ qboolean CL_GetSnapshot(int snapshotNumber, vmSnapshot_t *vmSnapshot, int vmSize
 	for (i = 0; i < MAX_SPLITVIEW; i++) {
 		snapshot.playerNums[i] = clSnap->playerNums[i];
 
-		ps = (sharedPlayerState_t *) ((byte *)playerStates + i * cl.cgamePlayerStateSize);
+		ps = (sharedPlayerState_t *)((byte *)playerStates + i * cl.cgamePlayerStateSize);
 
 		if (clSnap->localPlayerIndex[i] == -1) {
 			Com_Memset(snapshot.areamask[i], 0, sizeof(snapshot.areamask[0]));
@@ -505,7 +507,7 @@ void CL_CM_LoadMap(const char *mapname) {
 =======================================================================================================================================
 CL_Cmd_AutoComplete
 
-auto - complete cvar names, cmd names, and cmd arguments
+auto-complete cvar names, cmd names, and cmd arguments
 =======================================================================================================================================
 */
 void CL_Cmd_AutoComplete(const char *in, char *out, int outSize) {
@@ -1760,7 +1762,7 @@ void CL_InitCGame(void) {
 	FS_GameValid();
 	// init for this gamestate
 	VM_Call(cgvm, CG_INIT, clc.state, CL_MAX_SPLITVIEW, com_playVideo);
-	// only play opening video once per - game load
+	// only play opening video once per-game load
 	com_playVideo = 0;
 	// feed the console text to cgame
 	Cmd_SaveCmdContext();

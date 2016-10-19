@@ -22,24 +22,29 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
+/**************************************************************************************************************************************
+ Load fonts for CGame and UI usage.
+
+ q3_ui loads additional fonts (font1_prop, font1_prop_glo, font2_prop).
+ Team Arena HUD/UI also use separate fonts (specified in .menu files).
+
+ Try to load fonts specified by cg_font * cvars.
+ Falls back to font names and sizes used by Team Arena's .menu files (fonts/smallfont:12, fonts/font:16, and fonts/bigfont:20) or Q3
+ gfx/2d/bigchars.tga bitmap font.
+
+ Q3 gfx/2d/bigchars.tga bitmap font looks like Helvetica or Arial. number font, font1_prop, and font2_prop look similar to Impact Wide
+ but not quite. Team Arena's fonts look like Impact.
+**************************************************************************************************************************************/
+
 #include "cg_local.h"
 #include "../qcommon/q_unicode.h"
 
 static vec4_t lastTextColor = {0, 0, 0, 1};
 
 /*
-Load fonts for CGame and UI usage.
-
-q3_ui loads additional fonts(font1_prop, font1_prop_glo, font2_prop).
-Team Arena HUD / UI also use separate fonts(specified in .menu files).
-
-Try to load fonts specified by cg_font * cvars. Falls back to font names and
-sizes used by Team Arena's .menu files(fonts / smallfont:12, fonts / font:16, 
-and fonts / bigfont:20) or Q3 gfx/2d/bigchars.tga bitmap font.
-
-Q3 gfx/2d/bigchars.tga bitmap font looks like Helvetica or Arial.
-number font, font1_prop, and font2_prop look similar to Impact Wide but not quite.
-Team Arena's fonts look like Impact.
+=======================================================================================================================================
+CG_TextInit
+=======================================================================================================================================
 */
 void CG_TextInit(void) {
 	int tinySize;
@@ -54,28 +59,34 @@ void CG_TextInit(void) {
 	giantSize = 48;
 	numberSize = 48;
 
-	if (!CG_InitTrueTypeFont("fonts / tinyfont", tinySize, 0, &cgs.media.tinyFont)) {
+	if (!CG_InitTrueTypeFont("fonts/tinyfont", tinySize, 0, &cgs.media.tinyFont)) {
 		CG_InitBitmapFont(&cgs.media.tinyFont, tinySize, tinySize);
 	}
 
-	if (!CG_InitTrueTypeFont("fonts / font", smallSize, 0, &cgs.media.smallFont)) {
+	if (!CG_InitTrueTypeFont("fonts/font", smallSize, 0, &cgs.media.smallFont)) {
 		CG_InitBitmapFont(&cgs.media.smallFont, smallSize, smallSize * 0.5f);
 	}
 
-	if (!CG_InitTrueTypeFont("fonts / font", bigSize, 0, &cgs.media.textFont)) {
+	if (!CG_InitTrueTypeFont("fonts/font", bigSize, 0, &cgs.media.textFont)) {
 		CG_InitBitmapFont(&cgs.media.textFont, bigSize, bigSize);
 	}
 
-	if (!CG_InitTrueTypeFont("fonts / giantfont", giantSize, 0, &cgs.media.bigFont)) {
+	if (!CG_InitTrueTypeFont("fonts/giantfont", giantSize, 0, &cgs.media.bigFont)) {
 		CG_InitBitmapFont(&cgs.media.bigFont, giantSize, ceil(giantSize * 0.666666f));
 	}
 
-	if (!CG_InitTrueTypeFont("fonts / numberfont", numberSize, 0, &cgs.media.numberFont)) {
+	if (!CG_InitTrueTypeFont("fonts/numberfont", numberSize, 0, &cgs.media.numberFont)) {
 		CG_InitBitmapNumberFont(&cgs.media.numberFont, numberSize, ceil(numberSize * 0.666666f));
 	}
 }
 
-// 256x256 image with characters that are 16x16
+/*
+=======================================================================================================================================
+CG_InitBitmapFont
+
+256 * 256 image with characters that are 16 * 16.
+=======================================================================================================================================
+*/
 void CG_InitBitmapFont(fontInfo_t *font, int charHeight, int charWidth) {
 	int i, col, row;
 	const char *shaderName;
@@ -86,6 +97,7 @@ void CG_InitBitmapFont(fontInfo_t *font, int charHeight, int charWidth) {
 	hShader = trap_R_RegisterShaderNoMip(shaderName);
 
 	Com_sprintf(font->name, sizeof(font->name), "bitmapfont_%dx%d", charHeight, charWidth);
+
 	font->glyphScale = 48.0f / 16;
 	font->pointSize = charHeight;
 	font->flags = FONTFLAG_CURSORS;
@@ -113,7 +125,13 @@ void CG_InitBitmapFont(fontInfo_t *font, int charHeight, int charWidth) {
 	}
 }
 
-// Status bar number font, separeate 32x32 images for 0 - 9 and minus
+/*
+=======================================================================================================================================
+CG_InitBitmapNumberFont
+
+Status bar number font, separeate 32 * 32 images for 0 - 9 and minus.
+=======================================================================================================================================
+*/
 void CG_InitBitmapNumberFont(fontInfo_t *font, int charHeight, int charWidth) {
 	int i, index;
 	const char *shaderName;
@@ -134,6 +152,7 @@ void CG_InitBitmapNumberFont(fontInfo_t *font, int charHeight, int charWidth) {
 	Com_Memset(font, 0, sizeof(fontInfo_t));
 
 	Com_sprintf(font->name, sizeof(font->name), "numberfont_%dx%d", charHeight, charWidth);
+
 	font->glyphScale = 48.0f / 48;
 	font->pointSize = charHeight;
 	font->flags = 0;
@@ -165,7 +184,13 @@ void CG_InitBitmapNumberFont(fontInfo_t *font, int charHeight, int charWidth) {
 	}
 }
 
-// borderWidth is in screen - pixels, not scaled with resolution
+/*
+=======================================================================================================================================
+CG_InitTrueTypeFont
+
+'borderWidth' is in screen-pixels, not scaled with resolution.
+=======================================================================================================================================
+*/
 qboolean CG_InitTrueTypeFont(const char *name, int pointSize, float borderWidth, fontInfo_t *font) {
 
 	if (cg_forceBitmapFonts.integer) {
@@ -177,21 +202,18 @@ qboolean CG_InitTrueTypeFont(const char *name, int pointSize, float borderWidth,
 	if (!font->name[0]) {
 		return qfalse;
 	}
-	// fallback if missing Q3 bigchars - like cursors only present in Spearmint rendered fonts
+	// fallback if missing Q3 bigchars-like cursors only present in Spearmint rendered fonts
 	if (!(font->flags & FONTFLAG_CURSORS)) {
-		// Team Arena pre - rendered fonts don't have cursor characters(they're just transparent space)
+		// Team Arena pre-rendered fonts don't have cursor characters (they're just transparent space)
 
 		// character 13 is used as a selection marker in q3_ui
 		Com_Memcpy(&font->glyphs[GLYPH_ARROW], &font->glyphs[(int)'>'], sizeof(glyphInfo_t));
 	}
-	// Most TrueType fonts don't contain the glyphs used for text input
-	// cursors, so just hard code them. There is no easy way to hard code
-	// the q3_ui arrow. Though, I don't think programs typically use glyphs
-	// from fonts for text input cursors anyway.
+	// Most TrueType fonts don't contain the glyphs used for text input cursors, so just hard code them. There is no easy way to hard
+	// code the q3_ui arrow. Though, I don't think programs typically use glyphsfrom fonts for text input cursors anyway.
 
-	// ZTM: TODO?: Replace(unreliable / pointless) glyphInfo_t::pitch with
-	// flags so it's possible to check if glyph is missing, so these can
-	// be fallbacks instead of hard coded.
+	// ZTM: TODO?: Replace (unreliable/pointless) glyphInfo_t::pitch withflags so it's possible to check if glyph is missing, so
+	// these can be fallbacks instead of hard coded.
 
 	// missing overstrike block
 	Com_Memcpy(&font->glyphs[GLYPH_OVERSTRIKE], &font->glyphs[(int)'|'], sizeof(glyphInfo_t));
@@ -215,6 +237,11 @@ qboolean CG_InitTrueTypeFont(const char *name, int pointSize, float borderWidth,
 	return qtrue;
 }
 
+/*
+=======================================================================================================================================
+Text_GetGlyph
+=======================================================================================================================================
+*/
 const glyphInfo_t *Text_GetGlyph(const fontInfo_t *font, unsigned long index) {
 
 	if (index == 0 || index >= GLYPHS_PER_FONT) {
@@ -224,6 +251,11 @@ const glyphInfo_t *Text_GetGlyph(const fontInfo_t *font, unsigned long index) {
 	return &font->glyphs[index];
 }
 
+/*
+=======================================================================================================================================
+Text_Width
+=======================================================================================================================================
+*/
 float Text_Width(const char *text, const fontInfo_t *font, float scale, int limit) {
 	int count, len;
 	float out;
@@ -237,7 +269,6 @@ float Text_Width(const char *text, const fontInfo_t *font, float scale, int limi
 
 	useScale = scale * font->glyphScale;
 	out = 0;
-
 	len = Q_UTF8_PrintStrlen(text);
 
 	if (limit > 0 && len > limit) {
@@ -261,6 +292,11 @@ float Text_Width(const char *text, const fontInfo_t *font, float scale, int limi
 	return out * useScale;
 }
 
+/*
+=======================================================================================================================================
+Text_Height
+=======================================================================================================================================
+*/
 float Text_Height(const char *text, const fontInfo_t *font, float scale, int limit) {
 	int len, count;
 	float max;
@@ -274,7 +310,6 @@ float Text_Height(const char *text, const fontInfo_t *font, float scale, int lim
 
 	useScale = scale * font->glyphScale;
 	max = 0;
-
 	len = Q_UTF8_PrintStrlen(text);
 
 	if (limit > 0 && len > limit) {
@@ -302,7 +337,13 @@ float Text_Height(const char *text, const fontInfo_t *font, float scale, int lim
 	return max * useScale;
 }
 
-// Note: scale must be multiplied by font->glyphScale
+/*
+=======================================================================================================================================
+Text_PaintChar
+
+Note: scale must be multiplied by font->glyphScale.
+=======================================================================================================================================
+*/
 void Text_PaintChar(float x, float y, float width, float height, float useScale, float s, float t, float s2, float t2, qhandle_t hShader) {
 	float w, h;
 
@@ -313,7 +354,13 @@ void Text_PaintChar(float x, float y, float width, float height, float useScale,
 	trap_R_DrawStretchPic(x, y, w, h, s, t, s2, t2, hShader);
 }
 
-// Note: scale must be multiplied by font->glyphScale
+/*
+=======================================================================================================================================
+Text_PaintGlyph
+
+Note: scale must be multiplied by font->glyphScale.
+=======================================================================================================================================
+*/
 void Text_PaintGlyph(float x, float y, float useScale, const glyphInfo_t *glyph, float *gradientColor) {
 	float w, h;
 
@@ -329,6 +376,11 @@ void Text_PaintGlyph(float x, float y, float useScale, const glyphInfo_t *glyph,
 	}
 }
 
+/*
+=======================================================================================================================================
+Text_Paint
+=======================================================================================================================================
+*/
 void Text_Paint(float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor) {
 	int len, count;
 	vec4_t newColor;
@@ -345,6 +397,7 @@ void Text_Paint(float x, float y, const fontInfo_t *font, float scale, const vec
 	useScale = scale * font->glyphScale;
 
 	trap_R_SetColor(color);
+
 	Vector4Copy(color, newColor);
 	Vector4Copy(color, lastTextColor);
 
@@ -402,6 +455,11 @@ void Text_Paint(float x, float y, const fontInfo_t *font, float scale, const vec
 	trap_R_SetColor(NULL);
 }
 
+/*
+=======================================================================================================================================
+Text_PaintWithCursor
+=======================================================================================================================================
+*/
 void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor) {
 	int len, count;
 	vec4_t newColor;
@@ -418,6 +476,7 @@ void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale,
 	useScale = scale * font->glyphScale;
 
 	trap_R_SetColor(color);
+
 	Vector4Copy(color, newColor);
 	Vector4Copy(color, lastTextColor);
 
@@ -457,8 +516,7 @@ void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale,
 		if (count == cursorPos && ((cg.realTime / BLINK_DIVISOR) & 1) == 0) {
 			yadj = useScale * glyph2->top;
 
-			Text_PaintChar(x, y - yadj, glyph->left + glyph->xSkip, // use horizontal width of text character
-							glyph2->imageHeight, useScale, glyph2->s, glyph2->t, glyph2->s2, glyph2->t2, glyph2->glyph);
+			Text_PaintChar(x, y - yadj, glyph->left + glyph->xSkip, glyph2->imageHeight, useScale, glyph2->s, glyph2->t, glyph2->s2, glyph2->t2, glyph2->glyph); // use horizontal width of text character
 		}
 
 		yadj = useScale * glyph->top;
@@ -505,6 +563,11 @@ void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale,
 	trap_R_SetColor(NULL);
 }
 
+/*
+=======================================================================================================================================
+Text_Paint_Limit
+=======================================================================================================================================
+*/
 void Text_Paint_Limit(float *maxX, float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, float adjust, int limit) {
 	int len, count;
 	vec4_t newColor;
@@ -564,7 +627,11 @@ void Text_Paint_Limit(float *maxX, float x, float y, const fontInfo_t *font, flo
 
 #define MAX_WRAP_BYTES 1024
 #define MAX_WRAP_LINES 1024
-
+/*
+=======================================================================================================================================
+Text_Paint_AutoWrapped
+=======================================================================================================================================
+*/
 void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *str, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor, float xmax, float ystep, int style) {
 	int width;
 	char *s1, *s2, *s3;
@@ -581,8 +648,6 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 		return;
 	}
 	// Wrap the text
-	// 
-
 	Q_strncpyz(buf, str, sizeof(buf));
 	s1 = s2 = s3 = buf;
 
@@ -593,6 +658,7 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 		do {
 			s3 += Q_UTF8_Width(s3);
 		} while (*s3 != '\n' && *s3 != ' ' && *s3 != '\0');
+
 		c_bcp = *s3;
 		*s3 = '\0';
 		width = Text_Width(s1, font, scale, 0);
@@ -617,12 +683,11 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 			if (c_bcp == '\0') {
 				// that was the last word
 				// we could start a new loop, but that wouldn't be much use
-				// even if the word is too long, we would overflow it(see above)
+				// even if the word is too long, we would overflow it (see above)
 				// so just print it now if needed
 				s2 += Q_UTF8_Width(s2);
 
-				if (*s2 != '\0' && *s2 != '\n') // if we are printing an overflowing line we have s2 == s3
-				{
+				if (*s2 != '\0' && *s2 != '\n') { // if we are printing an overflowing line we have s2 == s3
 					Q_strcat(wrapped, sizeof(wrapped), s2);
 					Q_strcat(wrapped, sizeof(wrapped), "\n");
 
@@ -653,15 +718,13 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 			s1 = s3;
 			s2 = s3;
 
-			if (*s3 == '\0') // we reached the end
-			{
+			if (*s3 == '\0') { // we reached the end
 				break;
 			}
 		} else {
 			s2 = s3;
 
-			if (c_bcp == '\0') // we reached the end
-			{
+			if (c_bcp == '\0') { // we reached the end
 				Q_strcat(wrapped, sizeof(wrapped), s1);
 				Q_strcat(wrapped, sizeof(wrapped), "\n");
 
@@ -675,8 +738,6 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 		}
 	}
 	// Draw the text
-	// 
-
 	switch (style & UI_VA_FORMATMASK) {
 		case UI_VA_CENTER:
 			// center justify at y
@@ -724,7 +785,7 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 		if (numLines >= MAX_WRAP_LINES || autoNewline[numLines]) {
 			Vector4Copy(lastTextColor, newColor);
 		} else {
-			// reset color after non - wrapped lines
+			// reset color after non-wrapped lines
 			Vector4Copy(color, newColor);
 		}
 
@@ -734,4 +795,3 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 		p = strchr(p + 1, '\n');
 	}
 }
-

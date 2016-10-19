@@ -350,7 +350,7 @@ static qboolean CG_FindPlayerModelFile(char *filename, int length, playerInfo_t 
 
 	for (i = 0; i < 2; i++) {
 		if (i == 0 && teamName && *teamName) {
-			//								"models/players/james/stroggs / lower_lily_red.skin"
+			//								"models/players/james/stroggs/lower_lily_red.skin"
 			Com_sprintf(filename, length, "models/players/%s/%s%s_%s_%s.%s", modelName, teamName, base, skinName, team, ext);
 		} else {
 			//								"models/players/james/lower_lily_red.skin"
@@ -363,7 +363,7 @@ static qboolean CG_FindPlayerModelFile(char *filename, int length, playerInfo_t 
 
 		if (cgs.gametype >= GT_TEAM) {
 			if (i == 0 && teamName && *teamName) {
-				//								"models/players/james/stroggs / lower_red.skin"
+				//								"models/players/james/stroggs/lower_red.skin"
 				Com_sprintf(filename, length, "models/players/%s/%s%s_%s.%s", modelName, teamName, base, team, ext);
 			} else {
 				//								"models/players/james/lower_red.skin"
@@ -371,7 +371,7 @@ static qboolean CG_FindPlayerModelFile(char *filename, int length, playerInfo_t 
 			}
 		} else {
 			if (i == 0 && teamName && *teamName) {
-				//								"models/players/james/stroggs / lower_lily.skin"
+				//								"models/players/james/stroggs/lower_lily.skin"
 				Com_sprintf(filename, length, "models/players/%s/%s%s_%s.%s", modelName, teamName, base, skinName, ext);
 			} else {
 				//								"models/players/james/lower_lily.skin"
@@ -563,7 +563,7 @@ qboolean CG_RegisterSkin(const char *name, cgSkin_t *skin, qboolean append) {
 			SkipRestOfLine(&text_p);
 			continue;
 		}
-		// skip RTCW / ET skin settings
+		// skip RTCW/ET skin settings
 		if (!Q_stricmpn(token, "md3_", 4) || !Q_stricmp(token, "playerscale")) {
 			SkipRestOfLine(&text_p);
 			continue;
@@ -1100,7 +1100,6 @@ void CG_NewPlayerInfo(int playerNum) {
 	newInfo.teamLeader = atoi(v);
 #ifdef MISSIONPACK
 	Q_strncpyz(newInfo.redTeam, cg_redTeamName.string, MAX_TEAMNAME);
-
 	Q_strncpyz(newInfo.blueTeam, cg_blueTeamName.string, MAX_TEAMNAME);
 #endif
 	// model
@@ -1733,7 +1732,7 @@ static void CG_AddBreathPuffs(centity_t *cent, refEntity_t *head) {
 
 	pi = &cgs.playerinfo[cent->currentState.number];
 	// if it's a local player, only add the particles when they're rendering them self
-	// FIXME?: Causes particles to add a frame late for local players before them(i.e., add for player 4, player 1 - 3 don't see until next frame)
+	// FIXME?: Causes particles to add a frame late for local players before them(i.e., add for player 4, player 1-3 don't see until next frame)
 	// FIXME: Does not add particles for all players if only a single viewport
 	if (CG_LocalPlayerState(cent->currentState.number) && cent->currentState.number != cg.cur_ps->playerNum) {
 		return;
@@ -2518,7 +2517,7 @@ void CG_Player(centity_t *cent) {
 	renderfx = 0;
 
 	if (cent->currentState.number == cg.cur_ps->playerNum) {
-		// ZTM: FIXME: using CG_StepOffset, if player runs up steep stairs they are drawn deep in stairs / floor
+		// ZTM: FIXME: using CG_StepOffset, if player runs up steep stairs they are drawn deep in stairs/floor
 		if (cg_thirdPersonSmooth[cg.cur_localPlayerNum].integer) {
 			CG_StepOffset(cent->lerpOrigin);
 		}

@@ -505,7 +505,7 @@ void S_SpatializeOrigin(vec3_t origin, int master_vol, int *left_vol, int *right
 	*left_vol = 0;
 
 	for (i = 0; i < MAX_LISTENERS; i++) {
-		if (!listeners[i].valid || !listeners[i].updated {
+		if (!listeners[i].valid || !listeners[i].updated) {
 			continue;
 		}
 		// calculate stereo separation and distance attenuation

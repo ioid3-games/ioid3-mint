@@ -72,7 +72,7 @@ typedef struct {
 	int nextFrameTime;		// when time > nextFrameTime, process world
 	configString_t configstrings[MAX_CONFIGSTRINGS];
 	svEntity_t svEntities[MAX_GENTITIES];
-	darray_t svEntitiesBaseline;	// for delta compression of initial sighting
+	darray_t svEntitiesBaseline; // for delta compression of initial sighting
 	char *entityParsePoint;	// used during game VM init
 	// the game virtual machine will update these on init and changes
 	sharedEntity_t *gentities;
@@ -270,6 +270,7 @@ struct leakyBucket_s {
 		byte _4[4];
 		byte _6[16];
 	} ipv;
+
 	int lastTime;
 	signed char burst;
 	long hash;
@@ -335,7 +336,7 @@ void SV_InitGameProgs(void);
 void SV_ShutdownGameProgs(void);
 void SV_RestartGameProgs(void);
 void SV_GameCommand(void);
-qboolean SV_inPVS(const vec3_t p1, const vec3_t p2); 
+qboolean SV_inPVS(const vec3_t p1, const vec3_t p2);
 // sv_bot.c
 void SV_BotFrame(int time);
 int SV_BotAllocateClient(void);

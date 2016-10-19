@@ -27,15 +27,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "q_shared.h"
 #include "qcommon.h"
 #include "bsp.h"
-
 // Implementation notes
 // - Missing light grid support
 // - Missing terrain, sphere lights, static models(supported by OpenMoHAA)
-
-#define BSP_IDENT	(('5' << 24) + ('1' << 16) + ('0' << 8) + '2')
-		// little - endian "2015"
-
-#define BSP_VERSION	19
+#define BSP_IDENT (('5' << 24) + ('1' << 16) + ('0' << 8) + '2')
+		// little-endian "2015"
+#define BSP_VERSION 19
 
 typedef struct {
 	int fileofs, filelen;
@@ -75,7 +72,6 @@ typedef struct {
 	int ident;
 	int version;
 	int checksum;
-
 	lump_t lumps[HEADER_LUMPS];
 } dheader_t;
 
@@ -92,9 +88,7 @@ typedef struct {
 	int subdivisions;
 	char fenceMaskImage[MAX_QPATH]; // added for mohaa
 } realDshader_t;
-
 // planes x ^ 1 is allways the opposite of plane x
-
 typedef struct {
 	float normal[3];
 	float dist;
@@ -108,7 +102,7 @@ typedef struct {
 } realDnode_t;
 
 typedef struct {
-	int cluster;			// - 1 = opaque cluster(do I still store these?)
+	int cluster;			// -1 = opaque cluster(do I still store these?)
 	int area;
 	int mins[3];			// for frustum culling
 	int maxs[3];
@@ -127,11 +121,10 @@ typedef struct {
 // are somehow related to fencemasks...
 // MoHAA loads them only in CM(CM_LoadMap).
 typedef struct {
-  float fSeq[4];
-  float fTeq[4];
+	float fSeq[4];
+	float fTeq[4];
 } realDsideEquation_t;
 #endif
-
 typedef struct {
 	int planeNum;			// positive plane side faces out of the leaf
 	int shaderNum;
@@ -151,14 +144,17 @@ typedef struct {
 	vec3_t normal;
 	byte color[4];
 } realDrawVert_t;
-
 // When adding a new BSP format make sure the surfaceType variables mean the same thing as Q3 or remap them on load!
 #if 0
 typedef enum {
-	MST_BAD, MST_PLANAR, MST_PATCH, MST_TRIANGLE_SOUP, MST_FLARE, MST_FOLIAGE
+	MST_BAD,
+	MST_PLANAR,
+	MST_PATCH,
+	MST_TRIANGLE_SOUP,
+	MST_FLARE,
+	MST_FOLIAGE
 } mapSurfaceType_t;
 #endif
-
 typedef struct {
 	int shaderNum;
 	int fogNum;
@@ -170,14 +166,12 @@ typedef struct {
 	int lightmapNum;
 	int lightmapX, lightmapY;
 	int lightmapWidth, lightmapHeight;
-
 	vec3_t lightmapOrigin;
 	vec3_t lightmapVecs[3];	// for patches, [0] and [1] are lodbounds
 	int patchWidth; // ydnar: num foliage instances
 	int patchHeight; // ydnar: num foliage mesh verts
 	float subdivisions;
 } realDsurface_t;
-
 // IneQuation was here
 typedef struct dterPatch_s {
 	byte flags;
@@ -242,41 +236,57 @@ typedef struct {
 #define LIGHTING_GRIDSIZE_Y 32
 #define LIGHTING_GRIDSIZE_Z 32
 
-/****************************************************
+/*
+=======================================================================================================================================
+GetLumpElements
+=======================================================================================================================================
 */
-
 static int GetLumpElements(dheader_t *header, int lump, int size) {
-	/* check for odd size */
+
+	// check for odd size
 	if (header->lumps[lump].filelen % size) {
 		Com_Printf("GetLumpElements: odd lump size(%d) in lump %d\n", header->lumps[lump].filelen, lump);
 		return 0;
 	}
-
-	/* return element count */
+	// return element count
 	return header->lumps[lump].filelen / size;
 }
 
+/*
+=======================================================================================================================================
+CopyLump
+=======================================================================================================================================
+*/
 static void CopyLump(dheader_t *header, int lump, const void *src, void *dest, int size, qboolean swap) {
 	int length;
 
 	length = GetLumpElements(header, lump, size) * size;
-
-	/* handle erroneous cases */
+	// handle erroneous cases
 	if (length <= 0) {
 		return;
 	}
 
 	if (swap) {
-		BSP_SwapBlock(dest, (int *) ((byte *)src + header->lumps[lump].fileofs), length);
+		BSP_SwapBlock(dest, (int *)((byte *)src + header->lumps[lump].fileofs), length);
 	} else {
 		Com_Memcpy(dest, (byte *)src + header->lumps[lump].fileofs, length);
 	}
 }
 
+/*
+=======================================================================================================================================
+GetLump
+=======================================================================================================================================
+*/
 static void *GetLump(dheader_t *header, const void *src, int lump) {
-	return (void *) ((byte *)src + header->lumps[lump].fileofs);
+	return (void *)((byte *)src + header->lumps[lump].fileofs);
 }
 
+/*
+=======================================================================================================================================
+BSP_LoadMOHAA
+=======================================================================================================================================
+*/
 bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void *data, int length) {
 	int i, j, k;
 	dheader_t header;
@@ -351,12 +361,13 @@ bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void
 #endif
 	bsp->visibilityLength = GetLumpElements(&header, LUMP_VISIBILITY, 1) - VIS_HEADER;
 
-	if (bsp->visibilityLength > 0)
+	if (bsp->visibilityLength > 0) {
 		bsp->visibility = malloc(bsp->visibilityLength);
 	} else {
 		bsp->visibilityLength = 0;
+	}
 	// copy and swap and convert data
-	CopyLump(&header, LUMP_ENTITIES, data, (void *)bsp->entityString, sizeof(*bsp->entityString), qfalse); /* NO SWAP */
+	CopyLump(&header, LUMP_ENTITIES, data, (void *)bsp->entityString, sizeof(*bsp->entityString), qfalse); // NO SWAP
 
 	{
 		realDshader_t *in = GetLump(&header, data, LUMP_SHADERS);
@@ -476,8 +487,7 @@ bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void
 				out->st[j] = LittleFloat(in->st[j]);
 				out->lightmap[j] = LittleFloat(in->lightmap[j]);
 			}
-
-			/* NO SWAP */
+			// NO SWAP
 			for (j = 0; j < 4; j++) {
 				out->color[j] = in->color[j];
 			}
@@ -525,14 +535,14 @@ bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void
 
 			out->patchWidth = LittleLong(in->patchWidth);
 			out->patchHeight = LittleLong(in->patchHeight);
-
 			out->subdivisions = LittleFloat(in->subdivisions);
 		}
 	}
 	// convert MOHAA terrain into a draw surface
-	// ZTM: FIXME: Add to nodes(?) so that they will actually draw / collide
+	// ZTM: FIXME: Add to nodes(?) so that they will actually draw/collide
 #define LIGHTMAP_SIZE 128
-#define TERRAIN_LM_LENGTH		(16.f / LIGHTMAP_SIZE) {
+#define TERRAIN_LM_LENGTH (16.f / LIGHTMAP_SIZE)
+	{
 		realDterPatch_t *in = GetLump(&header, data, LUMP_TERRAIN);
 		dsurface_t *out = &bsp->surfaces[bsp->numSurfaces];
 		drawVert_t *vert;
@@ -587,15 +597,19 @@ bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void
 					VectorCopy(out->lightmapOrigin, vert->xyz);
 					vert->xyz[0] += x * 64;
 					vert->xyz[1] += y * 64;
-					/*if (x == 0)
+					/*
+					if (x == 0) {
 						vert->xyz[0] += 16;
-					else if (x == 8)
+					} else if (x == 8) {
 						vert->xyz[0] -= 16;
+					}
 
-					if (y == 0)
+					if (y == 0) {
 						vert->xyz[1] += 16;
-					else if (y == 8)
-						vert->xyz[1] -= 16; */
+					} else if (y == 8) {
+						vert->xyz[1] -= 16;
+					}
+					*/
 					vert->xyz[2] += in->heightmap[y][x] * 2.f;
 
 					f = x / 8.f;
@@ -617,24 +631,25 @@ bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void
 			for (y = 0; y < quads; y++) {
 				for (x = 0; x < quads; x++, ndx += 6) {
 					// The XOR below requires some explanation. Basically, it's done to reflect MoHAA's behaviour.
-					// This can be well observed by making a LOD terrain consisting of a single patch in Radiant, // but in case you don't have it at hand, here's how it looks(at the highest level of detail):
+					// This can be well observed by making a LOD terrain consisting of a single patch in Radiant,
+					// but in case you don't have it at hand, here's how it looks (at the highest level of detail):
 					//  _______________________________
-					// |\| / |\| / |\| / |\| /  |
-					// |------------------------------ - |
-					//|/ |\| / |\| / |\| / |\ |
-					// |------------------------------ - |
-					// |\| / |\| / |\| / |\| /  |
-					// |------------------------------ - |
-					//|/ |\| / |\| / |\| / |\ |
-					// |------------------------------ - |
-					// |\| / |\| / |\| / |\| /  |
-					// |------------------------------ - |
-					//|/ |\| / |\| / |\| / |\ |
-					// |------------------------------ - |
-					// |\| / |\| / |\| / |\| /  |
-					// |------------------------------ - |
-					//|/ |\| / |\| / |\| / |\ |
-					//  ------------------------------ - 
+					// | \ | / | \ | / | \ | / | \ | / |
+					// |-------------------------------|
+					// | / | \ | / | \ | / | \ | / | \ |
+					// |-------------------------------|
+					// | \ | / | \ | / | \ | / | \ | / |
+					// |-------------------------------|
+					// | / | \ | / | \ | / | \ | / | \ |
+					// |-------------------------------|
+					// | \ | / | \ | / | \ | / | \ | / |
+					// |-------------------------------|
+					// | / | \ | / | \ | / | \ | / | \ |
+					// |-------------------------------|
+					// | \ | / | \ | / | \ | / | \ | / |
+					// |-------------------------------|
+					// | / | \ | / | \ | / | \ | / | \ |
+					//  -------------------------------
 					// One segment with a slash inside is one quad divided into 2 triangles.
 					// Now if you pay attention, you'll notice that considering the diagonals' directions, the
 					// quads make a pattern similar to a chessboard. So this is exactly what the XOR is for
@@ -665,9 +680,9 @@ bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void
 		bsp->numDrawIndexes += numTerSurfaces * 8 * 8 * 6;
 	}
 
-	CopyLump(&header, LUMP_LIGHTMAPS, data, (void *)bsp->lightmapData, sizeof(*bsp->lightmapData), qfalse); /* NO SWAP */
+	CopyLump(&header, LUMP_LIGHTMAPS, data, (void *)bsp->lightmapData, sizeof(*bsp->lightmapData), qfalse); // NO SWAP
 #if 0
-	CopyLump(&header, LUMP_LIGHTGRID, data, (void *)bsp->lightGridData, sizeof(*bsp->lightGridData), qfalse); /* NO SWAP */
+	CopyLump(&header, LUMP_LIGHTGRID, data, (void *)bsp->lightGridData, sizeof(*bsp->lightGridData), qfalse); // NO SWAP
 #endif
 	if (bsp->visibilityLength) {
 		byte *in = GetLump(&header, data, LUMP_VISIBILITY);
@@ -675,16 +690,15 @@ bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void
 		bsp->numClusters = LittleLong(((int *)in)[0]);
 		bsp->clusterBytes = LittleLong(((int *)in)[1]);
 
-		Com_Memcpy(bsp->visibility, in + VIS_HEADER, bsp->visibilityLength); /* NO SWAP */
+		Com_Memcpy(bsp->visibility, in + VIS_HEADER, bsp->visibilityLength); // NO SWAP
 	}
 
 	return bsp;
 }
 
-/****************************************************
-*/
-
 bspFormat_t mohaaBspFormat = {
-	"MOHAA", BSP_IDENT, BSP_VERSION, BSP_LoadMOHAA,
+	"MOHAA",
+	BSP_IDENT,
+	BSP_VERSION,
+	BSP_LoadMOHAA,
 };
-

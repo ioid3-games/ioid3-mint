@@ -192,6 +192,7 @@ extern vmCvar_t bot_testrchat;
 extern vmCvar_t bot_challenge;
 extern vmCvar_t bot_droppedweight;
 extern vmCvar_t bot_offhandgrapple;
+
 extern bot_goal_t ctf_redflag;
 extern bot_goal_t ctf_blueflag;
 #ifdef MISSIONPACK

@@ -37,7 +37,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define SB_NORMAL_HEIGHT 40
 #define SB_INTER_HEIGHT 16 // interleaved height
 #define SB_MAXPLAYERS_NORMAL ((SB_STATUSBAR - SB_TOP) / SB_NORMAL_HEIGHT)
-#define SB_MAXPLAYERS_INTER  ((SB_STATUSBAR - SB_TOP) / SB_INTER_HEIGHT - 1)
+#define SB_MAXPLAYERS_INTER ((SB_STATUSBAR - SB_TOP) / SB_INTER_HEIGHT - 1)
 // Used when interleaved
 #define SB_LEFT_BOTICON_X (SCOREBOARD_X + 0)
 #define SB_LEFT_HEAD_X (SCOREBOARD_X + 32)

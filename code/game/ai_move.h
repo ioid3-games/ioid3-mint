@@ -110,10 +110,9 @@ typedef struct bot_avoidspot_s {
 } bot_avoidspot_t;
 
 // movement state
-// NOTE: the moveflags MFL_ONGROUND, MFL_TELEPORTED, MFL_WATERJUMP, 
-// 	MFL_GRAPPLEPULL, and MFL_GRAPPLEEXISTS must be set outside the movement code
+// NOTE: the moveflags MFL_ONGROUND, MFL_TELEPORTED, MFL_WATERJUMP, MFL_GRAPPLEPULL, and MFL_GRAPPLEEXISTS must be set outside the movement code
 typedef struct bot_movestate_s {
-	// input vars(all set outside the movement code)
+	// input vars (all set outside the movement code)
 	vec3_t origin;								// origin of the bot
 	vec3_t velocity;							// velocity of the bot
 	vec3_t viewoffset;							// view offset
@@ -134,9 +133,11 @@ typedef struct bot_movestate_s {
 	float grapplevisible_time;					// last time the grapple was visible
 	float lastgrappledist;						// last distance to the grapple end
 	float reachability_time;					// time to use current reachability
-	int avoidreach[MAX_AVOIDREACH];				// reachabilities to avoid 	float avoidreachtimes[MAX_AVOIDREACH];		// times to avoid the reachabilities
+	int avoidreach[MAX_AVOIDREACH];				// reachabilities to avoid
+	float avoidreachtimes[MAX_AVOIDREACH];		// times to avoid the reachabilities
 	int avoidreachtries[MAX_AVOIDREACH];		// number of tries before avoiding
-	bot_avoidspot_t avoidspots[MAX_AVOIDSPOTS];	// spots to avoid 	int numavoidspots;
+	bot_avoidspot_t avoidspots[MAX_AVOIDSPOTS];	// spots to avoid
+	int numavoidspots;
 } bot_movestate_t;
 
 // resets the whole move state
@@ -169,4 +170,4 @@ void BotInitPhysicsSettings(void);
 void BotShutdownMoveAI(void);
 
 #define BotAllocMoveState(_playerNum) (_playerNum + 1)
-#define BotFreeMoveState(_playerNum)		// nothing
+#define BotFreeMoveState(_playerNum) // nothing

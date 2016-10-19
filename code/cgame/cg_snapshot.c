@@ -231,7 +231,7 @@ static void CG_SetNextSnap(snapshot_t *snap) {
 		cent = &cg_entities[es->number];
 
 		memcpy(&cent->nextState, es, sizeof(entityState_t));
-		// cent->nextState = *es;
+		//cent->nextState = *es;
 		// if this frame is a teleport, or the entity wasn't in the previous frame, don't interpolate
 		if (!cent->currentValid || ((cent->currentState.eFlags ^ es->eFlags) & EF_TELEPORT_BIT)) {
 			cent->interpolate = qfalse;

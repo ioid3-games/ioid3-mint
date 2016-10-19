@@ -27,13 +27,11 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "q_shared.h"
 #include "qcommon.h"
 #include "bsp.h"
-
 // Implementation notes
 // - Missing entity lighting system support
 // - Missing dynamic LOD for MST_TRIANGLE_SOUP
-
 #define BSP_IDENT (('K' << 24) + ('K' << 16) + ('A' << 8) + 'F')
-// little - endian "FAKK"
+// little-endian "FAKK"
 #define FAKK_BSP_VERSION 12
 #define ALICE_BSP_VERSION 42
 
@@ -96,7 +94,7 @@ typedef struct {
 } realDnode_t;
 
 typedef struct {
-	int cluster;	// - 1 = opaque cluster(do I still store these?)
+	int cluster;	// -1 = opaque cluster(do I still store these?)
 	int area;
 	int mins[3];	// for frustum culling
 	int maxs[3];
@@ -196,7 +194,7 @@ static void CopyLump(dheader_t *header, int lump, const void *src, void *dest, i
 	}
 
 	if (swap) {
-		BSP_SwapBlock(dest, (int *) ((byte *)src + header->lumps[lump].fileofs), length);
+		BSP_SwapBlock(dest, (int *)((byte *)src + header->lumps[lump].fileofs), length);
 	} else {
 		Com_Memcpy(dest, (byte *)src + header->lumps[lump].fileofs, length);
 	}
@@ -457,9 +455,15 @@ bspFile_t *BSP_LoadFAKK(const bspFormat_t *format, const char *name, const void 
 }
 
 bspFormat_t fakkBspFormat = {
-	"FAKK", BSP_IDENT, FAKK_BSP_VERSION, BSP_LoadFAKK,
+	"FAKK",
+	BSP_IDENT,
+	FAKK_BSP_VERSION,
+	BSP_LoadFAKK,
 };
 
 bspFormat_t aliceBspFormat = {
-	"Alice", BSP_IDENT, ALICE_BSP_VERSION, BSP_LoadFAKK,
+	"Alice",
+	BSP_IDENT,
+	ALICE_BSP_VERSION,
+	BSP_LoadFAKK,
 };

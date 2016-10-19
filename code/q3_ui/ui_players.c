@@ -305,6 +305,7 @@ static qboolean UI_PositionRotatedEntityOnTag(refEntity_t *entity, const refEnti
 	orientation_t lerped;
 	vec3_t tempAxis[3];
 	qboolean returnValue;
+
 	// lerp the tag
 	returnValue = trap_R_LerpTagFrameModel(&lerped, parentModel, parent->oldframeModel, parent->oldframe, parent->frameModel, parent->frame, 1.0 - parent->backlerp, tagName, NULL);
 	// FIXME: allow origin offsets along tag?
@@ -814,7 +815,9 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 		memset(&gun, 0, sizeof(gun));
 
 		gun.hModel = pi->weaponModel;
+
 		Byte4Copy(pi->c1RGBA, gun.shaderRGBA);
+
 		VectorCopy(origin, gun.lightingOrigin);
 
 		UI_PositionEntityOnTag(&gun, &torso, pi->torsoModel, "tag_weapon");
@@ -849,7 +852,9 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 			memset(&flash, 0, sizeof(flash));
 
 			flash.hModel = pi->flashModel;
+
 			Byte4Copy(pi->c1RGBA, flash.shaderRGBA);
+
 			VectorCopy(origin, flash.lightingOrigin);
 
 			UI_PositionEntityOnTag(&flash, &gun, pi->weaponModel, "tag_flash");
@@ -876,7 +881,6 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	origin[1] -= 100;
 	origin[2] -= 100;
 	trap_R_AddJuniorLightToScene(origin, 500, 1.0, 1.0, 0.0, 0.0);
-
 	trap_R_RenderScene(&refdef);
 }
 
@@ -909,7 +913,7 @@ static qboolean UI_FindPlayerHeadFile(char *filename, int length, const char *te
 	team = "default";
 
 	if (headModelName[0] == '*') {
-		headsFolder = "heads / ";
+		headsFolder = "heads/";
 		headModelName++;
 	} else {
 		headsFolder = "";
@@ -918,9 +922,9 @@ static qboolean UI_FindPlayerHeadFile(char *filename, int length, const char *te
 	while (1) {
 		for (i = 0; i < 2; i++) {
 			if (i == 0 && teamName && *teamName) {
-				Com_sprintf(filename, length, "models/players/%s%s/%s / %s%s_%s.%s", headsFolder, headModelName, headSkinName, teamName, base, team, ext);
+				Com_sprintf(filename, length, "models/players/%s%s/%s/%s%s_%s.%s", headsFolder, headModelName, headSkinName, teamName, base, team, ext);
 			} else {
-				Com_sprintf(filename, length, "models/players/%s%s/%s / %s_%s.%s", headsFolder, headModelName, headSkinName, base, team, ext);
+				Com_sprintf(filename, length, "models/players/%s%s/%s/%s_%s.%s", headsFolder, headModelName, headSkinName, base, team, ext);
 			}
 
 			if (UI_FileExists(filename)) {
@@ -946,7 +950,7 @@ static qboolean UI_FindPlayerHeadFile(char *filename, int length, const char *te
 			break;
 		}
 
-		headsFolder = "heads / ";
+		headsFolder = "heads/";
 	}
 
 	return qfalse;
@@ -962,7 +966,7 @@ static qboolean UI_RegisterPlayerSkin(uiPlayerInfo_t *pi, const char *modelName,
 	qboolean legsSkin, torsoSkin, headSkin;
 
 	if (teamName && *teamName) {
-		Com_sprintf(filename, sizeof(filename), "models/players/%s/%s / lower_%s.skin", modelName, teamName, skinName);
+		Com_sprintf(filename, sizeof(filename), "models/players/%s/%s/lower_%s.skin", modelName, teamName, skinName);
 	} else {
 		Com_sprintf(filename, sizeof(filename), "models/players/%s/lower_%s.skin", modelName, skinName);
 	}
@@ -970,7 +974,7 @@ static qboolean UI_RegisterPlayerSkin(uiPlayerInfo_t *pi, const char *modelName,
 	legsSkin = CG_RegisterSkin(filename, &pi->modelSkin, qfalse);
 
 	if (teamName && *teamName) {
-		Com_sprintf(filename, sizeof(filename), "models/players/%s/%s / upper_%s.skin", modelName, teamName, skinName);
+		Com_sprintf(filename, sizeof(filename), "models/players/%s/%s/upper_%s.skin", modelName, teamName, skinName);
 	} else {
 		Com_sprintf(filename, sizeof(filename), "models/players/%s/upper_%s.skin", modelName, skinName);
 	}
@@ -1203,7 +1207,7 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 	}
 
 	if (headModelName[0] == '*') {
-		Com_sprintf(filename, sizeof(filename), "models/players/ heads /%s/%s.md3", &headModelName[1], &headModelName[1]);
+		Com_sprintf(filename, sizeof(filename), "models/players/heads/%s/%s.md3", &headModelName[1], &headModelName[1]);
 	} else {
 		Com_sprintf(filename, sizeof(filename), "models/players/%s/head.md3", headModelName);
 	}
@@ -1211,7 +1215,7 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 	pi->headModel = trap_R_RegisterModel(filename);
 
 	if (!pi->headModel && headModelName[0] != '*') {
-		Com_sprintf(filename, sizeof(filename), "models/players/ heads /%s/%s.md3", headModelName, headModelName);
+		Com_sprintf(filename, sizeof(filename), "models/players/heads/%s/%s.md3", headModelName, headModelName);
 		pi->headModel = trap_R_RegisterModel(filename);
 	}
 
@@ -1265,6 +1269,7 @@ UI_PlayerInfo_UpdateColor
 =======================================================================================================================================
 */
 void UI_PlayerInfo_UpdateColor(uiPlayerInfo_t *pi) {
+
 	CG_PlayerColorFromIndex(trap_Cvar_VariableIntegerValue("color1"), pi->color1);
 
 	pi->c1RGBA[0] = 255 * pi->color1[0];

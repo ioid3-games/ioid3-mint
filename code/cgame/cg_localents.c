@@ -285,7 +285,7 @@ void CG_AddFragment(localEntity_t *le) {
 
 		return;
 	}
-	// fragment inside mover, find the direction / origin of impact
+	// fragment inside mover, find the direction/origin of impact
 	if (trace.allsolid && cg_entities[trace.entityNum].currentState.eType == ET_MOVER) {
 		vec3_t origin, angles, dir;
 		float dist;
@@ -305,7 +305,7 @@ void CG_AddFragment(localEntity_t *le) {
 		VectorClear(angles);
 		// add the distance mover has moved since then
 		CG_AdjustPositionForMover(origin, trace.entityNum, oldTime, cg.time, origin, angles, angles);
-		// nudge the origin farther to avoid being co - planar
+		// nudge the origin farther to avoid being co-planar
 		VectorSubtract(origin, newOrigin, dir);
 		dist = VectorNormalize(dir);
 		VectorMA(origin, dist, dir, origin);

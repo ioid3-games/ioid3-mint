@@ -157,8 +157,7 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 		// client is asking for a retransmit
 		oldframe = NULL;
 		lastframe = 0;
-	} else if (client->netchan.outgoingSequence - client->deltaMessage 
-		 >= (PACKET_BACKUP - 3)) {
+	} else if (client->netchan.outgoingSequence - client->deltaMessage >= (PACKET_BACKUP - 3)) {
 		// client hasn't gotten a good message through in a long time
 		Com_DPrintf("%s: Delta request from out of date packet.\n", SV_ClientName(client));
 		oldframe = NULL;
@@ -178,7 +177,7 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 	MSG_WriteByte(msg, svc_snapshot);
 	// NOTE, MRE: now sent at the start of every message from server to client
 	// let the client know which reliable clientCommands we have received
-	// MSG_WriteLong(msg, client->lastClientCommand);
+	//MSG_WriteLong(msg, client->lastClientCommand);
 
 	// send over the current server time so the client can drift
 	// its view of time to try to match
@@ -415,6 +414,7 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 		// limit based on distance
 		if (ent->r.cullDistance) {
 			vec3_t dir;
+
 			VectorSubtract(ent->s.origin, origin, dir);
 
 			if (VectorLengthSquared(dir) > (float)ent->r.cullDistance * ent->r.cullDistance) {
@@ -469,6 +469,7 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 		// visibility dummies
 		if (ent->r.svFlags & SVF_VISDUMMY) {
 			sharedEntity_t *ment = NULL;
+
 			// find master
 			ment = SV_GentityNum(ent->r.visDummyNum);
 
@@ -532,6 +533,7 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 		if (ent->r.svFlags & SVF_PORTAL) {
 			if (ent->r.portalCullDistance) {
 				vec3_t dir;
+
 				VectorSubtract(ent->s.origin, origin, dir);
 
 				if (VectorLengthSquared(dir) > (float)ent->r.portalCullDistance * ent->r.portalCullDistance) {
@@ -620,8 +622,7 @@ static void SV_BuildClientSnapshot(client_t *client) {
 		org[2] += SV_SnapshotPlayer(frame, i)->viewheight;
 		// allow MAX_SNAPSHOT_ENTITIES to be added for this view point
 		entityNumbers.maxSnapshotEntities = entityNumbers.numSnapshotEntities + MAX_SNAPSHOT_ENTITIES;
-		// add all the entities directly visible to the eye, which
-		// may include portal entities that merge other viewpoints
+		// add all the entities directly visible to the eye, which may include portal entities that merge other viewpoints
 		SV_AddEntitiesVisibleFromPoint(i, SV_SnapshotPlayer(frame, i)->playerNum, org, frame, &entityNumbers, qfalse);
 	}
 	// if there were portals visible, there may be out of order entities in the list which will need to be resorted for the delta compression
@@ -742,8 +743,7 @@ void SV_SendClientSnapshot(client_t *client) {
 	} else {
 		// entities delta baseline
 		SV_WriteBaselineToClient(client, &msg);
-		// send over all the relevant entityState_t
-		// and playerState_t
+		// send over all the relevant entityState_t and playerState_t
 		SV_WriteSnapshotToClient(client, &msg);
 	}
 #ifdef USE_VOIP

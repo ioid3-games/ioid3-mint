@@ -832,8 +832,8 @@ char *PlayerConnect(int playerNum, qboolean firstTime, qboolean isBot, int conne
 			return "You are banned from this server.";
 		}
 		// we don't check password for bots and local client
-		// NOTE: local client < ->"ip" "localhost"
-		//   this means this client is not running in our current process
+		// NOTE: local client <-> "ip" "localhost"
+		// this means this client is not running in our current process
 		if (!isBot && (strcmp(value, "localhost") != 0)) {
 			// check for a password
 			value = Info_ValueForKey(userinfo, "password");
@@ -905,7 +905,7 @@ char *PlayerConnect(int playerNum, qboolean firstTime, qboolean isBot, int conne
 	CalculateRanks();
 	// for statistics
 //	player->areabits = areabits;
-//	if (!player->areabits)
+//	if (!player->areabits) {
 //		player->areabits = trap_Alloc((trap_AAS_PointReachabilityAreaIndex(NULL) + 7) / 8, NULL);
 //	}
 

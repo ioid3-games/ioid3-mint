@@ -765,7 +765,6 @@ static sfxHandle_t SpinControl_Key(menulist_s *s, int key) {
 
 			sound = menu_move_sound;
 			break;
-
 		case K_JOY_DPAD_LEFT:
 		case K_JOY_LEFTSTICK_LEFT:
 		case K_2JOY_DPAD_LEFT:
@@ -1654,15 +1653,15 @@ Menu_Cache
 */
 void Menu_Cache(void) {
 
-	if (!CG_InitTrueTypeFont("fonts / font1_prop", PROP_HEIGHT, 0, &uis.fontProp)) {
+	if (!CG_InitTrueTypeFont("fonts/font1_prop", PROP_HEIGHT, 0, &uis.fontProp)) {
 		UI_InitPropFont(&uis.fontProp, qfalse);
 	}
 
-	if (!CG_InitTrueTypeFont("fonts / font1_prop_glo", PROP_HEIGHT, 0, &uis.fontPropGlow)) {
+	if (!CG_InitTrueTypeFont("fonts/font1_prop_glo", PROP_HEIGHT, 0, &uis.fontPropGlow)) {
 		UI_InitPropFont(&uis.fontPropGlow, qtrue);
 	}
 
-	if (CG_InitTrueTypeFont("fonts / font2_prop", PROPB_HEIGHT, 0, &uis.fontPropB)) {
+	if (CG_InitTrueTypeFont("fonts/font2_prop", PROPB_HEIGHT, 0, &uis.fontPropB)) {
 		uis.bannerNumbers = qtrue;
 		Vector4Copy(ttf_banner_color, text_banner_color);
 	} else {

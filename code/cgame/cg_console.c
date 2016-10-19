@@ -27,9 +27,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #define CON_MAXLINES 512
 #define CON_LINELENGTH 128
+
 typedef struct {
 	qboolean initialized;
-
 	char lines[CON_MAXLINES][CON_LINELENGTH];
 	int current;			// line where next message will be printed
 	int display;			// bottom of console displays this line
@@ -80,6 +80,7 @@ Con_ToggleConsole_f
 =======================================================================================================================================
 */
 void Con_ToggleConsole_f(void) {
+
 	// Can't toggle the console when it's the only thing available
 	if (cg.connState == CA_DISCONNECTED && Key_GetCatcher() == KEYCATCH_CONSOLE) {
 		return;
@@ -373,7 +374,7 @@ void Con_DrawConsole(connstate_t state) {
 =======================================================================================================================================
 CG_RunConsole
 
-Scroll it up or down and draw it
+Scroll it up or down and draw it.
 =======================================================================================================================================
 */
 void CG_RunConsole(connstate_t state) {
@@ -512,7 +513,7 @@ void Console_Key(int key, qboolean down) {
 		Com_Printf("]%s\n", editLine);
 		// leading slash is an explicit command
 		if (editLine[0] == '\\' || editLine[0] == '/') {
-			trap_Cmd_ExecuteText(EXEC_APPEND, editLine + 1);	// valid command
+			trap_Cmd_ExecuteText(EXEC_APPEND, editLine + 1); // valid command
 			trap_Cmd_ExecuteText(EXEC_APPEND, "\n");
 		} else {
 			// other text will be chat messages
@@ -639,7 +640,7 @@ static int consoleSaveBufferSize = 0;
 =======================================================================================================================================
 CG_LoadConsoleHistory
 
-Load the console history from cl_consoleHistory
+Load the console history from cl_consoleHistory.
 =======================================================================================================================================
 */
 void CG_LoadConsoleHistory(void) {
@@ -684,8 +685,11 @@ void CG_LoadConsoleHistory(void) {
 			}
 
 			Com_Memcpy(tempLine, text_p, numChars);
+
 			tempLine[numChars] = '\0';
+
 			MField_SetText(&historyEditLines[i], tempLine);
+
 			historyEditLines[i].cursor = cursor;
 			historyEditLines[i].scroll = scroll;
 			text_p += numChars;
@@ -711,8 +715,7 @@ void CG_LoadConsoleHistory(void) {
 =======================================================================================================================================
 CG_SaveConsoleHistory
 
-Save the console history into the cvar cl_consoleHistory
-so that it persists across invocations of q3
+Save the console history into the cvar cl_consoleHistory so that it persists across invocations of q3.
 =======================================================================================================================================
 */
 void CG_SaveConsoleHistory(void) {
@@ -791,4 +794,3 @@ void CG_ConsoleInit(void) {
 
 	CG_LoadConsoleHistory();
 }
-

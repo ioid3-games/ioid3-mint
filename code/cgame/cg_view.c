@@ -716,8 +716,8 @@ static void CG_DamageBlendBlob(void) {
 	if (!cg.cur_lc->damageValue) {
 		return;
 	}
-	// if (cg.cameraMode) {
-	// 	return;
+	//if (cg.cameraMode) {
+	//	return;
 	//}
 
 	maxTime = DAMAGE_TIME;
@@ -1039,7 +1039,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	}
 	// this counter will be bumped for every valid scene we generate
 	cg.clientFrame++;
-	// Use single camera / viewport at intermission
+	// Use single camera/viewport at intermission
 	for (i = 0; i < CG_MaxSplitView(); i++) {
 		if (cg.localPlayers[i].playerNum != -1 && cg.snap->pss[i].pm_type != PM_INTERMISSION) {
 			// player present and not at intermission, keep viewports separate.
@@ -1082,7 +1082,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		cg.numViewports = 1;
 		renderPlayerViewport[0] = qtrue;
 	}
-	// play lead change annoucement and time / frag limit warnings
+	// play lead change annoucement and time/frag limit warnings
 	CG_CheckGameSounds();
 	// add buffered sounds
 	CG_PlayBufferedSounds();
@@ -1126,6 +1126,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		}
 
 		cg.refdef.time = cg.time;
+
 		memcpy(cg.refdef.areamask, cg.snap->areamask[i], sizeof(cg.refdef.areamask));
 		// warning sounds when powerup is wearing off
 		CG_PowerupTimerSounds();
@@ -1147,13 +1148,15 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 			if (cg_timescale.value < cg_timescaleFadeEnd.value) {
 				cg_timescale.value += cg_timescaleFadeSpeed.value * ((float)cg.frametime) / 1000;
 
-				if (cg_timescale.value > cg_timescaleFadeEnd.value)
+				if (cg_timescale.value > cg_timescaleFadeEnd.value) {
 					cg_timescale.value = cg_timescaleFadeEnd.value;
+				}
 			} else {
 				cg_timescale.value -= cg_timescaleFadeSpeed.value * ((float)cg.frametime) / 1000;
 
-				if (cg_timescale.value < cg_timescaleFadeEnd.value)
+				if (cg_timescale.value < cg_timescaleFadeEnd.value) {
 					cg_timescale.value = cg_timescaleFadeEnd.value;
+				}
 			}
 
 			if (cg_timescaleFadeSpeed.value) {

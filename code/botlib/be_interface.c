@@ -122,7 +122,7 @@ int Export_BotLibSetup(void) {
 		homedir = LibVarGetString("homedir");
 		gamedir = LibVarGetString("gamedir");
 
-		if (*homedir && *gamedir)
+		if (*homedir && *gamedir) {
 			Com_sprintf(logfilename, sizeof(logfilename), "%s%c%s%cbotlib.log", homedir, PATH_SEP, gamedir, PATH_SEP);
 		} else {
 			Com_sprintf(logfilename, sizeof(logfilename), "botlib.log");

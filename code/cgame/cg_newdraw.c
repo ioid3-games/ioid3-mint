@@ -186,7 +186,7 @@ void CG_CheckOrderPending(int localPlayerNum) {
 	}
 
 	if (localPlayer->orderPending) {
-		// playerInfo_t *pi;
+		//playerInfo_t *pi;
 		const char *p1, *p2;
 		char b[128];
 		int playerNum;
@@ -198,7 +198,7 @@ void CG_CheckOrderPending(int localPlayerNum) {
 		playerNum = cg.snap->pss[localPlayerNum].playerNum;
 		team = cg.snap->pss[localPlayerNum].persistant[PERS_TEAM];
 		selectedPlayer = cg_currentSelectedPlayer[localPlayerNum].integer;
-		// pi = cgs.playerinfo + sortedTeamPlayers[team][selectedPlayer];
+		//pi = cgs.playerinfo + sortedTeamPlayers[team][selectedPlayer];
 		switch (localPlayer->currentOrder) {
 			case TEAMTASK_OFFENSE:
 				p1 = VOICECHAT_ONOFFENSE;
@@ -241,10 +241,10 @@ void CG_CheckOrderPending(int localPlayerNum) {
 			// for the player self
 			if (sortedTeamPlayers[team][selectedPlayer] == playerNum && p1) {
 				trap_Cmd_ExecuteText(EXEC_APPEND, va("%s %i\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), localPlayer->currentOrder));
-				// trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "say_team"), p2));
+				//trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "say_team"), p2));
 				trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), p1));
 			} else if (p2) {
-				// trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s %s, %s\n", Com_LocalPlayerCvarName(localPlayerNum, "say_team"), pi->name, p));
+				//trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s %s, %s\n", Com_LocalPlayerCvarName(localPlayerNum, "say_team"), pi->name, p));
 				trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd %s %d %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), sortedTeamPlayers[team][selectedPlayer], p2));
 			}
 		}

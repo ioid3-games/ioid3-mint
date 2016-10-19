@@ -92,7 +92,7 @@ void G_InitSessionData(gplayer_t *player, char *userinfo) {
 		// always spawn as spectator in team games
 		sess->sessionTeam = TEAM_SPECTATOR;
 		sess->spectatorState = SPECTATOR_FREE;
-		// allow specifying team, mainly for bots(and humans via start server menu)
+		// allow specifying team, mainly for bots (and humans via start server menu)
 		value = Info_ValueForKey(userinfo, "teampref");
 
 		if (value[0] || g_teamAutoJoin.integer) {

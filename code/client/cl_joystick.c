@@ -29,7 +29,7 @@ typedef struct {
 	int keynum;
 } joyeventkey_t;
 
-#define MAX_JOY_REMAPS 32 // 5(LS) + 5(RS) + 4(DPAD) + 18 button / hat / trigger events
+#define MAX_JOY_REMAPS 32 // 5(LS) + 5(RS) + 4(DPAD) + 18 button/hat/trigger events
 typedef struct {
 	char ident[MAX_QPATH];
 	char name[MAX_QPATH];
@@ -42,7 +42,7 @@ joyDevice_t joyDevice[CL_MAX_SPLITVIEW];
 int playerJoyRemapIndex[CL_MAX_SPLITVIEW];
 // joystick remaps are not cross - platform
 #ifdef _WIN32
-// use generic "windows" instead of being separate for mingw / msvc and 32 / 64 bit
+// use generic "windows" instead of being separate for mingw/msvc and 32/64 bit
 #define JOY_PLATFORM "windows"
 #else
 #define JOY_PLATFORM OS_STRING
@@ -88,13 +88,13 @@ qboolean CL_StringToJoyEvent(char *str, joyevent_t *event) {
 		if (!Q_stricmpn(str + 1, "axis", 4)) {
 			event->type = JOYEVENT_AXIS;
 			event->value.axis.num = atoi(&str[5]);
-			event->value.axis.sign = (str[0] == '+') ? 1 : - 1;
+			event->value.axis.sign = (str[0] == '+') ? 1 : -1;
 			return qtrue;
 		// +a0
 		} else if (str[1] == 'a') {
 			event->type = JOYEVENT_AXIS;
 			event->value.axis.num = atoi(&str[2]);
-			event->value.axis.sign = (str[0] == '+') ? 1 : - 1;
+			event->value.axis.sign = (str[0] == '+') ? 1 : -1;
 			return qtrue;
 		}
 	}
@@ -123,7 +123,7 @@ char *CL_JoyEventToString(const joyevent_t *event) {
 			Com_sprintf(str, sizeof(str), "hat%d.%d", event->value.hat.num, event->value.hat.mask);
 			break;
 		default:
-			Q_strncpyz(str, " <UNKNOWN-EVENT> ", sizeof(str));
+			Q_strncpyz(str, "<UNKNOWN-EVENT>", sizeof(str));
 	}
 
 	return str;
@@ -158,7 +158,7 @@ qboolean CL_JoyEventsMatch(const joyevent_t *e1, const joyevent_t *e2) {
 =======================================================================================================================================
 CL_SetKeyForJoyEvent
 
-If keynum is - 1 removes remap for joyevent. Returns qtrue if there was an event.
+If keynum is -1 removes remap for joyevent. Returns qtrue if there was an event.
 Else; Returns qtrue if updated or added event/key.
 =======================================================================================================================================
 */
@@ -383,7 +383,7 @@ void Cmd_JoyRemap_f(void) {
 	if (c == 2) {
 		key = CL_GetKeyForJoyEvent(localPlayerNum, &joyevent);
 
-		if (key != -1)
+		if (key != -1) {
 			Com_Printf("\"%s\" = \"%s\"\n", CL_JoyEventToString(&joyevent), Key_KeynumToString(key));
 		} else {
 			Com_Printf("\"%s\" is not remapped\n", CL_JoyEventToString(&joyevent));
@@ -462,10 +462,10 @@ static void Cmd_CompleteJoyRemap(char *args, int argNum) {
 
 	if (argNum == 2) {
 		// Skip "joyremap "
-		// p = Com_SkipTokens(args, 1, " ");
+		//p = Com_SkipTokens(args, 1, " ");
 		// ZTM: TODO: add completion for (any) joystick event?
 	} else if (argNum == 3) {
-		// Skip "joyremap < event > "
+		// Skip "joyremap <event>"
 		p = Com_SkipTokens(args, 2, " ");
 
 		if (p > args) {
@@ -490,7 +490,7 @@ void CL_InitJoyRemapCommands(void) {
 		Cmd_AddCommand(Com_LocalPlayerCvarName(i, "joyremap"), Cmd_JoyRemap_f);
 		Cmd_SetCommandCompletionFunc(Com_LocalPlayerCvarName(i, "joyremap"), Cmd_CompleteJoyRemap);
 		Cmd_AddCommand(Com_LocalPlayerCvarName(i, "joyunmap"), Cmd_JoyUnmap_f);
-		// Cmd_SetCommandCompletionFunc(Com_LocalPlayerCvarName(i, "joyunmap"), Cmd_CompleteJoyUnmap);
+		//Cmd_SetCommandCompletionFunc(Com_LocalPlayerCvarName(i, "joyunmap"), Cmd_CompleteJoyUnmap);
 		Cmd_AddCommand(Com_LocalPlayerCvarName(i, "joyunmapall"), Cmd_JoyUnmapAll_f);
 		Cmd_AddCommand(Com_LocalPlayerCvarName(i, "joyremaplist"), Cmd_JoyRemapList_f);
 	}
@@ -551,7 +551,7 @@ void CL_CloseJoystickRemap(int localPlayerNum) {
 		return;
 	}
 
-	FS_Printf(f, "// Joystick remap created using " PRODUCT_NAME " on" JOY_PLATFORM " for %s\n", device->name);
+	FS_Printf(f, "// Joystick remap created using " PRODUCT_NAME " on " JOY_PLATFORM " for %s\n", device->name);
 
 	for (i = 0; i < MAX_JOY_REMAPS; i++) {
 		if (device->remap[i].event.type == JOYEVENT_NONE) {

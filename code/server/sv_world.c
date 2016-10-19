@@ -567,6 +567,7 @@ void SV_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec
 
 	clip.contentmask = contentmask;
 	clip.start = start;
+
 //	VectorCopy(clip.trace.endpos, clip.end);
 	VectorCopy(end, clip.end);
 
@@ -620,7 +621,8 @@ void SV_ClipToEntities(trace_t *results, const vec3_t start, const vec3_t mins, 
 	clip.trace.entityNum = ENTITYNUM_NONE;
 	clip.contentmask = contentmask;
 	clip.start = start;
-// 	VectorCopy(clip.trace.endpos, clip.end);
+
+//	VectorCopy(clip.trace.endpos, clip.end);
 	VectorCopy(end, clip.end);
 
 	clip.mins = mins;

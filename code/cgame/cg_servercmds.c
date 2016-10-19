@@ -99,7 +99,6 @@ static void CG_ParseScores(int start) {
 	memset(cg.scores, 0, sizeof(cg.scores));
 
 	for (i = 0; i < cg.numScores; i++) {
-		// 
 		cg.scores[i].playerNum = atoi(CG_Argv(i * 14 + 4 + start));
 		cg.scores[i].score = atoi(CG_Argv(i * 14 + 5 + start));
 		cg.scores[i].ping = atoi(CG_Argv(i * 14 + 6 + start));
@@ -402,7 +401,7 @@ static void CG_ConfigStringModified(void) {
 		CG_ShaderStateChanged();
 	} else if (num == CS_PLAYERS_READY) {
 		Com_ClientListParse(&cg.readyPlayers, str);
-	}	
+	}
 }
 
 /*
@@ -898,7 +897,7 @@ void CG_PlayVoiceChat(bufferedVoiceChat_t *vchat) {
 	if (cg.intermissionStarted) {
 		return;
 	}
-	// remove bits for non - valid players
+	// remove bits for non-valid players
 	vchat->localPlayerBits &= CG_LocalPlayerBitsForTeam(-1);
 
 	if (!cg_noVoiceChats.integer) {
@@ -1169,7 +1168,7 @@ static void CG_ServerCommand(void) {
 			text[strlen(text) - 1] = '\0';
 		}
 
-		CG_ReplaceCharacter(text, '\n',' ');
+		CG_ReplaceCharacter(text, '\n', ' ');
 		CG_Printf("[skipnotify]%s\n", text);
 
 		for (i = 0; i < CG_MaxSplitView(); i++) {

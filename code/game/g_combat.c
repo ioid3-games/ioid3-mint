@@ -133,7 +133,7 @@ void TossPlayerItems(gentity_t *self) {
 =======================================================================================================================================
 TossPlayerGametypeItems
 
-Drop CTF flag and Harvester cubes
+Drop CTF flag and Harvester cubes.
 =======================================================================================================================================
 */
 void TossPlayerGametypeItems(gentity_t *ent) {
@@ -141,6 +141,7 @@ void TossPlayerGametypeItems(gentity_t *ent) {
 	gitem_t *item;
 	gentity_t *drop;
 	int angle = 0;
+
 	// drop flags in CTF
 	item = NULL;
 	j = 0;
@@ -579,7 +580,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 		ent->s.eventParm = meansOfDeath;
 		ent->s.otherEntityNum = self->s.number;
 		ent->s.otherEntityNum2 = killer;
-		ent->r.svFlags = SVF_BROADCAST;	// send to everyone
+		ent->r.svFlags = SVF_BROADCAST; // send to everyone
 	}
 
 	self->enemy = attacker;
@@ -683,7 +684,6 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	memset(self->player->ps.powerups, 0, sizeof(self->player->ps.powerups));
 	// never gib in a nodrop
 	contents = trap_PointContents(self->r.currentOrigin, -1);
-
 	gibPlayer = ((self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP)) || meansOfDeath == MOD_SUICIDE);
 
 	if (gibPlayer) {

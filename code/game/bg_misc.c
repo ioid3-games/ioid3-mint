@@ -987,7 +987,7 @@ qboolean BG_CheckSpawnEntity(const bgEntitySpawnInfo_t *info) {
 			return qfalse;
 		}
 	}
-	// check for "notteam" flag(GT_FFA, GT_TOURNAMENT, GT_SINGLE_PLAYER)
+	// check for "notteam" flag (GT_FFA, GT_TOURNAMENT, GT_SINGLE_PLAYER)
 	if (gametype >= GT_TEAM) {
 		info->spawnInt("notteam", "0", &i);
 
@@ -1005,19 +1005,18 @@ qboolean BG_CheckSpawnEntity(const bgEntitySpawnInfo_t *info) {
 	info->spawnInt("notta", "0", &i);
 
 	if (i) {
-			return qfalse;
+		return qfalse;
 	}
 #else
 	info->spawnInt("notq3a", "0", &i);
 
 	if (i) {
-			return qfalse;
+		return qfalse;
 	}
 #endif
 	if (info->spawnString("!gametype", NULL, &value)) {
 		if (gametype >= 0 && gametype < GT_MAX_GAME_TYPE) {
 			gametypeName = gametypeNames[gametype];
-
 			s = strstr(value, gametypeName);
 
 			if (s) {
@@ -1029,7 +1028,6 @@ qboolean BG_CheckSpawnEntity(const bgEntitySpawnInfo_t *info) {
 	if (info->spawnString("gametype", NULL, &value)) {
 		if (gametype >= 0 && gametype < GT_MAX_GAME_TYPE) {
 			gametypeName = gametypeNames[gametype];
-
 			s = strstr(value, gametypeName);
 
 			if (!s) {
@@ -1156,7 +1154,6 @@ Returns false if the item should not be picked up. This needs to be the same for
 */
 qboolean BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t *ps) {
 	gitem_t *item;
-
 	int upperBound;
 
 	if (ent->modelindex < 1 || ent->modelindex >= BG_NumItems()) {
@@ -1197,7 +1194,7 @@ qboolean BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playe
 			// small and mega healths will go over the max, otherwise don't pick up if already at max
 #ifdef MISSIONPACK
 			if (BG_ItemForItemNum(ps->stats[STAT_PERSISTANT_POWERUP])->giTag == PW_GUARD) {
-			
+
 			} else
 #endif
 			if (item->quantity == 5 || item->quantity == 100) {
@@ -1463,7 +1460,6 @@ char *eventnames[] = {
 	"EV_TAUNT_GETFLAG",
 	"EV_TAUNT_GUARDBASE",
 	"EV_TAUNT_PATROL"
-
 };
 
 /*
@@ -1716,6 +1712,7 @@ BG_ComposeBits
 =======================================================================================================================================
 */
 void BG_ComposeBits(int *msg, int *bitsUsed, int value, int bits) {
+
 	*msg |= (value & ((1 << bits) - 1)) << *bitsUsed;
 	*bitsUsed += bits;
 
@@ -2017,7 +2014,7 @@ qboolean ReadNumber(int source, fielddef_t *fd, void *p) {
 			return 0;
 		}
 		// if not a minus sign
-		if (strcmp(token.string, " - ")) {
+		if (strcmp(token.string, "-")) {
 			PC_SourceError(source, "unexpected punctuation %s", token.string);
 			return 0;
 		}
@@ -2269,7 +2266,7 @@ qboolean PC_ReadStructure(int source, structdef_t *def, void *structure) {
 					break;
 				}
 
-				if (strcmp(token.string, ", ")) {
+				if (strcmp(token.string, ",")) {
 					PC_SourceError(source, "expected a comma, found %s", token.string);
 					return qfalse;
 				}

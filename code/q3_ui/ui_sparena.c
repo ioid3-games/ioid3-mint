@@ -50,7 +50,6 @@ void UI_SPArena_Start(const char *arenaInfo) {
 	}
 
 	trap_Cvar_SetValue("ui_spSelection", level);
-
 	trap_Cvar_SetValue("ui_singlePlayerActive", 1);
 	trap_Cvar_SetValue("g_gametype", GT_SINGLE_PLAYER);
 	trap_Cvar_SetValue("g_doWarmup", 0);

@@ -25,13 +25,20 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "q_shared.h"
 #include "qcommon.h"
 #include "bsp.h"
-
 #ifdef BSPC
 #include "../bspc/l_qfiles.h"
 #endif
 
 bspFormat_t *bspFormats[] = {
-	&quake3BspFormat, &wolfBspFormat, &darksBspFormat, &fakkBspFormat, &aliceBspFormat, &sof2BspFormat, &ef2BspFormat, &mohaaBspFormat, &q3Test106BspFormat,
+	&quake3BspFormat,
+	&wolfBspFormat,
+	&darksBspFormat,
+	&fakkBspFormat,
+	&aliceBspFormat,
+	&sof2BspFormat,
+	&ef2BspFormat,
+	&mohaaBspFormat,
+	&q3Test106BspFormat,
 };
 
 const int numBspFormats = ARRAY_LEN(bspFormats);
@@ -39,12 +46,17 @@ const int numBspFormats = ARRAY_LEN(bspFormats);
 #define MAX_BSP_FILES 1
 bspFile_t *bsp_loadedFiles[MAX_BSP_FILES] = {0};
 
-
+/*
+=======================================================================================================================================
+BSP_Load
+=======================================================================================================================================
+*/
 bspFile_t *BSP_Load(const char *name) {
 	union {
 		int *i;
 		void *v;
 	} buf;
+
 	int i;
 	int length;
 	bspFile_t *bspFile = NULL;
@@ -74,7 +86,6 @@ bspFile_t *BSP_Load(const char *name) {
 		Com_Error(ERR_DROP, "No free slot to load BSP '%s'", name);
 	}
 	// load the file
-	// 
 #ifndef BSPC
 	length = FS_ReadFile(name, &buf.v);
 #else
@@ -111,6 +122,11 @@ bspFile_t *BSP_Load(const char *name) {
 	return bspFile;
 }
 
+/*
+=======================================================================================================================================
+BSP_FreeInternal
+=======================================================================================================================================
+*/
 static void BSP_FreeInternal(bspFile_t *bsp) {
 	free(bsp->entityString);
 	free(bsp->shaders);
@@ -132,6 +148,11 @@ static void BSP_FreeInternal(bspFile_t *bsp) {
 	free(bsp);
 }
 
+/*
+=======================================================================================================================================
+BSP_Free
+=======================================================================================================================================
+*/
 void BSP_Free(bspFile_t *bspFile) {
 	int i;
 
@@ -155,6 +176,11 @@ void BSP_Free(bspFile_t *bspFile) {
 	BSP_FreeInternal(bspFile);
 }
 
+/*
+=======================================================================================================================================
+BSP_Shutdown
+=======================================================================================================================================
+*/
 void BSP_Shutdown(void) {
 	int i;
 
@@ -168,26 +194,29 @@ void BSP_Shutdown(void) {
 	}
 }
 
-/*
-    Common BSP Loading Utility functions
- */
+// Common BSP Loading Utility functions
 
 /*
    SwapBlock()
    if all values are 32 bits, this can be used to swap everything
  */
+
+/*
+=======================================================================================================================================
+BSP_SwapBlock
+=======================================================================================================================================
+*/
 void BSP_SwapBlock(int *dest, const int *src, int size) {
 	int i;
 
-	/* dummy check */
+	// dummy check
 	if (dest == NULL || src == NULL) {
 		return;
 	}
-
-	/* swap */
+	// swap
 	size >>= 2;
 
-	for (i = 0; i < size; i++)
+	for (i = 0; i < size; i++) {
 		dest[i] = LittleLong(src[i]);
+	}
 }
-

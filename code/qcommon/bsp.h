@@ -56,7 +56,7 @@ typedef struct {
 } dnode_t;
 
 typedef struct {
-	int cluster;			// - 1 = opaque cluster(do I still store these?)
+	int cluster;			// -1 = opaque cluster(do I still store these?)
 	int area;
 	int mins[3];			// for frustum culling
 	int maxs[3];

@@ -497,7 +497,7 @@ int BotInterpolateCharacters(int handle1, int handle2, float desiredskill) {
 	for (i = 0; i < MAX_CHARACTERISTICS; i++) {
 		if (ch1->c[i].type == CT_FLOAT && ch2->c[i].type == CT_FLOAT) {
 			out->c[i].type = CT_FLOAT;
-			out->c[i].value._float = ch1->c[i].value._float + 			(ch2->c[i].value._float - ch1->c[i].value._float) * scale;
+			out->c[i].value._float = ch1->c[i].value._float + (ch2->c[i].value._float - ch1->c[i].value._float) * scale;
 		} else if (ch1->c[i].type == CT_INTEGER) {
 			out->c[i].type = CT_INTEGER;
 			out->c[i].value.integer = ch1->c[i].value.integer;

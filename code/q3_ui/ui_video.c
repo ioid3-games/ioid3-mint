@@ -94,11 +94,10 @@ static void DriverInfo_MenuDraw(void) {
 	UI_DrawString(320, 80, "VENDOR", UI_CENTER|UI_SMALLFONT, text_small_title_color);
 	UI_DrawString(320, 152, "PIXELFORMAT", UI_CENTER|UI_SMALLFONT, text_small_title_color);
 	UI_DrawString(320, 192, "EXTENSIONS", UI_CENTER|UI_SMALLFONT, text_small_title_color);
-
 	UI_DrawString(320, 80 + 16, cgs.glconfig.vendor_string, UI_CENTER|UI_SMALLFONT, text_color_normal);
 	UI_DrawString(320, 96 + 16, cgs.glconfig.version_string, UI_CENTER|UI_SMALLFONT, text_color_normal);
 	UI_DrawString(320, 112 + 16, cgs.glconfig.renderer_string, UI_CENTER|UI_SMALLFONT, text_color_normal);
-	UI_DrawString(320, 152 + 16, va("color(%d - bits) Z(%d - bits) stencil(%d - bits)", cgs.glconfig.colorBits, cgs.glconfig.depthBits, cgs.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, text_color_normal);
+	UI_DrawString(320, 152 + 16, va("color(%d-bits) Z(%d-bits) stencil(%d-bits)", cgs.glconfig.colorBits, cgs.glconfig.depthBits, cgs.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, text_color_normal);
 	// double column
 	y = 192 + 16;
 
@@ -186,7 +185,7 @@ static void UI_DriverInfo_Menu(void) {
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=399
 	// NOTE: could have pushed the size of stringbuff, but the list is already out of the screen
 	// (no matter what your resolution)
-	// Q_strncpyz(s_driverinfo.stringbuff, cgs.glconfig.extensions_string, 1024);
+	Q_strncpyz(s_driverinfo.stringbuff, cgs.glconfig.extensions_string, 1024);
 	// build null terminated extension strings
 	eptr = s_driverinfo.stringbuff;
 
@@ -405,7 +404,7 @@ const char *GraphicsOptions_AspectString(float w, float h) {
 	int i;
 
 	Com_sprintf(str, sizeof(str), "%.2f:1", w / h);
-	// rename common ratios("1.33:1" ->"4:3")
+	// rename common ratios ("1.33:1" -> "4:3")
 	for (i = 0; knownRatios[i][0]; i++) {
 		if (!Q_stricmp(str, knownRatios[i][0])) {
 			Q_strncpyz(str, knownRatios[i][1], sizeof(str));
@@ -434,7 +433,7 @@ static void GraphicsOptions_GetAspectRatios(void) {
 		if (strchr(resolutions[r], '(')) {
 			w = cgs.glconfig.displayWidth;
 			h = cgs.glconfig.displayHeight;
-			Com_sprintf(str, sizeof(str), "Auto(%s)", GraphicsOptions_AspectString(w, h));
+			Com_sprintf(str, sizeof(str), "Auto (%s)", GraphicsOptions_AspectString(w, h));
 		} else {
 			x = strchr(resolutions[r], 'x') + 1;
 			Q_strncpyz(str, resolutions[r], x - resolutions[r]);
@@ -498,7 +497,8 @@ static void GraphicsOptions_GetResolutions(void) {
 		static char displayRes[64];
 
 		// Add display resolution video mode
-		Com_sprintf(displayRes, sizeof(displayRes), "Auto(%dx%d)", cgs.glconfig.displayWidth, cgs.glconfig.displayHeight);
+		Com_sprintf(displayRes, sizeof(displayRes), "Auto (%dx%d)", cgs.glconfig.displayWidth, cgs.glconfig.displayHeight);
+
 		detectedResolutions[i++] = displayRes;
 		// Use display resolution in "Very High Quality" template
 		s_ivo_templates[0].mode = -2;
@@ -579,6 +579,7 @@ GraphicsOptions_UpdateMenuItems
 =======================================================================================================================================
 */
 static void GraphicsOptions_UpdateMenuItems(void) {
+
 	s_graphicsoptions.apply.generic.flags |= QMF_HIDDEN|QMF_INACTIVE;
 
 	if (s_ivo.mode != s_graphicsoptions.mode.curvalue) {
@@ -926,8 +927,8 @@ void GraphicsOptions_MenuInit(void) {
 	};
 
 	static const char *lighting_names[] = {
-		"Lightmap(High)",
-		"Vertex(Low)",
+		"Lightmap (High)",
+		"Vertex (Low)",
 		NULL
 	};
 
@@ -1085,7 +1086,7 @@ void GraphicsOptions_MenuInit(void) {
 	y += BIGCHAR_HEIGHT + 2;
 	// references/modifies "r_ext_multisample"
 	s_graphicsoptions.multisample.generic.type = MTYPE_SPINCONTROL;
-	s_graphicsoptions.multisample.generic.name = "Anti - aliasing:";
+	s_graphicsoptions.multisample.generic.name = "Anti-aliasing:";
 	s_graphicsoptions.multisample.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	s_graphicsoptions.multisample.generic.x = 400;
 	s_graphicsoptions.multisample.generic.y = y;

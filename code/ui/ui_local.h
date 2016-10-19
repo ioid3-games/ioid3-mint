@@ -30,7 +30,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "ui_shared.h"
 
 // global display context
-
 extern vmCvar_t ui_ffa_fraglimit;
 extern vmCvar_t ui_ffa_timelimit;
 extern vmCvar_t ui_tourney_fraglimit;
@@ -148,10 +147,7 @@ extern vec4_t text_color_highlight;
 extern char *ui_medalNames[];
 extern char *ui_medalPicNames[];
 extern char *ui_medalSounds[];
-
-
 // ui_main.c
-
 void UI_Report(void);
 void UI_Load(void);
 void UI_LoadMenus(const char *menuFile, qboolean reset);
@@ -161,10 +157,7 @@ void UI_ClearScores(void);
 void UI_LoadArenas(void);
 void UI_RegisterCvars(void);
 void UI_UpdateCvars(void);
-
-
 // ui_players.c
-
 typedef struct {
 	// model info
 	qhandle_t legsModel;
@@ -172,16 +165,13 @@ typedef struct {
 	qhandle_t torsoModel;
 	lerpFrame_t torso;
 	qhandle_t headModel;
-
 	cgSkin_t modelSkin;
-
 	animation_t animations[MAX_TOTALANIMATIONS];
 	qhandle_t weaponModel;
 	qhandle_t barrelModel;
 	qhandle_t flashModel;
 	vec3_t flashDlightColor;
 	int muzzleFlashTime;
-
 	vec3_t color1;
 	byte c1RGBA[4];
 	// currently in use drawing parms
@@ -212,7 +202,6 @@ void UI_PlayerInfo_SetModel(uiPlayerInfo_t *pi, const char *model, const char *h
 void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat);
 void UI_PlayerInfo_UpdateColor(uiPlayerInfo_t *pi);
 qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinName, const char *headName, const char *teamName);
-
 // new ui stuff
 #define UI_NUMFX 7
 #define MAX_HEADS 64
@@ -223,23 +212,25 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 #define MAX_MAPS 128
 #define MAX_SPMAPS 16
 #define PLAYERS_PER_TEAM 5
-#define MAX_PINGREQUESTS		32
-#define MAX_ADDRESSLENGTH		64
-#define MAX_HOSTNAMELENGTH		22
-#define MAX_MAPNAMELENGTH		16
-#define MAX_STATUSLENGTH		64
-#define MAX_LISTBOXWIDTH		59
-#define UI_FONT_THRESHOLD		0.1
-#define MAX_DISPLAY_SERVERS		2048
-#define MAX_SERVERSTATUS_LINES	128
-#define MAX_SERVERSTATUS_TEXT	1024
-#define MAX_FOUNDPLAYER_SERVERS	16
+#define MAX_PINGREQUESTS 32
+#define MAX_ADDRESSLENGTH 64
+#define MAX_HOSTNAMELENGTH 22
+#define MAX_MAPNAMELENGTH 16
+#define MAX_STATUSLENGTH 64
+#define MAX_LISTBOXWIDTH 59
+#define UI_FONT_THRESHOLD 0.1
+#define MAX_DISPLAY_SERVERS 2048
+#define MAX_SERVERSTATUS_LINES 128
+#define MAX_SERVERSTATUS_TEXT 1024
+#define MAX_FOUNDPLAYER_SERVERS 16
 #define TEAM_MEMBERS 5
+
 #define GAMES_ALL		0
 #define GAMES_FFA		1
 #define GAMES_TEAMPLAY	2
 #define GAMES_TOURNEY	3
 #define GAMES_CTF		4
+
 #define MAPS_PER_TIER 3
 #define MAX_TIERS 16
 #define MAX_MODS 64
@@ -248,9 +239,9 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 #define MAX_PLAYERMODELS 256
 
 typedef struct {
-  const char *name;
+	const char *name;
 	const char *imageName;
-  qhandle_t headImage;
+	qhandle_t headImage;
 	const char *base;
 	qboolean active;
 	int reference;
@@ -263,23 +254,23 @@ typedef struct {
 } aliasInfo;
 
 typedef struct {
-  const char *teamName;
+	const char *teamName;
 	const char *imageName;
 	const char *teamMembers[TEAM_MEMBERS];
-  qhandle_t teamIcon;
-  qhandle_t teamIcon_Metal;
-  qhandle_t teamIcon_Name;
+	qhandle_t teamIcon;
+	qhandle_t teamIcon_Metal;
+	qhandle_t teamIcon_Name;
 	int cinematic;
 } teamInfo;
 
 typedef struct {
-  const char *gameType;
+	const char *gameType;
 	int gtEnum;
 } gameTypeInfo;
 
 typedef struct {
-  const char *mapName;
-  const char *mapLoadName;
+	const char *mapName;
+	const char *mapLoadName;
 	const char *imageName;
 	const char *opponentName;
 	int teamMembers;
@@ -395,7 +386,6 @@ typedef struct {
 	int tierCount;
 	tierInfo tierList[MAX_TIERS];
 	int skillIndex;
-
 	modInfo_t modList[MAX_MODS];
 	int modCount;
 	int modIndex;
@@ -406,7 +396,6 @@ typedef struct {
 	int movieCount;
 	int movieIndex;
 	int previewMovie;
-
 	serverStatus_t serverStatus;
 	// for the showing the status of a server
 	char serverStatusAddress[MAX_ADDRESSLENGTH];
@@ -430,9 +419,9 @@ typedef struct {
 	int effectsColor;
 	qboolean inGameLoad;
 	int maxSplitView;
-}	uiInfo_t;
-extern uiInfo_t uiInfo;
+} uiInfo_t;
 
+extern uiInfo_t uiInfo;
 
 extern void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
 extern void UI_DrawBannerString(int x, int y, const char *str, int style, vec4_t color);
@@ -446,21 +435,14 @@ extern qboolean UI_IsFullscreen(void);
 extern void UI_SetActiveMenu(uiMenuCommand_t menu);
 extern void UI_ForceMenuOff(void);
 void UI_LoadBestScores(const char *map, int game);
-
-
 // ui_gameinfo.c
-
 char *UI_GetBotInfoByNumber(int num);
 char *UI_GetBotInfoByName(const char *name);
 int UI_GetNumBots(void);
 void UI_LoadBots(void);
 char *UI_GetBotNameByNumber(int num);
-
-
-// new ui 
-
+// new ui
 #define ASSET_BACKGROUND "uiBackground"
-
 // for tracking sp game info in Team Arena
 typedef struct postGameInfo_s {
 	int score;
@@ -480,7 +462,4 @@ typedef struct postGameInfo_s {
 	int skillBonus;
 	int baseScore;
 } postGameInfo_t;
-
-
-
 #endif

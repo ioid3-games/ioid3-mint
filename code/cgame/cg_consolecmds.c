@@ -151,7 +151,7 @@ void CG_CenterEcho_f(int localPlayerNum) {
 
 	trap_Args(text, sizeof(text));
 
-	CG_ReplaceCharacter(text, '\\','\n');
+	CG_ReplaceCharacter(text, '\\', '\n');
 	CG_CenterPrint(localPlayerNum, text, SCREEN_HEIGHT * 0.30, 0.5);
 }
 
@@ -243,7 +243,8 @@ CG_LoadHud_f
 static void CG_LoadHud_f(void) {
 	char buff[1024];
 	const char *hudSet;
-  memset(buff, 0, sizeof(buff));
+
+	memset(buff, 0, sizeof(buff));
 #ifdef MISSIONPACK
 	// must reload both ui and hud at once, they share the string memory pool
 	UI_Load();
@@ -517,7 +518,7 @@ static void CG_PrevTeamMember_f(int localPlayerNum) {
 CG_NextOrder_f
 =======================================================================================================================================
 */
-// ASS U ME's enumeration order as far as task specific orders, OFFENSE is zero, CAMP is last
+// ASS U ME's enumeration order as far as task specific orders, OFFENSE is zero, PATROL is last
 static void CG_NextOrder_f(int localPlayerNum) {
 	localPlayer_t *player;
 	playerInfo_t *pi;
@@ -580,7 +581,7 @@ static void CG_ConfirmOrder_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %d %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), player->acceptLeader, VOICECHAT_YES));
 	trap_Cmd_ExecuteText(EXEC_NOW, "+button5; wait; -button5");
 
-	if (cg.time <player->acceptOrderTime) {
+	if (cg.time < player->acceptOrderTime) {
 		trap_SendClientCommand(va("teamtask %d\n", player->acceptTask));
 		player->acceptOrderTime = 0;
 	}
@@ -603,7 +604,7 @@ static void CG_DenyOrder_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %d %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), player->acceptLeader, VOICECHAT_NO));
 	trap_Cmd_ExecuteText(EXEC_NOW, va("%s; wait; %s", Com_LocalPlayerCvarName(localPlayerNum, "+button6"), Com_LocalPlayerCvarName(localPlayerNum, "-button6")));
 
-	if (cg.time <player->acceptOrderTime) {
+	if (cg.time < player->acceptOrderTime) {
 		player->acceptOrderTime = 0;
 	}
 }
@@ -863,7 +864,7 @@ static void CG_RemapShader_f(void) {
 	}
 
 	if (trap_Argc() < 2 || trap_Argc() > 4) {
-		CG_Printf("Usage: %s < original shader > [new shader] [time offset]\n", CG_Argv(0));
+		CG_Printf("Usage: %s <original shader> [new shader] [time offset]\n", CG_Argv(0));
 		return;
 	}
 
@@ -963,7 +964,7 @@ void CG_StopCinematic_f(void) {
 
 	trap_CIN_StopCinematic(cg.cinematicHandle);
 	cg.cinematicHandle = -1;
-	// trap_S_StopAllSounds();
+	//trap_S_StopAllSounds();
 }
 
 /*
@@ -990,7 +991,7 @@ void CG_Cinematic_f(void) {
 	if (s[0] == '2') {
 		bits |= CIN_loop;
 	}
-	// trap_S_StopAllSounds();
+	//trap_S_StopAllSounds();
 
 	x = 0;
 	y = 0;

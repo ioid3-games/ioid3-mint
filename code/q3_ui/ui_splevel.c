@@ -71,7 +71,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #define PLAYER_Y 314
 #define AWARDS_Y (PLAYER_Y + 26)
-
 #define MAX_UI_AWARDS 6
 
 typedef struct {

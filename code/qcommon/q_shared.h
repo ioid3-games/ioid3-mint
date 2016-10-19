@@ -114,7 +114,7 @@ typedef unsigned __int8 uint8_t;
 // vsnprintf is ISO/IEC 9899:1999
 // abstracting this to make it portable
 int Q_vsnprintf(char *str, size_t size, const char *format, va_list ap);
-#define rint(x)(floor(x) + 0.5f)
+#define rint(x) (floor(x) + 0.5f)
 #else
 #include <stdint.h>
 #define Q_vsnprintf vsnprintf
@@ -849,6 +849,7 @@ typedef struct {
 	byte b6;
 	byte b7;
 } qint64;
+
 #ifdef Q3_PORTABLE_ENDIAN
 short BigShort(short l);
 short LittleShort(short l);
@@ -906,7 +907,7 @@ void QDECL Com_DPrintf(const char *msg, ...) __attribute__((format(printf, 1, 2)
 #define CVAR_USERINFO2			0x4000 // userinfo for second local player
 #define CVAR_USERINFO3			0x8000 // userinfo for third local player
 #define CVAR_USERINFO4			0x10000 // userinfo for fourth local player
-#define CVAR_CUSTOM_RESET		0x20000 // uses a custom game - specific reset string
+#define CVAR_CUSTOM_RESET		0x20000 // uses a custom game-specific reset string
 // These flags are only returned by the Cvar_Flags() function
 #define CVAR_MODIFIED		0x40000000 // Cvar was modified
 #define CVAR_NONEXISTENT	0x80000000 // Cvar doesn't exist.
@@ -941,7 +942,7 @@ struct cvar_s {
 #define MAX_CVAR_VALUE_STRING 256
 
 typedef int cvarHandle_t;
-// the modules that run in the virtual machine can't access the cvar_t directly,  so they must ask for structured updates
+// the modules that run in the virtual machine can't access the cvar_t directly, so they must ask for structured updates
 typedef struct {
 	cvarHandle_t handle;
 	int modificationCount;
@@ -1075,7 +1076,7 @@ typedef enum {
 #define MAX_CONFIGSTRINGS 1024
 // these are the only configstrings that the system reserves, all the other ones are strictly for servergame to clientgame communication
 #define CS_SERVERINFO 0 // an info string with all the serverinfo cvars
-#define CS_SYSTEMINFO 1 // an info string for server system to client system configuration (timescale, etc)
+#define CS_SYSTEMINFO 1 // an info string for server system to client system configuration (timescale, etc.)
 
 #define RESERVED_CONFIGSTRINGS 2 // game can't modify below this, only the system can
 #define MAX_GAMESTATE_CHARS 16000
@@ -1110,7 +1111,7 @@ typedef struct usercmd_s {
 // New fields cannot be added to sharedEntityState_t without updating entityState_t in bg_public.h(and thus breaking mod compatiblity).
 typedef struct sharedEntityState_s {
 	int number;			// entity index
-	int contents;		// CONTENTS_TRIGGER, CONTENTS_SOLID, CONTENTS_BODY, etc, a non - solid entity should set to 0
+	int contents;		// CONTENTS_TRIGGER, CONTENTS_SOLID, CONTENTS_BODY, etc., a non-solid entity should set to 0
 	collisionType_t collisionType;	// if CT_SUBMODEL, modelindex is an inline model number
 									// if CT_CAPSULE, use capsule instead of bbox for clipping against this ent
 									// else(CT_AABB), assume an explicit mins / maxs bounding box
@@ -1141,7 +1142,6 @@ typedef enum {
 char *Com_LocalPlayerCvarName(int localPlayerNum, const char *in_cvarName);
 int Com_LocalPlayerForCvarName(const char *in_cvarName);
 const char *Com_LocalPlayerBaseCvarName(const char *in_cvarName);
-
 #define Square(x) ((x) * (x))
 // real time
 typedef struct qtime_s {

@@ -1,31 +1,25 @@
 /*
 =======================================================================================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2010 - 2011 by Zack Middleton
+Copyright (C) 2010 - 2011 by Zack Middleton.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, 
-or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License. If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -36,6 +30,7 @@ LOCAL PLAYER SELECT MENU
 
 This is a general select local player menu. Used for accessing menus for a specific local player.
 It runs a function, passing the selected player to the function.
+
 =======================================================================================================================================
 */
 
@@ -58,11 +53,11 @@ typedef struct {
 	menubitmap_s framer;
 	menutext_s player[MAX_SPLITVIEW];
 	menubitmap_s back;
-
 	char bannerString[32];
 	char playerString[MAX_SPLITVIEW][12];
-	void 	(*playerfunc)(int);
+	void (*playerfunc)(int);
 } selectPlayerMenu_t;
+
 static selectPlayerMenu_t selectPlayerMenu;
 
 /*
@@ -82,9 +77,9 @@ static void UI_SelectPlayerMenu_Event(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	case ID_BACK:
-		UI_PopMenu();
-		break;
+		case ID_BACK:
+			UI_PopMenu();
+			break;
 	}
 }
 
@@ -99,6 +94,7 @@ static void UI_SelectPlayer_MenuInit(const char *banner) {
 	UI_SelectPlayer_Cache();
 
 	memset(&selectPlayerMenu, 0, sizeof(selectPlayerMenu));
+
 	selectPlayerMenu.menu.wrapAround = qtrue;
 	selectPlayerMenu.menu.fullscreen = qtrue;
 

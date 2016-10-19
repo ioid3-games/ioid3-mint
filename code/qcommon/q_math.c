@@ -1051,8 +1051,6 @@ int PlaneTypeForNormal(vec3_t normal) {
 	return PLANE_NON_AXIAL;
 }
 */
-
-
 /*
 =======================================================================================================================================
 MatrixMultiply
@@ -1098,7 +1096,7 @@ void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up) 
 
 	if (right) {
 		right[0] = (-1 * sr * sp * cy + -1 * cr * -sy);
-		right[1] = (-1 * sr * sp * sy + -1 * cr *cy);
+		right[1] = (-1 * sr * sp * sy + -1 * cr * cy);
 		right[2] = -1 * sr * cp;
 	}
 
@@ -1179,12 +1177,12 @@ vec_t DistanceBetweenLineSegmentsSquared(
 		tN = (a * e - b * d);
 
 		if (sN < 0.0) {
-			// sN < 0 = > the s = 0 edge is visible
+			// sN < 0 => the s = 0 edge is visible
 			sN = 0.0;
 			tN = e;
 			tD = c;
 		} else if (sN > sD) {
-			// sN > sD = > the s = 1 edge is visible
+			// sN > sD => the s = 1 edge is visible
 			sN = sD;
 			tN = e + b;
 			tD = c;
@@ -1192,7 +1190,7 @@ vec_t DistanceBetweenLineSegmentsSquared(
 	}
 
 	if (tN < 0.0) {
-		// tN < 0 = > the t = 0 edge is visible
+		// tN < 0 => the t = 0 edge is visible
 		tN = 0.0;
 		// recompute sN for this edge
 		if (-d < 0.0) {
@@ -1244,7 +1242,6 @@ int Q_isnan(float x) {
 
 	return (int)((unsigned int)fi.ui >> 31);
 }
-
 #ifndef Q3_VM
 /*
 =======================================================================================================================================
@@ -1277,7 +1274,7 @@ float Q_acos(float c) {
 =======================================================================================================================================
 Q_asin
 
-the msvc asin probably has same odd behavior as acos.
+The msvc asin probably has same odd behavior as acos.
 =======================================================================================================================================
 */
 float Q_asin(float c) {

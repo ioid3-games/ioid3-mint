@@ -32,20 +32,23 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "ui_local.h"
 
-
+/*
+=======================================================================================================================================
+UI_WantsBindKeys
+=======================================================================================================================================
+*/
 qboolean UI_WantsBindKeys(void) {
 	return Controls_WantsBindKeys();
 }
 
+/*
+=======================================================================================================================================
+UI_WindowResized
+=======================================================================================================================================
+*/
 void UI_WindowResized(void) {
 
 }
-
-/*
-=======================================================================================================================================
-cvars
-=======================================================================================================================================
-*/
 
 typedef struct {
 	vmCvar_t *vmCvar;
@@ -53,7 +56,8 @@ typedef struct {
 	char *defaultString;
 	int cvarFlags;
 } cvarTable_t;
-	vmCvar_t ui_ffa_fraglimit;
+
+vmCvar_t ui_ffa_fraglimit;
 vmCvar_t ui_ffa_timelimit;
 vmCvar_t ui_tourney_fraglimit;
 vmCvar_t ui_tourney_timelimit;
@@ -74,7 +78,6 @@ vmCvar_t ui_harvester_capturelimit;
 vmCvar_t ui_harvester_timelimit;
 vmCvar_t ui_harvester_friendly;
 #endif
-
 vmCvar_t ui_publicServer;
 vmCvar_t ui_arenasFile;
 vmCvar_t ui_botsFile;
@@ -124,8 +127,7 @@ static cvarTable_t cvarTable[] = {
 	{&ui_team_friendly, "ui_team_friendly", "1", CVAR_ARCHIVE},
 	{&ui_ctf_capturelimit, "ui_ctf_capturelimit", "8", CVAR_ARCHIVE},
 	{&ui_ctf_timelimit, "ui_ctf_timelimit", "30", CVAR_ARCHIVE},
-	{&ui_ctf_friendly, "ui_ctf_friendly", "0", CVAR_ARCHIVE}, 
-
+	{&ui_ctf_friendly, "ui_ctf_friendly", "0", CVAR_ARCHIVE},
 #ifdef MISSIONPACK
 	{&ui_1flag_capturelimit, "ui_1flag_capturelimit", "5", CVAR_ARCHIVE},
 	{&ui_1flag_timelimit, "ui_1flag_timelimit", "30", CVAR_ARCHIVE},

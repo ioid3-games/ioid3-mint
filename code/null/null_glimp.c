@@ -21,13 +21,13 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
+
 #include "tr_common.h"
 
-qboolean(*qwglSwapIntervalEXT)(int interval);
-void (*qglMultiTexCoord2fARB) (GLenum texture, float s, float t);
-void (*qglActiveTextureARB) (GLenum texture);
-void (*qglClientActiveTextureARB) (GLenum texture);
-
+qboolean (*qwglSwapIntervalEXT)(int interval);
+void (*qglMultiTexCoord2fARB)(GLenum texture, float s, float t);
+void (*qglActiveTextureARB)(GLenum texture);
+void (*qglClientActiveTextureARB)(GLenum texture);
 void (*qglLockArraysEXT)(int, int);
 void (*qglUnlockArraysEXT)(void);
 

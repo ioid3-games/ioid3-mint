@@ -4243,7 +4243,7 @@ void BotMapScripts(bot_state_t *bs) {
 
 	trap_GetServerinfo(info, sizeof(info));
 
-	strncpy(mapname, Info_ValueForKey(info, "mapname"), sizeof(mapname) - 1);
+	strncpy(mapname, Info_ValueForKey(info, "mapname"), sizeof(mapname) -1);
 	mapname[sizeof(mapname) - 1] = '\0';
 
 	if (!Q_stricmp(mapname, "q3tourney6")) {
@@ -4429,6 +4429,7 @@ int BotFuncButtonActivateGoal(bot_state_t *bs, int bspent, bot_activategoal_t *a
 	VectorScale(origin, 0.5, origin);
 	// touch distance of the button
 	dist = fabs(movedir[0]) * size[0] + fabs(movedir[1]) * size[1] + fabs(movedir[2]) * size[2] - lip;
+
 	trap_AAS_FloatForBSPEpairKey(bspent, "health", &health);
 	// if the button is shootable
 	if (health) {
@@ -5122,7 +5123,7 @@ void BotCheckBlockedTeammates(bot_state_t *bs) {
 		if ((!(ent->r.svFlags & SVF_BOT)) || BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 90, i)) {
 			mindist = 32;
 		}
-		// teammates with an important item needs even more space, and stay away from dangerous teammates(mined / burning players).
+		// teammates with an important item needs even more space, and stay away from dangerous teammates(mined/burning players).
 		if (EntityCarriesFlag(&entinfo)
 #ifdef MISSIONPACK
 		 || EntityCarriesCubes(&entinfo) || bs->inventory[INVENTORY_SCOUT] || (entinfo.flags & EF_TICKING)
@@ -6021,7 +6022,6 @@ BotDeathmatchAI
 */
 void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
 	char gender[144], name[144];
-
 	int i;
 
 	// if the bot has just been setup

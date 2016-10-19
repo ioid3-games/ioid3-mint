@@ -180,7 +180,7 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 		vec3_t localOrigin;
 		// create the texture axis
 		VectorNormalize2(mf->projectionDir, axis[0]);
-		VectorScale(axis[0], -1, axis[0]); // ZTM: the dir was scaled to - 20 before giving to renderer, turn it back around. :S
+		VectorScale(axis[0], -1, axis[0]); // ZTM: the dir was scaled to -20 before giving to renderer, turn it back around. :S
 		PerpendicularVector(axis[1], axis[0]);
 		RotatePointAroundVector(axis[2], axis[0], axis[1], orientation);
 		CrossProduct(axis[0], axis[2], axis[1]);

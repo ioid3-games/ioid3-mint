@@ -59,7 +59,8 @@ typedef struct bot_goalstate_s {
 	int lastreachabilityarea;					// last area with reachabilities the bot was in
 	bot_goal_t goalstack[MAX_GOALSTACK];		// goal stack
 	int goalstacktop;							// the top of the goal stack
-	int avoidgoals[MAX_AVOIDGOALS];				// goals to avoid 	float avoidgoaltimes[MAX_AVOIDGOALS];		// times to avoid the goals
+	int avoidgoals[MAX_AVOIDGOALS];				// goals to avoid
+	float avoidgoaltimes[MAX_AVOIDGOALS];		// times to avoid the goals
 } bot_goalstate_t;
 
 // reset the whole goal state, but keep the item weights

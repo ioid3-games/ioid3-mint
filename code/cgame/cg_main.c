@@ -58,7 +58,7 @@ Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, in
 
 	switch (command) {
 		case CG_GETAPINAME:
-				return (intptr_t)CG_API_NAME;
+			return (intptr_t)CG_API_NAME;
 		case CG_GETAPIVERSION:
 			return (CG_API_MAJOR_VERSION << 16)|(CG_API_MINOR_VERSION & 0xFFFF);
 		case CG_INIT:
@@ -137,6 +137,7 @@ cgs_t cgs;
 centity_t cg_entities[MAX_GENTITIES];
 weaponInfo_t cg_weapons[MAX_WEAPONS];
 itemInfo_t cg_items[MAX_ITEMS];
+
 vmCvar_t con_conspeed;
 vmCvar_t con_autochat;
 vmCvar_t con_autoclear;
@@ -450,7 +451,7 @@ static cvarTable_t cgameCvarTable[] = {
 	{&cg_antiLag, "cg_antiLag", "0", CVAR_USERINFO_ALL|CVAR_ARCHIVE, RANGE_INT(0, 2)},
 	{&cg_forceBitmapFonts, "cg_forceBitmapFonts", "0", CVAR_ARCHIVE|CVAR_LATCH, RANGE_BOOL},
 	{&cg_drawGrappleHook, "cg_drawGrappleHook", "1", CVAR_ARCHIVE, RANGE_BOOL},
-	{&cg_drawBBox, "cg_drawBBox", "0", CVAR_CHEAT, RANGE_BOOL}, 
+	{&cg_drawBBox, "cg_drawBBox", "0", CVAR_CHEAT, RANGE_BOOL},
 //	{&cg_pmove_fixed, "cg_pmove_fixed", "0", CVAR_USERINFO|CVAR_ARCHIVE, RANGE_BOOL}
 	{&cg_introPlayed, "com_introPlayed", "0", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_joystickDebug, "in_joystickDebug", "0", CVAR_TEMP, RANGE_BOOL},
@@ -485,6 +486,7 @@ CG_RegisterCvar
 =======================================================================================================================================
 */
 void CG_RegisterCvar(vmCvar_t *vmCvar, char *cvarName, char *defaultString, int cvarFlags, float rangeMin, float rangeMax, qboolean rangeIntegral) {
+
 	trap_Cvar_Register(vmCvar, cvarName, defaultString, cvarFlags);
 
 	if (rangeMin != 0 || rangeMax != 0) {
@@ -541,7 +543,7 @@ void CG_RegisterUserCvars(void) {
 			CG_RegisterCvar(vmcvar, Com_LocalPlayerCvarName(j, uservar->baseName), uservar->defaultString, cvarFlags, uservar->rangeMin, uservar->rangeMax, uservar->rangeIntegral);
 		}
 	}
-	// cvars with per - player defaults
+	// cvars with per-player defaults
 	for (i = 0; i < CG_MaxSplitView(); i++) {
 		if (i == 0) {
 			name = DEFAULT_PLAYER_NAME;
@@ -654,7 +656,6 @@ void CG_UpdateCvars(void) {
 		return;
 	}
 	// check for modications here
-
 #ifndef MISSIONPACK_HUD
 	// If team overlay is on, ask for updates from the server. If it's off, let the server know so we don't receive it
 	if (drawTeamOverlayModificationCount != cg_drawTeamOverlay.modificationCount) {
@@ -739,7 +740,7 @@ void CG_RemoveNotifyLine(localPlayer_t *player) {
 		player->consoleText[i] = player->consoleText[i + offset];
 	}
 	// pop up the first consoleLine
-	for (i = 1; i <player->numConsoleLines; i++) {
+	for (i = 1; i < player->numConsoleLines; i++) {
 		player->consoleLines[i - 1] = player->consoleLines[i];
 	}
 	// clear last slot
@@ -827,7 +828,7 @@ void CG_AddNotifyText(int realTime, qboolean restoredText) {
 =======================================================================================================================================
 CG_NotifyPrintf
 
-Only printed in notify area for localPlayerNum(and client console)
+Only printed in notify area for localPlayerNum (and client console).
 =======================================================================================================================================
 */
 void QDECL CG_NotifyPrintf(int localPlayerNum, const char *msg, ...) {
@@ -849,7 +850,7 @@ void QDECL CG_NotifyPrintf(int localPlayerNum, const char *msg, ...) {
 =======================================================================================================================================
 CG_NotifyBitsPrintf
 
-Only printed in notify area for players specified in localPlayerBits(and client console)
+Only printed in notify area for players specified in localPlayerBits (and client console).
 =======================================================================================================================================
 */
 void QDECL CG_NotifyBitsPrintf(int localPlayerBits, const char *msg, ...) {
@@ -992,7 +993,6 @@ char *CG_Cvar_VariableString(const char *var_name) {
 	static char buffer[MAX_STRING_CHARS];
 
 	trap_Cvar_VariableStringBuffer(var_name, buffer, sizeof(buffer));
-
 	return buffer;
 }
 
@@ -1035,10 +1035,10 @@ void CG_SetupDlightstyles(void) {
 
 		cent = &cg_entities[entnum];
 
-		token = COM_Parse(&str);  // stylestring
+		token = COM_Parse(&str); // stylestring
 		Q_strncpyz(cent->dl_stylestring, token, sizeof(cent->dl_stylestring));
 
-		token = COM_Parse(&str);  // offset
+		token = COM_Parse(&str); // offset
 		cent->dl_frame = atoi(token);
 		cent->dl_oldframe = cent->dl_frame - 1;
 
@@ -1375,6 +1375,7 @@ This function may execute for a couple of minutes with a slow disk.
 static void CG_RegisterGraphics(void) {
 	int i;
 	char items[MAX_ITEMS + 1];
+
 	// clear any references to old media
 	memset(&cg.refdef, 0, sizeof(cg.refdef));
 
@@ -3083,7 +3084,7 @@ void CG_UpdateMouseState(int localPlayerNum) {
 			|| (cg.snap && (cg.snap->pss[localPlayerNum].pm_flags & (PMF_FOLLOW|PMF_SCOREBOARD)))) {
 		// no grab, show system cursor
 		state |= MOUSE_SYSTEMCURSOR;
-	// if console isn't open, not UI, and not other non - view angle modes
+	// if console isn't open, not UI, and not other non-view angle modes
 	} else if (state == 0) {
 		// change viewangles, grab mouse, hide system cursor
 		state = MOUSE_CLIENT;
@@ -3269,7 +3270,7 @@ void CG_JoystickAxisEvent(int localPlayerNum, int axis, int value, unsigned time
 
 	oldvalue = cg.localPlayers[localPlayerNum].joystickAxis[axis];
 	cg.localPlayers[localPlayerNum].joystickAxis[axis] = value;
-	// stick released or switched pos / neg
+	// stick released or switched pos/neg
 	if (value == 0 || !!(value < 0) != !!(oldvalue < 0)) {
 		if (oldvalue < 0) {
 			if (negKey != -1) {

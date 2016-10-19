@@ -572,6 +572,7 @@ vm_t *VM_Restart(vm_t *vm, qboolean unpure) {
 
 	if (vm->dllHandle) {
 		Sys_UnloadDll(vm->dllHandle);
+
 		vm->dllHandle = Sys_LoadGameDll(vm->filename, &vm->entryPoint, VM_DllSyscall);
 
 		if (!vm->dllHandle) {

@@ -152,7 +152,6 @@ or configs will never get loaded from disk!
 */
 
 gameConfig_t com_gameConfig;
-
 // every time a new demo pk3 file is built, this checksum must be updated.
 // the easiest way to get it is to just run the game and see what it spits out
 #define MAX_PAKSUMS 64
@@ -166,10 +165,8 @@ typedef struct {
 } purePak_t;
 
 purePak_t com_purePaks[MAX_PAKSUMS];
-
 qboolean fs_foundPaksums;
 int fs_numPaksums;
-
 // if this is defined, the executable positively won't work with any paks other
 // than the demo pak, even if productid is present. This is only used for our
 // last demo release to prevent the mac and linux users from using the demo
@@ -223,7 +220,6 @@ static cvar_t *fs_homepath;
 // Also search the .app bundle for .pk3 files
 static cvar_t *fs_apppath;
 #endif
-
 static cvar_t *fs_basepath;
 static cvar_t *fs_cdpath;
 static cvar_t *fs_gamedirvar;
@@ -1334,7 +1330,6 @@ long FS_FOpenFileRead(const char *filename, fileHandle_t *file, qboolean uniqueF
 			}
 		}
 	}
-	
 #ifdef FS_MISSING
 	if (missingFiles) {
 		fprintf(missingFiles, "%s\n", filename);
@@ -1385,7 +1380,7 @@ int FS_FindVM(void **startSearch, char *found, int foundlen, const char *name, i
 
 	lastSearch = *startSearch;
 
-	if (*startSearch == NULL)
+	if (*startSearch == NULL) {
 		search = fs_searchpaths;
 	} else {
 		search = lastSearch->next;
@@ -1408,6 +1403,7 @@ int FS_FindVM(void **startSearch, char *found, int foundlen, const char *name, i
 
 			if (FS_FOpenFileReadDir(qvmName, search, NULL, qfalse, qtrue) > 0) {
 				Com_sprintf(found, foundlen, "%s%c%s", search->dir->fullpath, PATH_SEP, qvmName);
+
 				*startSearch = search;
 				return VMI_COMPILED;
 			}
@@ -1444,7 +1440,7 @@ FS_AllowDeletion
 qboolean FS_AllowDeletion(char *filename) {
 
 	// for safety, only allow deletion from the save, profiles and demo directory
-	if (Q_strncmp(filename, "save / ", 5) != 0 && Q_strncmp(filename, "profiles / ", 9) != 0 && Q_strncmp(filename, "demos/", 6) != 0) {
+	if (Q_strncmp(filename, "save/", 5) != 0 && Q_strncmp(filename, "profiles/", 9) != 0 && Q_strncmp(filename, "demos/", 6) != 0) {
 		return qfalse;
 	}
 
@@ -1635,12 +1631,12 @@ int FS_Read(void *buffer, int len, fileHandle_t f) {
 				if (!tries) {
 					tries = 1;
 				} else {
-					return len - remaining;	// Com_Error(ERR_FATAL, "FS_Read: 0 bytes read");
+					return len - remaining; // Com_Error(ERR_FATAL, "FS_Read: 0 bytes read");
 				}
 			}
 
 			if (read == -1) {
-				Com_Error(ERR_FATAL, "FS_Read: - 1 bytes read");
+				Com_Error(ERR_FATAL, "FS_Read: -1 bytes read");
 			}
 
 			remaining -= read;
@@ -1868,7 +1864,7 @@ long FS_ReadFileDir(const char *qpath, void *searchPath, qboolean unpure, void *
 		Com_Error(ERR_FATAL, "FS_ReadFile with empty name");
 	}
 
-	buf = NULL;	// quiet compiler warning
+	buf = NULL; // quiet compiler warning
 	// if this is a .cfg file and we are playing back a journal, read it from the journal file
 	if (strstr(qpath, ".cfg")) {
 		isConfig = qtrue;
@@ -2146,7 +2142,7 @@ static pack_t *FS_LoadZipFile(const char *zipfile, const char *basename) {
 
 	pack = Z_Malloc(sizeof(pack_t) + i * sizeof(fileInPack_t *));
 	pack->hashSize = i;
-	pack->hashTable = (fileInPack_t **) (((char *)pack) + sizeof(pack_t));
+	pack->hashTable = (fileInPack_t **)(((char *)pack) + sizeof(pack_t));
 
 	for (i = 0; i < pack->hashSize; i++) {
 		pack->hashTable[i] = NULL;
@@ -2596,7 +2592,6 @@ int FS_GetFileList(const char *path, const char *extension, char *listbuf, int b
 			};
 		int extNamesSize = ARRAY_LEN(extensions);
 		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, qfalse);
-	}
 	// Allow extension to be a list. Example: "RoQ; roq;jpg; wav"
 	} else if (strstr(extension, ";")) {
 		#define MAX_FILE_LIST_EXTS 8
@@ -2758,7 +2753,7 @@ void FS_GetModDescription(const char *modDir, char *description, int description
 	int nDescLen;
 	FILE *file;
 
-	Com_sprintf(descPath, sizeof(descPath), "%s / description.txt", modDir);
+	Com_sprintf(descPath, sizeof(descPath), "%s/description.txt", modDir);
 	nDescLen = FS_SV_FOpenFileRead(descPath, &descHandle);
 
 	if (nDescLen > 0 && descHandle) {
@@ -2815,7 +2810,6 @@ int FS_GetModList(char *listbuf, int bufsize) {
 	// we searched for mods in the three paths
 	// it is likely that we have duplicate names now, which we will cleanup below
 	pFiles = Sys_ConcatenateFileLists(pFiles0, pFiles1, pFiles2);
-
 	nPotential = Sys_CountFileList(pFiles);
 
 	for (i = 0; i < nPotential; i++) {
@@ -2856,7 +2850,7 @@ int FS_GetModList(char *listbuf, int bufsize) {
 			nPaks = Sys_CountFileList(pPaks);
 			// don't list the mod if only Spearmint patch pk3 files are found
 			for (pak = 0; pak < nPaks; pak++) {
-				if (Q_stricmpn(pPaks[pak], "spearmint - patch", 15)) {
+				if (Q_stricmpn(pPaks[pak], "spearmint-patch", 15)) {
 					// found a pk3 that isn't a Spearmint patch pk3
 					break;
 				}
@@ -2879,7 +2873,7 @@ int FS_GetModList(char *listbuf, int bufsize) {
 					nTotal += nLen + nDescLen;
 					nMods++;
 				} else {
-					Com_Printf(S_COLOR_YELLOW "WARNING: Ran out of space for mods in mod list(%d mods fit in the %d byte buffer)\n", nMods, bufsize);
+					Com_Printf(S_COLOR_YELLOW "WARNING: Ran out of space for mods in mod list (%d mods fit in the %d byte buffer)\n", nMods, bufsize);
 					break;
 				}
 			}
@@ -3375,7 +3369,7 @@ qboolean FS_ComparePaks(char *neededpaks, int len, qboolean dlstring) {
 			continue;
 		}
 
-		if (pakType == PAK_UNKNOWN && fs_serverReferencedPakNames[i] &&	*fs_serverReferencedPakNames[i]) {
+		if (pakType == PAK_UNKNOWN && fs_serverReferencedPakNames[i] && *fs_serverReferencedPakNames[i]) {
 			// Don't got it
 			if (dlstring) {
 				// We need this to make sure we won't hit the end of the buffer or the server could
@@ -3701,6 +3695,7 @@ static qboolean FS_LoadGameConfig(gameConfig_t *config, const char *gameDir, qbo
 
 			screen = &config->loadingScreens[config->numLoadingScreens];
 			config->numLoadingScreens++;
+
 			Q_strncpyz(screen->shaderName, token, sizeof(screen->shaderName));
 
 			Parse1DMatrix(&text_p, 3, screen->color);
@@ -3849,13 +3844,42 @@ struct {
 	char *basename;
 } commercialPaks[] = {
 	// quake3
-	{1042450890u, "demoq3", "pak0"}, {4204185745u, "baseq3", "pak0"}, {4193093146u, "baseq3", "pak1"}, {2353701282u, "baseq3", "pak2"}, {3321918099u, "baseq3", "pak3"}, {2809125413u, "baseq3", "pak4"}, {1185311901u, "baseq3", "pak5"}, {750524939u, "baseq3", "pak6"}, {2842227859u, "baseq3", "pak7"}, {3662040954u, "baseq3", "pak8"},
+	{1042450890u, "demoq3", "pak0"},
+	{4204185745u, "baseq3", "pak0"},
+	{4193093146u, "baseq3", "pak1"},
+	{2353701282u, "baseq3", "pak2"},
+	{3321918099u, "baseq3", "pak3"},
+	{2809125413u, "baseq3", "pak4"},
+	{1185311901u, "baseq3", "pak5"},
+	{750524939u,  "baseq3", "pak6"},
+	{2842227859u, "baseq3", "pak7"},
+	{3662040954u, "baseq3", "pak8"},
+
 	// team arena
-	{1185930068u, "tademo", "pak0"}, {946490770u, "missionpack", "pak0"}, {1414087181u, "missionpack", "pak1"}, {409244605u, "missionpack", "pak2"}, {648653547u, "missionpack", "pak3"},
+	{1185930068u, "tademo", "pak0"},
+	{946490770u, "missionpack", "pak0"},
+	{1414087181u,"missionpack", "pak1"},
+	{409244605u, "missionpack", "pak2"},
+	{648653547u, "missionpack", "pak3"},
+
 	// rtcw
-	{1731729369u, "demomain", "pak0"}, {1787286276u, "main", "pak0"}, {825182904u, "main", "mp_pak0"}, {1872082070u, "main", "mp_pak1"}, {220365352u, "main", "mp_pak2"}, {1130325916u, "main", "mp_pak3"}, {3272074268u, "main", "mp_pak4"}, {3805724433u, "main", "mp_pak5"}, {2334312393u, "main", "sp_pak1"}, {1078227215u, "main", "sp_pak2"}, {2334312393u, "main", "sp_pak3"}, {1078227215u, "main", "sp_pak4"},
+	{1731729369u, "demomain", "pak0"},
+	{1787286276u, "main", "pak0"},
+	{825182904u, "main", "mp_pak0"},
+	{1872082070u, "main", "mp_pak1"},
+	{220365352u, "main", "mp_pak2"},
+	{1130325916u, "main", "mp_pak3"},
+	{3272074268u, "main", "mp_pak4"},
+	{3805724433u, "main", "mp_pak5"},
+	{2334312393u, "main", "sp_pak1"},
+	{1078227215u, "main", "sp_pak2"},
+	{2334312393u, "main", "sp_pak3"},
+	{1078227215u, "main", "sp_pak4"},
+
 	// et
-	{1627565872u, "etmain", "pak0"}, {1587932567u, "etmain", "pak1"}, {3477493040u, "etmain", "pak2"},
+	{1627565872u, "etmain", "pak0"},
+	{1587932567u,"etmain", "pak1"},
+	{3477493040u, "etmain", "pak2"},
 };
 
 int numCommercialPaks = ARRAY_LEN(commercialPaks);
@@ -3878,7 +3902,7 @@ void FS_DetectCommercialPaks(void) {
 
 		for (i = 0; i < numCommercialPaks; ++i) {
 			if (path->pack->checksum == commercialPaks[i].checksum && Q_stricmp(path->pack->pakGamename, commercialPaks[i].gamename) == 0 && Q_stricmp(path->pack->pakBasename, commercialPaks[i].basename) == 0) {
-				// Com_DPrintf("Found commercial pak: %s(original %s%c%s)\n", path->pack->pakFilename, // 		   commercialPaks[i].gamename, PATH_SEP, commercialPaks[i].basename);
+				// Com_DPrintf("Found commercial pak: %s(original %s%c%s)\n", path->pack->pakFilename, // commercialPaks[i].gamename, PATH_SEP, commercialPaks[i].basename);
 				path->pack->pakType = PAK_COMMERCIAL;
 				break;
 			}
@@ -4090,18 +4114,18 @@ static void FS_CheckPaks(qboolean quiet) {
 
 			if (!quiet) {
 				Com_Printf("\n\n"
-						" ********************************************************************* *\n"
-						"WARNING: %s / %s.pk3 is missing.\n"
-						" ********************************************************************* *\n\n\n", com_purePaks[pak].gamename, com_purePaks[pak].pakname);
+						"**********************************************************************\n"
+						"WARNING: %s/%s.pk3 is missing.\n"
+						"**********************************************************************\n\n\n", com_purePaks[pak].gamename, com_purePaks[pak].pakname);
 			}
 
 			missingPak = qtrue;
 		} else if (path->pack->checksum != com_purePaks[pak].checksum) {
 			if (!quiet) {
 				Com_Printf("\n\n"
-						" ********************************************************************* *\n"
-						"WARNING: %s / %s.pk3 is present but its checksum(%u) is not correct.\n"
-						" ********************************************************************* *\n\n\n", com_purePaks[pak].gamename, com_purePaks[pak].pakname, path->pack->checksum);
+						"**********************************************************************\n"
+						"WARNING: %s/%s.pk3 is present but its checksum(%u) is not correct.\n"
+						"**********************************************************************\n\n\n", com_purePaks[pak].gamename, com_purePaks[pak].pakname, path->pack->checksum);
 			}
 
 			invalidPak = qtrue;

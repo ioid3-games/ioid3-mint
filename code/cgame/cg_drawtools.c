@@ -162,7 +162,7 @@ void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
 				*x += cgs.screenXBias * 2;
 			}
 			// Offset for widescreen
-			*x += cgs.screenXBias *(viewXBias);
+			*x += cgs.screenXBias * (viewXBias);
 		}
 	}
 
@@ -187,8 +187,8 @@ void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
 			} else if (cg_verticalPlacement == PLACE_BOTTOM) {
 				*y += cgs.screenYBias * 2;
 			}
-			// Offset for narrow - screen
-			*y += cgs.screenYBias *(viewYBias);
+			// Offset for narrow-screen
+			*y += cgs.screenYBias * (viewYBias);
 		}
 	}
 }
@@ -532,7 +532,7 @@ void CG_DrawStringDirect(int x, int y, const char *str, int style, const vec4_t 
 		switch (style & UI_VA_FORMATMASK) {
 			case UI_VA_CENTER:
 				// center justify at y
-				y = y - charh /*Text_Height(str, font, scale, 0) *// 2;
+				y = y - charh /*Text_Height(str, font, scale, 0)*// 2;
 				break;
 			case UI_VA_BOTTOM:
 				// bottom justify at y
@@ -622,7 +622,7 @@ void CG_DrawSmallStringColor(int x, int y, const char *s, vec4_t color) {
 =======================================================================================================================================
 CG_DrawStrlenEx
 
-Returns draw width, skiping color escape codes
+Returns draw width, skiping color escape codes.
 =======================================================================================================================================
 */
 float CG_DrawStrlenEx(const char *str, int style, int maxchars) {
@@ -665,7 +665,7 @@ float CG_DrawStrlenEx(const char *str, int style, int maxchars) {
 =======================================================================================================================================
 CG_DrawStrlen
 
-Returns draw width, skiping color escape codes
+Returns draw width, skiping color escape codes.
 =======================================================================================================================================
 */
 float CG_DrawStrlen(const char *str, int style) {

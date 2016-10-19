@@ -108,11 +108,11 @@ static void *rendererLib = NULL;
 cvar_t *con_autochat;
 #endif
 #if idx64
-	int(*Q_VMftol)(void);
+	int (*Q_VMftol)(void);
 #elif id386
-	long(QDECL *Q_ftol)(float f);
-	int(QDECL *Q_VMftol)(void);
-	void(QDECL *Q_SnapVector)(vec3_t vec);
+	long (QDECL *Q_ftol)(float f);
+	int (QDECL *Q_VMftol)(void);
+	void (QDECL *Q_SnapVector)(vec3_t vec);
 #endif
 // com_speeds times
 int time_game;
@@ -314,7 +314,7 @@ void QDECL Com_Error(int code, const char *fmt, ...) {
 		Cvar_Set("com_errorMessage", com_errorMessage);
 	}
 
-	restartClient =(com_gameRestarting & 2) &&(!com_cl_running || !com_cl_running->integer);
+	restartClient = (com_gameRestarting & 2) && (!com_cl_running || !com_cl_running->integer);
 
 	if (com_gameRestarting) {
 		com_gameRestarting = 0;
@@ -833,8 +833,7 @@ typedef struct {
 } memzone_t;
 // main zone for all "dynamic" memory allocation
 memzone_t *mainzone;
-// we also have a small zone for small allocations that would only
-// fragment the main zone(think of cvar and cmd strings)
+// we also have a small zone for small allocations that would only fragment the main zone (think of cvar and cmd strings)
 memzone_t *smallzone;
 // zones for Game / CGame VM "dynamic" memory allocation
 memzone_t *vm_gamezone;
@@ -946,7 +945,7 @@ void Z_Free(void *ptr)
 #endif
 	}
 
-	block =(memblock_t *)((byte *)ptr - sizeof(memblock_t));
+	block = (memblock_t *)((byte *)ptr - sizeof(memblock_t));
 
 	if (block->id != ZONEID) {
 #ifdef ZONE_DEBUG
@@ -1884,14 +1883,14 @@ void *Hunk_Alloc(int size, ha_pref preference) {
 	{
 		hunkblock_t *block;
 
-		block =(hunkblock_t *)buf;
+		block = (hunkblock_t *)buf;
 		block->size = size - sizeof(hunkblock_t);
 		block->file = file;
 		block->label = label;
 		block->line = line;
 		block->next = hunkblocks;
 		hunkblocks = block;
-		buf =((byte *)buf) + sizeof(hunkblock_t);
+		buf = ((byte *)buf) + sizeof(hunkblock_t);
 	}
 #endif
 	return buf;
@@ -1936,8 +1935,8 @@ void *Hunk_AllocateTempMemory(int size) {
 		hunk_temp->tempHighwater = hunk_temp->temp;
 	}
 
-	hdr =(hunkHeader_t *)buf;
-	buf =(void *)(hdr + 1);
+	hdr = (hunkHeader_t *)buf;
+	buf = (void *)(hdr + 1);
 
 	hdr->magic = HUNK_MAGIC;
 	hdr->size = size;
@@ -2808,7 +2807,7 @@ static void Com_DetectAltivec(void) {
 		static qboolean detected = qfalse;
 
 		if (!detected) {
-			altivec =(Sys_GetProcessorFeatures() & CF_ALTIVEC);
+			altivec = (Sys_GetProcessorFeatures() & CF_ALTIVEC);
 			detected = qtrue;
 		}
 
@@ -3885,5 +3884,5 @@ Com_GameIsSinglePlayer
 =======================================================================================================================================
 */
 qboolean Com_GameIsSinglePlayer(void) {
-	return(com_singlePlayerActive->integer);
+	return (com_singlePlayerActive->integer);
 }

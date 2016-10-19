@@ -208,6 +208,7 @@ static void SV_MapRestart_f(void) {
 	player_t *player;
 	char *denied;
 	qboolean isBot;
+
 	// make sure we aren't restarting twice in the same frame
 	if (com_frameTime == sv.serverId) {
 		return;
@@ -249,8 +250,7 @@ static void SV_MapRestart_f(void) {
 		}
 	}
 	// reset all the vm data in place without changing memory allocation
-	// note that we do NOT set sv.state = SS_LOADING, so configstrings that had been changed from their default values will generate
-	// broadcast updates
+	// note that we do NOT set sv.state = SS_LOADING, so configstrings that had been changed from their default values will generate broadcast updates
 	sv.state = SS_LOADING;
 	sv.restarting = qtrue;
 
@@ -291,6 +291,7 @@ static void SV_MapRestart_f(void) {
 			// connect the client again, without the firstTime flag
 			denied = VM_ExplicitArgPtr(gvm, VM_Call(gvm, GAME_PLAYER_CONNECT, player - svs.players, qfalse, isBot, client - svs.clients, j));
 			player = client->localPlayers[j]; // may be NULL if game dropped player
+
 			if (denied) {
 				// this generally shouldn't happen, because the player was connected before the level change
 				if (player != NULL) {
@@ -304,7 +305,7 @@ static void SV_MapRestart_f(void) {
 			if (client->state == CS_ACTIVE) {
 				SV_PlayerEnterWorld(player, &player->lastUsercmd);
 			} else {
-				// If we don't reset player->lastUsercmd and are restarting during map load, // the client will hang because we'll use the last Usercmd from the previous map, // which is wrong obviously.
+				// If we don't reset player->lastUsercmd and are restarting during map load, the client will hang because we'll use the last Usercmd from the previous map, // which is wrong obviously.
 				SV_PlayerEnterWorld(player, NULL);
 			}
 		}
@@ -325,6 +326,7 @@ Kick a user off of the server.
 static void SV_Kick_f(void) {
 	player_t *player;
 	client_t *client;
+
 	// make sure server is running
 	if (!com_sv_running->integer) {
 		Com_Printf("Server is not running.\n");
@@ -425,6 +427,7 @@ Kick a user off of the server.
 static void SV_KickNum_f(void) {
 	player_t *player;
 	client_t *client;
+
 	// make sure server is running
 	if (!com_sv_running->integer) {
 		Com_Printf("Server is not running.\n");
@@ -956,13 +959,13 @@ static void SV_Status_f(void) {
 	Com_Printf("-- ----- ---- --------------- --------------------------------------- -----\n");
 
 	for (i = 0, player = svs.players; i < sv_maxclients->integer; i++, player++) {
-		if (!player->inUse {
+		if (!player->inUse) {
 			continue;
 		}
 
 		cl = player->client;
 
-		if (!cl->state {
+		if (!cl->state) {
 			continue;
 		}
 

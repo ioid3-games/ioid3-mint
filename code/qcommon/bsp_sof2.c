@@ -22,19 +22,17 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-// bsp_q3.c -- SoF2 / JK2 / JA BSP Level Loading
+// bsp_q3.c -- SoF2/JK2/JA BSP Level Loading
 
 #include "q_shared.h"
 #include "qcommon.h"
 #include "bsp.h"
-
 // Implementation notes
 // - Missing light styles support
+#define BSP_IDENT (('P' << 24) + ('S' << 16) + ('B' << 8) + 'R')
+		// little-endian "RBSP"
 
-#define BSP_IDENT	(('P' << 24) + ('S' << 16) + ('B' << 8) + 'R')
-		// little - endian "RBSP"
-
-#define BSP_VERSION			1
+#define BSP_VERSION 1
 
 typedef struct {
 	int fileofs, filelen;
@@ -63,7 +61,6 @@ typedef struct {
 typedef struct {
 	int ident;
 	int version;
-
 	lump_t lumps[HEADER_LUMPS];
 } dheader_t;
 
@@ -78,9 +75,7 @@ typedef struct {
 	int surfaceFlags;
 	int contentFlags;
 } realDshader_t;
-
 // planes x ^ 1 is allways the opposite of plane x
-
 typedef struct {
 	float normal[3];
 	float dist;
@@ -94,7 +89,7 @@ typedef struct {
 } realDnode_t;
 
 typedef struct {
-	int cluster;			// - 1 = opaque cluster(do I still store these?)
+	int cluster;			// -1 = opaque cluster (do I still store these?)
 	int area;
 	int mins[3];			// for frustum culling
 	int maxs[3];
@@ -119,15 +114,16 @@ typedef struct {
 typedef struct {
 	char shader[MAX_QPATH];
 	int brushNum;
-	int visibleSide;	// the brush side that ray tests need to clip against(-1 == none)
+	int visibleSide;	// the brush side that ray tests need to clip against (-1 == none)
 } realDfog_t;
 
 // Light Style Constants
 #define MAXLIGHTMAPS	4
 #define LS_NORMAL		0x00
 #define LS_UNUSED		0xfe
-#define LS_NONE		0xff
-#define MAX_LIGHT_STYLES		64
+#define LS_NONE			0xff
+
+#define MAX_LIGHT_STYLES 64
 
 typedef struct {
 	vec3_t xyz;
@@ -143,11 +139,15 @@ typedef struct {
 	byte styles[MAXLIGHTMAPS];
 	byte latLong[2];
 } realDgrid_t;
-
 // When adding a new BSP format make sure the surfaceType variables mean the same thing as Q3 or remap them on load!
 #if 0
 typedef enum {
-	MST_BAD, MST_PLANAR, MST_PATCH, MST_TRIANGLE_SOUP, MST_FLARE, MST_FOLIAGE
+	MST_BAD,
+	MST_PLANAR,
+	MST_PATCH,
+	MST_TRIANGLE_SOUP,
+	MST_FLARE,
+	MST_FOLIAGE
 } mapSurfaceType_t;
 #endif
 
@@ -156,15 +156,13 @@ typedef struct {
 	int fogNum;
 	int surfaceType;
 	int firstVert;
-	int numVerts; // ydnar: num verts + foliage origins(for cleaner lighting code in q3map)
+	int numVerts; // ydnar: num verts + foliage origins (for cleaner lighting code in q3map)
 	int firstIndex;
 	int numIndexes;
-
 	byte lightmapStyles[MAXLIGHTMAPS], vertexStyles[MAXLIGHTMAPS];
 	int lightmapNum[MAXLIGHTMAPS];
 	int lightmapX[MAXLIGHTMAPS], lightmapY[MAXLIGHTMAPS];
 	int lightmapWidth, lightmapHeight;
-
 	vec3_t lightmapOrigin;
 	vec3_t lightmapVecs[3];	// for patches, [0] and [1] are lodbounds
 	int patchWidth; // ydnar: num foliage instances
@@ -177,43 +175,61 @@ typedef struct {
 #define LIGHTING_GRIDSIZE_Y 64
 #define LIGHTING_GRIDSIZE_Z 128
 
-#define SUBDIVIDE_DISTANCE	16	// 4	// never more than this units away from curve
+#define SUBDIVIDE_DISTANCE 16 // 4 // never more than this units away from curve
 
-/****************************************************
+/*
+=======================================================================================================================================
+GetLumpElements
+=======================================================================================================================================
 */
-
 static int GetLumpElements(dheader_t *header, int lump, int size) {
-	/* check for odd size */
+
+	// check for odd size
 	if (header->lumps[lump].filelen % size) {
 		Com_Printf("GetLumpElements: odd lump size(%d) in lump %d\n", header->lumps[lump].filelen, lump);
 		return 0;
 	}
 
-	/* return element count */
+	// return element count
 	return header->lumps[lump].filelen / size;
 }
 
+/*
+=======================================================================================================================================
+CopyLump
+=======================================================================================================================================
+*/
 static void CopyLump(dheader_t *header, int lump, const void *src, void *dest, int size, qboolean swap) {
 	int length;
 
 	length = GetLumpElements(header, lump, size) * size;
 
-	/* handle erroneous cases */
+	// handle erroneous cases
 	if (length <= 0) {
 		return;
 	}
 
 	if (swap) {
-		BSP_SwapBlock(dest, (int *) ((byte *)src + header->lumps[lump].fileofs), length);
+		BSP_SwapBlock(dest, (int *)((byte *)src + header->lumps[lump].fileofs), length);
 	} else {
 		Com_Memcpy(dest, (byte *)src + header->lumps[lump].fileofs, length);
 	}
 }
 
+/*
+=======================================================================================================================================
+GetLump
+=======================================================================================================================================
+*/
 static void *GetLump(dheader_t *header, const void *src, int lump) {
-	return (void *) ((byte *)src + header->lumps[lump].fileofs);
+	return (void *)((byte *)src + header->lumps[lump].fileofs);
 }
 
+/*
+=======================================================================================================================================
+BSP_LoadSoF2
+=======================================================================================================================================
+*/
 bspFile_t *BSP_LoadSoF2(const bspFormat_t *format, const char *name, const void *data, int length) {
 	int i, j, k;
 	dheader_t header;
@@ -286,12 +302,13 @@ bspFile_t *BSP_LoadSoF2(const bspFormat_t *format, const char *name, const void 
 
 	bsp->visibilityLength = GetLumpElements(&header, LUMP_VISIBILITY, 1) - VIS_HEADER;
 
-	if (bsp->visibilityLength > 0)
+	if (bsp->visibilityLength > 0) {
 		bsp->visibility = malloc(bsp->visibilityLength);
 	} else {
 		bsp->visibilityLength = 0;
+	}
 	// copy and swap and convert data
-	CopyLump(&header, LUMP_ENTITIES, data, (void *)bsp->entityString, sizeof(*bsp->entityString), qfalse); /* NO SWAP */
+	CopyLump(&header, LUMP_ENTITIES, data, (void *)bsp->entityString, sizeof(*bsp->entityString), qfalse); // NO SWAP
 
 	{
 		realDshader_t *in = GetLump(&header, data, LUMP_SHADERS);
@@ -411,8 +428,7 @@ bspFile_t *BSP_LoadSoF2(const bspFormat_t *format, const char *name, const void 
 				out->st[j] = LittleFloat(in->st[j]);
 				out->lightmap[j] = LittleFloat(in->lightmap[0][j]);
 			}
-
-			/* NO SWAP */
+			// NO SWAP
 			for (j = 0; j < 4; j++) {
 				out->color[j] = in->color[0][j];
 			}
@@ -465,7 +481,7 @@ bspFile_t *BSP_LoadSoF2(const bspFormat_t *format, const char *name, const void 
 		}
 	}
 
-	CopyLump(&header, LUMP_LIGHTMAPS, data, (void *)bsp->lightmapData, sizeof(*bsp->lightmapData), qfalse); /* NO SWAP */
+	CopyLump(&header, LUMP_LIGHTMAPS, data, (void *)bsp->lightmapData, sizeof(*bsp->lightmapData), qfalse); // NO SWAP
 
 	{
 		realDgrid_t *in = GetLump(&header, data, LUMP_LIGHTGRID);
@@ -497,16 +513,15 @@ bspFile_t *BSP_LoadSoF2(const bspFormat_t *format, const char *name, const void 
 		bsp->numClusters = LittleLong(((int *)in)[0]);
 		bsp->clusterBytes = LittleLong(((int *)in)[1]);
 
-		Com_Memcpy(bsp->visibility, in + VIS_HEADER, bsp->visibilityLength); /* NO SWAP */
+		Com_Memcpy(bsp->visibility, in + VIS_HEADER, bsp->visibilityLength); // NO SWAP
 	}
 
 	return bsp;
 }
 
-/****************************************************
-*/
-
 bspFormat_t sof2BspFormat = {
-	"SoF2 / JK2 / JA", BSP_IDENT, BSP_VERSION, BSP_LoadSoF2,
+	"SoF2/JK2/JA",
+	BSP_IDENT,
+	BSP_VERSION,
+	BSP_LoadSoF2,
 };
-

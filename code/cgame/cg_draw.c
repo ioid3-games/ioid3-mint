@@ -142,7 +142,7 @@ void CG_Draw3DModel(float x, float y, float w, float h, qhandle_t model, cgSkin_
 
 /*
 =======================================================================================================================================
-CG_DrawFlagModel
+CG_DrawHead
 
 Used for both the status bar and the scoreboard.
 =======================================================================================================================================
@@ -560,8 +560,8 @@ static float CG_DrawFPS(float y) {
 		}
 
 		fps = 1000 * FPS_FRAMES / (float)total;
-
 		s = va("%ifps", fps);
+
 		CG_DrawString(635, y + 2, s, UI_RIGHT|UI_DROPSHADOW|UI_BIGFONT, NULL);
 	}
 
@@ -1798,7 +1798,7 @@ static void CG_DrawCrosshair(void) {
 	}
 
 	if (cg.numViewports > 1) {
-		// In splitscreen make crosshair normal [non - splitscreen] size, so it is easier to see.
+		// In splitscreen make crosshair normal [non-splitscreen] size, so it is easier to see.
 		w = h = cg_crosshairSize.value * 2.0f;
 	} else {
 		w = h = cg_crosshairSize.value;
@@ -2050,7 +2050,7 @@ static void CG_DrawCrosshairNames(void) {
 	}
 
 	if (cg.numViewports > 1) {
-		// In splitscreen make crosshair normal [non - splitscreen] size, so it is easier to see.
+		// In splitscreen make crosshair normal [non-splitscreen] size, so it is easier to see.
 		crosshairSize = cg_crosshairSize.value * 2.0f;
 	} else {
 		crosshairSize = cg_crosshairSize.value;
@@ -2116,8 +2116,8 @@ static void CG_DrawShaderInfo(void) {
 	VectorCopy(cg.refdef.vieworg, start);
 	VectorMA(start, 131072, cg.refdef.viewaxis[0], end);
 	// Get shader behind clip volume:
-	// Do a trace that hits all surfaces(including solid and non - solid), // and a trace that only hits solid. Use which ever is closer and use
-	// solid if 'any contents' trace didn't get a textured surface(such as clip)
+	// Do a trace that hits all surfaces(including solid and non-solid), and a trace that only hits solid. Use which ever is closer and use
+	// solid if 'any contents' trace didn't get a textured surface (such as clip)
 	CG_Trace(&trace, start, vec3_origin, vec3_origin, end, cg.cur_ps->playerNum, ~0);
 	CG_Trace(&trace2, start, vec3_origin, vec3_origin, end, cg.cur_ps->playerNum, CONTENTS_SOLID);
 	// trace2 is valid and closer or trace is invalid
@@ -2832,7 +2832,7 @@ void CG_DrawMiscGamemodels(void) {
 
 	ent.reType = RT_MODEL;
 	ent.nonNormalizedAxes = qtrue;
-	// ydnar: static gamemodels don't project shadows
+	// static gamemodels don't project shadows
 	ent.renderfx = RF_NOSHADOW;
 
 	for (i = 0; i < cg.numMiscGameModels; i++) {

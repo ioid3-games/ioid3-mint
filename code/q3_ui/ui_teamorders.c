@@ -91,13 +91,16 @@ static const char *ctfVoiceChats[] = {
 };
 
 static const char *ctfButtons[] = {
-	NULL, "8", // defend
+	NULL,
+	"8", // defend
 	"10", // followme
 	"7", // getflag
-	NULL, NULL, NULL, NULL
+	NULL,
+	NULL,
+	NULL,
+	NULL
 };
 #endif
-
 #define NUM_TEAM_ORDERS 6
 static const char *teamOrders[] = {
 	"I Am the Leader",
@@ -130,13 +133,15 @@ static const char *teamVoiceChats[] = {
 };
 
 static const char *teamButtons[] = {
-	NULL, "10", // followme
+	NULL,
+	"10", // followme
 	"9", // patrol
-	NULL, NULL, NULL, NULL
+	NULL,
+	NULL,
+	NULL,
+	NULL
 };
 #endif
-
-
 /*
 =======================================================================================================================================
 UI_TeamOrdersMenu_BackEvent
@@ -342,7 +347,6 @@ static void UI_TeamOrdersMenu_ListEvent(void *ptr, int event) {
 	}
 #ifdef MISSIONPACK
 	if (teamOrdersMenuInfo.selectedBot == 0) { // Everyone
-	
 		if (voiceChats[selection] != NULL && buttons[selection] != NULL) {
 			trap_Cmd_ExecuteText(EXEC_APPEND, va("cmd vsay_team %s; +button%s; wait; -button%s", voiceChats[selection], buttons[selection], buttons[selection]));
 		} else if (voiceChats[selection] != NULL) {
@@ -522,6 +526,7 @@ void UI_TeamOrdersMenu_f(void) {
 	}
 
 	trap_GetConfigString(CS_PLAYERS + cg.localPlayers[0].playerNum, info, MAX_INFO_STRING);
+
 	team = atoi(Info_ValueForKey(info, "t"));
 
 	if (team == TEAM_SPECTATOR) {

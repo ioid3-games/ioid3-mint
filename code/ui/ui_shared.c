@@ -46,9 +46,10 @@ typedef struct scrollInfo_s {
 static scrollInfo_t scrollInfo;
 static void (*captureFunc)(void *p) = 0;
 static void *captureData = NULL;
-static itemDef_t *itemCapture = NULL;  // item that has the mouse captured(if any)
+static itemDef_t *itemCapture = NULL; // item that has the mouse captured(if any)
 
 displayContextDef_t *DC = NULL;
+
 static qboolean g_waitingForKey = qfalse;
 static qboolean g_editingField = qfalse;
 static itemDef_t *g_bindItem = NULL;
@@ -86,7 +87,7 @@ void *UI_Alloc(int size) {
 		if (DC->Print) {
 			DC->Print("UI_Alloc: Failure. Out of memory!\n");
 		}
-   // DC->trap_Print(S_COLOR_YELLOW "WARNING: UI Out of Memory!\n");
+		 // DC->trap_Print(S_COLOR_YELLOW "WARNING: UI Out of Memory!\n");
 		return NULL;
 	}
 
@@ -113,7 +114,7 @@ void UI_InitMemory(void) {
 UI_OutOfMemory
 =======================================================================================================================================
 */
-qboolean UI_OutOfMemoryy(void) {
+qboolean UI_OutOfMemory(void) {
 	return outOfMemory;
 }
 
@@ -223,13 +224,17 @@ void String_Report(void) {
 
 	Com_Printf("Memory / String Pool Info\n");
 	Com_Printf("----------------\n");
+
 	f = strPoolIndex;
 	f /= STRING_POOL_SIZE;
 	f *= 100;
+
 	Com_Printf("String Pool is %.1f%% full, %i bytes out of %i used.\n", f, strPoolIndex, STRING_POOL_SIZE);
+
 	f = allocPoint;
 	f /= MEM_POOL_SIZE;
 	f *= 100;
+
 	Com_Printf("Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, allocPoint, MEM_POOL_SIZE);
 }
 
@@ -247,6 +252,7 @@ void String_Init(void) {
 
 	strHandleCount = 0;
 	strPoolIndex = 0;
+
 	DC->menuCount = 0;
 	UI_InitMemory();
 	Item_SetupKeywordHash();
@@ -269,10 +275,11 @@ void LerpColor(vec4_t a, vec4_t b, vec4_t c, float t) {
 	for (i = 0; i < 4; i++) {
 		c[i] = a[i] + t * (b[i] - a[i]);
 
-		if (c[i] < 0)
+		if (c[i] < 0) {
 			c[i] = 0;
-		else if (c[i] > 1.0)
+		} else if (c[i] > 1.0) {
 			c[i] = 1.0;
+		}
 	}
 }
 
@@ -307,8 +314,10 @@ qboolean PC_Float_Parse(int handle, float *f) {
 	}
 
 	if (token.string[0] == '-') {
-		if (!trap_PC_ReadToken(handle, &token))
+		if (!trap_PC_ReadToken(handle, &token)) {
 			return qfalse;
+		}
+
 		negative = qtrue;
 	}
 
@@ -317,10 +326,12 @@ qboolean PC_Float_Parse(int handle, float *f) {
 		return qfalse;
 	}
 
-	if (negative)
+	if (negative) {
 		*f = -token.floatvalue;
 	} else {
 		*f = token.floatvalue;
+	}
+
 	return qtrue;
 }
 
@@ -399,8 +410,10 @@ qboolean PC_Int_Parse(int handle, int *i) {
 	}
 
 	if (token.string[0] == '-') {
-		if (!trap_PC_ReadToken(handle, &token))
+		if (!trap_PC_ReadToken(handle, &token)) {
 			return qfalse;
+		}
+
 		negative = qtrue;
 	}
 
@@ -411,8 +424,10 @@ qboolean PC_Int_Parse(int handle, int *i) {
 
 	*i = token.intvalue;
 
-	if (negative)
+	if (negative) {
 		*i = -* i;
+	}
+
 	return qtrue;
 }
 
@@ -482,11 +497,12 @@ PC_String_Parse
 qboolean PC_String_Parse(int handle, const char **out) {
 	pc_token_t token;
 
-	if (!trap_PC_ReadToken(handle, &token))
+	if (!trap_PC_ReadToken(handle, &token)) {
 		return qfalse;
+	}
 
 	*(out) = String_Alloc(token.string);
-    return qtrue;
+	return qtrue;
 }
 
 /*
@@ -499,15 +515,14 @@ qboolean PC_Script_Parse(int handle, const char **out) {
 	pc_token_t token;
 
 	memset(script, 0, sizeof(script));
-	// scripts start with {and have; separated command lists.. commands are command, arg.. 
+	// scripts start with {and have; separated command lists.. commands are command, arg..
 	// basically we want everything between the {} as it will be interpreted at run time
-  
 	if (!trap_PC_ReadToken(handle, &token)) {
 		return qfalse;
 	}
 
 	if (Q_stricmp(token.string, "{") != 0) {
-	    return qfalse;
+		return qfalse;
 	}
 
 	while (1) {
@@ -534,22 +549,24 @@ qboolean PC_Script_Parse(int handle, const char **out) {
 
 // display, window, menu, item code
 
-
 /*
 =======================================================================================================================================
 Init_Display
 
 Initializes the display with a structure to all the drawing routines
- ==================
+=======================================================================================================================================
 */
 void Init_Display(displayContextDef_t *dc) {
 	DC = dc;
 }
 
+// type and style painting
 
-
-// type and style painting 
-
+/*
+=======================================================================================================================================
+GradientBar_Paint
+=======================================================================================================================================
+*/
 void GradientBar_Paint(rectDef_t *rect, vec4_t color) {
 	// gradient bar takes two paints
 	DC->setColor(color);
@@ -561,7 +578,7 @@ void GradientBar_Paint(rectDef_t *rect, vec4_t color) {
 =======================================================================================================================================
 Window_Init
 
-Initializes a window structure(windowDef_t) with defaults
+Initializes a window structure (windowDef_t) with defaults.
 =======================================================================================================================================
 */
 void Window_Init(Window *w) {
@@ -571,82 +588,93 @@ void Window_Init(Window *w) {
 	w->cinematic = -1;
 }
 
+/*
+=======================================================================================================================================
+Fade
+=======================================================================================================================================
+*/
 void Fade(int *flags, float *f, float clamp, int *nextTime, int offsetTime, qboolean bFlags, float fadeAmount) {
-  if (*flags & (WINDOW_FADINGOUT|WINDOW_FADINGIN)) {
-    if (DC->realTime > *nextTime) {
-      *nextTime = DC->realTime + offsetTime;
-      if (*flags & WINDOW_FADINGOUT) {
-        *f -= fadeAmount;
-        if (bFlags && *f <= 0.0) {
-          *flags &= ~(WINDOW_FADINGOUT|WINDOW_VISIBLE);
-      }
-    } else {
-        *f += fadeAmount;
-        if (*f >= clamp) {
-          *f = clamp;
-          if (bFlags) {
-            *flags &= ~WINDOW_FADINGIN;
-        }
-      }
-    }
-  }
-}
+
+	if (*flags & (WINDOW_FADINGOUT|WINDOW_FADINGIN)) {
+		if (DC->realTime > *nextTime) {
+			*nextTime = DC->realTime + offsetTime;
+
+			if (*flags & WINDOW_FADINGOUT) {
+				*f -= fadeAmount;
+
+				if (bFlags && *f <= 0.0) {
+					*flags &= ~(WINDOW_FADINGOUT|WINDOW_VISIBLE);
+			
+				}
+			} else {
+				*f += fadeAmount;
+
+				if (*f >= clamp) {
+					*f = clamp;
+
+					if (bFlags) {
+						*flags &= ~WINDOW_FADINGIN;
+					}
+				}
+			}
+		}
+	}
 }
 
 
 
 void Window_Paint(Window *w, float fadeAmount, float fadeClamp, float fadeCycle) {
  // float bordersize = 0;
-  vec4_t color = {0};
-  rectDef_t fillRect;
+	vec4_t color = {0};
+	rectDef_t fillRect;
 
-  if (w == NULL) {
-    return;
-}
+	if (w == NULL) {
+		return;
+	}
 
-  if (debugMode) {
-    color[0] = color[1] = color[2] = color[3] = 1;
-    DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, 1, color);
-}
+	if (debugMode) {
+		color[0] = color[1] = color[2] = color[3] = 1;
+		DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, 1, color);
+	}
 
-  if (w->style == 0 && w->border == 0) {
-    return;
-}
+	if (w->style == 0 && w->border == 0) {
+		return;
+	}
 
-  fillRect = w->rect;
+	fillRect = w->rect;
 
-  if (w->border != 0) {
-    fillRect.x += w->borderSize;
-    fillRect.y += w->borderSize;
-    fillRect.w -= w->borderSize + 1;
-    fillRect.h -= w->borderSize + 1;
-}
+	if (w->border != 0) {
+		fillRect.x += w->borderSize;
+		fillRect.y += w->borderSize;
+		fillRect.w -= w->borderSize + 1;
+		fillRect.h -= w->borderSize + 1;
+	}
 
-  if (w->style == WINDOW_STYLE_FILLED) {
-   // box, but possible a shader that needs filled
+	if (w->style == WINDOW_STYLE_FILLED) {
+	 // box, but possible a shader that needs filled
 		if (w->background) {
-		  Fade(&w->flags, &w->backColor[3], fadeClamp, &w->nextTime, fadeCycle, qtrue, fadeAmount);
-      DC->setColor(w->backColor);
-	    DC->drawHandlePic(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background);
-		  DC->setColor(NULL);
+			Fade(&w->flags, &w->backColor[3], fadeClamp, &w->nextTime, fadeCycle, qtrue, fadeAmount);
+			DC->setColor(w->backColor);
+			DC->drawHandlePic(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background);
+			DC->setColor(NULL);
 		} else {
-	    DC->fillRect(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->backColor);
+			DC->fillRect(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->backColor);
 		}
-} else if (w->style == WINDOW_STYLE_GRADIENT) {
-    GradientBar_Paint(&fillRect, w->backColor);
-   // gradient bar
-} else if (w->style == WINDOW_STYLE_SHADER) {
-    if (w->flags & WINDOW_FORECOLORSET) {
-      DC->setColor(w->foreColor);
-  }
-    DC->drawHandlePic(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background);
-    DC->setColor(NULL);
-} else if (w->style == WINDOW_STYLE_TEAMCOLOR) {
-    if (DC->getTeamColor) {
-      DC->getTeamColor(&color);
-      DC->fillRect(fillRect.x, fillRect.y, fillRect.w, fillRect.h, color);
-  }
-} else if (w->style == WINDOW_STYLE_CINEMATIC) {
+	} else if (w->style == WINDOW_STYLE_GRADIENT) {
+		GradientBar_Paint(&fillRect, w->backColor);
+	 // gradient bar
+	} else if (w->style == WINDOW_STYLE_SHADER) {
+		if (w->flags & WINDOW_FORECOLORSET) {
+			DC->setColor(w->foreColor);
+	}
+		DC->drawHandlePic(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background);
+		DC->setColor(NULL);
+	} else if (w->style == WINDOW_STYLE_TEAMCOLOR) {
+		if (DC->getTeamColor) {
+			DC->getTeamColor(&color);
+			DC->fillRect(fillRect.x, fillRect.y, fillRect.w, fillRect.h, color);
+		}
+	} else if (w->style == WINDOW_STYLE_CINEMATIC) {
 		if (w->cinematic == -1) {
 			w->cinematic = DC->playCinematic(w->cinematicName, fillRect.x, fillRect.y, fillRect.w, fillRect.h);
 
@@ -655,112 +683,112 @@ void Window_Paint(Window *w, float fadeAmount, float fadeClamp, float fadeCycle)
 			}
 		} 
 		if (w->cinematic >= 0) {
-	    DC->runCinematicFrame(w->cinematic);
+			DC->runCinematicFrame(w->cinematic);
 			DC->drawCinematic(w->cinematic, fillRect.x, fillRect.y, fillRect.w, fillRect.h);
 		}
-}
+	}
 
-  if (w->border == WINDOW_BORDER_FULL) {
-   // full
-   // HACK HACK HACK
-    if (w->style == WINDOW_STYLE_TEAMCOLOR) {
-      if (color[0] > 0) {
-       // red
-        color[0] = 1;
-        color[1] = color[2] = .5;
+	if (w->border == WINDOW_BORDER_FULL) {
+	 // full
+	 // HACK HACK HACK
+		if (w->style == WINDOW_STYLE_TEAMCOLOR) {
+			if (color[0] > 0) {
+			 // red
+				color[0] = 1;
+				color[1] = color[2] = .5;
+			} else {
+				color[2] = 1;
+				color[0] = color[1] = .5;
+			}
 
-    } else {
-        color[2] = 1;
-        color[0] = color[1] = .5;
-    }
-      color[3] = 1;
-      DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize, color);
-  } else {
-      DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize, w->borderColor);
-  }
-} else if (w->border == WINDOW_BORDER_HORZ) {
-   // top / bottom
-    DC->setColor(w->borderColor);
-    DC->drawTopBottom(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize);
-  	DC->setColor(NULL);
-} else if (w->border == WINDOW_BORDER_VERT) {
-   // left right
-    DC->setColor(w->borderColor);
-    DC->drawSides(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize);
-  	DC->setColor(NULL);
-} else if (w->border == WINDOW_BORDER_KCGRADIENT) {
-   // this is just two gradient bars along each horz edge
-    rectDef_t r = w->rect;
-    r.h = w->borderSize;
-    GradientBar_Paint(&r, w->borderColor);
-    r.y = w->rect.y + w->rect.h - 1;
-    GradientBar_Paint(&r, w->borderColor);
-}
+			color[3] = 1;
+			DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize, color);
+		} else {
+			DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize, w->borderColor);
+		}
+	} else if (w->border == WINDOW_BORDER_HORZ) {
+	 // top / bottom
+		DC->setColor(w->borderColor);
+		DC->drawTopBottom(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize);
+		DC->setColor(NULL);
+	} else if (w->border == WINDOW_BORDER_VERT) {
+	 // left right
+		DC->setColor(w->borderColor);
+		DC->drawSides(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize);
+		DC->setColor(NULL);
+	} else if (w->border == WINDOW_BORDER_KCGRADIENT) {
+	 // this is just two gradient bars along each horz edge
+		rectDef_t r = w->rect;
+		r.h = w->borderSize;
+		GradientBar_Paint(&r, w->borderColor);
+		r.y = w->rect.y + w->rect.h - 1;
+		GradientBar_Paint(&r, w->borderColor);
+	}
 }
 
 
 void Item_SetScreenCoords(itemDef_t *item, float x, float y) {
-  
-  if (item == NULL) {
-    return;
-}
+	
+	if (item == NULL) {
+		return;
+	}
 
-  if (item->window.border != 0) {
-    x += item->window.borderSize;
-    y += item->window.borderSize;
-}
+	if (item->window.border != 0) {
+		x += item->window.borderSize;
+		y += item->window.borderSize;
+	}
 
-  item->window.rect.x = x + item->window.rectClient.x;
-  item->window.rect.y = y + item->window.rectClient.y;
-  item->window.rect.w = item->window.rectClient.w;
-  item->window.rect.h = item->window.rectClient.h;
+	item->window.rect.x = x + item->window.rectClient.x;
+	item->window.rect.y = y + item->window.rectClient.y;
+	item->window.rect.w = item->window.rectClient.w;
+	item->window.rect.h = item->window.rectClient.h;
 
  // force the text rects to recompute
-  item->textRect.w = 0;
-  item->textRect.h = 0;
+	item->textRect.w = 0;
+	item->textRect.h = 0;
 }
 
 // FIXME: consolidate this with nearby stuff
 void Item_UpdatePosition(itemDef_t *item) {
 	float x, y;
-  menuDef_t *menu;
-  
-  if (item == NULL || item->parent == NULL) {
-    return;
-}
+	menuDef_t *menu;
+	
+	if (item == NULL || item->parent == NULL) {
+		return;
+	}
 
-  menu = item->parent;
+	menu = item->parent;
 
-  x = menu->window.rect.x;
-  y = menu->window.rect.y;
-  
-  if (menu->window.border != 0) {
-    x += menu->window.borderSize;
-    y += menu->window.borderSize;
-}
+	x = menu->window.rect.x;
+	y = menu->window.rect.y;
+	
+	if (menu->window.border != 0) {
+		x += menu->window.borderSize;
+		y += menu->window.borderSize;
+	}
 
-  Item_SetScreenCoords(item, x, y);
+	Item_SetScreenCoords(item, x, y);
 }
 
 // menus
 void Menu_UpdatePosition(menuDef_t *menu) {
 	int i;
-  float x, y;
+	float x, y;
 
-  if (menu == NULL) {
-    return;
-}
-  
-  x = menu->window.rect.x;
-  y = menu->window.rect.y;
-  if (menu->window.border != 0) {
-    x += menu->window.borderSize;
-    y += menu->window.borderSize;
-}
+	if (menu == NULL) {
+		return;
+	}
+	
+	x = menu->window.rect.x;
+	y = menu->window.rect.y;
+	if (menu->window.border != 0) {
+		x += menu->window.borderSize;
+		y += menu->window.borderSize;
+	}
 
-  for (i = 0; i < menu->itemCount; i++) {
-    Item_SetScreenCoords(menu->items[i], x, y);
-}
+	for (i = 0; i < menu->itemCount; i++) {
+		Item_SetScreenCoords(menu->items[i], x, y);
+	}
 }
 
 void Menu_PostParse(menuDef_t *menu) {
@@ -781,23 +809,25 @@ void Menu_PostParse(menuDef_t *menu) {
 
 itemDef_t *Menu_ClearFocus(menuDef_t *menu) {
 	int i;
-  itemDef_t *ret = NULL;
+	itemDef_t *ret = NULL;
 
-  if (menu == NULL) {
-    return NULL;
-}
+	if (menu == NULL) {
+		return NULL;
+	}
 
-  for (i = 0; i < menu->itemCount; i++) {
-    if (menu->items[i]->window.flags & WINDOW_HASFOCUS) {
-      ret = menu->items[i];
-  } 
-    menu->items[i]->window.flags &= ~WINDOW_HASFOCUS;
-    if (menu->items[i]->leaveFocus) {
-      Item_RunScript(menu->items[i], menu->items[i]->leaveFocus);
-  }
-}
- 
-  return ret;
+	for (i = 0; i < menu->itemCount; i++) {
+		if (menu->items[i]->window.flags & WINDOW_HASFOCUS) {
+			ret = menu->items[i];
+		}
+
+		menu->items[i]->window.flags &= ~WINDOW_HASFOCUS;
+
+		if (menu->items[i]->leaveFocus) {
+			Item_RunScript(menu->items[i], menu->items[i]->leaveFocus);
+		}
+	}
+
+	return ret;
 }
 
 qboolean IsVisible(int flags) {
@@ -805,86 +835,94 @@ qboolean IsVisible(int flags) {
 }
 
 qboolean Rect_ContainsPoint(rectDef_t *rect, float x, float y) {
-  if (rect) {
-    if (x > rect->x && x < rect->x + rect->w && y > rect->y && y < rect->y + rect->h) {
-      return qtrue;
-  }
-}
-  return qfalse;
+	if (rect) {
+		if (x > rect->x && x < rect->x + rect->w && y > rect->y && y < rect->y + rect->h) {
+			return qtrue;
+		}
+	}
+
+	return qfalse;
 }
 
 int Menu_ItemsMatchingGroup(menuDef_t *menu, const char *name) {
 	int i;
 	int count = 0;
-  for (i = 0; i < menu->itemCount; i++) {
-    if (Q_stricmp(menu->items[i]->window.name, name) == 0 || (menu->items[i]->window.group && Q_stricmp(menu->items[i]->window.group, name) == 0)) {
-      count++;
-  } 
-}
-  return count;
+	for (i = 0; i < menu->itemCount; i++) {
+		if (Q_stricmp(menu->items[i]->window.name, name) == 0 || (menu->items[i]->window.group && Q_stricmp(menu->items[i]->window.group, name) == 0)) {
+			count++;
+		}
+	}
+
+	return count;
 }
 
 itemDef_t *Menu_GetMatchingItemByNumber(menuDef_t *menu, int index, const char *name) {
 	int i;
 	int count = 0;
-  for (i = 0; i < menu->itemCount; i++) {
-    if (Q_stricmp(menu->items[i]->window.name, name) == 0 || (menu->items[i]->window.group && Q_stricmp(menu->items[i]->window.group, name) == 0)) {
-      if (count == index) {
-        return menu->items[i];
-    }
-      count++;
-  } 
-}
-  return NULL;
+	for (i = 0; i < menu->itemCount; i++) {
+		if (Q_stricmp(menu->items[i]->window.name, name) == 0 || (menu->items[i]->window.group && Q_stricmp(menu->items[i]->window.group, name) == 0)) {
+			if (count == index) {
+				return menu->items[i];
+			}
+
+			count++;
+		}
+	}
+
+	return NULL;
 }
 
 
 
 void Script_SetColor(itemDef_t *item, char **args) {
-  const char *name;
+	const char *name;
 	int i;
-  float f;
-  vec4_t *out;
+	float f;
+	vec4_t *out;
  // expecting type of color to set and 4 args for the color
-  if (String_Parse(args, &name)) {
-      out = NULL;
-      if (Q_stricmp(name, "backcolor") == 0) {
-        out = &item->window.backColor;
-        item->window.flags |= WINDOW_BACKCOLORSET;
-    } else if (Q_stricmp(name, "forecolor") == 0) {
-        out = &item->window.foreColor;
-        item->window.flags |= WINDOW_FORECOLORSET;
-    } else if (Q_stricmp(name, "bordercolor") == 0) {
-        out = &item->window.borderColor;
-    }
+	if (String_Parse(args, &name)) {
+		out = NULL;
+		if (Q_stricmp(name, "backcolor") == 0) {
+			out = &item->window.backColor;
+			item->window.flags |= WINDOW_BACKCOLORSET;
+		} else if (Q_stricmp(name, "forecolor") == 0) {
+			out = &item->window.foreColor;
+			item->window.flags |= WINDOW_FORECOLORSET;
+		} else if (Q_stricmp(name, "bordercolor") == 0) {
+			out = &item->window.borderColor;
+		}
 
-      if (out) {
-        for (i = 0; i < 4; i++) {
-          if (!Float_Parse(args, &f)) {
-            return;
-        }
-         (*out)[i] = f;
-      }
-    }
-}
+		if (out) {
+			for (i = 0; i < 4; i++) {
+				if (!Float_Parse(args, &f)) {
+					return;
+				}
+
+				(*out)[i] = f;
+			}
+		}
+	}
 }
 
 void Script_SetAsset(itemDef_t *item, char **args) {
-  const char *name;
- // expecting name to set asset to
-  if (String_Parse(args, &name)) {
-   // check for a model 
-    if (item->type == ITEM_TYPE_MODEL) {
-  }
-}
+	const char *name;
+
+	// expecting name to set asset to
+	if (String_Parse(args, &name)) {
+	 // check for a model 
+		if (item->type == ITEM_TYPE_MODEL) {
+	
+		}
+	}
 }
 
 void Script_SetBackground(itemDef_t *item, char **args) {
-  const char *name;
- // expecting name to set asset to
-  if (String_Parse(args, &name)) {
-    item->window.background = DC->registerShaderNoMip(name);
-}
+	const char *name;
+
+	// expecting name to set asset to
+	if (String_Parse(args, &name)) {
+		item->window.background = DC->registerShaderNoMip(name);
+	}
 }
 
 
@@ -892,67 +930,72 @@ void Script_SetBackground(itemDef_t *item, char **args) {
 
 itemDef_t *Menu_FindItemByName(menuDef_t *menu, const char *p) {
 	int i;
-  if (menu == NULL || p == NULL) {
-    return NULL;
-}
 
-  for (i = 0; i < menu->itemCount; i++) {
-    if (Q_stricmp(p, menu->items[i]->window.name) == 0) {
-      return menu->items[i];
-  }
-}
+	if (menu == NULL || p == NULL) {
+		return NULL;
+	}
 
-  return NULL;
+	for (i = 0; i < menu->itemCount; i++) {
+		if (Q_stricmp(p, menu->items[i]->window.name) == 0) {
+			return menu->items[i];
+		}
+	}
+
+	return NULL;
 }
 
 void Script_SetTeamColor(itemDef_t *item, char **args) {
-  if (DC->getTeamColor) {
- int i;
-    vec4_t color;
-    DC->getTeamColor(&color);
-    for (i = 0; i < 4; i++) {
-      item->window.backColor[i] = color[i];
-  }
-}
+
+	if (DC->getTeamColor) {
+		int i;
+		vec4_t color;
+		DC->getTeamColor(&color);
+
+		for (i = 0; i < 4; i++) {
+			item->window.backColor[i] = color[i];
+		}
+	}
 }
 
 void Script_SetItemColor(itemDef_t *item, char **args) {
-  const char *itemname;
-  const char *name;
-  vec4_t color;
+	const char *itemname;
+	const char *name;
+	vec4_t color;
 	int i;
-  vec4_t *out;
+	vec4_t *out;
  // expecting type of color to set and 4 args for the color
-  if (String_Parse(args, &itemname) && String_Parse(args, &name)) {
-    itemDef_t *item2;
-	int j;
-	int count = Menu_ItemsMatchingGroup(item->parent, itemname);
+	if (String_Parse(args, &itemname) && String_Parse(args, &name)) {
+		itemDef_t *item2;
+		int j;
+		int count = Menu_ItemsMatchingGroup(item->parent, itemname);
 
-    if (!Color_Parse(args, &color)) {
-      return;
-  }
+		if (!Color_Parse(args, &color)) {
+			return;
+		}
 
-    for (j = 0; j < count; j++) {
-      item2 = Menu_GetMatchingItemByNumber(item->parent, j, itemname);
-      if (item2 != NULL) {
-        out = NULL;
-        if (Q_stricmp(name, "backcolor") == 0) {
-          out = &item2->window.backColor;
-      } else if (Q_stricmp(name, "forecolor") == 0) {
-          out = &item2->window.foreColor;
-          item2->window.flags |= WINDOW_FORECOLORSET;
-      } else if (Q_stricmp(name, "bordercolor") == 0) {
-          out = &item2->window.borderColor;
-      }
+		for (j = 0; j < count; j++) {
+			item2 = Menu_GetMatchingItemByNumber(item->parent, j, itemname);
 
-        if (out) {
-          for (i = 0; i < 4; i++) {
-           (*out)[i] = color[i];
-        }
-      }
-    }
-  }
-}
+			if (item2 != NULL) {
+				out = NULL;
+
+				if (Q_stricmp(name, "backcolor") == 0) {
+					out = &item2->window.backColor;
+				} else if (Q_stricmp(name, "forecolor") == 0) {
+					out = &item2->window.foreColor;
+					item2->window.flags |= WINDOW_FORECOLORSET;
+				} else if (Q_stricmp(name, "bordercolor") == 0) {
+					out = &item2->window.borderColor;
+				}
+
+				if (out) {
+					for (i = 0; i < 4; i++) {
+						(*out)[i] = color[i];
+					}
+				}
+			}
+		}
+	}
 }
 
 
@@ -980,31 +1023,33 @@ void Menu_ShowItemByName(menuDef_t *menu, const char *p, qboolean bShow) {
 }
 
 void Menu_FadeItemByName(menuDef_t *menu, const char *p, qboolean fadeOut) {
-  itemDef_t *item;
+	itemDef_t *item;
 	int i;
 	int count = Menu_ItemsMatchingGroup(menu, p);
-  for (i = 0; i < count; i++) {
-    item = Menu_GetMatchingItemByNumber(menu, i, p);
-    if (item != NULL) {
-      if (fadeOut) {
-        item->window.flags |= (WINDOW_FADINGOUT|WINDOW_VISIBLE);
-        item->window.flags &= ~WINDOW_FADINGIN;
-    } else {
-        item->window.flags |= (WINDOW_VISIBLE|WINDOW_FADINGIN);
-        item->window.flags &= ~WINDOW_FADINGOUT;
-    }
-  }
-}
+	for (i = 0; i < count; i++) {
+		item = Menu_GetMatchingItemByNumber(menu, i, p);
+
+		if (item != NULL) {
+			if (fadeOut) {
+				item->window.flags |= (WINDOW_FADINGOUT|WINDOW_VISIBLE);
+				item->window.flags &= ~WINDOW_FADINGIN;
+			} else {
+				item->window.flags |= (WINDOW_VISIBLE|WINDOW_FADINGIN);
+				item->window.flags &= ~WINDOW_FADINGOUT;
+			}
+		}
+	}
 }
 
 menuDef_t *Menus_FindByName(const char *p) {
 	int i;
-  for (i = 0; i < DC->menuCount; i++) {
-    if (Q_stricmp(DC->Menus[i].window.name, p) == 0) {
-      return &DC->Menus[i];
-  } 
-}
-  return NULL;
+	for (i = 0; i < DC->menuCount; i++) {
+		if (Q_stricmp(DC->Menus[i].window.name, p) == 0) {
+			return &DC->Menus[i];
+		}
+	}
+
+	return NULL;
 }
 
 void Menus_ShowByName(const char *p) {
@@ -1016,70 +1061,70 @@ void Menus_ShowByName(const char *p) {
 }
 
 void Menus_OpenByName(const char *p) {
-  Menus_ActivateByName(p);
+	Menus_ActivateByName(p);
 }
 
 static void Menu_RunCloseScript(menuDef_t *menu) {
 
 	if (menu && menu->window.flags & WINDOW_VISIBLE && menu->onClose) {
 		itemDef_t item;
-    item.parent = menu;
-    Item_RunScript(&item, menu->onClose);
+		item.parent = menu;
+		Item_RunScript(&item, menu->onClose);
 	}
 }
 
 void Menus_CloseByName(const char *p) {
-  menuDef_t *menu = Menus_FindByName(p);
-  if (menu != NULL) {
+	menuDef_t *menu = Menus_FindByName(p);
+	if (menu != NULL) {
 		Menu_RunCloseScript(menu);
 		menu->window.flags &= ~(WINDOW_VISIBLE|WINDOW_HASFOCUS);
-}
+	}
 }
 
 void Menus_CloseAll(void) {
 	int i;
-  for (i = 0; i < DC->menuCount; i++) {
+	for (i = 0; i < DC->menuCount; i++) {
 		Menu_RunCloseScript(&DC->Menus[i]);
 		DC->Menus[i].window.flags &= ~(WINDOW_HASFOCUS|WINDOW_VISIBLE);
-}
+	}
 }
 
 
 void Script_Show(itemDef_t *item, char **args) {
-  const char *name;
-  if (String_Parse(args, &name)) {
-    Menu_ShowItemByName(item->parent, name, qtrue);
-}
+	const char *name;
+	if (String_Parse(args, &name)) {
+		Menu_ShowItemByName(item->parent, name, qtrue);
+	}
 }
 
 void Script_Hide(itemDef_t *item, char **args) {
-  const char *name;
-  if (String_Parse(args, &name)) {
-    Menu_ShowItemByName(item->parent, name, qfalse);
-}
+	const char *name;
+	if (String_Parse(args, &name)) {
+		Menu_ShowItemByName(item->parent, name, qfalse);
+	}
 }
 
 void Script_FadeIn(itemDef_t *item, char **args) {
-  const char *name;
-  if (String_Parse(args, &name)) {
-    Menu_FadeItemByName(item->parent, name, qfalse);
-}
+	const char *name;
+	if (String_Parse(args, &name)) {
+		Menu_FadeItemByName(item->parent, name, qfalse);
+	}
 }
 
 void Script_FadeOut(itemDef_t *item, char **args) {
-  const char *name;
-  if (String_Parse(args, &name)) {
-    Menu_FadeItemByName(item->parent, name, qtrue);
-}
+	const char *name;
+	if (String_Parse(args, &name)) {
+		Menu_FadeItemByName(item->parent, name, qtrue);
+	}
 }
 
 
 
 void Script_Open(itemDef_t *item, char **args) {
-  const char *name;
-  if (String_Parse(args, &name)) {
-    Menus_OpenByName(name);
-}
+	const char *name;
+	if (String_Parse(args, &name)) {
+		Menus_OpenByName(name);
+	}
 }
 
 void Script_ConditionalOpen(itemDef_t *item, char **args) {
@@ -1100,111 +1145,113 @@ void Script_ConditionalOpen(itemDef_t *item, char **args) {
 }
 
 void Script_Close(itemDef_t *item, char **args) {
-  const char *name;
-  if (String_Parse(args, &name)) {
-    Menus_CloseByName(name);
-}
+	const char *name;
+
+	if (String_Parse(args, &name)) {
+		Menus_CloseByName(name);
+	}
 }
 
 void Menu_TransitionItemByName(menuDef_t *menu, const char *p, rectDef_t rectFrom, rectDef_t rectTo, int time, float amt) {
-  itemDef_t *item;
+	itemDef_t *item;
 	int i;
 	int count = Menu_ItemsMatchingGroup(menu, p);
-  for (i = 0; i < count; i++) {
-    item = Menu_GetMatchingItemByNumber(menu, i, p);
-    if (item != NULL) {
-      item->window.flags |= (WINDOW_INTRANSITION|WINDOW_VISIBLE);
-      item->window.offsetTime = time;
+	for (i = 0; i < count; i++) {
+		item = Menu_GetMatchingItemByNumber(menu, i, p);
+		if (item != NULL) {
+			item->window.flags |= (WINDOW_INTRANSITION|WINDOW_VISIBLE);
+			item->window.offsetTime = time;
 			memcpy(&item->window.rectClient, &rectFrom, sizeof(rectDef_t));
 			memcpy(&item->window.rectEffects, &rectTo, sizeof(rectDef_t));
 			item->window.rectEffects2.x = abs(rectTo.x - rectFrom.x) / amt;
 			item->window.rectEffects2.y = abs(rectTo.y - rectFrom.y) / amt;
 			item->window.rectEffects2.w = abs(rectTo.w - rectFrom.w) / amt;
 			item->window.rectEffects2.h = abs(rectTo.h - rectFrom.h) / amt;
-      Item_UpdatePosition(item);
-  }
-}
+			Item_UpdatePosition(item);
+		}
+	}
 }
 
 
 void Script_Transition(itemDef_t *item, char **args) {
-  const char *name;
+	const char *name;
 	rectDef_t rectFrom, rectTo;
 	int time;
 	float amt;
 
-  if (String_Parse(args, &name)) {
-    if (Rect_Parse(args, &rectFrom) && Rect_Parse(args, &rectTo) && Int_Parse(args, &time) && Float_Parse(args, &amt)) {
-      Menu_TransitionItemByName(item->parent, name, rectFrom, rectTo, time, amt);
-  }
-}
+	if (String_Parse(args, &name)) {
+		if (Rect_Parse(args, &rectFrom) && Rect_Parse(args, &rectTo) && Int_Parse(args, &time) && Float_Parse(args, &amt)) {
+			Menu_TransitionItemByName(item->parent, name, rectFrom, rectTo, time, amt);
+		}
+	}
 }
 
 
 void Menu_OrbitItemByName(menuDef_t *menu, const char *p, float x, float y, float cx, float cy, int time) {
-  itemDef_t *item;
+	itemDef_t *item;
 	int i;
 	int count = Menu_ItemsMatchingGroup(menu, p);
-  for (i = 0; i < count; i++) {
-    item = Menu_GetMatchingItemByNumber(menu, i, p);
-    if (item != NULL) {
-      item->window.flags |= (WINDOW_ORBITING|WINDOW_VISIBLE);
-      item->window.offsetTime = time;
-      item->window.rectEffects.x = cx;
-      item->window.rectEffects.y = cy;
-      item->window.rectClient.x = x;
-      item->window.rectClient.y = y;
-      Item_UpdatePosition(item);
-  }
-}
+	for (i = 0; i < count; i++) {
+		item = Menu_GetMatchingItemByNumber(menu, i, p);
+		if (item != NULL) {
+			item->window.flags |= (WINDOW_ORBITING|WINDOW_VISIBLE);
+			item->window.offsetTime = time;
+			item->window.rectEffects.x = cx;
+			item->window.rectEffects.y = cy;
+			item->window.rectClient.x = x;
+			item->window.rectClient.y = y;
+			Item_UpdatePosition(item);
+		}
+	}
 }
 
 
 void Script_Orbit(itemDef_t *item, char **args) {
-  const char *name;
-  float cx, cy, x, y;
+	const char *name;
+	float cx, cy, x, y;
 	int time;
 
-  if (String_Parse(args, &name)) {
-    if (Float_Parse(args, &x) && Float_Parse(args, &y) && Float_Parse(args, &cx) && Float_Parse(args, &cy) && Int_Parse(args, &time)) {
-      Menu_OrbitItemByName(item->parent, name, x, y, cx, cy, time);
-  }
-}
+	if (String_Parse(args, &name)) {
+		if (Float_Parse(args, &x) && Float_Parse(args, &y) && Float_Parse(args, &cx) && Float_Parse(args, &cy) && Int_Parse(args, &time)) {
+			Menu_OrbitItemByName(item->parent, name, x, y, cx, cy, time);
+		}
+	}
 }
 
 
 
 void Script_SetFocus(itemDef_t *item, char **args) {
-  const char *name;
-  itemDef_t *focusItem;
+	const char *name;
+	itemDef_t *focusItem;
 
-  if (String_Parse(args, &name)) {
-    focusItem = Menu_FindItemByName(item->parent, name);
-    if (focusItem && !(focusItem->window.flags & WINDOW_DECORATION) && !(focusItem->window.flags & WINDOW_HASFOCUS)) {
-      Menu_ClearFocus(item->parent);
-      focusItem->window.flags |= WINDOW_HASFOCUS;
-      if (focusItem->onFocus) {
-        Item_RunScript(focusItem, focusItem->onFocus);
-    }
-      if (DC->Assets.itemFocusSound) {
-        DC->startLocalSound(DC->Assets.itemFocusSound, CHAN_LOCAL_SOUND);
-    }
-  }
-}
+	if (String_Parse(args, &name)) {
+		focusItem = Menu_FindItemByName(item->parent, name);
+		if (focusItem && !(focusItem->window.flags & WINDOW_DECORATION) && !(focusItem->window.flags & WINDOW_HASFOCUS)) {
+			Menu_ClearFocus(item->parent);
+			focusItem->window.flags |= WINDOW_HASFOCUS;
+			if (focusItem->onFocus) {
+				Item_RunScript(focusItem, focusItem->onFocus);
+			}
+
+			if (DC->Assets.itemFocusSound) {
+				DC->startLocalSound(DC->Assets.itemFocusSound, CHAN_LOCAL_SOUND);
+			}
+		}
+	}
 }
 
 void Script_SetPlayerModel(itemDef_t *item, char **args) {
-  const char *name;
-  if (String_Parse(args, &name)) {
-    DC->setCVar("team_model", name);
-}
+	const char *name;
+	if (String_Parse(args, &name)) {
+		DC->setCVar("team_model", name);
+	}
 }
 
 void Script_SetPlayerHead(itemDef_t *item, char **args) {
-  const char *name;
-  if (String_Parse(args, &name)) {
-    DC->setCVar("team_headmodel", name);
-}
+	const char *name;
+	if (String_Parse(args, &name)) {
+		DC->setCVar("team_headmodel", name);
+	}
 }
 
 void Script_SetCvar(itemDef_t *item, char **args) {
@@ -1243,103 +1290,102 @@ void Script_playLooped(itemDef_t *item, char **args) {
 
 
 commandDef_t commandList[] = {
-	{"fadein", &Script_FadeIn},   // group / name
-  {"fadeout", &Script_FadeOut}, // group / name
-  {"show", &Script_Show}, // group / name
-  {"hide", &Script_Hide}, // group / name
-  {"setcolor", &Script_SetColor},  // works on this
-  {"open", &Script_Open}, // menu
+	{"fadein", &Script_FadeIn},	 // group / name
+	{"fadeout", &Script_FadeOut}, // group / name
+	{"show", &Script_Show}, // group / name
+	{"hide", &Script_Hide}, // group / name
+	{"setcolor", &Script_SetColor},	// works on this
+	{"open", &Script_Open}, // menu
 	{"conditionalopen", &Script_ConditionalOpen}, // menu
-  {"close", &Script_Close},  // menu
-  {"setasset", &Script_SetAsset},  // works on this
-  {"setbackground", &Script_SetBackground}, // works on this
-  {"setitemcolor", &Script_SetItemColor}, // group / name
-  {"setteamcolor", &Script_SetTeamColor}, // sets this background color to team color
-  {"setfocus", &Script_SetFocus},  // sets this background color to team color
-  {"setplayermodel", &Script_SetPlayerModel}, // sets this background color to team color
-  {"setplayerhead", &Script_SetPlayerHead}, // sets this background color to team color
-  {"transition", &Script_Transition}, // group / name
-  {"setcvar", &Script_SetCvar}, // group / name
-  {"exec", &Script_Exec}, // group / name
-  {"play", &Script_Play}, // group / name
-  {"playlooped", &Script_playLooped}, // group / name
-  {"orbit", &Script_Orbit}                     // group / name
+	{"close", &Script_Close},	// menu
+	{"setasset", &Script_SetAsset},	// works on this
+	{"setbackground", &Script_SetBackground}, // works on this
+	{"setitemcolor", &Script_SetItemColor}, // group / name
+	{"setteamcolor", &Script_SetTeamColor}, // sets this background color to team color
+	{"setfocus", &Script_SetFocus},	// sets this background color to team color
+	{"setplayermodel", &Script_SetPlayerModel}, // sets this background color to team color
+	{"setplayerhead", &Script_SetPlayerHead}, // sets this background color to team color
+	{"transition", &Script_Transition}, // group / name
+	{"setcvar", &Script_SetCvar}, // group / name
+	{"exec", &Script_Exec}, // group / name
+	{"play", &Script_Play}, // group / name
+	{"playlooped", &Script_playLooped}, // group / name
+	{"orbit", &Script_Orbit} // group / name
 };
 
 int scriptCommandCount = ARRAY_LEN(commandList);
 
 
 void Item_RunScript(itemDef_t *item, const char *s) {
-  char script[1024], *p;
+	char script[1024], *p;
 	int i;
-  qboolean bRan;
-  memset(script, 0, sizeof(script));
-  if (item && s && s[0]) {
-    Q_strcat(script, 1024, s);
-    p = script;
-    while (1) {
-      const char *command;
-     // expect command then arguments, ; ends command, NULL ends script
-      if (!String_Parse(&p, &command)) {
-        return;
-    }
+	qboolean bRan;
+	memset(script, 0, sizeof(script));
+	if (item && s && s[0]) {
+		Q_strcat(script, 1024, s);
+		p = script;
+		while (1) {
+			const char *command;
+		 // expect command then arguments, ; ends command, NULL ends script
+			if (!String_Parse(&p, &command)) {
+				return;
+		}
 
-      if (command[0] == ';' && command[1] == '\0') {
-        continue;
-    }
+			if (command[0] == ';' && command[1] == '\0') {
+				continue;
+		}
 
-      bRan = qfalse;
-      for (i = 0; i < scriptCommandCount; i++) {
-        if (Q_stricmp(command, commandList[i].name) == 0) {
-         (commandList[i].handler(item, &p));
-          bRan = qtrue;
-          break;
-      }
-    }
-     // not in our auto list, pass to handler
-      if (!bRan) {
-        DC->runScript(&p);
-    }
-  }
-}
+			bRan = qfalse;
+			for (i = 0; i < scriptCommandCount; i++) {
+				if (Q_stricmp(command, commandList[i].name) == 0) {
+				 (commandList[i].handler(item, &p));
+					bRan = qtrue;
+					break;
+			}
+		}
+		 // not in our auto list, pass to handler
+			if (!bRan) {
+				DC->runScript(&p);
+			}
+		}
+	}
 }
 
 
 qboolean Item_EnableShowViaCvar(itemDef_t *item, int flag) {
-  char script[1024], *p;
-  memset(script, 0, sizeof(script));
-  if (item && item->enableCvar && *item->enableCvar && item->cvarTest && *item->cvarTest) {
+	char script[1024], *p;
+	memset(script, 0, sizeof(script));
+	if (item && item->enableCvar && *item->enableCvar && item->cvarTest && *item->cvarTest) {
 		char buff[1024];
-	  DC->getCVarString(item->cvarTest, buff, sizeof(buff));
+		DC->getCVarString(item->cvarTest, buff, sizeof(buff));
 
-    Q_strcat(script, 1024, item->enableCvar);
-    p = script;
-    while (1) {
-      const char *val;
-     // expect value then; or NULL, NULL ends list
-      if (!String_Parse(&p, &val)) {
+		Q_strcat(script, 1024, item->enableCvar);
+		p = script;
+		while (1) {
+			const char *val;
+		 // expect value then; or NULL, NULL ends list
+			if (!String_Parse(&p, &val)) {
 				return (item->cvarFlags & flag) ? qfalse : qtrue;
-    }
+		}
 
-      if (val[0] == ';' && val[1] == '\0') {
-        continue;
-    }
+			if (val[0] == ';' && val[1] == '\0') {
+				continue;
+		}
 			// enable it if any of the values are true
 			if (item->cvarFlags & flag) {
-        if (Q_stricmp(buff, val) == 0) {
+				if (Q_stricmp(buff, val) == 0) {
 					return qtrue;
 				}
 			} else {
 				// disable it if any of the values are true
-        if (Q_stricmp(buff, val) == 0) {
+				if (Q_stricmp(buff, val) == 0) {
 					return qfalse;
 				}
 			}
-
-  }
+		}
 
 		return (item->cvarFlags & flag) ? qfalse : qtrue;
-}
+	}
 
 	return qtrue;
 }
@@ -1358,7 +1404,7 @@ qboolean Item_SetFocus(itemDef_t *item, float x, float y) {
 	}
 	// this can be NULL
 	parent = (menuDef_t *)item->parent; 
-      
+			
 	// items can be enabled and disabled based on cvars
 	if (item->cvarFlags & (CVAR_ENABLE|CVAR_DISABLE) && !Item_EnableShowViaCvar(item, CVAR_ENABLE)) {
 		return qfalse;
@@ -1393,7 +1439,7 @@ qboolean Item_SetFocus(itemDef_t *item, float x, float y) {
 			}
 		}
 	} else {
-	    item->window.flags |= WINDOW_HASFOCUS;
+			item->window.flags |= WINDOW_HASFOCUS;
 
 		if (item->onFocus) {
 			Item_RunScript(item, item->onFocus);
@@ -1629,7 +1675,7 @@ int Item_ListBox_OverLB(itemDef_t *item, float x, float y) {
 void Item_ListBox_MouseEnter(itemDef_t *item, float x, float y) {
 	rectDef_t r;
 	listBoxDef_t *listPtr = (listBoxDef_t *)item->typeData;
-        
+				
 	item->window.flags &= ~(WINDOW_LB_LEFTARROW|WINDOW_LB_RIGHTARROW|WINDOW_LB_THUMB|WINDOW_LB_PGUP|WINDOW_LB_PGDN);
 	item->window.flags |= Item_ListBox_OverLB(item, x, y);
 
@@ -1717,42 +1763,42 @@ void Item_MouseEnter(itemDef_t *item, float x, float y) {
 }
 
 void Item_MouseLeave(itemDef_t *item) {
-  if (item) {
-    if (item->window.flags & WINDOW_MOUSEOVERTEXT) {
-      Item_RunScript(item, item->mouseExitText);
-      item->window.flags &= ~WINDOW_MOUSEOVERTEXT;
-  }
-    Item_RunScript(item, item->mouseExit);
-    item->window.flags &= ~(WINDOW_LB_RIGHTARROW|WINDOW_LB_LEFTARROW);
+	if (item) {
+		if (item->window.flags & WINDOW_MOUSEOVERTEXT) {
+			Item_RunScript(item, item->mouseExitText);
+			item->window.flags &= ~WINDOW_MOUSEOVERTEXT;
+	}
+		Item_RunScript(item, item->mouseExit);
+		item->window.flags &= ~(WINDOW_LB_RIGHTARROW|WINDOW_LB_LEFTARROW);
 }
 }
 
 itemDef_t *Menu_HitTest(menuDef_t *menu, float x, float y) {
 	int i;
-  for (i = 0; i < menu->itemCount; i++) {
-    if (Rect_ContainsPoint(&menu->items[i]->window.rect, x, y)) {
-      return menu->items[i];
-  }
+	for (i = 0; i < menu->itemCount; i++) {
+		if (Rect_ContainsPoint(&menu->items[i]->window.rect, x, y)) {
+			return menu->items[i];
+	}
 }
-  return NULL;
+	return NULL;
 }
 
 void Item_SetMouseOver(itemDef_t *item, qboolean focus) {
-  if (item) {
-    if (focus) {
-      item->window.flags |= WINDOW_MOUSEOVER;
-  } else {
-      item->window.flags &= ~WINDOW_MOUSEOVER;
-  }
+	if (item) {
+		if (focus) {
+			item->window.flags |= WINDOW_MOUSEOVER;
+	} else {
+			item->window.flags &= ~WINDOW_MOUSEOVER;
+	}
 }
 }
 
 
 qboolean Item_OwnerDraw_HandleKey(itemDef_t *item, int key) {
-  if (item && DC->ownerDrawHandleKey) {
-    return DC->ownerDrawHandleKey(item->window.ownerDraw, item->window.ownerDrawFlags, &item->special, key);
+	if (item && DC->ownerDrawHandleKey) {
+		return DC->ownerDrawHandleKey(item->window.ownerDraw, item->window.ownerDrawFlags, &item->special, key);
 }
-  return qfalse;
+	return qfalse;
 }
 
 void Item_ListBox_SetSelection(itemDef_t *item, int selection) {
@@ -4572,10 +4618,11 @@ int KeywordHash_Key(char *keyword) {
 	hash = 0;
 
 	for (i = 0; keyword[i] != '\0'; i++) {
-		if (keyword[i] >= 'A' && keyword[i] <= 'Z')
+		if (keyword[i] >= 'A' && keyword[i] <= 'Z') {
 			hash += (keyword[i] + ('a' - 'A')) * (119 + i);
 		} else {
 			hash += keyword[i] * (119 + i);
+		}
 	}
 
 	hash = (hash ^ (hash >> 10) ^ (hash >> 20)) & (KEYWORDHASH_SIZE - 1);

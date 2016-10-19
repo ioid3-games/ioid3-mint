@@ -107,7 +107,7 @@ void BotVoiceChat_Offense(bot_state_t *bs, int playernum, int mode) {
 #ifdef MISSIONPACK
 		|| gametype == GT_1FCTF
 #endif
-		) {
+	) {
 		BotVoiceChat_GetFlag(bs, playernum, mode);
 		return;
 	}
@@ -157,7 +157,6 @@ BotVoiceChat_Defend
 void BotVoiceChat_Defend(bot_state_t *bs, int playernum, int mode) {
 #ifdef MISSIONPACK
 	if (gametype == GT_OBELISK || gametype == GT_HARVESTER) {
-		// 
 		switch (BotTeam(bs)) {
 			case TEAM_RED:
 				memcpy(&bs->teamgoal, &redobelisk, sizeof(bot_goal_t));
@@ -174,7 +173,7 @@ void BotVoiceChat_Defend(bot_state_t *bs, int playernum, int mode) {
 #ifdef MISSIONPACK
 			|| gametype == GT_1FCTF
 #endif
-			) {
+		) {
 		switch (BotTeam(bs)) {
 			case TEAM_RED:
 				memcpy(&bs->teamgoal, &ctf_redflag, sizeof(bot_goal_t));
@@ -369,12 +368,13 @@ BotVoiceChat_ReturnFlag
 =======================================================================================================================================
 */
 void BotVoiceChat_ReturnFlag(bot_state_t *bs, int playernum, int mode) {
+
 	// if not in CTF mode
 	if (gametype != GT_CTF
 #ifdef MISSIONPACK
 		&& gametype != GT_1FCTF
 #endif
-		) {
+	) {
 		return;
 	}
 

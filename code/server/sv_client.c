@@ -182,7 +182,7 @@ void SV_AddPlayer(client_t *client, int localPlayerNum, const char *infoString) 
 
 	Q_strncpyz(userinfo, infoString, sizeof(userinfo));
 	// don't let "ip" overflow userinfo string
-	if (NET_IsLocalAddress(client->netchan.remoteAddress))
+	if (NET_IsLocalAddress(client->netchan.remoteAddress)) {
 		ip = "localhost";
 	} else {
 		ip = (char *)NET_AdrToString(client->netchan.remoteAddress);
@@ -399,6 +399,7 @@ void SV_DirectConnect(netadr_t from) {
 		if (NET_CompareBaseAdr(from, cl->netchan.remoteAddress) && (cl->netchan.qport == qport || from.port == cl->netchan.remoteAddress.port)) {
 			Com_Printf("%s:reconnect\n", NET_AdrToString(from));
 			newcl = cl;
+
 			goto gotnewcl;
 		}
 	}
@@ -814,12 +815,12 @@ void SV_PlayerEnterWorld(player_t *player, usercmd_t *cmd) {
 		SV_UpdateConfigstrings(client);
 
 		client->deltaMessage = -1;
-		client->lastSnapshotTime = 0;	// generate a snapshot immediately
+		client->lastSnapshotTime = 0; // generate a snapshot immediately
 	}
 
 	player->inWorld = qtrue;
 
-	if (cmd)
+	if (cmd) {
 		memcpy(&player->lastUsercmd, cmd, sizeof(player->lastUsercmd));
 	} else {
 		memset(&player->lastUsercmd, '\0', sizeof(player->lastUsercmd));
@@ -1565,7 +1566,7 @@ void SV_PlayerThink(player_t *player, usercmd_t *cmd) {
 	player->lastUsercmd = *cmd;
 
 	if (!player->inUse) {
-		return;		// may have been kicked during the last usercmd
+		return; // may have been kicked during the last usercmd
 	}
 
 	VM_Call(gvm, GAME_PLAYER_THINK, player - svs.players);
@@ -1652,8 +1653,8 @@ static void SV_UserMove(client_t *cl, msg_t *msg, qboolean delta) {
 				continue;
 			}
 			// extremely lagged or cmd from before a map_restart
-			// if (cmds[i].serverTime > svs.time + 3000) {
-			// 	continue;
+			//if (cmds[i].serverTime > svs.time + 3000) {
+			//	continue;
 			//}
 			// don't execute if this is an old cmd which is already executed
 			// these old cmds are included when cl_packetdup > 0
@@ -1673,7 +1674,6 @@ SV_ShouldIgnoreVoipSender
 Blocking of voip packets based on source client.
 =======================================================================================================================================
 */
-
 static qboolean SV_ShouldIgnoreVoipSender(const client_t *cl, int localPlayerNum) {
 
 	if (!sv_voip->integer) {
@@ -1730,9 +1730,9 @@ static void SV_UserVoip(client_t *cl, msg_t *msg, qboolean ignoreData) {
 	packetsize = MSG_ReadShort(msg);
 
 	if (msg->readcount > msg->cursize) {
-		return;
+		return; // short/invalid packet, bail.
 	}
-	// short/invalid packet, bail.
+
 	if (packetsize > sizeof(encoded)) { // overlarge packet?
 		int bytesleft = packetsize;
 
@@ -1759,7 +1759,6 @@ static void SV_UserVoip(client_t *cl, msg_t *msg, qboolean ignoreData) {
 	// !!! FIXME: see if we read past end of msg...
 	// !!! FIXME: reject if not opus data.
 	// !!! FIXME: decide if this is bogus data?
-
 	playerNum = cl->localPlayers[localPlayerNum] - svs.players;
 	// decide who needs this VoIP packet sent to them...
 	for (i = 0, client = svs.clients; i < sv_maxclients->integer; i++, client++) {
@@ -1900,7 +1899,7 @@ void SV_ExecuteClientMessage(client_t *cl, msg_t *msg) {
 
 		if (c == clc_clientCommand) {
 			if (!SV_ClientCommand(cl, msg)) {
-				return;	// we couldn't execute it because of the flood protection
+				return; // we couldn't execute it because of the flood protection
 			}
 
 			if (cl->state == CS_ZOMBIE) {
@@ -1920,6 +1919,7 @@ void SV_ExecuteClientMessage(client_t *cl, msg_t *msg) {
 			break;
 		}
 	} while (1);
+
 	// read the usercmd_t
 	if (c == clc_move) {
 		SV_UserMove(cl, msg, qtrue);

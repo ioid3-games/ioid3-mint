@@ -242,49 +242,51 @@ typedef struct {
 } controls_t;
 
 static controls_t s_controls;
+
 static qboolean waitingforkey = qfalse;
+
 static bind_t g_bindings[] = {
-	{"+scores", "show scores", ID_SHOWSCORES, ANIM_IDLE, K_TAB, -1, -1, -1},
-	{"+button2", "use item", ID_USEITEM, ANIM_IDLE, K_ENTER, -1, -1, -1},
-	{"+speed", "run/walk", ID_SPEED, ANIM_RUN, K_SHIFT, -1, - 1, - 1},
-	{"+forward", "walk forward", ID_FORWARD, ANIM_WALK, K_UPARROW, -1, -1, -1},
-	{"+back", "backpedal", ID_BACKPEDAL, ANIM_BACK, K_DOWNARROW, -1, -1, -1},
-	{"+moveleft", "step left", ID_MOVELEFT, ANIM_STEPLEFT, ',', -1, -1, -1},
-	{"+moveright", "step right", ID_MOVERIGHT, ANIM_STEPRIGHT, '.', -1, -1, -1},
-	{"+moveup", "up/jump", ID_MOVEUP, ANIM_JUMP, K_SPACE, -1, -1, -1},
-	{"+movedown", "down/crouch", ID_MOVEDOWN, ANIM_CROUCH, 'c', -1, -1, -1},
-	{"+left", "turn left", ID_LEFT, ANIM_TURNLEFT, K_LEFTARROW, -1, -1, -1},
-	{"+right", "turn right", ID_RIGHT, ANIM_TURNRIGHT, K_RIGHTARROW, -1, -1, -1},
-	{"+strafe", "sidestep/turn", ID_STRAFE, ANIM_IDLE, K_ALT, -1, -1, -1},
-	{"+lookup", "look up", ID_LOOKUP, ANIM_LOOKUP, K_PGDN, -1, -1, -1},
-	{"+lookdown", "look down", ID_LOOKDOWN, ANIM_LOOKDOWN, K_DEL, -1, -1, -1},
-	{"+mlook", "mouse look", ID_MOUSELOOK, ANIM_IDLE, '/', -1, -1, -1},
-	{"centerview", "center view", ID_CENTERVIEW, ANIM_IDLE, K_END, -1, -1, -1},
-	{"+zoom", "zoom view", ID_ZOOMVIEW, ANIM_IDLE, -1, -1, -1, -1},
-	{"weapon 1", "gauntlet", ID_WEAPON1, ANIM_WEAPON1, '1', -1, -1, -1},
-	{"weapon 2", "machinegun", ID_WEAPON2, ANIM_WEAPON2, '2', -1, -1, -1},
-	{"weapon 3", "shotgun", ID_WEAPON3, ANIM_WEAPON3, '3', -1, -1, -1},
-	{"weapon 4", "grenade launcher", ID_WEAPON4, ANIM_WEAPON4, '4', -1, -1, -1},
-	{"weapon 5", "rocket launcher", ID_WEAPON5, ANIM_WEAPON5, '5', -1, -1, -1},
-	{"weapon 6", "lightning", ID_WEAPON6, ANIM_WEAPON6, '6', -1, -1, -1},
-	{"weapon 7", "railgun", ID_WEAPON7, ANIM_WEAPON7, '7', -1, -1, -1},
-	{"weapon 8", "plasma gun", ID_WEAPON8, ANIM_WEAPON8, '8', -1, -1, -1},
-	{"weapon 9", "BFG", ID_WEAPON9, ANIM_WEAPON9, '9', -1, -1, -1},
+	{"+scores",			"show scores",		ID_SHOWSCORES,	ANIM_IDLE,		K_TAB,			-1, -1, -1},
+	{"+button2",		"use item",			ID_USEITEM,		ANIM_IDLE,		K_ENTER,		-1, -1, -1},
+	{"+speed",			"run/walk",			ID_SPEED,		ANIM_RUN,		K_SHIFT,		-1, -1, -1},
+	{"+forward",		"walk forward",		ID_FORWARD,		ANIM_WALK,		K_UPARROW,		-1, -1, -1},
+	{"+back",			"backpedal",		ID_BACKPEDAL,	ANIM_BACK,		K_DOWNARROW,	-1, -1, -1},
+	{"+moveleft",		"step left",		ID_MOVELEFT,	ANIM_STEPLEFT,	',',			-1, -1, -1},
+	{"+moveright",		"step right",		ID_MOVERIGHT,	ANIM_STEPRIGHT,	'.',			-1, -1, -1},
+	{"+moveup",			"up/jump",			ID_MOVEUP,		ANIM_JUMP,		K_SPACE,		-1, -1, -1},
+	{"+movedown",		"down/crouch",		ID_MOVEDOWN,	ANIM_CROUCH,	'c',			-1, -1, -1},
+	{"+left",			"turn left",		ID_LEFT,		ANIM_TURNLEFT,	K_LEFTARROW,	-1, -1, -1},
+	{"+right",			"turn right",		ID_RIGHT,		ANIM_TURNRIGHT,	K_RIGHTARROW,	-1, -1, -1},
+	{"+strafe",			"sidestep/turn",	ID_STRAFE,		ANIM_IDLE,		K_ALT,			-1, -1, -1},
+	{"+lookup",			"look up",			ID_LOOKUP,		ANIM_LOOKUP,	K_PGDN,			-1, -1, -1},
+	{"+lookdown",		"look down",		ID_LOOKDOWN,	ANIM_LOOKDOWN,	K_DEL,			-1, -1, -1},
+	{"+mlook",			"mouse look",		ID_MOUSELOOK,	ANIM_IDLE,		'/',			-1, -1, -1},
+	{"centerview",		"center view",		ID_CENTERVIEW,	ANIM_IDLE,		K_END,			-1, -1, -1},
+	{"+zoom",			"zoom view",		ID_ZOOMVIEW,	ANIM_IDLE,		-1,				-1, -1, -1},
+	{"weapon 1",		"gauntlet",			ID_WEAPON1,		ANIM_WEAPON1,	'1',			-1, -1, -1},
+	{"weapon 2",		"machinegun",		ID_WEAPON2,		ANIM_WEAPON2,	'2',			-1, -1, -1},
+	{"weapon 3",		"shotgun",			ID_WEAPON3,		ANIM_WEAPON3,	'3',			-1, -1, -1},
+	{"weapon 4",		"grenade launcher",	ID_WEAPON4,		ANIM_WEAPON4,	'4',			-1, -1, -1},
+	{"weapon 5",		"rocket launcher",	ID_WEAPON5,		ANIM_WEAPON5,	'5',			-1, -1, -1},
+	{"weapon 6",		"lightning",		ID_WEAPON6,		ANIM_WEAPON6,	'6',			-1, -1, -1},
+	{"weapon 7",		"railgun",			ID_WEAPON7,		ANIM_WEAPON7,	'7',			-1, -1, -1},
+	{"weapon 8",		"plasma gun",		ID_WEAPON8,		ANIM_WEAPON8,	'8',			-1, -1, -1},
+	{"weapon 9",		"BFG",				ID_WEAPON9,		ANIM_WEAPON9,	'9',			-1, -1, -1},
 #ifdef MISSIONPACK
-	{"weapon 11", "nail gun", ID_WEAPON11, ANIM_WEAPON11, -1, -1, -1, -1},
-	{"weapon 12", "proximity mine", ID_WEAPON12, ANIM_WEAPON12, -1, -1, -1, -1},
-	{"weapon 13", "chain gun", ID_WEAPON13, ANIM_WEAPON13, -1, -1, -1, -1},
+	{"weapon 11",		"nail gun",			ID_WEAPON11,	ANIM_WEAPON11,	-1,				-1, -1, -1},
+	{"weapon 12",		"proximity mine",	ID_WEAPON12,	ANIM_WEAPON12,	-1,				-1, -1, -1},
+	{"weapon 13",		"chain gun",		ID_WEAPON13,	ANIM_WEAPON13,	-1,				-1, -1, -1},
 #endif
-	{"+attack", "attack", ID_ATTACK, ANIM_ATTACK, K_CTRL, -1, -1, -1},
-	{"weapprev", "prev weapon", ID_WEAPPREV, ANIM_IDLE, '[', -1, -1, -1},
-	{"weapnext", "next weapon", ID_WEAPNEXT, ANIM_IDLE, ']', -1, -1, -1},
-	{"+button3", "gesture", ID_GESTURE, ANIM_GESTURE, K_MOUSE3, -1, -1, -1},
-	{"messagemode", "chat", ID_CHAT, ANIM_CHAT, 't', -1, -1, -1},
-	{"messagemode2", "chat - team", ID_CHAT2, ANIM_CHAT, -1, -1, -1, -1},
-	{"messagemode3", "chat - target", ID_CHAT3, ANIM_CHAT, -1, -1, -1, -1},
-	{"messagemode4", "chat - attacker", ID_CHAT4, ANIM_CHAT, -1, -1, -1, -1},
-	{"togglemenu", "toggle menu", ID_TOGGLEMENU, ANIM_IDLE, K_ESCAPE, -1, -1, -1},
-	{(char *)NULL, (char *)NULL, 0, 0, -1, -1, -1, - 1},
+	{"+attack",			"attack",			ID_ATTACK,		ANIM_ATTACK,	K_CTRL,			-1, -1, -1},
+	{"weapprev",		"prev weapon",		ID_WEAPPREV,	ANIM_IDLE,		'[',			-1, -1, -1},
+	{"weapnext",		"next weapon",		ID_WEAPNEXT,	ANIM_IDLE,		']',			-1, -1, -1},
+	{"+button3",		"gesture",			ID_GESTURE,		ANIM_GESTURE,	K_MOUSE3,		-1, -1, -1},
+	{"messagemode",		"chat",				ID_CHAT,		ANIM_CHAT,		't',			-1, -1, -1},
+	{"messagemode2",	"chat-team",		ID_CHAT2,		ANIM_CHAT,		-1,				-1, -1, -1},
+	{"messagemode3",	"chat-target",		ID_CHAT3,		ANIM_CHAT,		-1,				-1, -1, -1},
+	{"messagemode4",	"chat-attacker",	ID_CHAT4,		ANIM_CHAT,		-1,				-1, -1, -1},
+	{"togglemenu",		"toggle menu",		ID_TOGGLEMENU,	ANIM_IDLE,		K_ESCAPE,		-1, -1, -1},
+	{(char *)NULL,		(char *)NULL,		0,				0, 				-1,				-1, -1, -1},
 };
 
 #define MINIBIND(id, d1, d2) {(char *)NULL, (char *)NULL, (id), 0, (d1), (d2), -1, -1}
@@ -521,7 +523,8 @@ static menucommon_s *g_joystick_controls[] = {
 static menucommon_s **g_controls[] = {
 	g_movement_controls,
 	g_looking_controls,
-	g_weapons_controls, g_misc_controls,
+	g_weapons_controls,
+	g_misc_controls,
 	g_joystick_controls,
 	NULL
 };
@@ -776,7 +779,7 @@ static void Controls_Update(void) {
 	}
 
 	controls = s_controls.controls[s_controls.section];
-	// enable controls in active group(and count number of items for vertical centering)
+	// enable controls in active group (and count number of items for vertical centering)
 	for (j = 0; (control = controls[j]); j++) {
 		control->flags &= ~(QMF_GRAYED|QMF_HIDDEN|QMF_INACTIVE);
 	}
@@ -1052,8 +1055,9 @@ static void Controls_SetConfig(void) {
 			if (g_bindings_list[j][i].bind1 != -1) {
 				trap_Key_SetBinding(g_bindings_list[j][i].bind1, Com_LocalPlayerCvarName(j, bindptr->command));
 
-				if (g_bindings_list[j][i].bind2 != -1)
+				if (g_bindings_list[j][i].bind2 != -1) {
 					trap_Key_SetBinding(g_bindings_list[j][i].bind2, Com_LocalPlayerCvarName(j, bindptr->command));
+				}
 			}
 		}
 	}
@@ -1455,6 +1459,7 @@ Controls_MenuInit
 static void Controls_MenuInit(int localPlayerNum) {
 	static char playername[32];
 	int y;
+
 	// zero set all our globals
 	memset(&s_controls, 0, sizeof(controls_t));
 
@@ -1506,7 +1511,6 @@ static void Controls_MenuInit(int localPlayerNum) {
 	s_controls.framer.height = 334;
 
 	y = 240 - 2 * PROP_HEIGHT;
-
 	s_controls.looking.generic.type = MTYPE_PTEXT;
 	s_controls.looking.generic.flags = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_controls.looking.generic.id = ID_LOOKING;

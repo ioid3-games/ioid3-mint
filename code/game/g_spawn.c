@@ -407,6 +407,7 @@ void G_SpawnGEntityFromSpawnVars(void) {
 	int i;
 	gentity_t *ent;
 	bgEntitySpawnInfo_t spawnInfo;
+
 	// get the next free entity
 	ent = G_Spawn();
 
@@ -417,7 +418,7 @@ void G_SpawnGEntityFromSpawnVars(void) {
 	spawnInfo.gametype = g_gametype.integer;
 	spawnInfo.spawnInt = G_SpawnInt;
 	spawnInfo.spawnString = G_SpawnString;
-	// check "notsingle", "notfree", "notteam", etc
+	// check "notsingle", "notfree", "notteam", etc.
 	if (!BG_CheckSpawnEntity(&spawnInfo)) {
 		ADJUST_AREAPORTAL();
 		G_FreeEntity(ent);

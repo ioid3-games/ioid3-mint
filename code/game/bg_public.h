@@ -37,7 +37,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define MODDIR "baseq3"
 #endif
 #endif
-#define GAME_VERSION MODDIR " -4"
+#define GAME_VERSION MODDIR "-4"
 // used for switching fs_game
 #define BASEQ3 "baseq3"
 #define BASETA "missionpack"
@@ -56,14 +56,14 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define MAX_SUBMODELS 1024 // max bsp models, q3map2 limits to 1024 via MAX_MAP_MODELS
 #define MAX_ITEMS 256 // max item types
 #define MAX_MODELS 256 // max model filenames set by game VM
-#define MAX_SOUNDS 256 // this is sent over the net as 8 bits(in eventParm), so they cannot be blindly increased
-#define RANK_TIED_FLAG		0x4000
+#define MAX_SOUNDS 256 // this is sent over the net as 8 bits (in eventParm), so they cannot be blindly increased
+#define RANK_TIED_FLAG 0x4000
 #define DEFAULT_SHOTGUN_SPREAD 700
 #define DEFAULT_SHOTGUN_COUNT 11
-#define ITEM_RADIUS 15		// item sizes are needed for client side pickup detection
+#define ITEM_RADIUS 15 // item sizes are needed for client side pickup detection
 #define LIGHTNING_RANGE 768
 #define SCORE_NOT_PRESENT -9999	// for the CS_SCORES[12] when only one player is present
-#define VOTE_TIME 30000	// 30 seconds before vote times out
+#define VOTE_TIME 30000 // 30 seconds before vote times out
 #define MINS_Z -24
 #define DEFAULT_VIEWHEIGHT 26
 #define CROUCH_VIEWHEIGHT 12
@@ -134,14 +134,18 @@ typedef enum {
 extern const char *bg_netGametypeNames[GT_MAX_GAME_TYPE];
 extern const char *bg_displayGametypeNames[GT_MAX_GAME_TYPE];
 
-typedef enum {GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER} gender_t;
+typedef enum {
+	GENDER_MALE,
+	GENDER_FEMALE,
+	GENDER_NEUTER
+} gender_t;
 
 typedef enum {
 	TR_STATIONARY,
 	TR_INTERPOLATE,	// non-parametric, but interpolate between snapshots
 	TR_LINEAR,
 	TR_LINEAR_STOP,
-	TR_SINE,		// value = base + sin(time/duration) * delta
+	TR_SINE,		// value = base + sin(time / duration) * delta
 	TR_GRAVITY
 } trType_t;
 
@@ -155,9 +159,9 @@ typedef struct {
 
 /**************************************************************************************************************************************
 
-	ENTITY STATE/PLAYER STATE
+	ENTITY STATE / PLAYER STATE
 
-	Server game/client game definitions of entity state and player state.
+	Server game/ Client game definitions of entity state and player state.
 	Add new fields to bg_entityStateFields/bg_playerStateFields in bg_misc.c.
 
 **************************************************************************************************************************************/
@@ -706,13 +710,13 @@ typedef struct animation_s {
 #ifdef MISSIONPACK
 // Default team player model names
 #define DEFAULT_TEAM_MODEL "james"
-#define DEFAULT_TEAM_HEAD " * james"
+#define DEFAULT_TEAM_HEAD " *james"
 #define DEFAULT_TEAM_MODEL2 "james"
-#define DEFAULT_TEAM_HEAD2 " * james"
+#define DEFAULT_TEAM_HEAD2 " *james"
 #define DEFAULT_TEAM_MODEL3 "janet"
-#define DEFAULT_TEAM_HEAD3 " * janet"
+#define DEFAULT_TEAM_HEAD3 " *janet"
 #define DEFAULT_TEAM_MODEL4 "janet"
-#define DEFAULT_TEAM_HEAD4 " * janet"
+#define DEFAULT_TEAM_HEAD4 " *janet"
 // For team fallback sounds
 #define DEFAULT_TEAM_MODEL_MALE "james"
 #define DEFAULT_TEAM_MODEL_FEMALE "janet"

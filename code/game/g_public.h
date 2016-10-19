@@ -67,7 +67,7 @@ typedef struct {
 	// ent->r.ownerNum == passEntityNum (don't interact with your own missiles)
 	// entity[ent->r.ownerNum].r.ownerNum == passEntityNum (don't interact with other missiles from owner)
 	int ownerNum;
-	// if set, entity is only sent to client if distance between entity and client <= cullDistance(even if SVF_BROADCAST is set)
+	// if set, entity is only sent to client if distance between entity and client <= cullDistance (even if SVF_BROADCAST is set)
 	int cullDistance;
 	// if set, portal entities are only sent to client if distance between portal and player <= portalCullDistance
 	int portalCullDistance;
@@ -86,7 +86,7 @@ typedef struct {
 
 **************************************************************************************************************************************/
 
-// also see qvmTraps_t in qcommon.h for QVM - specific system calls
+// also see qvmTraps_t in qcommon.h for QVM-specific system calls
 typedef enum {
 	//============== general Quake services ==================
 	G_PRINT = 0,				// (const char *string);
@@ -106,7 +106,7 @@ typedef enum {
 	G_ADDCOMMAND,				// (const char *cmdName);
 	G_REMOVECOMMAND,			// (const char *cmdName);
 	G_CMD_EXECUTETEXT,			// (int exec_when, const char *text);
-	// add commands to the console as if they were typed in for map changing, etc
+	// add commands to the console as if they were typed in for map changing, etc.
 	// console variable interaction
 	G_CVAR_REGISTER,			// (vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags);
 	G_CVAR_UPDATE,				// (vmCvar_t *vmCvar);
@@ -123,7 +123,7 @@ typedef enum {
 	G_FS_READ,					// (void *buffer, int len, fileHandle_t f);
 	G_FS_WRITE,					// (const void *buffer, int len, fileHandle_t f);
 	G_FS_SEEK,
-	G_FS_TELL,					// (fileHandle_t f);
+	G_FS_TELL,
 	G_FS_FCLOSE_FILE,			// (fileHandle_t f);
 	G_FS_GETFILELIST,
 	G_FS_DELETE,				// (const void *path);
@@ -138,9 +138,7 @@ typedef enum {
 	G_HEAP_MALLOC,				// (int size);
 	G_HEAP_AVAILABLE,			// (void);
 	G_HEAP_FREE,				// (void *data);
-
 	//=========== server specific functionality =============
-
 	G_LOCATE_GAME_DATA = 100,	// (gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *players, int sizeofGamePlayer);
 	// the game needs to let the server system know where and how big the gentities are, so it can look at them directly without going through an interface
 	G_DROP_PLAYER,				// (int playerNum, const char *reason);
@@ -181,8 +179,7 @@ typedef enum {
 	G_BOT_FREE_CLIENT,			// (int playerNum);
 	G_GET_USERCMD,				// (int playerNum, usercmd_t *cmd)
 	G_GET_ENTITY_TOKEN,			// qboolean(int *parseOffset, char *buffer, int bufferSize)
-	// Retrieves the next string token from the entity spawn text, returning
-	// false when all tokens have been parsed.
+	// Retrieves the next string token from the entity spawn text, returning false when all tokens have been parsed.
 	G_DEBUG_POLYGON_CREATE,		// (int color, int numPoints, vec3_t *points);
 	G_DEBUG_POLYGON_SHOW,		// (int id, int color, int numPoints, vec3_t *points);
 	G_DEBUG_POLYGON_DELETE,		// (int id);
@@ -192,7 +189,7 @@ typedef enum {
 	G_R_REGISTERMODEL,			// (const char *name);
 	G_R_LERPTAG,				// (orientation_t *tag, qhandle_t handle, int startFrame, int endFrame, float frac, const char *tagName);
 	G_R_LERPTAG_FRAMEMODEL,		// (orientation_t *tag, qhandle_t handle, qhandle_t frameModel, int startFrame, qhandle_t endFrameModel, int endFrame, float frac, const char *tagName, int *tagIndex);
-	G_R_LERPTAG_TORSO,			// (orientation_t *tag, qhandle_t handle, qhandle_t frameModel, int startFrame, qhandle_t endFrameModel, int endFrame, float frac, const char *tagName, int *tagIndex,   //   const vec3_t *torsoAxis, qhandle_t torsoFrameModel, int torsoFrame, qhandle_t oldTorsoFrameModel, int oldTorsoFrame, float torsoFrac);
+	G_R_LERPTAG_TORSO,			// (orientation_t *tag, qhandle_t handle, qhandle_t frameModel, int startFrame, qhandle_t endFrameModel, int endFrame, float frac, const char *tagName, int *tagIndex, const vec3_t *torsoAxis, qhandle_t torsoFrameModel, int torsoFrame, qhandle_t oldTorsoFrameModel, int oldTorsoFrame, float torsoFrac);
 	G_R_MODELBOUNDS,			// (qhandle_t handle, vec3_t mins, vec3_t maxs, int startFrame, int endFrame, float frac);
 	G_CLIENT_COMMAND,			// (int playerNum, const char *command);
 	G_CLIPTOENTITIES,			// (trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask);
@@ -270,14 +267,14 @@ typedef enum {
 */
 
 typedef enum {
-	GAME_GETAPINAME = 100, GAME_GETAPIVERSION,
+	GAME_GETAPINAME = 100,
+	GAME_GETAPIVERSION,
 	GAME_INIT = 200,				// (int levelTime, int randomSeed, int restart);
 	// init and shutdown will be called every single level
 	// The game should call G_GET_ENTITY_TOKEN to parse through all the entity configuration text and spawn gentities.
 	GAME_SHUTDOWN,					// (void);
 	GAME_PLAYER_CONNECT,			// (int playerNum, qboolean firstTime, qboolean isBot, int clientNum, int localPlayerNum);
-	// return NULL if the player is allowed to connect, otherwise return
-	// a text string with the reason for denial
+	// return NULL if the player is allowed to connect, otherwise return a text string with the reason for denial
 	GAME_PLAYER_BEGIN,				// (int playerNum);
 	GAME_PLAYER_USERINFO_CHANGED,	// (int playerNum);
 	GAME_PLAYER_DISCONNECT,			// (int playerNum);

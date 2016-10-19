@@ -4,62 +4,57 @@ Copyright (C) 2006 Neil Toronto.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, 
-or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License. If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
 #include "cg_local.h"
 
 #if 0
-
 // we'll need this
-#define MACHINEGUN_SPREAD	200
+#define MACHINEGUN_SPREAD 200
 
 /*
 =======================================================================================================================================
 CG_PredictWeaponEffects
 
-Draws predicted effects for the railgun, shotgun, and machinegun. The
-lightning gun is done in CG_LightningBolt, since it was just a matter
-of setting the right origin and angles.
+Draws predicted effects for the railgun, shotgun, and machinegun. The lightning gun is done in CG_LightningBolt, since it was just a
+matter of setting the right origin and angles.
 =======================================================================================================================================
 */
 void CG_PredictWeaponEffects(centity_t *cent) {
 	vec3_t muzzlePoint, forward, right, up;
 	entityState_t *ent = &cent->currentState;
+
 	// if the client isn't us, forget it
 	if (cent->currentState.number != cg.predictedPlayerState.clientNum) {
 		return;
 	}
-	// if it's not switched on server - side, forget it
+	// if it's not switched on server-side, forget it
 	if (!cgs.delagHitscan) {
 		return;
 	}
 	// get the muzzle point
 	VectorCopy(cg.predictedPlayerState.origin, muzzlePoint);
+
 	muzzlePoint[2] += cg.predictedPlayerState.viewheight;
 	// get forward, right, and up
 	AngleVectors(cg.predictedPlayerState.viewangles, forward, right, up);
+
 	VectorMA(muzzlePoint, 14, forward, muzzlePoint);
 	// was it a rail attack?
 	if (ent->weapon == WP_RAILGUN) {
@@ -67,17 +62,17 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 		if (cg_delag.integer & 1 || cg_delag.integer & 16) {
 			trace_t trace;
 			vec3_t endPoint;
+
 			// trace forward
 			VectorMA(muzzlePoint, 8192, forward, endPoint);
 			// THIS IS FOR DEBUGGING!
-			// you definitely *will * want something like this to test the backward reconciliation
-			// to make sure it's working *exactly * right
+			// you definitely *will* want something like this to test the backward reconciliation to make sure it's working *exactly* right
 			if (cg_debugDelag.integer) {
 				// trace forward
 				CG_Trace(&trace, muzzlePoint, vec3_origin, vec3_origin, endPoint, cent->currentState.number, CONTENTS_BODY|CONTENTS_SOLID);
 				// did we hit another player?
 				if (trace.fraction < 1.0f && (trace.contents & CONTENTS_BODY)) {
-					// if we have two snapshots(we're interpolating)
+					// if we have two snapshots (we're interpolating)
 					if (cg.nextSnap) {
 						centity_t *c = &cg_entities[trace.entityNum];
 						vec3_t origin1, origin2;
@@ -85,7 +80,6 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 						// figure the two origins used for interpolation
 						BG_EvaluateTrajectory(&c->currentState.pos, cg.snap->serverTime, origin1);
 						BG_EvaluateTrajectory(&c->nextState.pos, cg.nextSnap->serverTime, origin2);
-
 						// print some debugging stuff exactly like what the server does
 
 						// it starts with "Int:" to let you know the target was interpolated
@@ -93,8 +87,7 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 						CG_Printf("^5frac: %0.4f, origin1: %0.2f %0.2f %0.2f, origin2: %0.2f %0.2f %0.2f\n", cg.frameInterpolation, origin1[0], origin1[1], origin1[2], origin2[0], origin2[1], origin2[2]);
 					} else {
 						// we haven't got a next snapshot
-						// the client clock has either drifted ahead(seems to happen once per server frame
-						// when you play locally) or the client is using timenudge
+						// the client clock has either drifted ahead (seems to happen once per server frame when you play locally) or the client is using timenudge
 						// in any case, CG_CalcEntityLerpPositions extrapolated rather than interpolated
 						centity_t *c = &cg_entities[trace.entityNum];
 						vec3_t origin1, origin2;
@@ -105,7 +98,6 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 
 						BG_EvaluateTrajectory(&c->currentState.pos, cg.snap->serverTime, origin1);
 						BG_EvaluateTrajectory(&c->currentState.pos, cg.snap->serverTime + 1000 / sv_fps.integer, origin2);
-
 						// print some debugging stuff exactly like what the server does
 
 						// it starts with "Ext:" to let you know the target was extrapolated
@@ -121,7 +113,7 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 			VectorMA(muzzlePoint, -1, up, muzzlePoint);
 			// draw a rail trail
 			CG_RailTrail(&cgs.clientinfo[cent->currentState.number], muzzlePoint, trace.endpos);
-			// Com_Printf("Predicted rail trail\n");
+			//Com_Printf("Predicted rail trail\n");
 			// explosion at end if not SURF_NOIMPACT
 			if (!(trace.surfaceFlags & SURF_NOIMPACT)) {
 				// predict an explosion
@@ -135,11 +127,12 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 		if (cg_delag.integer & 1 || cg_delag.integer & 4) {
 			int contents;
 			vec3_t endPoint, v;
-			// do everything like the server does
 
+			// do everything like the server does
 			SnapVector(muzzlePoint);
 
 			VectorScale(forward, 4096, endPoint);
+
 			SnapVector(endPoint);
 
 			VectorSubtract(endPoint, muzzlePoint, v);
@@ -160,22 +153,22 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 			}
 			// do the shotgun pellets
 			CG_ShotgunPattern(muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum);
-			// Com_Printf("Predicted shotgun pattern\n");
+			//Com_Printf("Predicted shotgun pattern\n");
 		}
 	}
 	// was it a machinegun attack?
 	} else if (ent->weapon == WP_MACHINEGUN) {
 		// do we have it on for the machinegun?
 		if (cg_delag.integer & 1 || cg_delag.integer & 2) {
-			// the server will use this exact time(it'll be serverTime on that end)
+			// the server will use this exact time (it'll be serverTime on that end)
 			int seed = cg.oldTime % 256;
 			float r, u;
 			trace_t tr;
 			qboolean flesh;
 			int fleshEntityNum;
 			vec3_t endPoint;
-			// do everything exactly like the server does
 
+			// do everything exactly like the server does
 			r = Q_random(&seed) * M_PI * 2.0f;
 			u = sin(r) * Q_crandom(&seed) * MACHINEGUN_SPREAD * 16;
 			r = cos(r) * Q_crandom(&seed) * MACHINEGUN_SPREAD * 16;
@@ -200,7 +193,7 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 			}
 			// do the bullet impact
 			CG_Bullet(tr.endpos, cg.predictedPlayerState.clientNum, tr.plane.normal, flesh, fleshEntityNum);
-			// Com_Printf("Predicted bullet\n");
+			//Com_Printf("Predicted bullet\n");
 		}
 	}
 }
@@ -299,4 +292,3 @@ void CG_DrawBBox(centity_t *cent, float *color) {
 	VectorCopy(corners[5], verts[1].xyz);
 	trap_R_AddPolyToScene(cgs.media.whiteDynamicShader, 4, verts, 0, 0);
 }
-

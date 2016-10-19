@@ -47,6 +47,7 @@ qboolean Q_Unicode_IsLower(int ch);
 qboolean Q_Unicode_IsIdeo(int ch);
 qboolean Q_Unicode_IsAlphaOrIdeo(int ch);
 qboolean Q_Unicode_IsAlphaOrIdeoOrDigit(int ch);
+
 int Q_Unicode_ToUpper(int ch);
 int Q_Unicode_ToLower(int ch);
 

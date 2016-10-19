@@ -589,7 +589,7 @@ gentity_t *Drop_Item(gentity_t *ent, gitem_t *item, float angle) {
 	VectorScale(velocity, 150, velocity);
 	velocity[2] += 200 + crandom() * 50;
 
-	return LaunchItem (item, ent->s.pos.trBase, velocity);
+	return LaunchItem(item, ent->s.pos.trBase, velocity);
 }
 
 /*

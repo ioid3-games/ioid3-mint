@@ -204,7 +204,6 @@ static void Demos_MenuInit(void) {
 	s_demos.list.height = 14;
 	s_demos.list.itemnames = (const char **)s_demos.demolist;
 	s_demos.list.columns = 3;
-
 	s_demos.numDemos = trap_FS_GetFileList("demos", "$demos", s_demos.names, ARRAY_LEN(s_demos.names));
 
 	demoname = s_demos.names;
@@ -216,7 +215,7 @@ static void Demos_MenuInit(void) {
 	for (i = 0; i < s_demos.numDemos; i++) {
 		// information to build into new UI...
 		valid = trap_GetDemoFileInfo(demoname, &protocol, &length, startTime, endTime, &runTime);
-		Com_Printf("Demo: %s%s, protocol %d, %dKB, %d seconds, %s ->%s\n", demoname, valid ? "" : "(unsupported)", protocol, length / 1024, runTime / 1000, startTime, endTime);
+		Com_Printf("Demo: %s%s, protocol %d, %dKB, %d seconds, %s -> %s\n", demoname, valid ? "" : "(unsupported)", protocol, length / 1024, runTime / 1000, startTime, endTime);
 
 		s_demos.list.itemnames[i] = demoname;
 		len = strlen(demoname);

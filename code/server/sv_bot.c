@@ -48,6 +48,7 @@ int SV_BotAllocateClient(void) {
 	int i;
 	client_t *cl;
 	player_t *player;
+
 	// find a client slot
 	for (i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++) {
 		if (cl->state == CS_FREE) {
@@ -146,7 +147,7 @@ void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *poin
 
 		parm0 = 0;
 		// ZTM: FIXME: Moved BUTTONS_GENERATED from engine to bg_misc.h, the Test function it self should move to game VM.
-		// if (svs.players[0].lastUsercmd.buttons & ~BUTTONS_GENERATED) parm0 |= 1;
+		//if (svs.players[0].lastUsercmd.buttons & ~BUTTONS_GENERATED) parm0 |= 1;
 
 		if (bot_reachability->integer) {
 			parm0 |= 2;

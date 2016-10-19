@@ -356,10 +356,11 @@ void Cmd_God_f(gentity_t *ent) {
 
 	ent->flags ^= FL_GODMODE;
 
-	if (!(ent->flags & FL_GODMODE))
+	if (!(ent->flags & FL_GODMODE)) {
 		msg = "godmode OFF\n";
 	} else {
 		msg = "godmode ON\n";
+	}
 
 	trap_SendServerCommand(ent - g_entities, va("print \"%s\"", msg));
 }
@@ -903,7 +904,7 @@ void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatText) {
 		case SAY_TEAM:
 			G_LogPrintf("sayteam: %s: %s\n", ent->player->pers.netname, chatText);
 
-			if (Team_GetLocationMsg(ent, location, sizeof(location)))
+			if (Team_GetLocationMsg(ent, location, sizeof(location))) {
 				Com_sprintf(name, sizeof(name), EC"(%s%c%c"EC") (%s)"EC": ", ent->player->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
 			} else {
 				Com_sprintf(name, sizeof(name), EC"(%s%c%c"EC")"EC": ", ent->player->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
@@ -913,7 +914,7 @@ void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatText) {
 			cmd = "tchat";
 			break;
 		case SAY_TELL:
-			if (target && target->inuse && target->player && g_gametype.integer >= GT_TEAM && target->player->sess.sessionTeam == ent->player->sess.sessionTeam && Team_GetLocationMsg(ent, location, sizeof(location)))
+			if (target && target->inuse && target->player && g_gametype.integer >= GT_TEAM && target->player->sess.sessionTeam == ent->player->sess.sessionTeam && Team_GetLocationMsg(ent, location, sizeof(location))) {
 				Com_sprintf(name, sizeof(name), EC"[%s%c%c"EC"] (%s)"EC": ", ent->player->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE, location);
 			} else {
 				Com_sprintf(name, sizeof(name), EC"[%s%c%c"EC"]"EC": ", ent->player->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
@@ -956,8 +957,9 @@ void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatText) {
 	// send it to all the appropriate clients
 	for (i = 0; i < level.maxconnections; i++) {
 		for (j = 0; j < MAX_SPLITVIEW; j++) {
-			if (level.connections[i].localPlayerNums[j] == -1)
+			if (level.connections[i].localPlayerNums[j] == -1) {
 				continue;
+			}
 
 			other = &g_entities[level.connections[i].localPlayerNums[j]];
 
@@ -1111,8 +1113,9 @@ void G_Voice(gentity_t *ent, gentity_t *target, int mode, const char *id, qboole
 	// send it to all the appropriate clients
 	for (i = 0; i < level.maxconnections; i++) {
 		for (j = 0; j < MAX_SPLITVIEW; j++) {
-			if (level.connections[i].localPlayerNums[j] == -1)
+			if (level.connections[i].localPlayerNums[j] == -1) {
 				continue;
+			}
 
 			other = &g_entities[level.connections[i].localPlayerNums[j]];
 
@@ -1778,8 +1781,7 @@ void ClientCommand(int connectionNum) {
 	trap_Argv(0, buf, sizeof(buf));
 
 	cmd = &buf[0];
-	// Commands for extra local players.
-	// 2team, 2give, 2teamtask, ...
+	// Commands for extra local players. 2team, 2give, 2teamtask, ...
 	if (cmd[0] >= '2' && cmd[0] <= '0' + MAX_SPLITVIEW) {
 		localPlayerNum = cmd[0] - '1';
 
@@ -1800,7 +1802,7 @@ void ClientCommand(int connectionNum) {
 		}
 
 		if (localPlayerNum == MAX_SPLITVIEW) {
-			// G_Printf("No Local player connected from connection %d!\n", connectionNum);
+			//G_Printf("No Local player connected from connection %d!\n", connectionNum);
 			return;
 		}
 	}

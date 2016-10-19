@@ -37,6 +37,7 @@ static qboolean msgInit = qfalse;
 
 =======================================================================================================================================
 */
+
 void MSG_initHuffman(void);
 
 /*
@@ -203,7 +204,7 @@ void MSG_WriteBits(msg_t *msg, int value, int bits) {
 			Com_Error(ERR_DROP, "can't write %d bits", bits);
 		}
 	} else {
-// 		fp = fopen("c:\\netchan.bin", "a");
+//		fp = fopen("c:\\netchan.bin", "a");
 		value &= (0xffffffff >> (32 - bits));
 
 		if (bits&7) {
@@ -220,14 +221,14 @@ void MSG_WriteBits(msg_t *msg, int value, int bits) {
 
 		if (bits) {
 			for (i = 0; i < bits; i += 8) {
-// 				fwrite(bp, 1, 1, fp);
+//				fwrite(bp, 1, 1, fp);
 				Huff_offsetTransmit(&msgHuff.compressor, (value & 0xff), msg->data, &msg->bit);
 				value = (value >> 8);
 			}
 		}
 
 		msg->cursize = (msg->bit >> 3) + 1;
-// 		fclose(fp);
+//		fclose(fp);
 	}
 }
 
@@ -991,13 +992,13 @@ void MSG_ReadDeltaUsercmdKey(msg_t *msg, int key, usercmd_t *from, usercmd_t *to
 
 // These can't be blindly increased.
 #define MAX_NETF_ARRAY_BITS 32
-#define MAX_NETF_ELEMENTS(32 * MAX_NETF_ARRAY_BITS)
+#define MAX_NETF_ELEMENTS (32 * MAX_NETF_ARRAY_BITS)
 
 typedef struct {
 	int offset;
-	int numElements;	// 1 to 1024(MAX_NETF_ELEMENTS)
+	int numElements;// 1 to 1024(MAX_NETF_ELEMENTS)
 	int numElementArrays;
-	int bits;			// 0 = float
+	int bits;		// 0 = float
 	int pcount;
 } netField_t;
 
@@ -1013,7 +1014,7 @@ static netFields_t msg_entityStateFields = {"entityState_t", 0, 0, NULL};
 
 /*
 =======================================================================================================================================
-MSG_ReportChangeVectors(
+MSG_ReportChangeVectors
 
 Prints out a table from the current statistics for copying to code.
 =======================================================================================================================================
@@ -1022,7 +1023,7 @@ static void MSG_ReportChangeVectors(netFields_t *stateFields) {
 	netField_t *field;
 	int i;
 
- 	Com_Printf("%s (number of fields: %i, object size: %i)\n", stateFields->objectName, stateFields->numFields, stateFields->objectSize);
+ 	Com_Printf("%s(number of fields: %i, object size: %i)\n", stateFields->objectName, stateFields->numFields, stateFields->objectSize);
 
 	for (i = 0, field = stateFields->fields; i < msg_entityStateFields.numFields; i++, field++) {
 		if (field->pcount) {
@@ -1191,10 +1192,10 @@ static int MSG_LastChangedField(void *from, void *to, netFields_t *stateFields) 
 	lc = 0;
 	// build the change vector as bytes so it is endien independent
 	for (i = stateFields->numFields - 1, field = &stateFields->fields[i]; i >= 0; i--, field--) {
-		toF = (int *) ((byte *)to + field->offset);
+		toF = (int *)((byte *)to + field->offset);
 
 		if (from) {
-			fromF = (int *) ((byte *)from + field->offset);
+			fromF = (int *)((byte *)from + field->offset);
 
 			for (n = 0; n < field->numElements; n++) {
 				if (toF[n] != fromF[n]) {
@@ -1239,8 +1240,8 @@ static void MSG_WriteDeltaNetFields(msg_t *msg, void *from, void *to, netFields_
 	int bitsArray[MAX_NETF_ELEMENTS / MAX_NETF_ARRAY_BITS];
 
 	for (i = 0, field = stateFields->fields; i < numSendFields; i++, field++) {
-		fromF = (int *) ((byte *)from + field->offset);
-		toF = (int *) ((byte *)to + field->offset);
+		fromF = (int *)((byte *)from + field->offset);
+		toF = (int *)((byte *)to + field->offset);
 
 		arraysChanged = 0;
 
@@ -1254,11 +1255,11 @@ static void MSG_WriteDeltaNetFields(msg_t *msg, void *from, void *to, netFields_
 		}
 
 		if (arraysChanged == 0) {
-			MSG_WriteBits(msg, 0, field->numElementArrays);	// no change
+			MSG_WriteBits(msg, 0, field->numElementArrays); // no change
 			continue;
 		}
 
-		MSG_WriteBits(msg, arraysChanged, field->numElementArrays);	// changed
+		MSG_WriteBits(msg, arraysChanged, field->numElementArrays); // changed
 
 		if (field->numElements > 1) {
 			elementsLeft = field->numElements;
@@ -1287,8 +1288,7 @@ static void MSG_WriteDeltaNetFields(msg_t *msg, void *from, void *to, netFields_
 				} else {
 					MSG_WriteBits(msg, 1, 1);
 
-					if (trunc == fullFloat && trunc + FLOAT_INT_BIAS >= 0 && 
-						trunc + FLOAT_INT_BIAS < (1 << FLOAT_INT_BITS)) {
+					if (trunc == fullFloat && trunc + FLOAT_INT_BIAS >= 0 && trunc + FLOAT_INT_BIAS < (1 << FLOAT_INT_BITS)) {
 						// send as small integer
 						MSG_WriteBits(msg, 0, 1);
 						MSG_WriteBits(msg, trunc + FLOAT_INT_BIAS, FLOAT_INT_BITS);
@@ -1327,14 +1327,14 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to, netFields_t
 	int endBit;
 
 	for (i = 0, field = stateFields->fields; i < numReadFields; i++, field++) {
-		toF = (int *) ((byte *)to + field->offset);
+		toF = (int *)((byte *)to + field->offset);
 
 		arraysChanged = MSG_ReadBits(msg, field->numElementArrays);
 
 		if (arraysChanged == 0) {
 			// no change
 			if (from) {
-				fromF = (int *) ((byte *)from + field->offset);
+				fromF = (int *)((byte *)from + field->offset);
 
 				for (n = 0; n < field->numElements; n++, toF++, fromF++) {
 					*toF = *fromF;
@@ -1374,7 +1374,7 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to, netFields_t
 			if (!(bitsArray[n / MAX_NETF_ARRAY_BITS] & (1 << (n & (MAX_NETF_ARRAY_BITS - 1))))) {
 				// no change
 				if (from) {
-					fromF = (int *) ((byte *)from + field->offset);
+					fromF = (int *)((byte *)from + field->offset);
 
 					*toF = fromF[n];
 				} else {
@@ -1441,7 +1441,7 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to, netFields_t
 		toF = (int *)((byte *)to + field->offset);
 		// no change
 		if (from) {
-			fromF = (int *) ((byte *)from + field->offset);
+			fromF = (int *)((byte *)from + field->offset);
 
 			for (n = 0; n < field->numElements; n++, toF++, fromF++) {
 				*toF = *fromF;
@@ -1460,7 +1460,7 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to, netFields_t
 			endBit = (msg->readcount - 1) * 8 + msg->bit - GENTITYNUM_BITS;
 		}
 
-		Com_Printf(" (%i bits)\n", endBit - startBit);
+		Com_Printf("(%i bits)\n", endBit - startBit);
 	}
 }
 
@@ -1519,7 +1519,7 @@ void MSG_WriteDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntitySta
 	MSG_WriteBits(msg, to->number, GENTITYNUM_BITS);
 	MSG_WriteBits(msg, 0, 1);			// not removed
 	MSG_WriteBits(msg, 1, 1);			// we have a delta
-	MSG_WriteByte(msg, lc);				// #of changes
+	MSG_WriteByte(msg, lc);				// # of changes
 	MSG_WriteDeltaNetFields(msg, from, to, &msg_entityStateFields, lc);
 }
 
@@ -1565,10 +1565,11 @@ void MSG_ReadDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntityStat
 	}
 	// check for no delta
 	if (MSG_ReadBits(msg, 1) == 0) {
-		if (from)
+		if (from) {
 			Com_Memcpy(to, from, msg_entityStateFields.objectSize);
 		} else {
 			Com_Memset(to, 0, msg_entityStateFields.objectSize);
+		}
 
 		to->number = number;
 		return;
@@ -1614,7 +1615,7 @@ void MSG_WriteDeltaPlayerstate(msg_t *msg, sharedPlayerState_t *from, sharedPlay
 
 	lc = MSG_LastChangedField(from, to, &msg_playerStateFields);
 
-	MSG_WriteByte(msg, lc);	// #of changes
+	MSG_WriteByte(msg, lc);	// # of changes
 	MSG_WriteDeltaNetFields(msg, from, to, &msg_playerStateFields, lc);
 }
 

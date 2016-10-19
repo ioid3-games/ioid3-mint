@@ -512,7 +512,9 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 	level.gentities = g_entities;
 	// initialize all client connections for this game
 	level.maxconnections = g_maxplayers.integer;
+
 	memset(g_connections, 0, MAX_CLIENTS * sizeof(g_connections[0]));
+
 	level.connections = g_connections;
 	// clear local player nums
 	for (i = 0; i < level.maxconnections; i++) {
@@ -553,7 +555,7 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 
 	SaveRegisteredItems();
 
-	G_Printf("-----------------------------------\n");
+	G_DPrintf("-----------------------------------\n");
 
 	if (g_gametype.integer == GT_SINGLE_PLAYER || trap_Cvar_VariableIntegerValue("com_buildScript")) {
 		G_ModelIndex(SP_PODIUM_MODEL);
@@ -654,7 +656,7 @@ qboolean G_NeedFullMapRestart(void) {
 G_MapRestart
 
 This is called by the server when map_restart command is issued and when restart time is hit.
-return restart time, -1 to do a full map reload, or INT_MAX to prevent restart.
+Return restart time, -1 to do a full map reload, or INT_MAX to prevent restart.
 =======================================================================================================================================
 */
 int G_MapRestart(int levelTime, int restartTime) {
@@ -723,7 +725,7 @@ void QDECL Com_Printf(const char *msg, ...) {
 
 /*
 =======================================================================================================================================
-om_DPrintf
+Com_DPrintf
 =======================================================================================================================================
 */
 void QDECL Com_DPrintf(const char *msg, ...) {
@@ -1375,8 +1377,6 @@ void LogExit(const char *string) {
 		trap_Cmd_ExecuteText(EXEC_APPEND, (won) ? "spWin\n" : "spLose\n");
 	}
 #endif
-
-
 }
 
 /*
@@ -1401,6 +1401,7 @@ void CheckIntermissionExit(void) {
 	ready = 0;
 	notReady = 0;
 	playerCount = 0;
+
 	Com_ClientListClear(&readyList);
 
 	for (i = 0; i < g_maxplayers.integer; i++) {
@@ -1418,6 +1419,7 @@ void CheckIntermissionExit(void) {
 
 		if (cl->readyToExit) {
 			ready++;
+
 			Com_ClientListAdd(&readyList, i);
 		} else {
 			notReady++;

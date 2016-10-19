@@ -26,7 +26,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #if defined DEDICATED && !defined USE_RENDERER_DLOPEN
 
-#include "../renderergl1 / tr_local.h"
+#include "../renderergl1/tr_local.h"
 
 qboolean refHeadless;
 

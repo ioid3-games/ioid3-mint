@@ -376,7 +376,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 		ent->enemy = other;
 		ent->s.groundEntityNum = other->s.number;
 
-		SnapVectorTowards(v, ent->s.pos.trBase);	// save net bandwidth
+		SnapVectorTowards(v, ent->s.pos.trBase); // save net bandwidth
 
 		nent->freeAfterEvent = qtrue;
 		// change over to a normal entity right at the point of impact

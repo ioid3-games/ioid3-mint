@@ -386,10 +386,11 @@ void G_SetBrushModel(gentity_t *ent, const char *name) {
 	ent->s.modelindex = atoi(name + 1);
 
 	trap_GetBrushBounds(ent->s.modelindex, mins, maxs);
+
 	VectorCopy(mins, ent->s.mins);
 	VectorCopy(maxs, ent->s.maxs);
-	ent->s.collisionType = CT_SUBMODEL;
 
+	ent->s.collisionType = CT_SUBMODEL;
 	ent->s.contents = -1; // we don't know exactly what is in the brushes
 
 	trap_LinkEntity(ent); // FIXME: remove
@@ -642,7 +643,7 @@ void G_AddPredictableEvent(gentity_t *ent, int event, int eventParm) {
 =======================================================================================================================================
 G_AddEvent
 
-Adds an event + parm and twiddles the event counter
+Adds an event + parm and twiddles the event counter.
 =======================================================================================================================================
 */
 void G_AddEvent(gentity_t *ent, int event, int eventParm) {

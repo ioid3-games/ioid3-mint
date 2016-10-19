@@ -24,14 +24,20 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "cg_local.h"
 
-#define MAX_PB_BUFFERS  128
+#define MAX_PB_BUFFERS 128
 
 polyBuffer_t cg_polyBuffers[MAX_PB_BUFFERS];
 int cg_polyBuffersInuse[MAX_PB_BUFFERS];
 
+/*
+=======================================================================================================================================
+CG_PB_FindFreePolyBuffer
+=======================================================================================================================================
+*/
 polyBuffer_t *CG_PB_FindFreePolyBuffer(qhandle_t shader, int numVerts, int numIndicies) {
 	int i;
 	int firstFree = -1;
+
 	// find one with the same shader if possible
 	for (i = 0; i < MAX_PB_BUFFERS; i++) {
 		if (!cg_polyBuffersInuse[i]) {
@@ -62,10 +68,10 @@ polyBuffer_t *CG_PB_FindFreePolyBuffer(qhandle_t shader, int numVerts, int numIn
 	}
 	// return new poly buffer
 	if (firstFree != -1) {
-		cg_polyBuffersInuse[firstFree] =       1 + cg.cur_localPlayerNum;
-		cg_polyBuffers[firstFree].shader =     shader;
+		cg_polyBuffersInuse[firstFree] = 1 + cg.cur_localPlayerNum;
+		cg_polyBuffers[firstFree].shader = shader;
 		cg_polyBuffers[firstFree].numIndicies = 0;
-		cg_polyBuffers[firstFree].numVerts =   0;
+		cg_polyBuffers[firstFree].numVerts = 0;
 
 		return &cg_polyBuffers[firstFree];
 	}
@@ -73,11 +79,22 @@ polyBuffer_t *CG_PB_FindFreePolyBuffer(qhandle_t shader, int numVerts, int numIn
 	return NULL;
 }
 
+/*
+=======================================================================================================================================
+CG_PB_ClearPolyBuffers
+=======================================================================================================================================
+*/
 void CG_PB_ClearPolyBuffers(void) {
-	// Gordon: changed numIndicies and numVerts to be reset in CG_PB_FindFreePolyBuffer, not here(should save the cache misses we were prolly getting)
+
+	// changed numIndicies and numVerts to be reset in CG_PB_FindFreePolyBuffer, not here (should save the cache misses we were prolly getting)
 	memset(cg_polyBuffersInuse, 0, sizeof(cg_polyBuffersInuse));
 }
 
+/*
+=======================================================================================================================================
+CG_PB_RenderPolyBuffers
+=======================================================================================================================================
+*/
 void CG_PB_RenderPolyBuffers(void) {
 	int i;
 

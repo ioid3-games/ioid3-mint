@@ -63,7 +63,7 @@ static void UI_CreditMenu_Draw_ioq3(void) {
 		y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
 	}
 
-	UI_DrawString(320, 459, "http:// spearmint.pw", UI_CENTER|UI_SMALLFONT, colorGreen);
+	UI_DrawString(320, 459, "http://spearmint.pw", UI_CENTER|UI_SMALLFONT, colorGreen);
 }
 
 /*
@@ -107,7 +107,7 @@ static void UI_CreditMenu_Draw(void) {
 	y += 1.42 * PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
 	UI_DrawProportionalString(320, y, "Art", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
-	UI_DrawProportionalString(320, y, "Adrian Carmack, Kevin Cloud, ", UI_CENTER|UI_SMALLFONT, color_white);
+	UI_DrawProportionalString(320, y, "Adrian Carmack, Kevin Cloud,", UI_CENTER|UI_SMALLFONT, color_white);
 	y += PROP_HEIGHT * PROP_SMALL_SIZE_SCALE;
 	UI_DrawProportionalString(320, y, "Kenneth Scott, Seneca Menard, Fred Nilsson", UI_CENTER|UI_SMALLFONT, color_white);
 

@@ -533,7 +533,7 @@ int AAS_ClipToBBox(aas_trace_t *trace, vec3_t start, vec3_t end, int presencetyp
 
 /*
 =======================================================================================================================================
-AAS_ClientMovementPrediction
+AAS_PlayerMovementPrediction
 
 Predicts the movement. Assumes regular bounding box sizes.
 NOTE: out of water jumping is not included.
@@ -551,7 +551,7 @@ Parameter:	origin			: origin to start with.
 Returns: aas_clientmove_t
 =======================================================================================================================================
 */
-int AAS_ClientMovementPrediction(struct aas_clientmove_s *move, int entnum, vec3_t origin, int presencetype, int onground, vec3_t velocity, vec3_t cmdmove, int cmdframes, int maxframes, float frametime, int stopevent, int stopareanum, vec3_t mins, vec3_t maxs, int visualize, int contentmask) {
+int AAS_PlayerMovementPrediction(struct aas_clientmove_s *move, int entnum, vec3_t origin, int presencetype, int onground, vec3_t velocity, vec3_t cmdmove, int cmdframes, int maxframes, float frametime, int stopevent, int stopareanum, vec3_t mins, vec3_t maxs, int visualize, int contentmask) {
 	float phys_friction, phys_stopspeed, phys_gravity, phys_waterfriction;
 	float phys_watergravity;
 	float phys_walkaccelerate, phys_airaccelerate, phys_swimaccelerate;
@@ -589,6 +589,7 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s *move, int entnum, vec3
 	phys_maxsteepness = aassettings.phys_maxsteepness;
 	phys_jumpvel = aassettings.phys_jumpvel * frametime;
 	phys_strafejumping = aassettings.phys_strafejumping;
+
 	Com_Memset(move, 0, sizeof(aas_clientmove_t));
 	Com_Memset(&trace, 0, sizeof(aas_trace_t));
 	// start at the current origin
@@ -1066,20 +1067,20 @@ int AAS_ClientMovementPrediction(struct aas_clientmove_s *move, int entnum, vec3
 
 /*
 =======================================================================================================================================
-AAS_PredictClientMovement
+AAS_PredictPlayerMovement
 =======================================================================================================================================
 */
-int AAS_PredictClientMovement(struct aas_clientmove_s *move, int entnum, vec3_t origin, int presencetype, int onground, vec3_t velocity, vec3_t cmdmove, int cmdframes, int maxframes, float frametime, int stopevent, int stopareanum, int visualize, int contentmask) {
+int AAS_PredictPlayerMovement(struct aas_clientmove_s *move, int entnum, vec3_t origin, int presencetype, int onground, vec3_t velocity, vec3_t cmdmove, int cmdframes, int maxframes, float frametime, int stopevent, int stopareanum, int visualize, int contentmask) {
 	vec3_t mins, maxs;
 	return AAS_PlayerMovementPrediction(move, entnum, origin, presencetype, onground, velocity, cmdmove, cmdframes, maxframes, frametime, stopevent, stopareanum, mins, maxs, visualize, contentmask);
 }
 
 /*
 =======================================================================================================================================
-AAS_ClientMovementHitBBox
+AAS_PlayerMovementHitBBox
 =======================================================================================================================================
 */
-int AAS_ClientMovementHitBBox(struct aas_clientmove_s *move, int entnum, vec3_t origin, int presencetype, int onground, vec3_t velocity, vec3_t cmdmove, int cmdframes, int maxframes, float frametime, vec3_t mins, vec3_t maxs, int visualize, int contentmask) {
+int AAS_PlayerMovementHitBBox(struct aas_clientmove_s *move, int entnum, vec3_t origin, int presencetype, int onground, vec3_t velocity, vec3_t cmdmove, int cmdframes, int maxframes, float frametime, vec3_t mins, vec3_t maxs, int visualize, int contentmask) {
 	return AAS_PlayerMovementPrediction(move, entnum, origin, presencetype, onground, velocity, cmdmove, cmdframes, maxframes, frametime, SE_HITBOUNDINGBOX, 0, mins, maxs, visualize, contentmask);
 }
 

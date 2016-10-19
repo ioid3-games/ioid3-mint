@@ -79,7 +79,7 @@ void MenuField_Draw(menufield_s *f) {
 		style = UI_BIGFONT;
 	}
 
-	if(Menu_ItemAtCursor(f->generic.parent) == f) {
+	if (Menu_ItemAtCursor(f->generic.parent) == f) {
 		focus = qtrue;
 		style |= UI_PULSE;
 	} else {
@@ -137,20 +137,21 @@ sfxHandle_t MenuField_Key(menufield_s *m, int *key) {
 			if (keycode & K_CHAR_FLAG) {
 				keycode &= ~K_CHAR_FLAG;
 
-				if ((m->generic.flags & QMF_UPPERCASE) && Q_islower(keycode))
+				if ((m->generic.flags & QMF_UPPERCASE) && Q_islower(keycode)) {
 					keycode -= 'a' - 'A';
-				else if ((m->generic.flags & QMF_LOWERCASE) && Q_isupper(keycode))
+				} else if ((m->generic.flags & QMF_LOWERCASE) && Q_isupper(keycode)) {
 					keycode -= 'A' - 'a';
-				else if ((m->generic.flags & QMF_NUMBERSONLY) && Q_isalpha(keycode))
+				} else if ((m->generic.flags & QMF_NUMBERSONLY) && Q_isalpha(keycode)) {
 					return (menu_buzz_sound);
+				}
 
 				MField_CharEvent(&m->field, keycode);
-			} else
+			} else {
 				MField_KeyDownEvent(&m->field, keycode);
+			}
+
 			break;
 	}
 
 	return (0);
 }
-
-

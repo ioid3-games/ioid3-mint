@@ -1528,7 +1528,7 @@ void AIEnter_Seek_ActivateEntity(bot_state_t *bs, char *s) {
 AINode_Seek_ActivateEntity
 =======================================================================================================================================
 */
-int AINode_Seek_ActivateEntityy(bot_state_t *bs) {
+int AINode_Seek_ActivateEntity(bot_state_t *bs) {
 	bot_goal_t *goal;
 	vec3_t target, dir, ideal_viewangles;
 	bot_moveresult_t moveresult;

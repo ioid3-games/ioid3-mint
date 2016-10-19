@@ -3179,7 +3179,7 @@ PC_LoadSourceHandle
 
 source_t *sourceFiles[MAX_SOURCEFILES];
 
-int PC_LoadSourceHandle(const char *filename, const char *basepath)
+int PC_LoadSourceHandle(const char *filename, const char *basepath) {
 	source_t *source;
 	int i;
 
@@ -3308,7 +3308,7 @@ int PC_SourceFileAndLine(int handle, char *filename, int *line) {
 PC_SetBaseFolder
 =======================================================================================================================================
 */
-void PC_SetBaseFolder(const char *path)
+void PC_SetBaseFolder(const char *path) {
 	PS_SetBaseFolder(path);
 }
 

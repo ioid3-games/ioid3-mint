@@ -534,9 +534,9 @@ void Svcmd_Say_f(void) {
 }
 #endif
 struct svcmd {
-  char *cmd;
-  qboolean dedicated;
-  void (*function)(void);
+	char *cmd;
+	qboolean dedicated;
+	void (*function)(void);
 } svcmds[] = {
 	{"abort_podium", qfalse, Svcmd_AbortPodium_f},
 	{"addbot", qfalse, Svcmd_AddBot_f},
@@ -546,8 +546,8 @@ struct svcmd {
 	{"entityList", qfalse, Svcmd_EntityList_f},
 	{"forceTeam", qfalse, Svcmd_ForceTeam_f},
 	{"listip", qfalse, Svcmd_ListIPs_f},
-	{"removeip", qfalse, Svcmd_RemoveIP_f}, 
- // {"say", qtrue, Svcmd_Say_f},
+	{"removeip", qfalse, Svcmd_RemoveIP_f},
+	//{"say", qtrue, Svcmd_Say_f},
 	{"teleport", qfalse, Svcmd_Teleport_f},
 };
 
@@ -591,7 +591,7 @@ void G_RegisterCommands(void) {
 	int i;
 
 	for (i = 0; i < numSvCmds; i++) {
-		if (svcmds[i].dedicated && !g_dedicated.integer {
+		if (svcmds[i].dedicated && !g_dedicated.integer) {
 			continue;
 		}
 

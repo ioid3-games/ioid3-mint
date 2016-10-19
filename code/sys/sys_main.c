@@ -160,7 +160,7 @@ Sys_GetCapsLockMode
 */
 qboolean Sys_GetCapsLockMode(void) {
 #ifdef WIN32
-	// ZTM: TODO: SDL does not track Windows num / caps lock state. Remove this after it's fixed by a major SDL version? (i.e., SDL 2.1)
+	// ZTM: TODO: SDL does not track Windows num/caps lock state. Remove this after it's fixed by a major SDL version? (i.e., SDL 2.1)
 	return (GetKeyState(VK_CAPITAL) & 0x0001) ? qtrue : qfalse;
 #else
 	return (SDL_GetModState() & KMOD_CAPS) ? qtrue : qfalse;
@@ -174,7 +174,7 @@ Sys_GetNumLockMode
 */
 qboolean Sys_GetNumLockMode(void) {
 #ifdef WIN32
-	// ZTM: TODO: SDL does not track Windows num / caps lock state. Remove this after it's fixed by a major SDL version? (i.e., SDL 2.1)
+	// ZTM: TODO: SDL does not track Windows num/caps lock state. Remove this after it's fixed by a major SDL version? (i.e., SDL 2.1)
 	return (GetKeyState(VK_NUMLOCK) & 0x0001) ? qtrue : qfalse;
 #else
 	return (SDL_GetModState() & KMOD_NUM) ? qtrue : qfalse;

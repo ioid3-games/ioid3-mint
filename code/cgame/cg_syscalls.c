@@ -507,7 +507,7 @@ void trap_S_StopLoopingSound(int entityNum) {
 
 /*
 =======================================================================================================================================
-rap_S_ClearLoopingSounds
+trap_S_ClearLoopingSounds
 =======================================================================================================================================
 */
 void trap_S_ClearLoopingSounds(qboolean killall) {
@@ -965,7 +965,6 @@ void trap_R_GetGlobalFog(fogType_t *type, vec3_t color, float *depthForOpaque, f
 trap_R_GetViewFog
 =======================================================================================================================================
 */
-
 void trap_R_GetViewFog(const vec3_t origin, fogType_t *type, vec3_t color, float *depthForOpaque, float *density, float *farClip, qboolean inwater) {
 	syscall(CG_R_GET_VIEW_FOG, origin, type, color, depthForOpaque, density, farClip, inwater);
 }
@@ -1008,7 +1007,7 @@ void trap_R_GetShaderName(qhandle_t hShader, char *buffer, int bufferSize) {
 
 /*
 =======================================================================================================================================
-rap_GetClipboardData
+trap_GetClipboardData
 =======================================================================================================================================
 */
 void trap_GetClipboardData(char *buf, int bufsize) {
@@ -1170,7 +1169,6 @@ int trap_GetDemoState(void) {
 trap_GetDemoPos
 =======================================================================================================================================
 */
-
 int trap_GetDemoPos(void) {
 	return syscall(CG_GETDEMOPOS);
 }
@@ -1734,16 +1732,32 @@ void trap_CIN_SetExtents(int handle, int x, int y, int w, int h) {
 }
 
 /*
+=======================================================================================================================================
+trap_loadCamera
+=======================================================================================================================================
+*/
+/*
 qboolean trap_loadCamera(const char *name) {
 	return syscall(CG_LOADCAMERA, name);
 }
-
+*/
+/*
+=======================================================================================================================================
+trap_startCamera
+=======================================================================================================================================
+*/
+/*
 void trap_startCamera(int time) {
 	syscall(CG_STARTCAMERA, time);
 }
-
+*/
+/*
+=======================================================================================================================================
+trap_getCameraInfo
+=======================================================================================================================================
+*/
+/*
 qboolean trap_getCameraInfo(int time, vec3_t *origin, vec3_t *angles) {
 	return syscall(CG_GETCAMERAINFO, time, origin, angles);
 }
 */
-

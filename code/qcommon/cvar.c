@@ -764,7 +764,7 @@ void Cvar_Server_Set(const char *var_name, const char *value) {
 	if (flags != CVAR_NONEXISTENT) {
 		// If this cvar may not be modified by a server discard the value.
 		if (!(flags & (CVAR_SYSTEMINFO|CVAR_SERVER_CREATED|CVAR_USER_CREATED))) {
-			Com_Printf(S_COLOR_YELLOW "WARNING: server is not allowed to set %s = %s\n", var_name, value);
+			Com_Printf(S_COLOR_YELLOW "WARNING: server is not allowed to set %s=%s\n", var_name, value);
 			return;
 		}
 
@@ -1022,13 +1022,13 @@ void Cvar_Set_f(void) {
 			switch (cmd[4]) {
 				default:
 					flag = CVAR_USERINFO;
-						break;
+					break;
 				case '2':
 					flag = CVAR_USERINFO2;
-						break;
+					break;
 				case '3':
 					flag = CVAR_USERINFO3;
-						break;
+					break;
 				case '4':
 					flag = CVAR_USERINFO4;
 			}
@@ -1507,7 +1507,7 @@ void Cvar_CheckRange(cvar_t *var, float min, float max, qboolean integral) {
 	var->max = max;
 	var->integral = integral;
 	// Force an initial range check
-	if (strcmp(var->resetString, var->string))	}
+	if (strcmp(var->resetString, var->string)) {
 		Cvar_Set(var->name, var->string);
 	} else {
 		Cvar_Reset(var->name);

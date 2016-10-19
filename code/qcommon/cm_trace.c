@@ -414,7 +414,7 @@ void CM_TestBoundingBoxInCapsule(traceWork_t *tw, clipHandle_t model) {
 	}
 	// replace the bounding box with the capsule
 	tw->type = TT_CAPSULE;
-	tw->sphere.radius = (tw->size[1][0] > tw->size[1][2]) ? tw->size[1][2]: tw->size[1][0];
+	tw->sphere.radius = (tw->size[1][0] > tw->size[1][2]) ? tw->size[1][2] : tw->size[1][0];
 	tw->sphere.halfheight = tw->size[1][2];
 
 	VectorSet(tw->sphere.offset, 0, 0, tw->size[1][2] - tw->sphere.radius);
@@ -745,7 +745,7 @@ CM_ProximityToBrush
 static void CM_ProximityToBrush(traceWork_t *tw, cbrush_t *brush) {
 	int i;
 	cbrushedge_t *edge;
-	float dist, minDist = 1e + 10f;
+	float dist, minDist = 1e+10f;
 	float s, t;
 	float sAtMin = 0.0f;
 	float radius = 0.0f, fraction;
@@ -776,7 +776,7 @@ static void CM_ProximityToBrush(traceWork_t *tw, cbrush_t *brush) {
 		}
 
 		if (tw->type == TT_BISPHERE) {
-			radius = tw->biSphere.startRadius + sAtMin * (tw->biSphere.endRadius - tw->biSphere.startRadius));
+			radius = tw->biSphere.startRadius + (sAtMin * (tw->biSphere.endRadius - tw->biSphere.startRadius));
 		} else if (tw->type == TT_CAPSULE) {
 			radius = tw->sphere.radius;
 		} else if (tw->type == TT_AABB) {
@@ -790,6 +790,7 @@ static void CM_ProximityToBrush(traceWork_t *tw, cbrush_t *brush) {
 		}
 	} else {
 		tw->trace.lateralFraction = 0.0f;
+	} 
 }
 
 /*
@@ -835,7 +836,6 @@ void CM_TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 	// trace line against all brushes in the leaf
 	for (k = 0; k < leaf->numLeafBrushes; k++) {
 		brushnum = cm.leafbrushes[leaf->firstLeafBrush + k];
-
 		b = &cm.brushes[brushnum];
 
 		if (b->checkcount == cm.checkcount) {
@@ -1021,7 +1021,8 @@ void CM_TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t 
 #endif
 #if 1 // ZTM: NOTE: Old method caused CM_Trace to fail assert at bottom of CM_Trace sometimes.
 			VectorNormalize2(dir, tw->trace.plane.normal);
-#else		{
+#else		
+			{
 				float scale;
 				scale = 1 / (radius + RADIUS_EPSILON);
 				VectorScale(dir, scale, dir);
@@ -1051,6 +1052,7 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 	//float a;
 	float b, c, d, sqrtd;
 	vec3_t v1, dir, start2d, end2d, org2d, intersection;
+
 	// 2d coordinates
 	VectorSet(start2d, start[0], start[1], 0);
 	VectorSet(end2d, end[0], end[1], 0);
@@ -1134,7 +1136,8 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 #endif
 #if 1 // ZTM: NOTE: Old method caused CM_Trace to fail assert at bottom of CM_Trace sometimes.
 				VectorNormalize2(dir, tw->trace.plane.normal);
-#else			{
+#else			
+				{
 					float scale;
 					scale = 1 / (radius + RADIUS_EPSILON);
 					VectorScale(dir, scale, dir);
@@ -1254,7 +1257,7 @@ void CM_TraceBoundingBoxThroughCapsule(traceWork_t *tw, clipHandle_t model) {
 	}
 	// replace the bounding box with the capsule
 	tw->type = TT_CAPSULE;
-	tw->sphere.radius = (tw->size[1][0] > tw->size[1][2]) ? tw->size[1][2]: tw->size[1][0];
+	tw->sphere.radius = (tw->size[1][0] > tw->size[1][2]) ? tw->size[1][2] : tw->size[1][0];
 	tw->sphere.halfheight = tw->size[1][2];
 	VectorSet(tw->sphere.offset, 0, 0, tw->size[1][2] - tw->sphere.radius);
 	// replace the capsule with the bounding box
@@ -1418,7 +1421,7 @@ void CM_Trace(trace_t *results, const vec3_t start, const vec3_t end, const vec3
 	if (sphere) {
 		tw.sphere = *sphere;
 	} else {
-		tw.sphere.radius = (tw.size[1][0] > tw.size[1][2]) ? tw.size[1][2]: tw.size[1][0];
+		tw.sphere.radius = (tw.size[1][0] > tw.size[1][2]) ? tw.size[1][2] : tw.size[1][0];
 		tw.sphere.halfheight = tw.size[1][2];
 		VectorSet(tw.sphere.offset, 0, 0, tw.size[1][2] - tw.sphere.radius);
 	}
@@ -1660,8 +1663,8 @@ void CM_BiSphereTrace(trace_t *results, const vec3_t start, const vec3_t end, fl
 	cmodel_t *cmod;
 
 	cmod = CM_ClipHandleToModel(model);
-	cm.checkcount++;		// for multi - check avoidance
-	c_traces++;				// for statistics, may be zeroed
+	cm.checkcount++;	// for multi-check avoidance
+	c_traces++;			// for statistics, may be zeroed
 	// fill in a default trace
 	Com_Memset(&tw, 0, sizeof(tw));
 
@@ -1675,7 +1678,7 @@ void CM_BiSphereTrace(trace_t *results, const vec3_t start, const vec3_t end, fl
 
 	if (!cm.numNodes) {
 		*results = tw.trace;
-		return;	// map not loaded, shouldn't happen
+		return; // map not loaded, shouldn't happen
 	}
 	// set basic parms
 	tw.contents = mask;
@@ -1710,15 +1713,15 @@ void CM_BiSphereTrace(trace_t *results, const vec3_t start, const vec3_t end, fl
 	if (tw.trace.fraction == 1.0f) {
 		VectorCopy(end, tw.trace.endpos);
 	} else {
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 3; i++) {
 			tw.trace.endpos[i] = start[i] + tw.trace.fraction * (end[i] - start[i]);
+		}
 	}
 	// If allsolid is set(was entirely inside something solid), the plane is not valid.
 	// If fraction == 1.0, we never hit anything, and thus the plane is not valid.
 	// Otherwise, the normal on the plane should have unit length
 	assert(tw.trace.allsolid || tw.trace.fraction == 1.0 || VectorLengthSquared(tw.trace.plane.normal) > 0.9999);
-
- *results = tw.trace;
+	*results = tw.trace;
 }
 
 /*

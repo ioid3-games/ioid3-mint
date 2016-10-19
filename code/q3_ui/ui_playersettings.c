@@ -214,8 +214,10 @@ static void PlayerSettings_DrawEffects(void *self) {
 		vec4_t picColor;
 
 		colorShader = s_playersettings.fxPic[NUM_COLOR_EFFECTS - 1]; // white
-		if (!colorShader)
+
+		if (!colorShader) {
 			colorShader = uis.whiteShader;
+		}
 
 		CG_PlayerColorFromIndex(uitogamecode[item->curvalue], picColor);
 		picColor[3] = 1;
@@ -223,6 +225,7 @@ static void PlayerSettings_DrawEffects(void *self) {
 	}
 
 	CG_DrawPic(item->generic.x + 64 + item->curvalue * xOffset + xOffset * 0.5f, item->generic.y + PROP_HEIGHT + 6, 16, 12, colorShader);
+
 	trap_R_SetColor(NULL);
 
 	if (focus) {
@@ -310,9 +313,9 @@ static void PlayerSettings_SetMenuItems(void) {
 	int c;
 	int h;
 	char model[MAX_QPATH], headmodel[MAX_QPATH];
+
 	// name
-	MField_SetText(&s_playersettings.name.field, CG_Cvar_VariableString(
-			Com_LocalPlayerCvarName(s_playersettings.localPlayerNum, "name")));
+	MField_SetText(&s_playersettings.name.field, CG_Cvar_VariableString(Com_LocalPlayerCvarName(s_playersettings.localPlayerNum, "name")));
 	// effects color
 	c = trap_Cvar_VariableValue(Com_LocalPlayerCvarName(s_playersettings.localPlayerNum, "color1")) - 1;
 
@@ -391,7 +394,7 @@ static void PlayerSettings_StatusBar(void *ptr) {
 		case ID_EFFECTS:
 			UI_DrawString(320, 410, "Color of railgun core", UI_CENTER|UI_SMALLFONT, colorWhite);
 			break;
-			case ID_EFFECTS2:
+		case ID_EFFECTS2:
 			UI_DrawString(320, 410, "Color of railgun disks", UI_CENTER|UI_SMALLFONT, colorWhite);
 			break;
 		default:

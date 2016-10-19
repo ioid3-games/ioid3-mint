@@ -234,12 +234,12 @@ void QDECL SV_SendServerCommand(client_t *cl, int localPlayerNum, const char *fm
 =======================================================================================================================================
 */
 
+static netadr_t adr[MAX_MASTER_SERVERS][2]; // [2] for v4 and v6 address for the same address string.
 /*
 =======================================================================================================================================
 SV_RefreshMasterAdr
 =======================================================================================================================================
 */
-static netadr_t adr[MAX_MASTER_SERVERS][2]; // [2] for v4 and v6 address for the same address string.
 qboolean SV_RefreshMasterAdr(int i) {
 	int res;
 	int netenabled;
@@ -249,8 +249,7 @@ qboolean SV_RefreshMasterAdr(int i) {
 	}
 
 	netenabled = Cvar_VariableIntegerValue("net_enabled");
-	// see if we haven't already resolved the name
-	// resolving usually causes hitches on win95, so only do it when needed
+	// see if we haven't already resolved the name, resolving usually causes hitches on win95, so only do it when needed
 	if (sv_master[i]->modified || (adr[i][0].type == NA_BAD && adr[i][1].type == NA_BAD)) {
 		sv_master[i]->modified = qfalse;
 
@@ -312,7 +311,7 @@ void SV_MasterHeartbeat(const char *message) {
 	int i;
 	int netenabled;
 
-	// Do not send heartbeats in single player.
+	// do not send heartbeats in single player.
 	if (Com_GameIsSinglePlayer()) {
 		return;
 	}
@@ -320,10 +319,8 @@ void SV_MasterHeartbeat(const char *message) {
 	netenabled = Cvar_VariableIntegerValue("net_enabled");
 
 	if (!(netenabled & (NET_ENABLEV4|NET_ENABLEV6))) {
-		return;
+		return; // only public servers send heartbeats
 	}
-	// only public servers send heartbeats
-
 	// if not time yet, don't send anything
 	if (svs.time < svs.nextHeartbeatTime) {
 		return;
@@ -604,7 +601,7 @@ static void SVC_Status(netadr_t from) {
 	int playerLength;
 	char infostring[MAX_INFO_STRING];
 
-	// Don't reply if sv_public is - 1 or lower
+	// don't reply if sv_public is -1 or lower
 	if (sv_public->integer <= -1) {
 		return;
 	}
@@ -638,7 +635,7 @@ static void SVC_Status(netadr_t from) {
 	for (i = 0; i < sv_maxclients->integer; i++) {
 		pl = &svs.players[i];
 
-		if (!pl->inUse {
+		if (!pl->inUse) {
 			continue;
 		}
 
@@ -673,7 +670,7 @@ void SVC_Info(netadr_t from) {
 	char *gamedir;
 	char infostring[MAX_INFO_STRING];
 
-	// Don't reply if sv_public is -1 or lower
+	// don't reply if sv_public is -1 or lower
 	if (sv_public->integer <= -1) {
 		return;
 	}

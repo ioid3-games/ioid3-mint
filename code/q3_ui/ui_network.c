@@ -46,7 +46,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define ID_ANTILAG	16
 #define ID_BACK		17
 
-
 static const char *rate_items[] = {
 	"<= 28.8K",
 	"33.6K",

@@ -50,11 +50,11 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define GAMENAME_FOR_MASTER			"Spearmint"
 // Game's engine settings for compatibility and other information needed before loading CGame VM.
 // Probably don't need to change this, but if you break compatiblity feel free to give it a less stupid name.
-#define GAMESETTINGS				"mint - game.settings"
+#define GAMESETTINGS				"mint-game.settings"
 // Prefix for game and cgame virtual machines. Example: vm/PREFIXcgame.qvm, PREFIXcgame_x86.dll
 // Change this if you break VM API compatibility with Spearmint.
 // You'll also need to change VM_PREFIX in game code Makefile.
-#define VM_PREFIX					"mint - "
+#define VM_PREFIX					"mint-"
 // Prefix for renderer native libraries. Example: PREFIXopengl1_x86.dll
 // Change this if you break renderer compatibility with Spearmint.
 // You'll also need to change RENDERER_PREFIX in Makefile.
@@ -71,7 +71,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define FLATLINE_FOR_MASTER			HEARTBEAT_FOR_MASTER
 #define MAX_MASTER_SERVERS 5 // number of supported master servers
 #define DEMOEXT						"mintdemo" // standard demo extension
-
 // Ignore __attribute__ on non-gcc platforms
 #ifndef __GNUC__
 #ifndef __attribute__
@@ -253,7 +252,7 @@ qboolean Netchan_Process(netchan_t *chan, msg_t *msg);
 */
 
 #define PROTOCOL_VERSION 10
-#define PROTOCOL_LEGACY_VERSION	0
+#define PROTOCOL_LEGACY_VERSION 0
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
 extern int demo_protocols[];
@@ -487,7 +486,7 @@ void Cvar_WriteVariables(fileHandle_t f);
 void Cvar_Init(void);
 char *Cvar_InfoString(int bit);
 char *Cvar_InfoString_Big(int bit);
-// returns an info string containing all the cvars that have the given bit set in their flags (CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc)
+// returns an info string containing all the cvars that have the given bit set in their flags (CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc.)
 void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
 void Cvar_CheckRange(cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral);
 void Cvar_SetDescription(cvar_t *var, const char *var_description);
@@ -650,6 +649,7 @@ typedef struct {
 	int numLoadingScreens;
 #endif
 } gameConfig_t;
+
 extern gameConfig_t com_gameConfig;
 
 /*
@@ -747,7 +747,6 @@ qboolean Com_GameIsSinglePlayer(void);
 void Com_StartupVariable(const char *match);
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise only a set with the exact name. Only used during startup.
-
 extern cvar_t *com_fs_pure;
 extern cvar_t *com_developer;
 extern cvar_t *com_dedicated;
@@ -894,6 +893,7 @@ void Com_Shutdown(void);
 	REFRESH DLL
 
 =======================================================================================================================================
+*/
 
 extern refexport_t re; // interface to refresh .dll
 

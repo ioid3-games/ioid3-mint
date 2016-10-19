@@ -547,10 +547,10 @@ void UI_SPPostgameMenu_f(void) {
 	Q_strncpyz(arenainfo, arena, sizeof(arenainfo));
 
 	postgameMenuInfo.level = atoi(Info_ValueForKey(arenainfo, "num"));
-
 	postgameMenuInfo.numPlayers = atoi(CG_Argv(1));
+
 	playerNum = atoi(CG_Argv(2));
-	playerGameRank = 8;		// in case they ended game as a spectator
+	playerGameRank = 8; // in case they ended game as a spectator
 
 	if (postgameMenuInfo.numPlayers > MAX_SCOREBOARD_PLAYERS) {
 		postgameMenuInfo.numPlayers = MAX_SCOREBOARD_PLAYERS;

@@ -381,6 +381,7 @@ static void UI_LoadBots(void) {
 
 	Info_SetValueForKey(info, "name", "Random");
 	Info_SetValueForKey(info, "model", "random");
+
 	ui_botInfos[ui_numBots] = UI_Alloc(strlen(info) + strlen("\\num\\") + strlen(va("%d", MAX_ARENAS)) + 1);
 
 	if (ui_botInfos[ui_numBots]) {

@@ -388,7 +388,6 @@ void UI_PlayerInfo_SetModel(uiPlayerInfo_t *pi, const char *model, const char *h
 void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat);
 void UI_PlayerInfo_UpdateColor(uiPlayerInfo_t *pi);
 qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinName, const char *headModelSkinName, const char *teamName);
-
 // ui_atoms.c
 typedef struct {
 	int frametime;
@@ -413,6 +412,7 @@ typedef struct {
 	int maxSplitView;
 	qboolean bannerNumbers;
 } uiStatic_t;
+
 extern void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
 extern void UI_InitBannerFont(fontInfo_t *font);
 extern void UI_InitPropFont(fontInfo_t *font, qboolean glow);
@@ -503,5 +503,4 @@ int UI_GetAwardLevel(int award);
 void UI_SPUnlock_f(void);
 void UI_SPUnlockMedals_f(void);
 void UI_InitGameinfo(void);
-
 #endif

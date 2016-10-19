@@ -388,7 +388,7 @@ typedef struct {
 	int ident;
 	char name[MAX_QPATH];          // polyset name
 	char shader[MAX_QPATH];
-	int shaderIndex;               // for in - game use
+	int shaderIndex;               // for in-game use
 	int minLod;
 	int ofsHeader;                 // this will be a negative number
 	int numVerts;
@@ -405,10 +405,10 @@ typedef struct {
 } mdsSurface_t;
 
 typedef struct {
-	// float angles[3];
-	// float ofsAngles[2];
-	short angles[4];           // to be converted to axis at run - time(this is also better for lerping)
-	short ofsAngles[2];        // PITCH / YAW, head in this direction from parent to go to the offset position
+	//float angles[3];
+	//float ofsAngles[2];
+	short angles[4];           // to be converted to axis at run-time (this is also better for lerping)
+	short ofsAngles[2];        // PITCH/YAW, head in this direction from parent to go to the offset position
 } mdsBoneFrameCompressed_t;
 // NOTE: this only used at run-time
 typedef struct {
@@ -507,7 +507,7 @@ typedef struct {
 	int ident;
 	char name[MAX_QPATH];          // polyset name
 	char shader[MAX_QPATH];
-	int shaderIndex;               // for in - game use
+	int shaderIndex;               // for in-game use
 	int minLod;
 	int ofsHeader;                 // this will be a negative number
 	int numVerts;
@@ -519,7 +519,7 @@ typedef struct {
 	// present in any vertex weights for this surface. This is
 	// needed because a model may have surfaces that need to be
 	// drawn at different sort times, and we don't want to have
-	// to re - interpolate all the bones for each surface.
+	// to re-interpolate all the bones for each surface.
 	int numBoneReferences;
 	int ofsBoneReferences;
 	int ofsEnd;                    // next surface follows
@@ -591,7 +591,7 @@ MDX file format(Wolfenstein Enemy Territory Skeletal Data)
 
 version history:
 	1 - initial version
-	2 -moved parentOffset from the mesh to the skeletal data file
+	2 - moved parentOffset from the mesh to the skeletal data file
 =======================================================================================================================================
 */
 
@@ -600,9 +600,9 @@ version history:
 #define MDX_MAX_BONES 128
 
 typedef struct {
-	// float angles[3];
-	// float ofsAngles[2];
-	short angles[4];               // to be converted to axis at run - time(this is also better for lerping)
+	//float angles[3];
+	//float ofsAngles[2];
+	short angles[4];               // to be converted to axis at run-time( this is also better for lerping)
 	short ofsAngles[2];            // PITCH/YAW, head in this direction from parent to go to the offset position
 } mdxBoneFrameCompressed_t;
 // NOTE: this only used at run-time
@@ -737,7 +737,7 @@ typedef struct {
 
 // there shouldn't be any problem with increasing these values at the expense of more memory allocation in the utilities
 #define MAX_MAP_MODELS		0x400
-#define MAX_MAP_BRUSHES		0x8000 // ZTM: NOTE: Using value from Quake3/RTCW - MP, it's only 0x4000 in WolfET.
+#define MAX_MAP_BRUSHES		0x8000 // ZTM: NOTE: Using value from Quake3/RTCW-MP, it's only 0x4000 in WolfET.
 #define MAX_MAP_ENTITIES	0x1000 // ZTM: NOTE: Using value from WolfET, it's only 0x800 in Quake3/RTCW-MP.
 #define MAX_MAP_ENTSTRING	0x40000
 #define MAX_MAP_SHADERS		0x400
