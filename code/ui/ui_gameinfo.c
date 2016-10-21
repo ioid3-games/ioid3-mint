@@ -22,17 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-
-// gameinfo.c
-
-
 #include "ui_local.h"
 
-
-
 // arena and bot info
-
-
 
 int ui_numBots;
 static char *ui_botInfos[MAX_BOTS];
@@ -179,7 +171,6 @@ void UI_LoadArenas(void) {
 
 	for (n = 0; n < ui_numArenas; n++) {
 		// determine type
-
 		uiInfo.mapList[uiInfo.mapCount].cinematic = -1;
 		uiInfo.mapList[uiInfo.mapCount].mapLoadName = String_Alloc(Info_ValueForKey(ui_arenaInfos[n], "map"));
 		uiInfo.mapList[uiInfo.mapCount].mapName = String_Alloc(Info_ValueForKey(ui_arenaInfos[n], "longname"));

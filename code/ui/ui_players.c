@@ -573,14 +573,15 @@ static void UI_PlayerAngles(uiPlayerInfo_t *pi, vec3_t legs[3], vec3_t torso[3],
 	headAngles[YAW] = AngleMod(headAngles[YAW]);
 	VectorClear(legsAngles);
 	VectorClear(torsoAngles);
+
 	// --------- yaw -------------
 
 	// allow yaw to drift a bit
 	if ((pi->legsAnim & ~ANIM_TOGGLEBIT) != LEGS_IDLE || (pi->torsoAnim & ~ANIM_TOGGLEBIT) != TORSO_STAND) {
 		// if not standing still, always point all in the same direction
-		pi->torso.yawing = qtrue;	// always center
-		pi->torso.pitching = qtrue;	// always center
-		pi->legs.yawing = qtrue;	// always center
+		pi->torso.yawing = qtrue; // always center
+		pi->torso.pitching = qtrue; // always center
+		pi->legs.yawing = qtrue; // always center
 	}
 	// adjust legs for movement dir
 	adjust = UI_MovedirAdjustment(pi);
@@ -592,6 +593,7 @@ static void UI_PlayerAngles(uiPlayerInfo_t *pi, vec3_t legs[3], vec3_t torso[3],
 
 	torsoAngles[YAW] = pi->torso.yawAngle;
 	legsAngles[YAW] = pi->legs.yawAngle;
+
 	// --------- pitch -------------
 
 	// only show a fraction of the pitch angle in the torso
@@ -914,7 +916,7 @@ static qboolean UI_FindPlayerHeadFile(char *filename, int length, const char *te
 	team = "default";
 
 	if (headModelName[0] == '*') {
-		headsFolder = "heads / ";
+		headsFolder = "heads/";
 		headModelName++;
 	} else {
 		headsFolder = "";
@@ -923,9 +925,9 @@ static qboolean UI_FindPlayerHeadFile(char *filename, int length, const char *te
 	while (1) {
 		for (i = 0; i < 2; i++) {
 			if (i == 0 && teamName && *teamName) {
-				Com_sprintf(filename, length, "models/players/%s%s/%s / %s%s_%s.%s", headsFolder, headModelName, headSkinName, teamName, base, team, ext);
+				Com_sprintf(filename, length, "models/players/%s%s/%s/%s%s_%s.%s", headsFolder, headModelName, headSkinName, teamName, base, team, ext);
 			} else {
-				Com_sprintf(filename, length, "models/players/%s%s/%s / %s_%s.%s", headsFolder, headModelName, headSkinName, base, team, ext);
+				Com_sprintf(filename, length, "models/players/%s%s/%s/%s_%s.%s", headsFolder, headModelName, headSkinName, base, team, ext);
 			}
 
 			if (UI_FileExists(filename)) {
@@ -951,7 +953,7 @@ static qboolean UI_FindPlayerHeadFile(char *filename, int length, const char *te
 			break;
 		}
 
-		headsFolder = "heads / ";
+		headsFolder = "heads/";
 	}
 
 	return qfalse;
@@ -967,7 +969,7 @@ static qboolean UI_RegisterPlayerSkin(uiPlayerInfo_t *pi, const char *modelName,
 	qboolean legsSkin, torsoSkin, headSkin;
 
 	if (teamName && *teamName) {
-		Com_sprintf(filename, sizeof(filename), "models/players/%s/%s / lower_%s.skin", modelName, teamName, skinName);
+		Com_sprintf(filename, sizeof(filename), "models/players/%s/%s/lower_%s.skin", modelName, teamName, skinName);
 	} else {
 		Com_sprintf(filename, sizeof(filename), "models/players/%s/lower_%s.skin", modelName, skinName);
 	}
@@ -975,7 +977,7 @@ static qboolean UI_RegisterPlayerSkin(uiPlayerInfo_t *pi, const char *modelName,
 	legsSkin = CG_RegisterSkin(filename, &pi->modelSkin, qfalse);
 
 	if (teamName && *teamName) {
-		Com_sprintf(filename, sizeof(filename), "models/players/%s/%s / upper_%s.skin", modelName, teamName, skinName);
+		Com_sprintf(filename, sizeof(filename), "models/players/%s/%s/upper_%s.skin", modelName, teamName, skinName);
 	} else {
 		Com_sprintf(filename, sizeof(filename), "models/players/%s/upper_%s.skin", modelName, skinName);
 	}
@@ -1210,7 +1212,7 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 	}
 
 	if (headModelName[0] == '*') {
-		Com_sprintf(filename, sizeof(filename), "models/players/ heads /%s/%s.md3", &headModelName[1], &headModelName[1]);
+		Com_sprintf(filename, sizeof(filename), "models/players/heads/%s/%s.md3", &headModelName[1], &headModelName[1]);
 	} else {
 		Com_sprintf(filename, sizeof(filename), "models/players/%s/head.md3", headModelName);
 	}
@@ -1218,7 +1220,7 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 	pi->headModel = trap_R_RegisterModel(filename);
 
 	if (!pi->headModel && headModelName[0] != '*') {
-		Com_sprintf(filename, sizeof(filename), "models/players/ heads /%s/%s.md3", headModelName, headModelName);
+		Com_sprintf(filename, sizeof(filename), "models/players/heads/%s/%s.md3", headModelName, headModelName);
 		pi->headModel = trap_R_RegisterModel(filename);
 	}
 

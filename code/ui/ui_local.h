@@ -206,7 +206,7 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 #define UI_NUMFX 7
 #define MAX_HEADS 64
 #define MAX_ALIASES 64
-#define MAX_HEADNAME  32
+#define MAX_HEADNAME 32
 #define MAX_TEAMS 64
 #define MAX_GAMETYPES 16
 #define MAX_MAPS 128
@@ -297,7 +297,6 @@ typedef struct {
 	char adrstr[MAX_ADDRESSLENGTH];
 	int start;
 } pinglist_t;
-
 
 typedef struct serverStatus_s {
 	pinglist_t pingList[MAX_PINGREQUESTS];

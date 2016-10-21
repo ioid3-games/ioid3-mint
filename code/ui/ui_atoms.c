@@ -81,7 +81,7 @@ void UI_LoadBestScores(const char *map, int game) {
 
 	memset(&newInfo, 0, sizeof(postGameInfo_t));
 
-	Com_sprintf(fileName, MAX_QPATH, "games / %s_%i.game", map, game);
+	Com_sprintf(fileName, MAX_QPATH, "games/%s_%i.game", map, game);
 
 	if (trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0) {
 		int size = 0;
@@ -119,8 +119,8 @@ void UI_ClearScores(void) {
 	postGameInfo_t newInfo;
 
 	count = trap_FS_GetFileList("games", "game", gameList, sizeof(gameList));
-
 	size = sizeof(postGameInfo_t);
+
 	memset(&newInfo, 0, size);
 
 	if (count > 0) {
@@ -129,7 +129,7 @@ void UI_ClearScores(void) {
 		for (i = 0; i < count; i++) {
 			len = strlen(gameFile);
 
-			if (trap_FS_FOpenFile(va("games / %s", gameFile), &f, FS_WRITE) >= 0) {
+			if (trap_FS_FOpenFile(va("games/%s", gameFile), &f, FS_WRITE) >= 0) {
 				trap_FS_Write(&size, sizeof(int), f);
 				trap_FS_Write(&newInfo, size, f);
 				trap_FS_FCloseFile(f);
@@ -170,7 +170,7 @@ static void UI_CalcPostGameStats(void) {
 	Q_strncpyz(map, Info_ValueForKey(info, "mapname"), sizeof(map));
 	game = atoi(Info_ValueForKey(info, "g_gametype"));
 	// compose file name
-	Com_sprintf(fileName, MAX_QPATH, "games / %s_%i.game", map, game);
+	Com_sprintf(fileName, MAX_QPATH, "games/%s_%i.game", map, game);
 	// see if we have one already
 	memset(&oldInfo, 0, sizeof(postGameInfo_t));
 
@@ -307,10 +307,7 @@ UI_CursorInRect
 */
 qboolean UI_CursorInRect(int x, int y, int width, int height) {
 
-	if (uiInfo.uiDC.cursorx < x ||
-		uiInfo.uiDC.cursory < y ||
-		uiInfo.uiDC.cursorx > x + width ||
-		uiInfo.uiDC.cursory > y + height) {
+	if (uiInfo.uiDC.cursorx < x || uiInfo.uiDC.cursory < y || uiInfo.uiDC.cursorx > x + width || uiInfo.uiDC.cursory > y + height) {
 		return qfalse;
 	}
 

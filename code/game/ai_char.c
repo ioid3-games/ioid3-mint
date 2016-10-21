@@ -119,10 +119,16 @@ void BotDumpCharacter(bot_character_t *ch) {
 
 	for (i = 0; i < MAX_CHARACTERISTICS; i++) {
 		switch (ch->c[i].type) {
-			case CT_INTEGER: G_Printf(" %4d %d\n", i, ch->c[i].value.integer); break;
-			case CT_FLOAT: G_Printf(" %4d %f\n", i, ch->c[i].value._float); break;
-			case CT_STRING: G_Printf(" %4d %s\n", i, ch->c[i].value.string); break;
-		} // end case
+			case CT_INTEGER:
+				G_Printf(" %4d %d\n", i, ch->c[i].value.integer);
+				break;
+			case CT_FLOAT:
+				G_Printf(" %4d %f\n", i, ch->c[i].value._float);
+				break;
+			case CT_STRING:
+				G_Printf(" %4d %s\n", i, ch->c[i].value.string);
+				break;
+		}
 	}
 
 	G_Printf("}\n");
@@ -282,7 +288,7 @@ qboolean BotLoadCharacterFromFile(char *charfile, int skill, bot_character_t *ch
 						} else {
 							ch->c[index].value.integer = token.intvalue;
 							ch->c[index].type = CT_INTEGER;
-						} // end else
+						}
 					} else if (token.type == TT_STRING) {
 						// ZTM: FIXME: ###I think I made this be done in the engine
 						// StripDoubleQuotes(token.string);
@@ -294,7 +300,7 @@ qboolean BotLoadCharacterFromFile(char *charfile, int skill, bot_character_t *ch
 						trap_PC_FreeSource(source);
 						BotFreeCharacterStrings(ch);
 						return qfalse;
-					} // end else
+					}
 				}
 
 				break;
@@ -319,6 +325,7 @@ qboolean BotLoadCharacterFromFile(char *charfile, int skill, bot_character_t *ch
 			return qfalse;
 		}
 	}
+
 	trap_PC_FreeSource(source);
 
 	if (!foundcharacter) {
@@ -381,7 +388,8 @@ int BotLoadCachedCharacter(char *charfile, float skill, int reload) {
 			BotAI_Print(PRT_DEVELOPER, "loaded cached skill %f from %s\n", skill, charfile);
 			return cachedhandle;
 		}
-	} // end else
+	}
+
 	intskill = (int)(skill + 0.5);
 	// try to load the character with the given skill
 	if (BotLoadCharacterFromFile(charfile, intskill, &botcharacters[handle])) {
@@ -452,6 +460,7 @@ int BotLoadCachedCharacter(char *charfile, float skill, int reload) {
 // ===========================================================================
 int BotLoadCharacterSkill(char *charfile, float skill) {
 	int ch, defaultch;
+
 	defaultch = BotLoadCachedCharacter(DEFAULT_CHARACTER, skill, qfalse);
 	ch = BotLoadCachedCharacter(charfile, skill, bot_reloadcharacters.integer);
 
@@ -758,5 +767,4 @@ void BotShutdownCharacters(void) {
 			BotFreeCharacter2(handle);
 		}
 	}
-} // end of the function BotShutdownCharacters
-
+}
