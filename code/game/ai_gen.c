@@ -22,14 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		ai_gen.c
- *
- * desc:		genetic selection
- *
- * $Archive:  / source / code / game/ai_gen.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ Genetic selection.
+**************************************************************************************************************************************/
 
 #include "g_local.h"
 #include "../botlib/botlib.h"
@@ -49,17 +44,16 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "ai_vcmd.h"
 #include "ai_dmnet.h"
 #include "ai_team.h"
-#include "chars.h"				// characteristics
-#include "inv.h"				// indexes into the inventory
-#include "syn.h"				// synonyms
-#include "match.h"				// string matching types and vars
+#include "chars.h" // characteristics
+#include "inv.h" // indexes into the inventory
+#include "syn.h" // synonyms
+#include "match.h" // string matching types and vars
 
-// ===========================================================================
-
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+GeneticSelection
+=======================================================================================================================================
+*/
 int GeneticSelection(int numranks, float *rankings) {
 	float sum;
 	int i, index;
@@ -75,36 +69,40 @@ int GeneticSelection(int numranks, float *rankings) {
 	}
 
 	if (sum > 0) {
-		// select a bot where the ones with the higest rankings have
-		// the highest chance of being selected
-		// sum *= random();
+		// select a bot where the ones with the highest rankings have the highest chance of being selected
+		//sum *= random();
 
 		for (i = 0; i < numranks; i++) {
 			if (rankings[i] < 0) {
-			continue;
-		}
+				continue;
+			}
 
 			sum -= rankings[i];
 
-			if (sum <= 0) return i;
+			if (sum <= 0) {
+				return i;
+			}
 		}
 	}
 	// select a bot randomly
 	index = random() * numranks;
 
 	for (i = 0; i < numranks; i++) {
-		if (rankings[index] >= 0) return index;
+		if (rankings[index] >= 0) {
+			return index;
+		}
+
 		index = (index + 1) % numranks;
 	}
 
 	return 0;
-} // end of the function GeneticSelection
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+GeneticParentsAndChildSelection
+=======================================================================================================================================
+*/
 int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, int *parent2, int *child) {
 	float rankings[256], max;
 	int i;
@@ -129,7 +127,7 @@ int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, in
 		return qfalse;
 	}
 
-	Com_Memcpy(rankings, ranks, sizeof(float)* numranks);
+	Com_Memcpy(rankings, ranks, sizeof(float) * numranks);
 	// select first parent
 	*parent1 = GeneticSelection(numranks, rankings);
 	rankings[*parent1] = -1;
@@ -144,7 +142,9 @@ int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, in
 			continue;
 		}
 
-		if (rankings[i] > max) max = rankings[i];
+		if (rankings[i] > max) {
+			max = rankings[i];
+		}
 	}
 
 	for (i = 0; i < numranks; i++) {
@@ -157,4 +157,4 @@ int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, in
 	// select child
 	*child = GeneticSelection(numranks, rankings);
 	return qtrue;
-} // end of the function GeneticParentsAndChildSelection
+}

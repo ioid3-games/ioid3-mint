@@ -22,14 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		ai_char.c
- *
- * desc:		bot characters
- *
- * $Archive:  / source / code / game/ai_char.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ Bot characters.
+**************************************************************************************************************************************/
 
 #include "g_local.h"
 #include "../botlib/botlib.h"
@@ -59,10 +54,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define CT_STRING	3
 
 #define DEFAULT_CHARACTER "bots/default_c.c"
-
-// interpolation requires 3 slots per - character plus 2 default character slots, and account for handle 0 being a dummy
+// interpolation requires 3 slots per-character plus 2 default character slots, and account for handle 0 being a dummy
 #define MAX_BOT_CHARACTERS (3 * MAX_CLIENTS + 2 + 1)
-
 // characteristic value
 union cvalue {
 	int integer;
@@ -74,7 +67,6 @@ typedef struct bot_characteristic_s {
 	char type;			// characteristic type
 	union cvalue value;	// characteristic value
 } bot_characteristic_t;
-
 // a bot character
 typedef struct bot_character_s {
 	char filename[MAX_QPATH];
@@ -84,12 +76,11 @@ typedef struct bot_character_s {
 
 bot_character_t botcharacters[MAX_BOT_CHARACTERS];
 
-// ========================================================================
-
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ========================================================================
+/*
+=======================================================================================================================================
+BotCharacterFromHandle
+=======================================================================================================================================
+*/
 bot_character_t *BotCharacterFromHandle(int handle) {
 
 	if (handle <= 0 || handle >= MAX_BOT_CHARACTERS) {
@@ -103,13 +94,13 @@ bot_character_t *BotCharacterFromHandle(int handle) {
 	}
 
 	return &botcharacters[handle];
-} // end of the function BotCharacterFromHandle
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+BotDumpCharacter
+=======================================================================================================================================
+*/
 void BotDumpCharacter(bot_character_t *ch) {
 	int i;
 
@@ -132,13 +123,13 @@ void BotDumpCharacter(bot_character_t *ch) {
 	}
 
 	G_Printf("}\n");
-} // end of the function BotDumpCharacter
-// ========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ========================================================================
+/*
+=======================================================================================================================================
+BotFreeCharacterStrings
+=======================================================================================================================================
+*/
 void BotFreeCharacterStrings(bot_character_t *ch) {
 #if 0 // ZTM: FIXME: No support for freeing memory
 	int i;
@@ -149,13 +140,13 @@ void BotFreeCharacterStrings(bot_character_t *ch) {
 		}
 	}
 #endif
-} // end of the function BotFreeCharacterStrings
-// ========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ========================================================================
+/*
+=======================================================================================================================================
+BotFreeCharacter2
+=======================================================================================================================================
+*/
 void BotFreeCharacter2(int handle) {
 
 	if (handle <= 0 || handle >= MAX_BOT_CHARACTERS) {
@@ -170,24 +161,27 @@ void BotFreeCharacter2(int handle) {
 
 	BotFreeCharacterStrings(&botcharacters[handle]);
 	Com_Memset(&botcharacters[handle], 0, sizeof(bot_character_t));
-} // end of the function BotFreeCharacter2
-// ========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ========================================================================
+/*
+=======================================================================================================================================
+BotFreeCharacter
+=======================================================================================================================================
+*/
 void BotFreeCharacter(int handle) {
 
-	if (!bot_reloadcharacters.integer) return;
-	BotFreeCharacter2(handle);
-} // end of the function BotFreeCharacter
-// ===========================================================================
+	if (!bot_reloadcharacters.integer) {
+		return;
+	}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+	BotFreeCharacter2(handle);
+}
+
+/*
+=======================================================================================================================================
+BotDefaultCharacteristics
+=======================================================================================================================================
+*/
 void BotDefaultCharacteristics(bot_character_t *ch, bot_character_t *defaultch) {
 	int i;
 
@@ -208,13 +202,13 @@ void BotDefaultCharacteristics(bot_character_t *ch, bot_character_t *defaultch) 
 			strcpy(ch->c[i].value.string, defaultch->c[i].value.string);
 		}
 	}
-} // end of the function BotDefaultCharacteristics
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+BotLoadCharacterFromFile
+=======================================================================================================================================
+*/
 qboolean BotLoadCharacterFromFile(char *charfile, int skill, bot_character_t *ch) {
 	int indent, index, foundcharacter;
 	int source;
@@ -250,7 +244,9 @@ qboolean BotLoadCharacterFromFile(char *charfile, int skill, bot_character_t *ch
 				ch->skill = token.intvalue;
 
 				while (PC_ExpectAnyToken(source, &token)) {
-					if (!strcmp(token.string, "}")) break;
+					if (!strcmp(token.string, "}")) {
+						break;
+					}
 
 					if (token.type != TT_NUMBER || !(token.subtype & TT_INTEGER)) {
 						PC_SourceError(source, "expected integer index, found %s", token.string);
@@ -290,8 +286,8 @@ qboolean BotLoadCharacterFromFile(char *charfile, int skill, bot_character_t *ch
 							ch->c[index].type = CT_INTEGER;
 						}
 					} else if (token.type == TT_STRING) {
-						// ZTM: FIXME: ###I think I made this be done in the engine
-						// StripDoubleQuotes(token.string);
+						// ZTM: FIXME: ### I think I made this be done in the engine
+						//StripDoubleQuotes(token.string);
 						ch->c[index].value.string = trap_HeapMalloc(strlen(token.string) + 1);
 						strcpy(ch->c[index].value.string, token.string);
 						ch->c[index].type = CT_STRING;
@@ -314,8 +310,11 @@ qboolean BotLoadCharacterFromFile(char *charfile, int skill, bot_character_t *ch
 						return qfalse;
 					}
 
-					if (!strcmp(token.string, "{")) indent++;
-					else if (!strcmp(token.string, "}")) indent--;
+					if (!strcmp(token.string, "{")) {
+						indent++;
+					} else if (!strcmp(token.string, "}")) {
+						indent--;
+					}
 				}
 			}
 		} else {
@@ -334,13 +333,13 @@ qboolean BotLoadCharacterFromFile(char *charfile, int skill, bot_character_t *ch
 	}
 
 	return qtrue;
-} // end of the function BotLoadCharacterFromFile
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+BotFindCachedCharacter
+=======================================================================================================================================
+*/
 int BotFindCachedCharacter(char *charfile, float skill) {
 	int handle;
 
@@ -355,13 +354,13 @@ int BotFindCachedCharacter(char *charfile, float skill) {
 	}
 
 	return 0;
-} // end of the function BotFindCachedCharacter
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+BotLoadCachedCharacter
+=======================================================================================================================================
+*/
 int BotLoadCachedCharacter(char *charfile, float skill, int reload) {
 	int handle, cachedhandle, intskill;
 #ifdef DEBUG
@@ -369,7 +368,6 @@ int BotLoadCachedCharacter(char *charfile, float skill, int reload) {
 
 	starttime = trap_Milliseconds();
 #endif // DEBUG
-
 	// find a free spot for a character
 	for (handle = 1; handle < MAX_BOT_CHARACTERS; handle++) {
 		if (!botcharacters[handle].skill) {
@@ -393,7 +391,6 @@ int BotLoadCachedCharacter(char *charfile, float skill, int reload) {
 	intskill = (int)(skill + 0.5);
 	// try to load the character with the given skill
 	if (BotLoadCharacterFromFile(charfile, intskill, &botcharacters[handle])) {
-		// 
 		BotAI_Print(PRT_DEVELOPER, "loaded skill %d from %s\n", intskill, charfile);
 #ifdef DEBUG
 		BotAI_Print(PRT_DEVELOPER, "skill %d loaded in %d msec from %s\n", intskill, trap_Milliseconds() - starttime, charfile);
@@ -451,13 +448,13 @@ int BotLoadCachedCharacter(char *charfile, float skill, int reload) {
 	BotAI_Print(PRT_WARNING, "couldn't load any skill from %s\n", charfile);
 	// couldn't load any character
 	return 0;
-} // end of the function BotLoadCachedCharacter
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+BotLoadCharacterSkill
+=======================================================================================================================================
+*/
 int BotLoadCharacterSkill(char *charfile, float skill) {
 	int ch, defaultch;
 
@@ -469,13 +466,13 @@ int BotLoadCharacterSkill(char *charfile, float skill) {
 	}
 
 	return ch;
-} // end of the function BotLoadCharacterSkill
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+BotInterpolateCharacters
+=======================================================================================================================================
+*/
 int BotInterpolateCharacters(int handle1, int handle2, float desiredskill) {
 	bot_character_t *ch1, *ch2, *out;
 	int i, handle;
@@ -484,8 +481,9 @@ int BotInterpolateCharacters(int handle1, int handle2, float desiredskill) {
 	ch1 = BotCharacterFromHandle(handle1);
 	ch2 = BotCharacterFromHandle(handle2);
 
-	if (!ch1 || !ch2)
+	if (!ch1 || !ch2) {
 		return 0;
+	}
 	// find a free spot for a character
 	for (handle = 1; handle < MAX_BOT_CHARACTERS; handle++) {
 		if (!botcharacters[handle].skill) {
@@ -499,6 +497,7 @@ int BotInterpolateCharacters(int handle1, int handle2, float desiredskill) {
 
 	out = &botcharacters[handle];
 	out->skill = desiredskill;
+
 	strcpy(out->filename, ch1->filename);
 
 	scale = (float)(desiredskill - ch1->skill) / (ch2->skill - ch1->skill);
@@ -518,13 +517,13 @@ int BotInterpolateCharacters(int handle1, int handle2, float desiredskill) {
 	}
 
 	return handle;
-} // end of the function BotInterpolateCharacters
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+BotLoadCharacter
+=======================================================================================================================================
+*/
 int BotLoadCharacter(char *charfile, float skill) {
 	int firstskill, secondskill, handle;
 
@@ -550,35 +549,47 @@ int BotLoadCharacter(char *charfile, float skill) {
 		// load skill 1 and 4
 		firstskill = BotLoadCharacterSkill(charfile, 1);
 
-		if (!firstskill) return 0;
+		if (!firstskill) {
+			return 0;
+		}
+
 		secondskill = BotLoadCharacterSkill(charfile, 4);
 
-		if (!secondskill) return firstskill;
+		if (!secondskill) {
+			return firstskill;
+		}
 	} else {
 		// load skill 4 and 5
 		firstskill = BotLoadCharacterSkill(charfile, 4);
 
-		if (!firstskill) return 0;
+		if (!firstskill) {
+			return 0;
+		}
+
 		secondskill = BotLoadCharacterSkill(charfile, 5);
 
-		if (!secondskill) return firstskill;
+		if (!secondskill) {
+			return firstskill;
+		}
 	}
 	// interpolate between the two skills
 	handle = BotInterpolateCharacters(firstskill, secondskill, skill);
 
-	if (!handle) return 0;
+	if (!handle) {
+		return 0;
+	}
 #if 0 // ZTM: FIXME: add new bot logfile for game to write to?
 	// write the character to the log file
 	BotDumpCharacter(&botcharacters[handle]);
 #endif
 	return handle;
-} // end of the function BotLoadCharacter
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+CheckCharacteristicIndex
+=======================================================================================================================================
+*/
 int CheckCharacteristicIndex(int character, int index) {
 	bot_character_t *ch;
 
@@ -599,13 +610,13 @@ int CheckCharacteristicIndex(int character, int index) {
 	}
 
 	return qtrue;
-} // end of the function CheckCharacteristicIndex
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+Characteristic_Float
+=======================================================================================================================================
+*/
 float Characteristic_Float(int character, int index) {
 	bot_character_t *ch;
 
@@ -629,14 +640,14 @@ float Characteristic_Float(int character, int index) {
 		BotAI_Print(PRT_ERROR, "characteristic %d is not a float\n", index);
 		return 0;
 	}
-// return 0;
-} // end of the function Characteristic_Float
-// ===========================================================================
+//	return 0;
+}
 
-// Parameter:				 - 
-// Returns:					 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+Characteristic_BFloat
+=======================================================================================================================================
+*/
 float Characteristic_BFloat(int character, int index, float min, float max) {
 	float value;
 	bot_character_t *ch;
@@ -663,13 +674,13 @@ float Characteristic_BFloat(int character, int index, float min, float max) {
 	}
 
 	return value;
-} // end of the function Characteristic_BFloat
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+Characteristic_Integer
+=======================================================================================================================================
+*/
 int Characteristic_Integer(int character, int index) {
 	bot_character_t *ch;
 
@@ -692,14 +703,14 @@ int Characteristic_Integer(int character, int index) {
 		BotAI_Print(PRT_ERROR, "characteristic %d is not an integer\n", index);
 		return 0;
 	}
-// return 0;
-} // end of the function Characteristic_Integer
-// ===========================================================================
+//	return 0;
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+Characteristic_BInteger
+=======================================================================================================================================
+*/
 int Characteristic_BInteger(int character, int index, int min, int max) {
 	int value;
 	bot_character_t *ch;
@@ -726,13 +737,13 @@ int Characteristic_BInteger(int character, int index, int min, int max) {
 	}
 
 	return value;
-} // end of the function Characteristic_BInteger
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+Characteristic_String
+=======================================================================================================================================
+*/
 void Characteristic_String(int character, int index, char *buf, int size) {
 	bot_character_t *ch;
 
@@ -752,13 +763,13 @@ void Characteristic_String(int character, int index, char *buf, int size) {
 	} else {
 		BotAI_Print(PRT_ERROR, "characteristic %d is not a string\n", index);
 	}
-} // end of the function Characteristic_String
-// ===========================================================================
+}
 
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+BotShutdownCharacters
+=======================================================================================================================================
+*/
 void BotShutdownCharacters(void) {
 	int handle;
 
