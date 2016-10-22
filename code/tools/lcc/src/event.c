@@ -16,13 +16,11 @@ void attach(Apply func, void *cl, List *list) {
 	*list = append(p, *list);
 }
 void apply(List event, void *arg1, void *arg2) {
-
 	if (event) {
 		List lp = event;
-
 		do {
 			struct entry *p = lp->x;
-			(*p->func) (p->cl, arg1, arg2);
+			(*p->func)(p->cl, arg1, arg2);
 			lp = lp->link;
 		} while (lp != event);
 	}

@@ -4,7 +4,7 @@
 /* iburg.c: */
 extern void *alloc(int nbytes);
 
-typedef enum {TERM = 1, NONTERM} Kind;
+typedef enum { TERM=1, NONTERM } Kind;
 typedef struct rule *Rule;
 typedef struct term *Term;
 struct term {		/* terminals: */
@@ -21,10 +21,10 @@ struct nonterm {	/* nonterminals: */
 	char *name;		/* nonterminal name */
 	Kind kind;		/* NONTERM */
 	int number;		/* identifying number */
-	int lhscount;		/* #times nt appears in a rule lhs */
+	int lhscount;		/* # times nt appears in a rule lhs */
 	int reached;		/* 1 iff reached from start nonterminal */
-	Rule rules;		/* rules w / nonterminal on lhs */
-	Rule chain;		/* chain rules w / nonterminal on rhs */
+	Rule rules;		/* rules w/nonterminal on lhs */
+	Rule chain;		/* chain rules w/nonterminal on rhs */
 	Nonterm link;		/* next terminal in number order */
 };
 extern Nonterm nonterm(char *id);

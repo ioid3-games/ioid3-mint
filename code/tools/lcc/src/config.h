@@ -1,47 +1,50 @@
 typedef struct {
 	unsigned char max_unaligned_load;
-	Symbol(*rmap)(int);
+	Symbol (*rmap)(int);
 
 	void (*blkfetch)(int size, int off, int reg, int tmp);
 	void (*blkstore)(int size, int off, int reg, int tmp);
-	void (*blkloop)(int dreg, int doff, int sreg, int soff, int size, int tmps[]);
-	void (*_label) (Node);
-	int (*_rule) (void *, int);
+	void (*blkloop)(int dreg, int doff,
+	                 int sreg, int soff,
+	                 int size, int tmps[]);
+	void (*_label)(Node);
+	int (*_rule)(void*, int);
 	short **_nts;
-	void (*_kids) (Node, int, Node *);
+	void (*_kids)(Node, int, Node*);
 	char **_string;
 	char **_templates;
 	char *_isinstruction;
 	char **_ntname;
-	void (*emit2) (Node);
-	void (*doarg) (Node);
-	void (*target) (Node);
-	void (*clobber) (Node);
+	void (*emit2)(Node);
+	void (*doarg)(Node);
+	void (*target)(Node);
+	void (*clobber)(Node);
 } Xinterface;
-extern int askregvar(Symbol, Symbol);
-extern void blkcopy(int, int, int, int, int, int[]);
-extern int getregnum(Node);
-extern int mayrecalc(Node);
-extern int mkactual(int, int);
-extern void mkauto(Symbol);
-extern Symbol mkreg(char *, int, int, int);
-extern Symbol mkwildcard(Symbol *);
-extern int move(Node);
-extern int notarget(Node);
-extern void parseflags(int, char **);
-extern int range(Node, int, int);
+extern int     askregvar(Symbol, Symbol);
+extern void    blkcopy(int, int, int, int, int, int[]);
+extern int     getregnum(Node);
+extern int     mayrecalc(Node);
+extern int     mkactual(int, int);
+extern void    mkauto(Symbol);
+extern Symbol  mkreg(char *, int, int, int);
+extern Symbol  mkwildcard(Symbol *);
+extern int     move(Node);
+extern int     notarget(Node);
+extern void    parseflags(int, char **);
+extern int     range(Node, int, int);
 extern unsigned regloc(Symbol);  /* omit */
-extern void rtarget(Node, int, Symbol);
-extern void setreg(Node, Symbol);
-extern void spill(unsigned, int, Node);
-extern int widens(Node);
-extern int argoffset, maxargoffset;
-extern int bflag, dflag;
-extern int dalign, salign;
-extern int framesize;
+extern void    rtarget(Node, int, Symbol);
+extern void    setreg(Node, Symbol);
+extern void    spill(unsigned, int, Node);
+extern int     widens(Node);
+
+extern int      argoffset, maxargoffset;
+extern int      bflag, dflag;
+extern int      dalign, salign;
+extern int      framesize;
 extern unsigned freemask[], usedmask[];
-extern int offset, maxoffset;
-extern int swap;
+extern int      offset, maxoffset;
+extern int      swap;
 extern unsigned tmask[], vmask[];
 typedef struct {
 	unsigned listed:1;
@@ -64,7 +67,7 @@ typedef struct {
 	short number;
 	unsigned mask;
 } *Regnode;
-enum {IREG = 0, FREG = 1};
+enum { IREG=0, FREG=1 };
 typedef struct {
 	char *name;
 	unsigned int eaddr;  /* omit */
@@ -74,7 +77,7 @@ typedef struct {
 	Regnode regnode;
 	Symbol *wildcard;
 } Xsymbol;
-enum {RX = 2};
+enum { RX=2 };
 typedef struct {
 	int offset;
 	unsigned freemask[2];
@@ -82,16 +85,18 @@ typedef struct {
 
 #define LBURG_MAX SHRT_MAX
 
-enum {VREG = (44 << 4)};
+enum { VREG=(44<<4) };
 
 /* Exported for the front end */
-extern void blockbeg(Env *);
-extern void blockend(Env *);
-extern void emit(Node);
-extern Node gen(Node);
-extern unsigned  emitbin(Node, int);
+extern void             blockbeg(Env *);
+extern void             blockend(Env *);
+extern void             emit(Node);
+extern Node             gen(Node);
+
+extern unsigned         emitbin(Node, int);
+
 #ifdef NDEBUG
 #define debug(x) (void)0
 #else
-#define debug(x) (void) (dflag&& ((x), 0))
+#define debug(x) (void)(dflag&&((x),0))
 #endif

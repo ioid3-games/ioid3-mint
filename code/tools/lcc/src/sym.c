@@ -15,12 +15,15 @@ struct table {
 };
 #define HASHSIZE NELEMS(((Table)0)->buckets)
 static struct table
-	cns = {CONSTANTS}, ext = {GLOBAL}, ids = {GLOBAL}, tys = {GLOBAL};
-Table constants = &cns;
-Table externals = &ext;
+	cns = { CONSTANTS },
+	ext = { GLOBAL },
+	ids = { GLOBAL },
+	tys = { GLOBAL };
+Table constants   = &cns;
+Table externals   = &ext;
 Table identifiers = &ids;
-Table globals = &ids;
-Table types = &tys;
+Table globals     = &ids;
+Table types       = &tys;
 Table labels;
 int level = GLOBAL;
 static int tempid;
@@ -32,66 +35,54 @@ Table table(Table tp, int level) {
 	NEW0(new, FUNC);
 	new->previous = tp;
 	new->level = level;
-
 	if (tp)
 		new->all = tp->all;
 	return new;
 }
-void foreach(Table tp, int lev, void (*apply) (Symbol, void *), void *cl) {
+void foreach(Table tp, int lev, void (*apply)(Symbol, void *), void *cl) {
 	assert(tp);
-
 	while (tp && tp->level > lev)
 		tp = tp->previous;
-
 	if (tp && tp->level == lev) {
 		Symbol p;
 		Coordinate sav;
 		sav = src;
-
 		for (p = tp->all; p && p->scope == lev; p = p->up) {
 			src = p->src;
-			(*apply) (p, cl);
+			(*apply)(p, cl);
 		}
-
 		src = sav;
 	}
 }
 void enterscope(void) {
-
 	if (++level == LOCAL)
 		tempid = 0;
 }
 void exitscope(void) {
 	rmtypes(level);
-
 	if (types->level == level)
 		types = types->previous;
-
 	if (identifiers->level == level) {
 		if (Aflag >= 2) {
 			int n = 0;
 			Symbol p;
-
 			for (p = identifiers->all; p && p->scope == level; p = p->up)
 				if (++n > 127) {
 					warning("more than 127 identifiers declared in a block\n");
 					break;
 				}
 		}
-
 		identifiers = identifiers->previous;
 	}
-
 	assert(level >= GLOBAL);
 	--level;
 }
 Symbol install(const char *name, Table *tpp, int level, int arena) {
 	Table tp = *tpp;
 	struct entry *p;
-	unsigned h = (unsigned long)name& (HASHSIZE - 1);
+	unsigned h = (unsigned long)name&(HASHSIZE-1);
 
 	assert(level == 0 || level >= tp->level);
-
 	if (level > 0 && tp->level < level)
 		tp = *tpp = table(tp, level);
 	NEW0(p, arena);
@@ -106,13 +97,11 @@ Symbol install(const char *name, Table *tpp, int level, int arena) {
 Symbol relocate(const char *name, Table src, Table dst) {
 	struct entry *p, **q;
 	Symbol *r;
-	unsigned h = (unsigned long)name& (HASHSIZE - 1);
+	unsigned h = (unsigned long)name&(HASHSIZE-1);
 
-	for (q = &src->buckets[h]; *q; q = & (*q)->link)
-		if (name == (*q)->sym.name) {
+	for (q = &src->buckets[h]; *q; q = &(*q)->link)
+		if (name == (*q)->sym.name)
 			break;
-		}
-
 	assert(*q);
 	/*
 	 Remove the entry from src's hash chain
@@ -120,15 +109,14 @@ Symbol relocate(const char *name, Table src, Table dst) {
 	*/
 	p = *q;
 	*q = (*q)->link;
-
-	for (r = &src->all; *r && *r != &p->sym; r = & (*r)->up)
+	for (r = &src->all; *r && *r != &p->sym; r = &(*r)->up)
 		;
 	assert(*r == &p->sym);
 	*r = p->sym.up;
 	/*
 	 Insert the entry into dst's hash chain
 	  and into its list of all symbols.
-	  Return the symbol - table entry.
+	  Return the symbol-table entry.
 	*/
 	p->link = dst->buckets[h];
 	dst->buckets[h] = p;
@@ -138,15 +126,13 @@ Symbol relocate(const char *name, Table src, Table dst) {
 }
 Symbol lookup(const char *name, Table tp) {
 	struct entry *p;
-	unsigned h = (unsigned long)name& (HASHSIZE - 1);
+	unsigned h = (unsigned long)name&(HASHSIZE-1);
 
 	assert(tp);
-
 	do
 		for (p = tp->buckets[h]; p; p = p->link)
 			if (name == p->sym.name)
 				return &p->sym;
-
 	while ((tp = tp->previous) != NULL);
 	return NULL;
 }
@@ -158,7 +144,7 @@ int genlabel(int n) {
 }
 Symbol findlabel(int lab) {
 	struct entry *p;
-	unsigned h = lab& (HASHSIZE - 1);
+	unsigned h = lab&(HASHSIZE-1);
 
 	for (p = labels->buckets[h]; p; p = p->link)
 		if (lab == p->sym.u.l.label)
@@ -172,15 +158,14 @@ Symbol findlabel(int lab) {
 	labels->buckets[h] = p;
 	p->sym.generated = 1;
 	p->sym.u.l.label = lab;
-	(*IR->defsymbol) (&p->sym);
+	(*IR->defsymbol)(&p->sym);
 	return &p->sym;
 }
 Symbol constant(Type ty, Value v) {
 	struct entry *p;
-	unsigned h = v.u& (HASHSIZE - 1);
+	unsigned h = v.u&(HASHSIZE-1);
 
 	ty = unqual(ty);
-
 	for (p = constants->buckets[h]; p; p = p->link)
 		if (eqtype(ty, p->sym.type, 1))
 			switch (ty->op) {
@@ -192,7 +177,6 @@ Symbol constant(Type ty, Value v) {
 			case POINTER:  if (equalp(p)) return &p->sym; break;
 			default: assert(0);
 			}
-
 	NEW0(p, PERM);
 	p->sym.name = vtoa(ty, v);
 	p->sym.scope = CONSTANTS;
@@ -203,9 +187,8 @@ Symbol constant(Type ty, Value v) {
 	p->sym.up = constants->all;
 	constants->all = &p->sym;
 	constants->buckets[h] = p;
-
 	if (ty->u.sym && !ty->u.sym->addressed)
-		(*IR->defsymbol) (&p->sym);
+		(*IR->defsymbol)(&p->sym);
 	p->sym.defined = 1;
 	return &p->sym;
 }
@@ -224,9 +207,8 @@ Symbol genident(int scls, Type ty, int lev) {
 	p->sclass = scls;
 	p->type = ty;
 	p->generated = 1;
-
 	if (lev == GLOBAL)
-		(*IR->defsymbol) (p);
+		(*IR->defsymbol)(p);
 	return p;
 }
 
@@ -245,7 +227,7 @@ Symbol temporary(int scls, Type ty) {
 Symbol newtemp(int sclass, int tc, int size) {
 	Symbol p = temporary(sclass, btot(tc, size));
 
-	(*IR->local) (p);
+	(*IR->local)(p);
 	p->defined = 1;
 	return p;
 }
@@ -255,7 +237,7 @@ Symbol allsymbols(Table tp) {
 }
 
 void locus(Table tp, Coordinate *cp) {
-	loci = append(cp, loci);
+	loci    = append(cp, loci);
 	symbols = append(allsymbols(tp), symbols);
 }
 
@@ -273,13 +255,11 @@ Symbol findtype(Type ty) {
 	struct entry *p;
 
 	assert(tp);
-
 	do
 		for (i = 0; i < HASHSIZE; i++)
 			for (p = tp->buckets[i]; p; p = p->link)
 				if (p->sym.type == ty && p->sym.sclass == TYPEDEF)
 					return &p->sym;
-
 	while ((tp = tp->previous) != NULL);
 	return NULL;
 }
@@ -291,27 +271,25 @@ Symbol mkstr(char *str) {
 
 	v.p = str;
 	p = constant(array(chartype, strlen(v.p) + 1, 0), v);
-
 	if (p->u.c.loc == NULL)
 		p->u.c.loc = genident(STATIC, p->type, GLOBAL);
 	return p;
 }
 
-/* mksymbol - make a symbol for name, install in &globals if sclass == EXTERN */
+/* mksymbol - make a symbol for name, install in &globals if sclass==EXTERN */
 Symbol mksymbol(int sclass, const char *name, Type ty) {
 	Symbol p;
 
 	if (sclass == EXTERN)
 		p = install(string(name), &globals, GLOBAL, PERM);
-	} else {
+	else {
 		NEW0(p, PERM);
 		p->name = string(name);
 		p->scope = GLOBAL;
 	}
-
 	p->sclass = sclass;
 	p->type = ty;
-	(*IR->defsymbol) (p);
+	(*IR->defsymbol)(p);
 	p->defined = 1;
 	return p;
 }
@@ -320,18 +298,17 @@ Symbol mksymbol(int sclass, const char *name, Type ty) {
 char *vtoa(Type ty, Value v) {
 
 	ty = unqual(ty);
-
 	switch (ty->op) {
 	case INT:      return stringd(v.i);
 	case UNSIGNED: return stringf((v.u&~0x7FFF) ? "0x%X" : "%U", v.u);
 	case FLOAT:    return stringf("%g", (double)v.d);
 	case ARRAY:
-		if (ty->type == chartype || ty->type == signedchar || ty->type == unsignedchar)
+		if (ty->type == chartype || ty->type == signedchar
+		||  ty->type == unsignedchar)
 			return v.p;
 		return stringf("%p", v.p);
 	case POINTER:  return stringf("%p", v.p);
 	case FUNCTION: return stringf("%p", v.g);
 	}
-
 	assert(0); return NULL;
 }

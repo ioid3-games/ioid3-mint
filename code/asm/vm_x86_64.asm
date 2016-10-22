@@ -35,10 +35,10 @@ qvmcall64 PROC
   push rsi							; push non-volatile registers to stack
   push rdi
   push rbx
-; need to save pointer in rcx so we can write back the programData value to caller
+  ; need to save pointer in rcx so we can write back the programData value to caller
   push rcx
 
-; registers r8 and r9 have correct value already thanx to __fastcall
+  ; registers r8 and r9 have correct value already thanx to __fastcall
   xor rbx, rbx						; opStackOfs starts out being 0
   mov rdi, rdx						; opStack
   mov esi, dword ptr [rcx]			; programStack
