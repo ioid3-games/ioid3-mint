@@ -189,7 +189,7 @@ int c_tinyportals;
 void AddPortalToNodes(portal_t *p, node_t *front, node_t *back) {
 
 	if (p->nodes[0] || p->nodes[1])
-		Error("AddPortalToNode: allready included");
+		Error("AddPortalToNode: already included");
 
 	p->nodes[0] = front;
 	p->next[0] = front->portals;
@@ -932,7 +932,7 @@ void FloodAreas_r(node_t *node) {
 		// this node is part of an area portal
 		b = node->brushlist;
 		e = &entities[b->original->entitynum];
-		// if the current area has allready touched this
+		// if the current area has already touched this
 		// portal, we are done
 		if (e->portalareas[0] == c_areas || e->portalareas[1] == c_areas)
 			return;
@@ -953,7 +953,7 @@ void FloodAreas_r(node_t *node) {
 	if (node->area) {
 		return;
 	}
-		// allready got it
+		// already got it
 	node->area = c_areas;
 
 	for (p = node->portals; p; p = p->next[s]) {
@@ -988,7 +988,7 @@ void FindAreas_r(node_t *node) {
 	if (node->area) {
 		return;
 	}
-		// allready got it
+		// already got it
 
 	if (node->contents & CONTENTS_SOLID) {
 		return;
@@ -1028,7 +1028,7 @@ void SetAreaPortalAreas_r(node_t *node) {
 
 	if (node->contents == CONTENTS_AREAPORTAL) {
 		if (node->area)
-			return;		// allready set
+			return;		// already set
 
 		b = node->brushlist;
 		e = &entities[b->original->entitynum];

@@ -302,7 +302,7 @@ void AddBrushBevels(mapbrush_t *b) {
 
 	for (axis = 0; axis < 3; axis++) {
 		for (dir = -1; dir <= 1; dir += 2, order++) {
-			// see if the plane is allready present
+			// see if the plane is already present
 			for (i = 0, s = b->original_sides; i < b->numsides; i++, s++) {
 				if (mapplanes[s->planenum].normal[axis] == dir) {
 					break;
@@ -383,7 +383,7 @@ void AddBrushBevels(mapbrush_t *b) {
 					// if all the points on all the sides are
 					// behind this plane, it is a proper edge bevel
 					for (k = 0; k < b->numsides; k++) {
-						// if this plane has allready been used, skip it
+						// if this plane has already been used, skip it
 						if (PlaneEqual(&mapplanes[b->original_sides[k].planenum]
 							, normal, dist))
 							break;
