@@ -117,6 +117,7 @@ vmCvar_t ui_server14;
 vmCvar_t ui_server15;
 vmCvar_t ui_server16;
 vmCvar_t ui_ioq3;
+
 static cvarTable_t cvarTable[] = {
 	{&ui_ffa_fraglimit, "ui_ffa_fraglimit", "20", CVAR_ARCHIVE},
 	{&ui_ffa_timelimit, "ui_ffa_timelimit", "0", CVAR_ARCHIVE},

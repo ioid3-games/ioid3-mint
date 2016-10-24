@@ -141,8 +141,8 @@ static const char *sortkey_items[] = {
 };
 
 static char *netnames[] = {
-	"??? ",
-	"UDP ",
+	"???",
+	"UDP",
 	"UDP6",
 	NULL
 };

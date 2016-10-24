@@ -338,6 +338,7 @@ void QDECL Com_Error(int code, const char *fmt, ...) {
 		VM_Forced_Unload_Done();
 		// make sure we can get at our local stuff
 		FS_PureServerSetLoadedPaks("", "");
+
 		com_errorEntered = qfalse;
 		longjmp(abortframe, -1);
 	} else if (code == ERR_DROP) {
@@ -3284,7 +3285,7 @@ Writes key bindings and archived cvars to config file if modified.
 */
 void Com_WriteConfiguration(void) {
 
-	// if we are quiting without fully initializing, make sure we don't write out anything
+	// if we are quitting without fully initializing, make sure we don't write out anything
 	if (!com_fullyInitialized) {
 		return;
 	}
