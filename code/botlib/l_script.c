@@ -39,7 +39,10 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "l_memory.h"
 #include "l_script.h"
 
-typedef enum {qfalse, qtrue} qboolean;
+typedef enum {
+	qfalse,
+	qtrue
+} qboolean;
 #endif // SCREWUP
 #ifdef BOTLIB
 // include files for usage in the bot library
