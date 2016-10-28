@@ -34,6 +34,7 @@ UI_SetBestScores
 =======================================================================================================================================
 */
 void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
+
 	trap_Cvar_Set("ui_scoreAccuracy", va("%i%%", newInfo->accuracy));
 	trap_Cvar_SetValue("ui_scoreImpressives", newInfo->impressives);
 	trap_Cvar_SetValue("ui_scoreExcellents", newInfo->excellents);
