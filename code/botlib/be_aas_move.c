@@ -865,7 +865,7 @@ int AAS_PlayerMovementPrediction(struct aas_clientmove_s *move, int entnum, vec3
 				if (!step) {
 					// velocity left to test for this frame is the projection of the current test velocity into the hit plane
 					VectorMA(left_test_vel, -DotProduct(left_test_vel, plane->normal), plane->normal, left_test_vel);
-					// if this is the same plane we hit before, nudge velocity out along it, which fixes some epsilon issues with non - axial planes
+					// if this is the same plane we hit before, nudge velocity out along it, which fixes some epsilon issues with non-axial planes
 					if (lplane && DotProduct(lplane->normal, plane->normal) > 0.99) {
 						VectorAdd(plane->normal, left_test_vel, left_test_vel);
 					}
@@ -1105,7 +1105,7 @@ void AAS_TestMovementPrediction(int entnum, vec3_t origin, vec3_t dir, int conte
 	cmdmove[2] = 224;
 
 	AAS_ClearShownDebugLines();
-	AAS_PredictPlayerMovement(&move, entnum, origin, PRESENCE_NORMAL, qtrue, velocity, cmdmove, 13, 13, 0.1f, SE_HITGROUND, 0, qtrue, contentmask); // SE_LEAVEGROUND);
+	AAS_PredictPlayerMovement(&move, entnum, origin, PRESENCE_NORMAL, qtrue, velocity, cmdmove, 13, 13, 0.1f, SE_HITGROUND, 0, qtrue, contentmask); // SE_LEAVEGROUND
 
 	if (move.stopevent & SE_LEAVEGROUND) {
 		botimport.Print(PRT_MESSAGE, "leave ground\n");
