@@ -2634,7 +2634,7 @@ int AAS_Reachability_Ladder(int area1num, int area2num) {
 			start[2] += 5;
 			end[2] -= 100;
 			// trace without entity collision
-			trace = AAS_TracePlayerBBox(start, end, PRESENCE_NORMAL, -1, BOTMASK_SOLID); 
+			trace = AAS_TracePlayerBBox(start, end, PRESENCE_NORMAL, -1, BOTMASK_SOLID);
 #ifdef REACH_DEBUG
 			if (trace.startsolid) {
 				Log_Write("trace from area %d started in solid\r\n", area1num);
@@ -4171,19 +4171,10 @@ void AAS_SetWeaponJumpAreaFlags(void) {
 			continue;
 		}
 
-		if (
-			!strcmp(classname, "item_armor_body") ||
-			!strcmp(classname, "item_armor_combat") ||
-			!strcmp(classname, "item_health_mega") ||
-			!strcmp(classname, "weapon_grenadelauncher") ||
-			!strcmp(classname, "weapon_rocketlauncher") ||
-			!strcmp(classname, "weapon_lightning") ||
-			!strcmp(classname, "weapon_plasmagun") ||
-			!strcmp(classname, "weapon_railgun") ||
-			!strcmp(classname, "weapon_bfg") ||
-			!strcmp(classname, "item_quad") ||
-			!strcmp(classname, "item_regen") ||
-			!strcmp(classname, "item_invulnerability")) {
+		if (!strcmp(classname, "item_health_mega") || !strcmp(classname, "item_armor_body") || !strcmp(classname, "item_armor_combat") ||
+			!strcmp(classname, "weapon_grenadelauncher") || !strcmp(classname, "weapon_rocketlauncher") || !strcmp(classname, "weapon_lightning") ||
+			!strcmp(classname, "weapon_plasmagun") || !strcmp(classname, "weapon_railgun") || !strcmp(classname, "weapon_bfg") ||
+			!strcmp(classname, "item_quad") || !strcmp(classname, "item_regen") || !strcmp(classname, "item_invulnerability")) {
 			if (AAS_VectorForBSPEpairKey(ent, "origin", origin)) {
 				spawnflags = 0;
 				AAS_IntForBSPEpairKey(ent, "spawnflags", &spawnflags);

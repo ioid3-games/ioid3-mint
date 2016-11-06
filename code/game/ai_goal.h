@@ -22,35 +22,28 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		ai_goal.h
- *
- * desc:		goal AI
- *
- * $Archive:  / source / code / game/ai_goal.h $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ Goal AI.
+**************************************************************************************************************************************/
 
-#define MAX_AVOIDGOALS			256
-#define MAX_GOALSTACK			8
+#define MAX_AVOIDGOALS 256
+#define MAX_GOALSTACK 8
 
-#define GFL_NONE				0
-#define GFL_ITEM				1
-#define GFL_ROAM				2
-#define GFL_DROPPED				4
-#define GFL_AIR					8
-
+#define GFL_NONE	0
+#define GFL_ITEM	1
+#define GFL_ROAM	2
+#define GFL_DROPPED	4
+#define GFL_AIR		8
 // a bot goal
 typedef struct bot_goal_s {
-	vec3_t origin;				// origin of the goal
-	int areanum;				// area number of the goal
-	vec3_t mins, maxs;			// mins and maxs of the goal
-	int entitynum;				// number of the goal entity
-	int number;					// goal number
-	int flags;					// goal flags
-	int iteminfo;				// item information
+	vec3_t origin;		// origin of the goal
+	int areanum;		// area number of the goal
+	vec3_t mins, maxs;	// mins and maxs of the goal
+	int entitynum;		// number of the goal entity
+	int number;			// goal number
+	int flags;			// goal flags
+	int iteminfo;		// item information
 } bot_goal_t;
-
 // goal state
 typedef struct bot_goalstate_s {
 	struct weightconfig_s *itemweightconfig;	// weight config
@@ -62,7 +55,6 @@ typedef struct bot_goalstate_s {
 	int avoidgoals[MAX_AVOIDGOALS];				// goals to avoid
 	float avoidgoaltimes[MAX_AVOIDGOALS];		// times to avoid the goals
 } bot_goalstate_t;
-
 // reset the whole goal state, but keep the item weights
 void BotResetGoalState(int goalstate);
 // reset avoid goals
@@ -109,7 +101,7 @@ float BotAvoidGoalTime(int goalstate, int number);
 void BotSetAvoidGoalTime(int goalstate, int number, float avoidtime);
 // initializes the items in the level
 void BotInitLevelItems(void);
-// regularly update dynamic entity items(dropped weapons, flags etc.)
+// regularly update dynamic entity items (dropped weapons, flags etc.)
 void BotUpdateEntityItems(void);
 // interbreed the goal fuzzy logic
 void BotInterbreedGoalFuzzyLogic(int parent1, int parent2, int child);

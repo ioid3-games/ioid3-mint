@@ -922,13 +922,12 @@ int BotGetNextCampSpotGoal(int num, bot_goal_t *goal) {
 
 	return 0;
 }
-
+#if 0
 /*
 =======================================================================================================================================
 BotFindEntityForLevelItem
 =======================================================================================================================================
 */
-#if 0
 void BotFindEntityForLevelItem(levelitem_t *li) {
 	int ent, modelindex;
 	itemconfig_t *ic;

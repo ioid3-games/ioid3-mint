@@ -22,31 +22,24 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		ai_chat_sys.h
- *
- * desc:		char AI
- *
- * $Archive:  / source / code / game/ai_chat_sys.h $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ Char AI.
+**************************************************************************************************************************************/
 
-#define MAX_MESSAGE_SIZE		256
-#define MAX_CHATTYPE_NAME		32
-#define MAX_MATCHVARIABLES		8
+#define MAX_MESSAGE_SIZE 256
+#define MAX_CHATTYPE_NAME 32
+#define MAX_MATCHVARIABLES 8
 
-#define CHAT_GENDERLESS			0
-#define CHAT_GENDERFEMALE		1
-#define CHAT_GENDERMALE			2
+#define CHAT_GENDERLESS		0
+#define CHAT_GENDERFEMALE	1
+#define CHAT_GENDERMALE		2
 
-#define CHAT_ALL					0
-#define CHAT_TEAM					1
-#define CHAT_TELL					2
-
+#define CHAT_ALL	0
+#define CHAT_TEAM	1
+#define CHAT_TELL	2
 // console message types
-#define CMS_NORMAL				0
-#define CMS_CHAT				1
-
+#define CMS_NORMAL	0
+#define CMS_CHAT	1
 // a console message
 typedef struct bot_consolemessage_s {
 	int handle;
@@ -55,7 +48,6 @@ typedef struct bot_consolemessage_s {
 	char message[MAX_MESSAGE_SIZE];				// message
 	struct bot_consolemessage_s *prev, *next;	// prev and next in list
 } bot_consolemessage_t;
-
 // match variable
 typedef struct bot_matchvariable_s {
 	char offset;
@@ -68,7 +60,6 @@ typedef struct bot_match_s {
 	int subtype;
 	bot_matchvariable_t variables[MAX_MATCHVARIABLES];
 } bot_match_t;
-
 // setup the chat AI
 int BotSetupChatAI(void);
 // shutdown the chat AI
@@ -97,7 +88,7 @@ int BotChatLength(int chatstate);
 void BotEnterChat(int chatstate, int playerto, int sendto);
 // get the chat message ready to be output
 void BotGetChatMessage(int chatstate, char *buf, int size);
-// checks if the first string contains the second one, returns index into first string or - 1 if not found
+// checks if the first string contains the second one, returns index into first string or -1 if not found
 int StringContains(char *str1, char *str2, int casesensitive);
 // finds a match for the given string using the match templates
 int BotFindMatch(char *str, bot_match_t *match, unsigned long int context);
