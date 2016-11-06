@@ -216,7 +216,7 @@ typedef struct searchpath_s {
 static char fs_gamedir[MAX_OSPATH]; // this will be a single file name with no separators
 static cvar_t *fs_debug;
 static cvar_t *fs_homepath;
-#ifdef MACOS_X
+#ifdef __APPLE__
 // Also search the .app bundle for .pk3 files
 static cvar_t *fs_apppath;
 #endif
@@ -264,8 +264,8 @@ static int fs_numServerReferencedPaks;
 static int fs_serverReferencedPaks[MAX_SEARCH_PATHS]; // checksums
 static char *fs_serverReferencedPakNames[MAX_SEARCH_PATHS]; // pk3 names
 // last valid game folder used
-char lastValidBase[MAX_OSPATH] = {0};
-char lastValidGame[MAX_OSPATH] = {0};
+char lastValidBase[MAX_OSPATH];
+char lastValidGame[MAX_OSPATH];
 #ifdef FS_MISSING
 FILE *missingFiles = NULL;
 #endif

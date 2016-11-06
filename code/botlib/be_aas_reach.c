@@ -2516,14 +2516,14 @@ int AAS_Reachability_Ladder(int area1num, int area2num) {
 		VectorMA(area1point, -32, dir, area1point);
 		VectorMA(area2point, 32, dir, area2point);
 
-		ladderface1vertical = abs(DotProduct(plane1->normal, up)) < 0.1;
-		ladderface2vertical = abs(DotProduct(plane2->normal, up)) < 0.1;
+		ladderface1vertical = fabsf(DotProduct(plane1->normal, up)) < 0.1;
+		ladderface2vertical = fabsf(DotProduct(plane2->normal, up)) < 0.1;
 		// there's only reachability between vertical ladder faces
 		if (!ladderface1vertical && !ladderface2vertical) {
 			return qfalse;
 		}
 		// if both vertical ladder faces, and the ladder faces do not make a sharp corner, and the shared edge is not too vertical
-		if (ladderface1vertical && ladderface2vertical && DotProduct(plane1->normal, plane2->normal) > 0.7 && abs(DotProduct(sharededgevec, up)) < 0.7) {
+		if (ladderface1vertical && ladderface2vertical && DotProduct(plane1->normal, plane2->normal) > 0.7 && fabsf(DotProduct(sharededgevec, up)) < 0.7) {
 			// create a new reachability link
 			lreach = AAS_AllocReachability();
 
@@ -2651,7 +2651,7 @@ int AAS_Reachability_Ladder(int area1num, int area2num) {
 				if (face2->faceflags & FACE_LADDER) {
 					plane2 = &aasworld.planes[face2->planenum];
 
-					if (abs(DotProduct(plane2->normal, up)) < 0.1) {
+					if (fabsf(DotProduct(plane2->normal, up)) < 0.1) {
 						break;
 					}
 				}

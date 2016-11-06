@@ -57,7 +57,7 @@ char *Sys_DefaultHomePath(void) {
 	if (!*homePath && com_homepath != NULL) {
 		if ((p = getenv("HOME")) != NULL) {
 			Com_sprintf(homePath, sizeof(homePath), "%s%c", p, PATH_SEP);
-#ifdef MACOS_X
+#ifdef __APPLE__
 			Q_strcat(homePath, sizeof(homePath), "Library/Application Support/");
 
 			if (com_homepath->string[0]) {
@@ -89,7 +89,7 @@ char *Sys_SteamPath(void) {
 	char *p;
 
 	if ((p = getenv("HOME")) != NULL) {
-#ifdef MACOS_X
+#ifdef __APPLE__
 		char *steamPathEnd = "/Library/Application Support/Steam/SteamApps/common/" STEAMPATH_NAME;
 #else
 		char *steamPathEnd = "/.steam/steam/SteamApps/common/" STEAMPATH_NAME;
@@ -608,7 +608,7 @@ void Sys_ErrorDialog(const char *error) {
 
 	close(f);
 }
-#ifndef MACOS_X
+#ifndef __APPLE__
 static char execBuffer[1024];
 static char *execBufferPointer;
 static char *execArgv[16];

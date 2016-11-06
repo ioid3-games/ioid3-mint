@@ -997,7 +997,7 @@ char *Sys_Cwd(void);
 void Sys_SetDefaultInstallPath(const char *path);
 char *Sys_DefaultInstallPath(void);
 char *Sys_SteamPath(void);
-#ifdef MACOS_X
+#ifdef __APPLE__
 char *Sys_DefaultAppPath(void);
 #endif
 void Sys_SetDefaultHomePath(const char *path);

@@ -143,8 +143,6 @@ void MSG_Copy(msg_t *buf, byte *data, int length, msg_t *src) {
 =======================================================================================================================================
 */
 
-int overflows;
-
 /*
 =======================================================================================================================================
 MSG_WriteBits
@@ -154,7 +152,7 @@ Negative bit values include signs.
 */
 void MSG_WriteBits(msg_t *msg, int value, int bits) {
 	int i;
-//	FILE *fp;
+
 	// this isn't an exact overflow check, but close enough
 	if (msg->maxsize - msg->cursize < 4) {
 		msg->overflowed = qtrue;
@@ -163,22 +161,6 @@ void MSG_WriteBits(msg_t *msg, int value, int bits) {
 
 	if (bits == 0 || bits < -31 || bits > 32) {
 		Com_Error(ERR_DROP, "MSG_WriteBits: bad bits %i", bits);
-	}
-	// check for overflows
-	if (bits != 32) {
-		if (bits > 0) {
-			if (value > ((1 << bits) - 1) || value < 0) {
-				overflows++;
-			}
-		} else {
-			int r;
-
-			r = 1 << (bits - 1);
-
-			if (value > r - 1 || value < -r) {
-				overflows++;
-			}
-		}
 	}
 
 	if (bits < 0) {

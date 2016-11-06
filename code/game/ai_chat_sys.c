@@ -633,7 +633,7 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename) {
 	bot_synonymlist_t *synlist, *lastsyn, *syn;
 	bot_synonym_t *synonym, *lastsynonym;
 
-	if (!*filename)
+	if (!*filename) {
 		return NULL;
 	}
 

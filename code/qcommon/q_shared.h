@@ -28,7 +28,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #ifndef __Q_SHARED_H
 #define __Q_SHARED_H
-
+#ifndef PRODUCT_DATE
+#define PRODUCT_DATE __DATE__
+#endif
 #ifdef _MSC_VER
 #pragma warning(disable : 4018) // signed/unsigned mismatch
 #pragma warning(disable : 4032)
