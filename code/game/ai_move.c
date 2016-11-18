@@ -1449,7 +1449,7 @@ int BotWalkInDirection(bot_movestate_t *ms, vec3_t dir, float speed, int type) {
 			return qfalse;
 		}
 		// don't fall in gaps
-		if (move.stopevent & SE_GAP {
+		if (move.stopevent & SE_GAP) {
 			// BotAI_Print(PRT_MESSAGE, "player %d: predicted frame %d of %d, there is a gap\n", ms->playernum, move.frames, maxframes);
 			return qfalse;
 		}
@@ -2323,7 +2323,6 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t *ms, aas_reachability_t *rea
 	int modelnum;
 	bot_moveresult_t_cleared(result);
 
-
 	modelnum = reach->facenum & 0x0000FFFF;
 
 	if (!BotBSPModelMinsMaxsOrigin(modelnum, NULL, NULL, NULL, NULL)) {
@@ -2498,7 +2497,6 @@ bot_moveresult_t BotFinishTravel_Elevator(bot_movestate_t *ms, aas_reachability_
 	vec3_t bottomcenter, bottomdir, topdir;
 	bot_moveresult_t_cleared(result);
 
-
 	if (!MoverBottomCenter(reach, bottomcenter)) {
 		return result;
 	}
@@ -2586,7 +2584,6 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t *ms, aas_reachability_t *
 	vec3_t dir, dir1, dir2, hordir, bottomcenter, bob_start, bob_end, bob_origin;
 	float dist, dist1, dist2, speed;
 	bot_moveresult_t_cleared(result);
-
 
 	if (!BotFuncBobStartEnd(reach, bob_start, bob_end, bob_origin)) {
 		// stop using this reachability
@@ -2767,7 +2764,6 @@ bot_moveresult_t BotFinishTravel_FuncBobbing(bot_movestate_t *ms, aas_reachabili
 	vec3_t bob_origin, bob_start, bob_end, dir, hordir, bottomcenter;
 	bot_moveresult_t_cleared(result);
 	float dist, speed;
-
 
 	if (!BotFuncBobStartEnd(reach, bob_start, bob_end, bob_origin)) {
 		return result;
@@ -3030,7 +3026,7 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t *ms, aas_reachability_t *r
 	float dist, speed;
 	bot_moveresult_t_cleared(result);
 
-	// BotAI_Print(PRT_MESSAGE, "BotTravel_RocketJump: bah\n");
+	//BotAI_Print(PRT_MESSAGE, "BotTravel_RocketJump: bah\n");
 
 	hordir[0] = reach->start[0] - ms->origin[0];
 	hordir[1] = reach->start[1] - ms->origin[1];
