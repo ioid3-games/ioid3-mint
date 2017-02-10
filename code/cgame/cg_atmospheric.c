@@ -665,7 +665,7 @@ static void CG_SnowParticleRender(cg_atmosphericParticle_t *particle) {
 	len *= dist;
 
 	VectorCopy(particle->deltaNormalized, forward);
-	VectorMA(start, -(len /* * sinTumbling*/), forward, finish);
+	VectorMA(start, -(len /** sinTumbling*/), forward, finish);
 
 	line[0] = DotProduct(forward, cg.refdef.viewaxis[1]);
 	line[1] = DotProduct(forward, cg.refdef.viewaxis[2]);
@@ -674,7 +674,7 @@ static void CG_SnowParticleRender(cg_atmosphericParticle_t *particle) {
 	VectorMA(right, -line[0], cg.refdef.viewaxis[2], right);
 	VectorNormalize(right);
 
-	particleWidth = dist * (/*cosTumbling * */ particle->weight);
+	particleWidth = dist * (/*cosTumbling **/ particle->weight);
 
 	VectorMA(finish, -particleWidth, right, verts[0].xyz);
 	verts[0].st[0] = 0;
@@ -716,7 +716,7 @@ static void CG_EffectGust(void) {
 	// Generate random values for the next gust
 	int diff;
 
-	cg_atmFx.baseEndTime = cg.time + cg_atmFx.baseMinTime + (rand() %(cg_atmFx.baseMaxTime - cg_atmFx.baseMinTime));
+	cg_atmFx.baseEndTime = cg.time + cg_atmFx.baseMinTime + (rand()%(cg_atmFx.baseMaxTime - cg_atmFx.baseMinTime));
 	diff = cg_atmFx.changeMaxTime - cg_atmFx.changeMinTime;
 	cg_atmFx.gustStartTime = cg_atmFx.baseEndTime + cg_atmFx.changeMinTime + (diff ? (rand() % diff) : 0);
 	diff = cg_atmFx.gustMaxTime - cg_atmFx.gustMinTime;

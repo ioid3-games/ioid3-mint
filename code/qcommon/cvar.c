@@ -1444,7 +1444,7 @@ char *Cvar_InfoString(int bit) {
 
 	for (var = cvar_vars; var; var = var->next) {
 		if (var->name && (var->flags & bit)) {
-			// If extra local client userinfo, remove "#"(2, 3, or 4) from the beginning of each var.
+			// if extra local client userinfo, remove "#"(2, 3, or 4) from the beginning of each var.
 			if ((bit & (CVAR_USERINFO2|CVAR_USERINFO3|CVAR_USERINFO4)) && isdigit(var->name[0])) {
 				Info_SetValueForKey(info, &var->name[1], var->string);
 			} else {
@@ -1471,7 +1471,7 @@ char *Cvar_InfoString_Big(int bit) {
 
 	for (var = cvar_vars; var; var = var->next) {
 		if (var->name && (var->flags & bit)) {
-			// If extra local client userinfo, remove "#"(2, 3, or 4) from the beginning of each var.
+			// if extra local client userinfo, remove "#"(2, 3, or 4) from the beginning of each var.
 			if ((bit & (CVAR_USERINFO2|CVAR_USERINFO3|CVAR_USERINFO4)) && isdigit(var->name[0])) {
 				Info_SetValueForKey_Big(info, &var->name[1], var->string);
 			} else {

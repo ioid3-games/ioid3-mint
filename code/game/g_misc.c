@@ -68,7 +68,7 @@ Nonlinear checkbox gives inverse square falloff instead of linear
 Angle adds light:surface angle calculations (only valid for "Linear" lights)
 Lights pointed at a target will be spotlights.
 "radius" overrides the default 64 unit radius of a spotlight at the target point.
-"fade" falloff/radius adjustment value. multiply the run of the slope by "fade" (1.0f default)(only valid for "Linear" lights)
+"fade" falloff/radius adjustment value. multiply the run of the slope by "fade" (1.0f default) (only valid for "Linear" lights)
 */
 void SP_lightJunior(gentity_t *self) {
 	G_FreeEntity(self);
@@ -180,6 +180,7 @@ md3 placed in the game at runtime (rather than in the bsp)
 void SP_misc_gamemodel(gentity_t *ent) {
 	G_FreeEntity(ent);
 }
+
 /*
 =======================================================================================================================================
 SP_props_skyportal
@@ -190,12 +191,21 @@ Loaded by CGame.
 void SP_props_skyportal(gentity_t *ent) {
 	G_FreeEntity(ent);
 }
+
 /*
 =======================================================================================================================================
-locateMaster
+
+	VIS_DUMMY
+
 =======================================================================================================================================
 */
-void locateMaster(gentity_t *ent) {
+
+/*
+=======================================================================================================================================
+LocateMaster
+=======================================================================================================================================
+*/
+void LocateMaster(gentity_t *ent) {
 
 	ent->target_ent = G_PickTarget(ent->target);
 
@@ -226,7 +236,7 @@ void SP_misc_vis_dummy(gentity_t *ent) {
 
 	trap_LinkEntity(ent);
 
-	ent->think = locateMaster;
+	ent->think = LocateMaster;
 	ent->nextthink = level.time + 1000;
 }
 
@@ -263,7 +273,7 @@ void SP_misc_vis_dummy_multiple(gentity_t *ent) {
 LocateCamera
 =======================================================================================================================================
 */
-void locateCamera(gentity_t *ent) {
+void LocateCamera(gentity_t *ent) {
 	vec3_t dir;
 	gentity_t *target;
 	gentity_t *owner;
@@ -324,7 +334,7 @@ void SP_misc_portal_surface(gentity_t *ent) {
 	if (!ent->target) {
 		VectorCopy(ent->s.origin, ent->s.origin2);
 	} else {
-		ent->think = locateCamera;
+		ent->think = LocateCamera;
 		ent->nextthink = level.time + 100;
 	}
 }

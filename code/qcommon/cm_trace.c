@@ -649,8 +649,7 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 		}
 	} else {
 		// compare the trace against all planes of the brush
-		// find the latest time the trace crosses a plane towards the interior
-		// and the earliest time the trace crosses a plane towards the exterior
+		// find the latest time the trace crosses a plane towards the interior and the earliest time the trace crosses a plane towards the exterior
 		for (i = 0; i < brush->numsides; i++) {
 			side = brush->sides + i;
 			plane = side->plane;

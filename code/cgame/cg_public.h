@@ -22,65 +22,69 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
+/**************************************************************************************************************************************
+
+	Allow a lot of command backups for very fast systems. Multiple commands may be combined into a single packet, so this needs to be
+	larger than PACKET_BACKUP.
+
+**************************************************************************************************************************************/
+
 #ifndef __CG_PUBLIC_H__
 #define __CG_PUBLIC_H__
 
 #define CG_API_NAME "SPEARMINT_CGAME"
-
 // major 0 means each minor is an API break.
 // major > 0 means each major is an API break and each minor extends API.
 #define CG_API_MAJOR_VERSION 0
 #define CG_API_MINOR_VERSION 37
 
-
 #define CMD_BACKUP 64
 #define CMD_MASK (CMD_BACKUP - 1)
-// allow a lot of command backups for very fast systems
-// multiple commands may be combined into a single packet, so this
-// needs to be larger than PACKET_BACKUP
 
+/**************************************************************************************************************************************
 
-// snapshots are a view of the server at a given time
+	Snapshots are a view of the server at a given time.
 
-// Snapshots are generated at regular time intervals by the server,
-// but they may not be sent if a client's rate level is exceeded, or
-// they may be dropped by the network.
+	Snapshots are generated at regular time intervals by the server, but they may not be sent if a client's rate level is exceeded, or
+	they may be dropped by the network.
+
+**************************************************************************************************************************************/
+
 typedef struct {
-	int snapFlags;			// SNAPFLAG_RATE_DELAYED, etc
+	int snapFlags;				// SNAPFLAG_RATE_DELAYED, etc
 	int ping;
-	int serverTime;		// server time the message is valid for (in msec)
-
-	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES];		// portalarea visibility bits
+	int serverTime;				// server time the message is valid for (in msec)
+	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES]; // portalarea visibility bits
 	int playerNums[MAX_SPLITVIEW];
 	int numServerCommands;		// text based server commands to execute when this
 	int serverCommandSequence;	// snapshot becomes current
 	int numEntities;
 } vmSnapshot_t;
 #ifdef CGAME
-#define MAX_ENTITIES_IN_SNAPSHOT	256 * MAX_SPLITVIEW
+#define MAX_ENTITIES_IN_SNAPSHOT 256 * MAX_SPLITVIEW
 
 typedef struct {
-	// Must exactly match vmSnapshot_t
-	int snapFlags;			// SNAPFLAG_RATE_DELAYED, etc
+	// must exactly match vmSnapshot_t
+	int snapFlags;						// SNAPFLAG_RATE_DELAYED, etc
 	int ping;
-	int serverTime;		// server time the message is valid for (in msec)
-
-	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES];		// portalarea visibility bits
+	int serverTime;						// server time the message is valid for (in msec)
+	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES]; // portalarea visibility bits
 	int playerNums[MAX_SPLITVIEW];
-	int numServerCommands;		// text based server commands to execute when this
-	int serverCommandSequence;	// snapshot becomes current
+	int numServerCommands;				// text based server commands to execute when this
+	int serverCommandSequence;			// snapshot becomes current
 	int numEntities;
 	// CGame specific data
-	entityState_t entities[MAX_ENTITIES_IN_SNAPSHOT]; // all of the entities that need to be presented
-											// at the time of this snapshot
-
+	entityState_t entities[MAX_ENTITIES_IN_SNAPSHOT]; // all of the entities that need to be presented at the time of this snapshot
 	playerState_t pss[MAX_SPLITVIEW];		// complete information about the current players at this time
-
 } snapshot_t;
 #endif
 
 typedef enum {
-	UIMENU_NONE, UIMENU_MAIN, UIMENU_INGAME, UIMENU_TEAM, UIMENU_POSTGAME
+	UIMENU_NONE,
+	UIMENU_MAIN,
+	UIMENU_INGAME,
+	UIMENU_TEAM,
+	UIMENU_POSTGAME
 } uiMenuCommand_t;
 
 typedef struct {
@@ -90,7 +94,7 @@ typedef struct {
 	char updateInfoString[MAX_STRING_CHARS];
 	char messageString[MAX_STRING_CHARS];
 } uiClientState_t;
-// Used by LAN_CompareServers
+// used by LAN_CompareServers
 #define SORT_HOST		0
 #define SORT_MAP		1
 #define SORT_CLIENTS	2
@@ -144,16 +148,15 @@ typedef struct {
 } joyevent_t;
 
 /*
-==================================================================
+=======================================================================================================================================
 
-functions imported from the main executable
+	Functions imported from the main executable.
 
-also see qvmTraps_t in qcommon.h for QVM - specific system calls
 =======================================================================================================================================
 */
 
 typedef enum {
-	// ============== general Quake services ==================
+	//============== general Quake services ==================
 	CG_PRINT = 0,
 	CG_ERROR,
 	CG_MILLISECONDS,
@@ -196,7 +199,7 @@ typedef enum {
 	CG_HEAP_MALLOC, // (int size);
 	CG_HEAP_AVAILABLE, // (void);
 	CG_HEAP_FREE, // (void *data);
-	// =========== client game specific functionality =============
+	//=========== client game specific functionality =============
 	CG_GETCLIPBOARDDATA = 100,
 	CG_GETGLCONFIG,
 	CG_MEMORY_REMAINING,

@@ -1,31 +1,25 @@
 /*
 =======================================================================================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2005 Stuart Dalton(badcdev@gmail.com)
+Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com).
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, 
-or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License. If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -513,8 +507,7 @@ static sfxHandle_t S_AL_RegisterSound(const char *sample, qboolean compressed) {
 S_AL_SoundDuration
 =======================================================================================================================================
 */
-static
-int S_AL_SoundDuration(sfxHandle_t sfx) {
+static int S_AL_SoundDuration(sfxHandle_t sfx) {
 
 	if (sfx < 0 || sfx >= numSfx) {
 		Com_Printf(S_COLOR_RED "ERROR: S_AL_SoundDuration: handle %i out of range\n", sfx);
@@ -961,7 +954,7 @@ static srcHandle_t S_AL_SrcAlloc(alSrcPriority_t priority, int entnum, int chann
 				weakest = i;
 			}
 		}
-		// The channel system is not actually adhered to by baseq3, and not
+		// the channel system is not actually adhered to by baseq3, and not
 		// implemented in snd_dma.c, so while the following is strictly correct, it
 		// causes incorrect behaviour versus defacto baseq3
 #if 0
@@ -1113,7 +1106,7 @@ static void S_AL_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle
 	if (origin) {
 		if (S_AL_CheckInput(0, sfx)) {
 			return;
-	}
+		}
 
 		VectorCopy(origin, sorigin);
 	} else {
@@ -1494,7 +1487,7 @@ S_AL_AllocateStreamChannel
 static void S_AL_AllocateStreamChannel(int stream, int entityNum) {
 	srcHandle_t cursrc;
 	ALuint alsrc;
-   
+
 	if ((stream < 0) || (stream >= MAX_RAW_STREAMS)) {
 		return;
 	}
@@ -1763,7 +1756,7 @@ static void S_AL_StreamUpdate(int stream) {
 	}
 
 	if (stream < MAX_STREAMING_SOUNDS) {
-		// Set the gain property
+		// set the gain property
 		srcHandle_t cursrc = streamSourceHandles[stream];
 		float gain = s_alGain->value * s_musicVolume->value * streamVolume[stream];
 

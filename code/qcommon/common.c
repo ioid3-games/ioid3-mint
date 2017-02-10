@@ -58,7 +58,7 @@ static fileHandle_t pipefile;
 static fileHandle_t logfile;
 fileHandle_t com_journalFile; // events are written here
 fileHandle_t com_journalDataFile; // config files are written here
-// Structure containing functions exported from refresh DLL
+// structure containing functions exported from refresh DLL
 refexport_t re;
 
 cvar_t *com_fs_pure;
@@ -3753,7 +3753,7 @@ void Field_CompleteCommand(char *cmd, qboolean doCommands, qboolean doCvars) {
 	} else
 		completionString = Cmd_Argv(completionArgument - 1);
 #ifndef DEDICATED
-	// Add a '\' to the start of the buffer if it might be sent as chat otherwise
+	// add a '\' to the start of the buffer if it might be sent as chat otherwise
 	if (con_autochat->integer && completionField->buffer[0] && completionField->buffer[0] != '\\') {
 		if (completionField->buffer[0] != '/') {
 			// Buffer is full, refuse to complete

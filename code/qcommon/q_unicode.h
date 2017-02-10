@@ -50,5 +50,4 @@ qboolean Q_Unicode_IsAlphaOrIdeoOrDigit(int ch);
 
 int Q_Unicode_ToUpper(int ch);
 int Q_Unicode_ToLower(int ch);
-
-#endif /* Q_UNICODE_H_ */
+#endif // Q_UNICODE_H_

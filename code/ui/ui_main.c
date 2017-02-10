@@ -1990,7 +1990,6 @@ static void UI_DrawServerRefreshDate(rectDef_t *rect, float scale, vec4_t color,
 }
 
 #define MOTD_PIXELS_PER_SECOND 30.0f
-
 /*
 =======================================================================================================================================
 UI_DrawServerMOTD
@@ -2477,8 +2476,10 @@ static qboolean UI_ClanName_HandleKey(int flags, float *special, int key) {
 		}
 
 		trap_Cvar_Set("ui_teamName", uiInfo.teamList[i].teamName);
+
 		UI_HeadCountByTeam();
 		UI_FeederSelection(FEEDER_HEADS, 0);
+
 		updateModel = qtrue;
 		return qtrue;
 	}
@@ -2522,6 +2523,7 @@ static qboolean UI_GameType_HandleKey(int flags, float *special, int key, qboole
 		}
 
 		trap_Cvar_SetValue("ui_gameType", ui_gameType.integer);
+
 		UI_SetCapFragLimits(qtrue);
 		UI_LoadBestScores(uiInfo.mapList[ui_currentMap.integer].mapLoadName, uiInfo.gameTypes[ui_gameType.integer].gtEnum);
 
@@ -2556,6 +2558,7 @@ static qboolean UI_NetGameType_HandleKey(int flags, float *special, int key) {
 		trap_Cvar_SetValue("ui_netGameType", ui_netGameType.integer);
 		trap_Cvar_SetValue("ui_actualnetGameType", uiInfo.gameTypes[ui_netGameType.integer].gtEnum);
 		trap_Cvar_SetValue("ui_currentNetMap", 0);
+
 		UI_MapCountByGameType(qfalse);
 		Menu_SetFeederSelection(NULL, FEEDER_ALLMAPS, 0, NULL);
 		return qtrue;
@@ -2582,6 +2585,7 @@ static qboolean UI_JoinGameType_HandleKey(int flags, float *special, int key) {
 		}
 
 		trap_Cvar_SetValue("ui_joinGameType", ui_joinGameType.integer);
+
 		UI_BuildServerDisplayList(qtrue);
 		return qtrue;
 	}
@@ -5779,7 +5783,7 @@ void UI_SetActiveMenu(uiMenuCommand_t menu) {
 
 	Init_Display(&uiInfo.uiDC);
 	// this should be the ONLY way the menu system is brought up
-	// enusure minumum menu data is cached
+	// enusure minimum menu data is cached
 	if (Menu_Count() <= 0) {
 		return;
 	}

@@ -1318,7 +1318,7 @@ static void CG_RunLerpFrame(playerInfo_t *pi, lerpFrame_t *lf, int newAnimation,
 		}
 
 		f = (lf->frameTime - lf->animationTime) / anim->frameLerp;
-		f *= speedScale; // adjust for haste, etc
+		f *= speedScale; // adjust for haste, etc.
 
 		numFrames = anim->numFrames;
 
@@ -2109,6 +2109,7 @@ static void CG_PlayerFloatSprite(vec3_t origin, int rf, qhandle_t shader) {
 	memset(&ent, 0, sizeof(ent));
 
 	VectorCopy(origin, ent.origin);
+
 	ent.reType = RT_SPRITE;
 	ent.customShader = shader;
 	ent.radius = 10;

@@ -66,6 +66,7 @@ sharedPlayerState_t *SV_SnapshotPlayer(clientSnapshot_t *snap, int num) {
 	8	localPlayerIndex and playerNum for each of MAX_SPLITVIEW
 	<playerstates>
 	<packetentities>
+
 =======================================================================================================================================
 */
 

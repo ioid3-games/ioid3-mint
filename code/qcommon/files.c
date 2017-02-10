@@ -563,7 +563,6 @@ FS_Remove
 int FS_Remove(const char *osPath) {
 
 	FS_CheckFilenameIsMutable(osPath, __func__);
-
 	return remove(osPath) != -1;
 }
 
@@ -575,7 +574,6 @@ FS_HomeRemove
 int FS_HomeRemove(const char *homePath) {
 
 	FS_CheckFilenameIsMutable(homePath, __func__);
-
 	return remove(FS_BuildOSPath(fs_homepath->string, fs_gamedir, homePath)) != -1;
 }
 
@@ -1214,8 +1212,8 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 				// case and separator insensitive comparisons
 				if (!FS_FilenameCompare(pakFile->name, filename)) {
 					// found it!
-					// Mark the pak as having been referenced shaders, txt, arena files by themselves do not count as a reference as 
-					// these are loaded from all pk3s from every pk3 file.. 
+					// Mark the pak as having been referenced 
+					// Shaders, txt, arena files by themselves do not count as a reference as these are loaded from all pk3s from every pk3 file.
 					len = strlen(filename);
 
 					if (!pak->referenced) {
@@ -2754,6 +2752,7 @@ void FS_GetModDescription(const char *modDir, char *description, int description
 	FILE *file;
 
 	Com_sprintf(descPath, sizeof(descPath), "%s/description.txt", modDir);
+
 	nDescLen = FS_SV_FOpenFileRead(descPath, &descHandle);
 
 	if (nDescLen > 0 && descHandle) {
@@ -3353,7 +3352,7 @@ qboolean FS_ComparePaks(char *neededpaks, int len, qboolean dlstring) {
 	if (!fs_numServerReferencedPaks) {
 		return qfalse; // Server didn't send any pack information along
 	}
-	
+
 	*neededpaks = 0;
 
 	for (i = 0; i < fs_numServerReferencedPaks; i++) {
@@ -3854,14 +3853,12 @@ struct {
 	{750524939u,  "baseq3", "pak6"},
 	{2842227859u, "baseq3", "pak7"},
 	{3662040954u, "baseq3", "pak8"},
-
 	// team arena
 	{1185930068u, "tademo", "pak0"},
 	{946490770u, "missionpack", "pak0"},
 	{1414087181u,"missionpack", "pak1"},
 	{409244605u, "missionpack", "pak2"},
 	{648653547u, "missionpack", "pak3"},
-
 	// rtcw
 	{1731729369u, "demomain", "pak0"},
 	{1787286276u, "main", "pak0"},
@@ -3875,7 +3872,6 @@ struct {
 	{1078227215u, "main", "sp_pak2"},
 	{2334312393u, "main", "sp_pak3"},
 	{1078227215u, "main", "sp_pak4"},
-
 	// et
 	{1627565872u, "etmain", "pak0"},
 	{1587932567u,"etmain", "pak1"},

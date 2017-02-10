@@ -39,9 +39,9 @@ CG_SetScreenPlacement
 =======================================================================================================================================
 */
 void CG_SetScreenPlacement(screenPlacement_e hpos, screenPlacement_e vpos) {
+
 	cg_lastHorizontalPlacement = cg_horizontalPlacement;
 	cg_lastVerticalPlacement = cg_verticalPlacement;
-
 	cg_horizontalPlacement = hpos;
 	cg_verticalPlacement = vpos;
 }
@@ -52,6 +52,7 @@ CG_PopScreenPlacement
 =======================================================================================================================================
 */
 void CG_PopScreenPlacement(void) {
+
 	cg_horizontalPlacement = cg_lastHorizontalPlacement;
 	cg_verticalPlacement = cg_lastVerticalPlacement;
 }
@@ -544,12 +545,12 @@ void CG_DrawStringDirect(int x, int y, const char *str, int style, const vec4_t 
 				break;
 		}
 	}
-	// This function expects that y is top of line, text_paint expects at baseline
+	// this function expects that y is top of line, text_paint expects at baseline
 	decent = -font->glyphs[(int)'g'].top + font->glyphs[(int)'g'].height;
 	y = y + charh - decent * scale * font->glyphScale;
 
 	if (decent != 0) {
-		// Make TrueType fonts line up with bigchars bitmap font which has 2 transparent pixels above glyphs at 16 point font size
+		// make TrueType fonts line up with bigchars bitmap font which has 2 transparent pixels above glyphs at 16 point font size
 		y += 2.0f * charh / 16.0f;
 	}
 
@@ -757,6 +758,14 @@ int CG_DrawStringLineHeight(int style) {
 
 /*
 =======================================================================================================================================
+
+	COMMON UI FUNCTIONS
+
+=======================================================================================================================================
+*/
+
+/*
+=======================================================================================================================================
 CG_TileClearBox
 
 This repeats a 64 * 64 tile graphic to fill the screen around a sized down refresh window.
@@ -909,7 +918,6 @@ CG_ColorForHealth
 =======================================================================================================================================
 */
 void CG_ColorForHealth(vec4_t hcolor) {
-
 	CG_GetColorForHealth(cg.cur_ps->stats[STAT_HEALTH], cg.cur_ps->stats[STAT_ARMOR], hcolor);
 }
 
@@ -940,7 +948,6 @@ void CG_KeysStringForBinding(const char *binding, char *string, int stringSize) 
 	if (keys[1] != -1) {
 		trap_Key_KeynumToStringBuf(keys[1], name2, 32);
 		Q_strupr(name2);
-
 		Q_strcat(string, stringSize, " or ");
 		Q_strcat(string, stringSize, name2);
 	}

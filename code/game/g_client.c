@@ -28,6 +28,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "g_local.h"
 
+#define MAX_SPAWN_POINTS 128
+
 static vec3_t playerMins = {-15, -15, -24};
 static vec3_t playerMaxs = {15, 15, 32};
 
@@ -112,7 +114,6 @@ SelectNearestDeathmatchSpawnPoint
 Find the spot that we DON'T want to use.
 =======================================================================================================================================
 */
-#define MAX_SPAWN_POINTS 128
 gentity_t *SelectNearestDeathmatchSpawnPoint(vec3_t from) {
 	gentity_t *spot;
 	vec3_t delta;
@@ -143,7 +144,6 @@ SelectRandomDeathmatchSpawnPoint
 Go to a random point that doesn't telefrag.
 =======================================================================================================================================
 */
-#define MAX_SPAWN_POINTS 128
 gentity_t *SelectRandomDeathmatchSpawnPoint(qboolean isbot) {
 	gentity_t *spot;
 	int count;
@@ -377,7 +377,6 @@ The body ques are never actually freed, they are just unlinked.
 void BodyQueFree(gentity_t *ent) {
 
 	trap_UnlinkEntity(ent);
-
 	ent->physicsObject = qfalse;
 }
 
@@ -408,7 +407,7 @@ void CopyToBodyQue(gentity_t *ent) {
 	level.bodyQueIndex = (level.bodyQueIndex + 1) % BODY_QUEUE_SIZE;
 
 	body->s = ent->s;
-	body->s.eFlags = EF_DEAD; // clear EF_TALK, etc
+	body->s.eFlags = EF_DEAD; // clear EF_TALK, etc.
 #ifdef MISSIONPACK
 	if (ent->s.eFlags & EF_KAMIKAZE) {
 		body->s.eFlags |= EF_KAMIKAZE;
@@ -470,7 +469,6 @@ void CopyToBodyQue(gentity_t *ent) {
 
 	VectorCopy(ent->s.mins, body->s.mins);
 	VectorCopy(ent->s.maxs, body->s.maxs);
-
 	VectorCopy(ent->r.absmin, body->r.absmin);
 	VectorCopy(ent->r.absmax, body->r.absmax);
 
@@ -1166,7 +1164,6 @@ void PlayerSpawn(gentity_t *ent) {
 PlayerDisconnect
 
 Called when a player drops from the server. Will not be called between levels.
-
 This should NOT be called directly by any game logic, call trap_DropPlayer(), which will call this and do server system housekeeping.
 =======================================================================================================================================
 */

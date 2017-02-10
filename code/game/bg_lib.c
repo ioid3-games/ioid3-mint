@@ -2420,7 +2420,7 @@ int sscanf(const char *buffer, const char *fmt, ...) {
 				*(va_arg(ap, unsigned int *)) = _hextoi(&buffer);
 				break;
 			case 's':
-				{
+			{
 				char *s = va_arg(ap, char *);
 
 				while (isspace(*buffer)) {

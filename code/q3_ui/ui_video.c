@@ -288,12 +288,18 @@ static InitialVideoOptions_s s_ivo;
 static graphicsoptions_t s_graphicsoptions;
 
 static InitialVideoOptions_s s_ivo_templates[] = {
-	{6, qtrue, 3, 0, 2, 3, 5, 2, qtrue}, // very high
-	{6, qtrue, 3, 0, 2, 2, 2, 1, qtrue}, // high // Note: If r_availableModes is found, mode is changed to - 2.
-	{6, qtrue, 3, 0, 2, 2, 1, 0, qtrue}, // normal
-	{4, qtrue, 2, 0, 0, 1, 0, 0, qfalse}, // fast
-	{3, qtrue, 1, 1, 0, 0, 0, 0, qfalse}, // fastest
-	{3, qtrue, 1, 0, 0, 1, 0, 0, qfalse} // custom
+	// very high
+	{6, qtrue, 3, 0, 2, 3, 5, 2, qtrue}, // Note: If r_availableModes is found, mode is changed to -2.
+	// high
+	{6, qtrue, 3, 0, 2, 2, 2, 1, qtrue},
+	// normal
+	{6, qtrue, 3, 0, 2, 2, 1, 0, qtrue},
+	// fast
+	{4, qtrue, 2, 0, 0, 1, 0, 0, qfalse},
+	// fastest
+	{3, qtrue, 1, 1, 0, 0, 0, 0, qfalse},
+	// custom
+	{3, qtrue, 1, 0, 0, 1, 0, 0, qfalse}
 };
 
 #define NUM_IVO_TEMPLATES (ARRAY_LEN(s_ivo_templates))
@@ -347,7 +353,7 @@ static int GraphicsOptions_FindBuiltinResolution(int mode) {
 	if (!resolutionsDetected) {
 		return mode;
 	}
-	// Display resolution
+	// display resolution
 	if (mode == 0) {
 		return -2;
 	}
@@ -376,7 +382,7 @@ static int GraphicsOptions_FindDetectedResolution(int mode) {
 	if (!resolutionsDetected) {
 		return mode;
 	}
-	// Display resolution
+	// display resolution
 	if (mode == -2) {
 		return 0;
 	}
@@ -496,11 +502,11 @@ static void GraphicsOptions_GetResolutions(void) {
 		unsigned int i = 0;
 		static char displayRes[64];
 
-		// Add display resolution video mode
+		// add display resolution video mode
 		Com_sprintf(displayRes, sizeof(displayRes), "Auto (%dx%d)", cgs.glconfig.displayWidth, cgs.glconfig.displayHeight);
 
 		detectedResolutions[i++] = displayRes;
-		// Use display resolution in "Very High Quality" template
+		// use display resolution in "Very High Quality" template
 		s_ivo_templates[0].mode = -2;
 
 		while (s && i < ARRAY_LEN(detectedResolutions) - 1) {
@@ -534,9 +540,9 @@ static void GraphicsOptions_CheckConfig(void) {
 			continue;
 		}
 
-// 		if (s_ivo_templates[i].fullscreen != s_graphicsoptions.fs.curvalue) {
-// 			continue;
-// 		}
+//		if (s_ivo_templates[i].fullscreen != s_graphicsoptions.fs.curvalue) {
+//			continue;
+//		}
 
 		if (s_ivo_templates[i].tq != s_graphicsoptions.tq.curvalue) {
 			continue;

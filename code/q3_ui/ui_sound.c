@@ -55,10 +55,10 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define DEFAULT_SDL_SND_SPEED 48000
 
 static const char *quality_items[] = {
-	"Low(11k)",
-	"Medium(22k)",
-	"High(44.1k)",
-	"Very High(48k)",
+	"Low (11k)",
+	"Medium (22k)",
+	"High (44.1k)",
+	"Very High (48k)",
 	NULL
 };
 

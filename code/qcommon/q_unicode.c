@@ -1,6 +1,6 @@
 /*
 =======================================================================================================================================
-Copyright (C) 2012 - 2013 Unvanquished Developers.
+Copyright (C) 2012-2013 Unvanquished Developers.
 
 This file is part of Spearmint Source Code.
 
@@ -154,7 +154,7 @@ unsigned long Q_UTF8_CodePoint(const char **str) {
 	const char *c;
 
 	c = *str;
-	// Quick and dirty UTF-8 to UTF-32 conversion
+	// quick and dirty UTF-8 to UTF-32 conversion
 	if ((*c & 0x80) == 0) {
 		utf32 = *c++;
 	} else if ((*c & 0xE0) == 0xC0) { // 110x xxxx
@@ -170,7 +170,7 @@ unsigned long Q_UTF8_CodePoint(const char **str) {
 		utf32 |= (*c++ & 0x3F) << 6;
 		utf32 |= (*c++ & 0x3F);
 	} else {
-		Com_DPrintf("Unrecognised UTF - 8 lead byte: 0x%x\n", (unsigned int) * c);
+		Com_DPrintf("Unrecognised UTF-8 lead byte: 0x%x\n", (unsigned int) *c);
 		c++;
 	}
 
@@ -233,16 +233,16 @@ int Q_UTF8_Store(const char *s) {
 		r = us[0];
 	} else if ((us[0] & 0xE0) == 0xC0) { // 110xxxxx
 		r = us[0];
-		r |= (uint32_t) us[1] << 8;
+		r |= (uint32_t)us[1] << 8;
 	} else if ((us[0] & 0xF0) == 0xE0) { // 1110xxxx
 		r = us[0];
-		r |= (uint32_t) us[1] << 8;
-		r |= (uint32_t) us[2] << 16;
+		r |= (uint32_t)us[1] << 8;
+		r |= (uint32_t)us[2] << 16;
 	} else if ((us[0] & 0xF8) == 0xF0) { // 11110xxx
 		r = us[0];
-		r |= (uint32_t) us[1] << 8;
-		r |= (uint32_t) us[2] << 16;
-		r |= (uint32_t) us[3] << 24;
+		r |= (uint32_t)us[1] << 8;
+		r |= (uint32_t)us[2] << 16;
+		r |= (uint32_t)us[3] << 24;
 	}
 
 	return r;
@@ -283,14 +283,14 @@ static int uc_search_range(const void *chp, const void *memb) {
 	int ch = *(int *)chp;
 	const ucs2_pair_t *item = (ucs2_pair_t *)memb;
 
-	return (ch < item->c1) ? - 1 : (ch >= item->c2) ? 1 : 0;
+	return (ch < item->c1) ? -1 : (ch >= item->c2) ? 1 : 0;
 }
 
 #define Q_UC_IS(label, array) \
 	qboolean Q_Unicode_Is##label(int ch) \
-	{\
-	return bsearch(&ch, array, ARRAY_LEN(array), sizeof(array[0]), uc_search_range) ? qtrue : qfalse; \
-}
+	{ \
+		return bsearch(&ch, array, ARRAY_LEN(array), sizeof(array[0]), uc_search_range) ? qtrue : qfalse; \
+	}
 
 Q_UC_IS(Alpha, uc_prop_alphabetic)
 Q_UC_IS(Upper, uc_prop_uppercase)
@@ -325,15 +325,15 @@ static int uc_search_cp(const void *chp, const void *memb) {
 	int ch = *(int *)chp;
 	const ucs2_pair_t *item = (ucs2_pair_t *)memb;
 
-	return (ch < item->c1) ? - 1 : (ch > item->c1) ? 1 : 0;
+	return (ch < item->c1) ? -1 : (ch > item->c1) ? 1 : 0;
 }
 
 #define Q_UC_TO(label, array) \
 	int Q_Unicode_To##label(int ch) \
 	{\
-	const ucs2_pair_t *converted = (ucs2_pair_t *)bsearch(&ch, array, ARRAY_LEN(array), sizeof(array[0]), uc_search_cp); \
-	return converted ? converted->c2 : ch; \
-}
+		const ucs2_pair_t *converted = (ucs2_pair_t *)bsearch(&ch, array, ARRAY_LEN(array), sizeof(array[0]), uc_search_cp); \
+		return converted ? converted->c2 : ch; \
+	}
 
 Q_UC_TO(Upper, uc_case_upper)
 Q_UC_TO(Lower, uc_case_lower)

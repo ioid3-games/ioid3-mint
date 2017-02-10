@@ -452,7 +452,6 @@ void UI_DrawProportionalString(int x, int y, const char *str, int style, vec4_t 
 	float scale;
 
 	propScale = UI_ProportionalSizeScale(style);
-
 	charh = propScale * PROP_HEIGHT;
 	scale = propScale * PROP_HEIGHT / 48.0f;
 
@@ -469,14 +468,14 @@ void UI_DrawProportionalString(int x, int y, const char *str, int style, vec4_t 
 		default:
 			break;
 	}
-	// This function expects that y is top of line, text_paint expects at baseline
+	// this function expects that y is top of line, text_paint expects at baseline
 
 	// glow font
 	decent = -uis.fontPropGlow.glyphs[(int)'g'].top + uis.fontPropGlow.glyphs[(int)'g'].height;
 	glowY = y + charh - decent * scale * uis.fontPropGlow.glyphScale;
 
 	if (decent != 0) {
-		// Make TrueType fonts line up with font1_prop bitmap font which has 4 transparent pixels above glyphs at 16 point font size
+		// make TrueType fonts line up with font1_prop bitmap font which has 4 transparent pixels above glyphs at 16 point font size
 		glowY += 3.0f * propScale;
 	}
 	// normal font
@@ -484,7 +483,7 @@ void UI_DrawProportionalString(int x, int y, const char *str, int style, vec4_t 
 	y = y + charh - decent * scale * uis.fontProp.glyphScale;
 
 	if (decent != 0) {
-		// Make TrueType fonts line up with font1_prop bitmap font which has 4 transparent pixels above glyphs at 16 point font size
+		// make TrueType fonts line up with font1_prop bitmap font which has 4 transparent pixels above glyphs at 16 point font size
 		y += 3.0f * propScale;
 	}
 
@@ -499,7 +498,6 @@ void UI_DrawProportionalString(int x, int y, const char *str, int style, vec4_t 
 
 	if (style & UI_PULSE) {
 		Text_Paint(x, y, &uis.fontProp, scale, color, str, 0, 0, (style & UI_DROPSHADOW) ? 2 : 0, 0, qfalse);
-
 		drawcolor[0] = color[0];
 		drawcolor[1] = color[1];
 		drawcolor[2] = color[2];
@@ -556,7 +554,7 @@ void UI_DrawProportionalString_AutoWrapped(int x, int y, int xmax, int ystep, co
 
 			if (c_bcp == '\0') {
 				// that was the last word
-				// we could start a new loop, but that wouldn't be much use even if the word is too long, we would overflow it(see above)
+				// we could start a new loop, but that wouldn't be much use even if the word is too long, we would overflow it (see above)
 				// so just print it now if needed
 				s2++;
 
@@ -603,6 +601,14 @@ void UI_DrawChar(int x, int y, int ch, int style, vec4_t color) {
 
 	UI_DrawString(x, y, buff, style, color);
 }
+
+/*
+=======================================================================================================================================
+
+	COMMON UI FUNCTIONS
+
+=======================================================================================================================================
+*/
 
 /*
 =======================================================================================================================================
@@ -705,7 +711,7 @@ void UI_MouseEvent(int localPlayerNum, int dx, int dy) {
 	for (i = 0; i < uis.activemenu->nitems; i++) {
 		m = (menucommon_s *)uis.activemenu->items[i];
 
-		if (m->flags & (QMF_GRAYED|QMF_INACTIVE)) {
+		if (m->flags &(QMF_GRAYED|QMF_INACTIVE)) {
 			continue;
 		}
 
@@ -788,6 +794,7 @@ UI_Cache_f
 =======================================================================================================================================
 */
 void UI_Cache_f(void) {
+
 	MainMenu_Cache();
 	InGame_Cache();
 	InSelectPlayer_Cache();
@@ -919,6 +926,7 @@ void UI_Refresh(int realtime) {
 	}
 	// draw cursor
 	trap_R_SetColor(NULL);
+
 	CG_DrawPic(uis.cursorx - 16, uis.cursory - 16, 32, 32, uis.cursor);
 
 	if (uis.debug) {

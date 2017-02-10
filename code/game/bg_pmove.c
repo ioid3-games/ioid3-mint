@@ -510,7 +510,7 @@ static void PM_WaterMove(void) {
 			} else if (pm->watertype & CONTENTS_SLIME) {
 				pm->ps->velocity[2] = 80;
 			} else {
-				pm->ps->velocity[2] = 50;
+				pm->ps->velocity[2] = 40;
 			}
 		}
 	}
@@ -1000,7 +1000,6 @@ void PM_CheckStuck(void) {
 	}
 }
 */
-
 /*
 =======================================================================================================================================
 PM_CorrectAllSolid

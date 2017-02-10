@@ -250,7 +250,8 @@ static void SV_MapRestart_f(void) {
 		}
 	}
 	// reset all the vm data in place without changing memory allocation
-	// note that we do NOT set sv.state = SS_LOADING, so configstrings that had been changed from their default values will generate broadcast updates
+	// note that we do NOT set sv.state = SS_LOADING, so configstrings that had been changed from their default values will generate
+	// broadcast updates
 	sv.state = SS_LOADING;
 	sv.restarting = qtrue;
 

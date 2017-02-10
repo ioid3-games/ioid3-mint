@@ -166,7 +166,7 @@ void Bullet_Fire(gentity_t *ent, float spread, int damage, int mod) {
 	u = sin(r) * crandom() * spread * 16;
 	r = cos(r) * crandom() * spread * 16;
 
-	VectorMA(muzzle, 8192 * 16, forward, end);
+	VectorMA(muzzle, 131072, forward, end);
 	VectorMA(end, r, right, end);
 	VectorMA(end, u, up, end);
 
@@ -350,7 +350,7 @@ void ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, gentity_t *ent) {
 		r = Q_crandom(&seed) * DEFAULT_SHOTGUN_SPREAD * 16;
 		u = Q_crandom(&seed) * DEFAULT_SHOTGUN_SPREAD * 16;
 
-		VectorMA(origin, 8192 * 16, forward, end);
+		VectorMA(origin, 131072, forward, end);
 		VectorMA(end, r, right, end);
 		VectorMA(end, u, up, end);
 
@@ -368,7 +368,7 @@ void ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, gentity_t *ent) {
 Weapon_Shotgun_Fire
 =======================================================================================================================================
 */
-void weapon_supershotgun_fire(gentity_t *ent) {
+void Weapon_Shotgun_Fire(gentity_t *ent) {
 	gentity_t *tent;
 
 	// send shotgun blast
@@ -488,7 +488,7 @@ void weapon_railgun_fire(gentity_t *ent) {
 
 	damage = 100 * s_quadFactor;
 
-	VectorMA(muzzle, 8192, forward, end);
+	VectorMA(muzzle, 100000, forward, end);
 	// backward-reconcile the other clients
 	G_DoTimeShiftFor(ent);
 	// trace only against the solids, so the railgun will go through people

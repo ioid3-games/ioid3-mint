@@ -340,7 +340,7 @@ static void UI_AddBotsMenu_Init(void) {
 	addBotsMenuInfo.team.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	addBotsMenuInfo.team.generic.x = 320;
 	addBotsMenuInfo.team.generic.y = y;
-	addBotsMenuInfo.team.generic.name = "Team: ";
+	addBotsMenuInfo.team.generic.name = "Team:";
 	addBotsMenuInfo.team.generic.id = ID_TEAM;
 
 	if (gametype >= GT_TEAM) {

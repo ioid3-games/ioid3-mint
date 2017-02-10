@@ -2335,6 +2335,7 @@ static void CG_FeederSelection(float feederID, int index) {
 	}
 #endif
 }
+
 /*
 =======================================================================================================================================
 CG_Cvar_Get
@@ -3080,8 +3081,7 @@ void CG_UpdateMouseState(int localPlayerNum) {
 		// call mouse move event, no grab, hide system cursor
 		state |= MOUSE_CGAME;
 	// not controlling view angles
-	} else if (cg.demoPlayback || cg.connState != CA_ACTIVE
-			|| (cg.snap && (cg.snap->pss[localPlayerNum].pm_flags & (PMF_FOLLOW|PMF_SCOREBOARD)))) {
+	} else if (cg.demoPlayback || cg.connState != CA_ACTIVE || (cg.snap && (cg.snap->pss[localPlayerNum].pm_flags & (PMF_FOLLOW|PMF_SCOREBOARD)))) {
 		// no grab, show system cursor
 		state |= MOUSE_SYSTEMCURSOR;
 	// if console isn't open, not UI, and not other non-view angle modes
@@ -3430,7 +3430,7 @@ static char *CG_VoIPString(int localPlayerNum) {
 				continue;
 			}
 
-			nlen = Com_sprintf(&voipString[slen], sizeof(voipString) - slen, "%s%d", (slen > 0) ? ", " : "", i);
+			nlen = Com_sprintf(&voipString[slen], sizeof(voipString) - slen, "%s%d", (slen > 0) ? "," : "", i);
 
 			if (slen + nlen + 1 >= sizeof(voipString)) {
 				CG_Printf(S_COLOR_YELLOW "WARNING: voipString overflowed\n");
@@ -3439,7 +3439,7 @@ static char *CG_VoIPString(int localPlayerNum) {
 
 			slen += nlen;
 		}
-		// Notice that if the Com_sprintf was truncated, slen was not updated so this will remove any trailing commas or partially-completed numbers
+		// notice that if the Com_sprintf was truncated, slen was not updated, so this will remove any trailing commas or partially-completed numbers
 		voipString[slen] = '\0';
 	} else if (Q_stricmpn(voipSendTarget, "crosshair", 9) == 0) {
 		Com_sprintf(voipString, sizeof(voipString), "%d", CG_CrosshairPlayer(localPlayerNum));

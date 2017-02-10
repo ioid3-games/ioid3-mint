@@ -52,6 +52,7 @@ displayContextDef_t *DC = NULL;
 
 static qboolean g_waitingForKey = qfalse;
 static qboolean g_editingField = qfalse;
+
 static itemDef_t *g_bindItem = NULL;
 static itemDef_t *g_editItem = NULL;
 static qboolean debugMode = qfalse;

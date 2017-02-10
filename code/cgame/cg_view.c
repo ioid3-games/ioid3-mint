@@ -620,9 +620,8 @@ static int CG_CalcFov(void) {
 	}
 
 	if (cg_fovAspectAdjust.integer) {
-		// Based on LordHavoc's code for Darkplaces
-		// http://www.quakeworld.nu/forum/topic/53/what-does-your-qw-look-like/page/30
-		const float baseAspect = 0.75f; // 3 / 4
+		// based on LordHavoc's code for Darkplaces -> http://www.quakeworld.nu/forum/topic/53/what-does-your-qw-look-like/page/30
+		const float baseAspect = 0.75f; // 3/4
 		const float aspect = (float)cg.refdef.width / (float)cg.refdef.height;
 		const float desiredFov = fov_x;
 
@@ -909,7 +908,7 @@ static void CG_PlayBufferedSounds(void) {
 /*
 =======================================================================================================================================
 
-	Frustum code
+	FRUSTUM CODE
 
 =======================================================================================================================================
 */

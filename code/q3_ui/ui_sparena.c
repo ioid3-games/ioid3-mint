@@ -55,6 +55,7 @@ void UI_SPArena_Start(const char *arenaInfo) {
 	trap_Cvar_SetValue("g_doWarmup", 0);
 
 	map = Info_ValueForKey(arenaInfo, "map");
+
 	trap_Cmd_ExecuteText(EXEC_APPEND, va("map %s\n", map));
 }
 

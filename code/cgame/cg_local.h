@@ -173,8 +173,8 @@ typedef struct {
 	vec3_t flashOrigin;
 } playerEntity_t;
 
-
 #define MAX_CG_SKIN_SURFACES 32
+
 typedef struct {
 	int numSurfaces;
 	qhandle_t surfaces[MAX_CG_SKIN_SURFACES];
@@ -493,7 +493,7 @@ typedef struct {
 	int centerPrintY;
 	char centerPrint[1024];
 	// low ammo warning state
-	int lowAmmoWarning; // 1 = low, 2 = empty
+	int lowAmmoWarning;				// 1 = low, 2 = empty
 	// crosshair player ID
 	int crosshairPlayerNum;
 	int crosshairPlayerTime;
@@ -529,7 +529,7 @@ typedef struct {
 	float zoomSensitivity;
 	int itemPickup;
 	int itemPickupTime;
-	int itemPickupBlendTime; // the pulse around the crosshair is timed separately
+	int itemPickupBlendTime; 		// the pulse around the crosshair is timed separately
 	int weaponSelectTime;
 	int weaponAnimation;
 	int weaponAnimationTime;
@@ -547,12 +547,12 @@ typedef struct {
 	float v_dmg_time;
 	float v_dmg_pitch;
 	float v_dmg_roll;
-	vec3_t kick_angles;		// weapon kicks
+	vec3_t kick_angles;				// weapon kicks
 	vec3_t kick_origin;
 	qboolean renderingThirdPerson;	// during deaths, chasecams, etc
 	// first person gun flash origin
 	vec3_t flashOrigin;
-	// qboolean cameraMode;	// if rendering from a loaded camera
+	// qboolean cameraMode;			// if rendering from a loaded camera
 	vec3_t lastViewPos;
 	vec3_t lastViewAngles;
 	// scoreboard
@@ -566,39 +566,39 @@ typedef struct {
 	consoleLine_t consoleLines[MAX_CONSOLE_LINES];
 	int numConsoleLines;
 } localPlayer_t;
- 
+
 #define MAX_SPAWN_VARS 64
 #define MAX_SPAWN_VARS_CHARS 2048
- 
+
 typedef struct {
 	connstate_t connState;
-	qboolean connected;			// connected to a server
-	int clientFrame;			// incremented each frame
-	int cinematicHandle;		// handle for fullscreen cinematic
+	qboolean connected;				// connected to a server
+	int clientFrame;				// incremented each frame
+	int cinematicHandle;			// handle for fullscreen cinematic
 	qboolean demoPlayback;
-	qboolean levelShot;			// taking a level menu screenshot
+	qboolean levelShot;				// taking a level menu screenshot
 	int deferredPlayerLoading;
-	qboolean loading;			// don't defer players at initial startup
+	qboolean loading;				// don't defer players at initial startup
 	qboolean intermissionStarted;	// don't play voice rewards, because game will end shortly
 	// there are only one or two snapshot_t that are relevant at a time
-	int latestSnapshotNum;		// the number of snapshots the client system has received
-	int latestSnapshotTime;		// the time from latestSnapshotNum, so we don't need to read the snapshot yet
-	snapshot_t *snap;			// cg.snap->serverTime <= cg.time
-	snapshot_t *nextSnap;		// cg.nextSnap->serverTime > cg.time, or NULL
+	int latestSnapshotNum;			// the number of snapshots the client system has received
+	int latestSnapshotTime;			// the time from latestSnapshotNum, so we don't need to read the snapshot yet
+	snapshot_t *snap;				// cg.snap->serverTime <= cg.time
+	snapshot_t *nextSnap;			// cg.nextSnap->serverTime > cg.time, or NULL
 	snapshot_t activeSnapshots[2];
-	float frameInterpolation;	// (float)(cg.time - cg.frame->serverTime) / (cg.nextFrame->serverTime - cg.frame->serverTime)
+	float frameInterpolation;		// (float)(cg.time - cg.frame->serverTime) / (cg.nextFrame->serverTime - cg.frame->serverTime)
 	qboolean thisFrameTeleport;
 	qboolean nextFrameTeleport;
 	int realTime;
 	int realFrameTime;
-	int frametime;				// cg.time - cg.oldTime
-	int time;					// this is the server time value that the client is rendering at.
-	int oldTime;				// time at last frame, used for missile trails and prediction checking
-	int physicsTime;			// either cg.snap->time or cg.nextSnap->time
+	int frametime;					// cg.time - cg.oldTime
+	int time;						// this is the server time value that the client is rendering at.
+	int oldTime;					// time at last frame, used for missile trails and prediction checking
+	int physicsTime;				// either cg.snap->time or cg.nextSnap->time
 	leadChange_t bestLeadChange;
-	int timelimitWarnings;		// 5 min, 1 min, overtime
+	int timelimitWarnings;			// 5 min, 1 min, overtime
 	int fraglimitWarnings;
-	qboolean mapRestart;		// set on a map restart to set back the weapon
+	qboolean mapRestart;			// set on a map restart to set back the weapon
 	// auto rotating items
 	vec3_t autoAngles;
 	vec3_t autoAxis[3];
@@ -606,16 +606,16 @@ typedef struct {
 	vec3_t autoAxisFast[3];
 	// view rendering
 	refdef_t refdef;
-	vec3_t refdefViewAngles;	// will be converted to refdef.viewaxis
-	float fov;					// either range checked cg_fov or forced value
+	vec3_t refdefViewAngles;		// will be converted to refdef.viewaxis
+	float fov;						// either range checked cg_fov or forced value
 	// first person view pos, set even when rendering third person view
 	vec3_t firstPersonViewOrg;
 	vec3_t firstPersonViewAngles;
 	vec3_t firstPersonViewAxis[3];
 	// spawn variables
-	qboolean spawning;			// the CG_Spawn *() functions are valid
+	qboolean spawning;				// the CG_Spawn *() functions are valid
 	int numSpawnVars;
-	char *spawnVars[MAX_SPAWN_VARS][2];	// key/value pairs
+	char *spawnVars[MAX_SPAWN_VARS][2]; // key/value pairs
 	int numSpawnVarChars;
 	char spawnVarChars[MAX_SPAWN_VARS_CHARS];
 	int spawnEntityOffset;
@@ -1341,9 +1341,9 @@ void CG_DrawTopBottom(float x, float y, float w, float h, float size);
 void CG_ClearViewport(void);
 // cg_draw.c, cg_newDraw.c
 typedef enum {
-  SYSTEM_PRINT, 
-  CHAT_PRINT, 
-  TEAMCHAT_PRINT
+	SYSTEM_PRINT,
+	CHAT_PRINT,
+	TEAMCHAT_PRINT
 } q3print_t;
 
 extern int sortedTeamPlayers[TEAM_NUM_TEAMS][TEAM_MAXOVERLAY];

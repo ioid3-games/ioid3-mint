@@ -1970,7 +1970,7 @@ void CL_Connect_f(void) {
 		clc.challenge = ((rand() << 16) ^ rand()) ^ Com_Milliseconds();
 	}
 
-	clc.connectTime = -99999;	// CL_CheckForResend() will fire immediately
+	clc.connectTime = -99999; // CL_CheckForResend() will fire immediately
 	clc.connectPacketCount = 0;
 	// server connection string
 	Cvar_Set("cl_currentServerAddress", server);
@@ -2222,7 +2222,7 @@ void CL_DownloadsComplete(void) {
 		clc.downloadRestart = qfalse;
 		clc.missingDefaultCfg = qfalse;
 
-		FS_Restart(qfalse); // We possibly downloaded a pak, restart the file system to load it
+		FS_Restart(qfalse); // we possibly downloaded a pak, restart the file system to load it
 		clc.fsRestarted = qtrue;
 		// still missing default.cfg after downloading files
 		if (clc.missingDefaultCfg) {
@@ -2405,8 +2405,7 @@ void CL_InitDownloads(void) {
 =======================================================================================================================================
 CL_MissingDefaultCfg
 
-Client connected to a remote server and when changing fs_game found
-that it was missing default.cfg.
+Client connected to a remote server and when changing fs_game found that it was missing default.cfg.
 =======================================================================================================================================
 */
 void CL_MissingDefaultCfg(void) {
@@ -2425,6 +2424,7 @@ void CL_CheckForResend(void) {
 	int protocol;
 	char info[MAX_INFO_STRING];
 	char data[(MAX_INFO_STRING + 3) * CL_MAX_SPLITVIEW + 7];
+
 	// don't send anything if playing back a demo
 	if (clc.demoplaying) {
 		return;
@@ -2539,7 +2539,6 @@ void CL_InitServerInfo(serverInfo_t *server, netadr_t *address) {
 	server->game[0] = '\0';
 	server->gameType[0] = '\0';
 	server->netType = 0;
-
 	server->g_humanplayers = 0;
 	server->g_needpass = 0;
 }
@@ -2631,8 +2630,8 @@ void CL_ServersResponsePacket(const netadr_t *from, msg_t *msg, qboolean extende
 	for (i = 0; i < numservers && count < MAX_GLOBAL_SERVERS; i++) {
 		// build net address
 		serverInfo_t *server = &cls.globalServers[count];
-		// It's possible to have sent many master server requests. Then we may receive many times the same addresses from the master server.
-		// We just avoid to add a server if it is still in the global servers list.
+		// it's possible to have sent many master server requests. Then we may receive many times the same addresses from the master server.
+		// we just avoid to add a server if it is still in the global servers list.
 		for (j = 0; j < count; j++) {
 			if (NET_CompareAdr(cls.globalServers[j].adr, addresses[i])) {
 				break;
@@ -2708,7 +2707,7 @@ void CL_ConnectionlessPacket(netadr_t from, msg_t *msg) {
 			if (ver != com_protocol->integer) {
 #ifdef LEGACY_PROTOCOL
 				if (com_legacyprotocol->integer > 0) {
-					// Server is ioq3 but has a different protocol than we do. Fall back to legacy protocol.
+					// server is ioq3 but has a different protocol than we do. Fall back to legacy protocol.
 					clc.compat = qtrue;
 
 					Com_Printf(S_COLOR_YELLOW "Warning: Server reports protocol version %d, we have %d. Trying legacy protocol %d.\n", ver, com_protocol->integer, com_legacyprotocol->integer);
@@ -2720,8 +2719,9 @@ void CL_ConnectionlessPacket(netadr_t from, msg_t *msg) {
 			}
 		}
 #ifdef LEGACY_PROTOCOL
-		else
+		else {
 			clc.compat = qtrue;
+		}
 #endif
 		if (!*c || challenge != clc.challenge) {
 			Com_Printf("Bad challenge for challengeResponse. Ignored.\n");

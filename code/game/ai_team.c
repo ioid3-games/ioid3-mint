@@ -2270,8 +2270,8 @@ void BotTeamAI(bot_state_t *bs) {
 #ifdef MISSIONPACK
 		case GT_1FCTF:
 		{
-			// if the enemy team leads and time limit has expired to 70%, choose aggressive strategy
-			if (bs->ownteamscore < bs->enemyteamscore && level.time - level.startTime > (g_timelimit.integer * 60000) * 0.7f) {
+			// if the enemy team leads and time limit has expired to 75%, choose aggressive strategy
+			if (bs->ownteamscore < bs->enemyteamscore && level.time - level.startTime > (g_timelimit.integer * 60000) * 0.75f) {
 				bs->ctfstrategy = CTFS_AGRESSIVE;
 				// give orders again after 30 seconds
 				bs->teamgiveorders_time = FloatTime() + 30;

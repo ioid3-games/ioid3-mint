@@ -48,7 +48,7 @@ typedef struct tracemap_s {
 
 static tracemap_t tracemap;
 static vec2_t one_over_mapgrid_factor;
-void etpro_FinalizeTracemapClamp(int *x, int *y);
+void FinalizeTracemapClamp(int *x, int *y);
 
 /*
 =======================================================================================================================================
@@ -151,7 +151,6 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 
 			if (!((lastDraw <= ms) && (lastDraw > ms - 500))) {
 				lastDraw = ms;
-
 				Com_Printf("%i of %i gridpoints calculated (%.2f%%), %i total traces\n", i * TRACEMAP_SIZE + j, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE + j) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
 				//trap_UpdateScreen();
 			}
@@ -243,7 +242,6 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 
 			if (!((lastDraw <= ms) && (lastDraw > ms - 500))) {
 				lastDraw = ms;
-
 				Com_Printf("%i of %i gridpoints calculated (%.2f%%), %i total traces\n", i * TRACEMAP_SIZE + j, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE + j) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
 				//trap_UpdateScreen();
 			}
@@ -294,7 +292,6 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 
 			if (!((lastDraw <= ms) && (lastDraw > ms - 500))) {
 				lastDraw = ms;
-
 				Com_Printf("%i of %i gridpoints calculated (%.2f%%), %i total traces\n", i * TRACEMAP_SIZE + j, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE + j) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
 				//trap_UpdateScreen();
 			}
@@ -500,7 +497,7 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 	i = 0;
 	trap_FS_Write(&i, sizeof(i), f); // developer directory offset, 4 bytes
 
-	trap_FS_Write("TRUEVISION - XFILE.\0", 18, f);
+	trap_FS_Write("TRUEVISION-XFILE.\0", 18, f);
 	trap_FS_FCloseFile(f);
 }
 
@@ -750,8 +747,8 @@ BG_GetSkyHeightAtPoint
 float BG_GetSkyHeightAtPoint(vec3_t pos) {
 	int i, j;
 	vec2_t point;
-
 //	int msec = trap_Milliseconds();
+
 //	n_getskytime++;
 
 	if (!tracemap.loaded) {
@@ -764,7 +761,7 @@ float BG_GetSkyHeightAtPoint(vec3_t pos) {
 	i = myftol((point[0] - tracemap.world_mins[0]) * one_over_mapgrid_factor[0]);
 	j = myftol((point[1] - tracemap.world_mins[1]) * one_over_mapgrid_factor[1]);
 	// re-clamp the points, because a rounding error can cause them to go outside the array
-	etpro_FinalizeTracemapClamp(&i, &j);
+	FinalizeTracemapClamp(&i, &j);
 
 //	getskytime += trap_Milliseconds() - msec;
 	return (tracemap.sky[j][i]);
@@ -778,8 +775,8 @@ BG_GetSkyGroundHeightAtPoint
 float BG_GetSkyGroundHeightAtPoint(vec3_t pos) {
 	int i, j;
 	vec2_t point;
-
 //	int msec = trap_Milliseconds();
+
 //	n_getgroundtime++;
 
 	if (!tracemap.loaded) {
@@ -792,7 +789,7 @@ float BG_GetSkyGroundHeightAtPoint(vec3_t pos) {
 	i = myftol((point[0] - tracemap.world_mins[0]) * one_over_mapgrid_factor[0]);
 	j = myftol((point[1] - tracemap.world_mins[1]) * one_over_mapgrid_factor[1]);
 	// re-clamp the points, because a rounding error can cause them to go outside the array
-	etpro_FinalizeTracemapClamp(&i, &j);
+	FinalizeTracemapClamp(&i, &j);
 
 //	getgroundtime += trap_Milliseconds() - msec;
 	return (tracemap.skyground[j][i]);
@@ -806,8 +803,8 @@ BG_GetGroundHeightAtPoint
 float BG_GetGroundHeightAtPoint(vec3_t pos) {
 	int i, j;
 	vec2_t point;
-
 //	int msec = trap_Milliseconds();
+
 //	n_getgroundtime++;
 
 	if (!tracemap.loaded) {
@@ -820,7 +817,7 @@ float BG_GetGroundHeightAtPoint(vec3_t pos) {
 	i = myftol((point[0] - tracemap.world_mins[0]) * one_over_mapgrid_factor[0]);
 	j = myftol((point[1] - tracemap.world_mins[1]) * one_over_mapgrid_factor[1]);
 	// re-clamp the points, because a rounding error can cause them to go outside the array
-	etpro_FinalizeTracemapClamp(&i, &j);
+	FinalizeTracemapClamp(&i, &j);
 
 //	getgroundtime += trap_Milliseconds() - msec;
 	return (tracemap.ground[j][i]);
@@ -856,12 +853,12 @@ int BG_GetTracemapGroundCeil(void) {
 
 /*
 =======================================================================================================================================
-etpro_FinalizeTracemapClamp
+FinalizeTracemapClamp
 
 Re-clamp the points, because a rounding error can cause them to go outside the array.
 =======================================================================================================================================
 */
-void etpro_FinalizeTracemapClamp(int *x, int *y) {
+void FinalizeTracemapClamp(int *x, int *y) {
 
 	if (*x < 0) {
 		*x = 0;

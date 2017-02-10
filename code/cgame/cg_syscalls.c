@@ -1689,6 +1689,8 @@ void trap_SnapVector(float *v) {
 /*
 =======================================================================================================================================
 trap_CIN_PlayCinematic
+
+This returns a handle. arg0 is the name in the format "idlogo.roq", set arg1 to NULL, alteredstates to qfalse (do not alter gamestate).
 =======================================================================================================================================
 */
 int trap_CIN_PlayCinematic(const char *arg0, int xpos, int ypos, int width, int height, int bits) {
@@ -1698,6 +1700,9 @@ int trap_CIN_PlayCinematic(const char *arg0, int xpos, int ypos, int width, int 
 /*
 =======================================================================================================================================
 trap_CIN_StopCinematic
+
+Stops playing the cinematic and ends it. Should always return FMV_EOF. Cinematics must be stopped in reverse order of when they are
+started.
 =======================================================================================================================================
 */
 e_status trap_CIN_StopCinematic(int handle) {
@@ -1707,6 +1712,8 @@ e_status trap_CIN_StopCinematic(int handle) {
 /*
 =======================================================================================================================================
 trap_CIN_RunCinematic
+
+Will run a frame of the cinematic but will not draw it. Will return FMV_EOF if the end of the cinematic has been reached.
 =======================================================================================================================================
 */
 e_status trap_CIN_RunCinematic(int handle) {
@@ -1716,6 +1723,8 @@ e_status trap_CIN_RunCinematic(int handle) {
 /*
 =======================================================================================================================================
 trap_CIN_DrawCinematic
+
+Draws the current frame.
 =======================================================================================================================================
 */
 void trap_CIN_DrawCinematic(int handle) {
@@ -1725,6 +1734,8 @@ void trap_CIN_DrawCinematic(int handle) {
 /*
 =======================================================================================================================================
 trap_CIN_SetExtents
+
+Allows you to resize the animation dynamically.
 =======================================================================================================================================
 */
 void trap_CIN_SetExtents(int handle, int x, int y, int w, int h) {

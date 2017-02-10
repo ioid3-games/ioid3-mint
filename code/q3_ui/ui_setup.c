@@ -276,8 +276,8 @@ static void UI_SetupMenu_Init(void) {
 	Menu_AddItem(&setupMenuInfo.menu, &setupMenuInfo.game);
 
 	if (!trap_Cvar_VariableValue("cl_paused")) {
-		//Menu_AddItem(&setupMenuInfo.menu, &setupMenuInfo.load);
-		//Menu_AddItem(&setupMenuInfo.menu, &setupMenuInfo.save);
+//		Menu_AddItem(&setupMenuInfo.menu, &setupMenuInfo.load);
+//		Menu_AddItem(&setupMenuInfo.menu, &setupMenuInfo.save);
 		Menu_AddItem(&setupMenuInfo.menu, &setupMenuInfo.defaults);
 	}
 

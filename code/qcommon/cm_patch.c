@@ -1922,7 +1922,7 @@ void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *point
 			}
 
 			plane[3] += cv->value;
-			//*
+
 			for (n = 0; n < 3; n++) {
 				if (plane[n] > 0) {
 					v1[n] = maxs[n];
@@ -1934,7 +1934,6 @@ void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *point
 			VectorNegate(plane, v2);
 
 			plane[3] += fabs(DotProduct(v1, v2));
-			//*/
 			w = BaseWindingForPlane(plane, plane[3]);
 
 			for (j = 0; j < facet->numBorders + 1 && w; j++) {
@@ -1944,7 +1943,6 @@ void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *point
 				} else {
 					curplanenum = facet->surfacePlane;
 					curinward = qfalse;
-					//continue;
 				}
 
 				if (curplanenum == planenum) {

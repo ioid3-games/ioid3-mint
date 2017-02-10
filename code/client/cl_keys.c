@@ -348,7 +348,6 @@ keyname_t keynames[] = {
 	{"PAD0_DPAD_DOWN", K_PAD0_DPAD_DOWN},
 	{"PAD0_DPAD_LEFT", K_PAD0_DPAD_LEFT},
 	{"PAD0_DPAD_RIGHT", K_PAD0_DPAD_RIGHT},
-
 	{"PAD0_LEFTSTICK_LEFT", K_PAD0_LEFTSTICK_LEFT},
 	{"PAD0_LEFTSTICK_RIGHT", K_PAD0_LEFTSTICK_RIGHT},
 	{"PAD0_LEFTSTICK_UP", K_PAD0_LEFTSTICK_UP},
@@ -360,7 +359,7 @@ keyname_t keynames[] = {
 	{"PAD0_LEFTTRIGGER", K_PAD0_LEFTTRIGGER},
 	{"PAD0_RIGHTTRIGGER", K_PAD0_RIGHTTRIGGER},
 
-	{NULL,0}
+	{NULL, 0}
 };
 
 /*
@@ -787,6 +786,7 @@ Normal keyboard characters, already shifted / capslocked / etc.
 =======================================================================================================================================
 */
 void CL_CharEvent(int character) {
+
 	// delete is not a printable character and is otherwise handled by Field_KeyDownEvent
 	if (character == 127) {
 		return;

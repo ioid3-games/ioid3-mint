@@ -1,6 +1,6 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 2008 Przemyslaw Iskra <sparky@pld-linux.org>.
 
 This file is part of Spearmint Source Code.
 

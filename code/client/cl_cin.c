@@ -67,7 +67,7 @@ static unsigned short vq4[256 * 64 * 4];
 static unsigned short vq8[256 * 256 * 4];
 
 typedef struct {
-	byte linbuf[DEFAULT_CIN_WIDTH * DEFAULT_CIN_HEIGHT * 4 * 2];
+	byte linbuf[DEFAULT_CIN_WIDTH * DEFAULT_CIN_HEIGHT * 8];
 	byte file[65536];
 	short sqrTable[256];
 	int mcomp[256];
@@ -1455,7 +1455,7 @@ int CIN_PlayCinematic(const char *arg, int x, int y, int w, int h, int systemBit
 	cinTable[currentHandle].ROQSize = FS_FOpenFileRead(cinTable[currentHandle].fileName, &cinTable[currentHandle].iFile, qtrue);
 
 	if (cinTable[currentHandle].ROQSize <= 0) {
-		Com_DPrintf("play(%s), ROQSize<=0\n", arg);
+		Com_DPrintf("play(%s), ROQSize <= 0\n", arg);
 		cinTable[currentHandle].fileName[0] = 0;
 		return -1;
 	}

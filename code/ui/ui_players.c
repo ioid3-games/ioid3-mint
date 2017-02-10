@@ -306,6 +306,7 @@ static qboolean UI_PositionRotatedEntityOnTag(refEntity_t *entity, const refEnti
 	orientation_t lerped;
 	vec3_t tempAxis[3];
 	qboolean returnValue;
+
 	// lerp the tag
 	returnValue = trap_R_LerpTagFrameModel(&lerped, parentModel, parent->oldframeModel, parent->oldframe, parent->frameModel, parent->frame, 1.0 - parent->backlerp, tagName, NULL);
 	// FIXME: allow origin offsets along tag?

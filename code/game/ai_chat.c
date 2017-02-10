@@ -23,8 +23,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 */
 
 #include "g_local.h"
-#include ".. / botlib / botlib.h"
-#include ".. / botlib / be_aas.h"
+#include "../botlib/botlib.h"
+#include "../botlib/be_aas.h"
 #include "ai_char.h"
 #include "ai_chat_sys.h"
 #include "ai_ea.h"
@@ -433,14 +433,14 @@ int BotValidChatPosition(bot_state_t *bs) {
 		return qfalse;
 	}
 	// must be on the ground
-	// if (bs->cur_ps.groundEntityNum != ENTITYNUM_NONE) {
-	// 	return qfalse;
-	// }
+	//if (bs->cur_ps.groundEntityNum != ENTITYNUM_NONE) {
+	//	return qfalse;
+	//}
 	// do not chat if in lava or slime
 	VectorCopy(bs->origin, point);
 	point[2] -= 24;
 
-	if (trap_PointContents(point, bs->entitynum) &(CONTENTS_LAVA|CONTENTS_SLIME)) {
+	if (trap_PointContents(point, bs->entitynum) & (CONTENTS_LAVA|CONTENTS_SLIME)) {
 		return qfalse;
 	}
 	// do not chat if under water
@@ -1197,10 +1197,10 @@ BotChatTime
 =======================================================================================================================================
 */
 float BotChatTime(bot_state_t *bs) {
-	// int cpm;
+	//int cpm;
 
-	// cpm = Characteristic_BInteger(bs->character, CHARACTERISTIC_CHAT_CPM, 1, 4000);
-	return 2.0;	// (float)BotChatLength(bs->cs) * 30 / cpm;
+	//cpm = Characteristic_BInteger(bs->character, CHARACTERISTIC_CHAT_CPM, 1, 4000);
+	return 2.0;	//(float)BotChatLength(bs->cs) * 30 / cpm;
 }
 
 /*

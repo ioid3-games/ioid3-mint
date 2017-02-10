@@ -903,6 +903,7 @@ void MSG_WriteDeltaUsercmdKey(msg_t *msg, int key, usercmd_t *from, usercmd_t *t
 	}
 
 	key ^= to->serverTime;
+
 	MSG_WriteBits(msg, 1, 1);
 	MSG_WriteDeltaKey(msg, key, from->angles[0], to->angles[0], 16);
 	MSG_WriteDeltaKey(msg, key, from->angles[1], to->angles[1], 16);
@@ -1910,8 +1911,8 @@ void MSG_initHuffman(void) {
 
 	for (i = 0; i < 256; i++) {
 		for (j = 0; j < msg_hData[i]; j++) {
-			Huff_addRef(&msgHuff.compressor, (byte)i); // Do update
-			Huff_addRef(&msgHuff.decompressor, (byte)i); // Do update
+			Huff_addRef(&msgHuff.compressor, (byte)i); // do update
+			Huff_addRef(&msgHuff.decompressor, (byte)i); // do update
 		}
 	}
 }

@@ -187,13 +187,14 @@ static float (*_LittleFloat)(const float *l);
 
 short BigShort(short l) {return _BigShort(l);}
 short LittleShort(short l) {return _LittleShort(l);}
-int BigLong (int l) {return _BigLong(l);}
-int LittleLong (int l) {return _LittleLong(l);}
-qint64 BigLong64 (qint64 l) {return _BigLong64(l);}
-qint64 LittleLong64 (qint64 l) {return _LittleLong64(l);}
-float BigFloatPtr (const float *l) {return _BigFloat(l);}
-float LittleFloatPtr (const float *l) {return _LittleFloat(l);}
+int BigLong(int l) {return _BigLong(l);}
+int LittleLong(int l) {return _LittleLong(l);}
+qint64 BigLong64(qint64 l) {return _BigLong64(l);}
+qint64 LittleLong64(qint64 l) {return _LittleLong64(l);}
+float BigFloatPtr(const float *l) {return _BigFloat(l);}
+float LittleFloatPtr(const float *l) {return _LittleFloat(l);}
 #endif
+
 /*
 =======================================================================================================================================
 CopyShortSwap
@@ -583,6 +584,7 @@ char *COM_ParseExt2(char **data_p, qboolean allowLineBreaks, char delimiter) {
 		}
 
 		com_lines += linesSkipped;
+
 		c = *data;
 		// skip double slash comments
 		if (c == '/' && data[1] == '/') {

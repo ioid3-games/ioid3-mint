@@ -56,6 +56,7 @@ void G_BounceMissile(gentity_t *ent, trace_t *trace) {
 
 	VectorAdd(ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
 	VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);
+
 	ent->s.pos.trTime = level.time;
 }
 

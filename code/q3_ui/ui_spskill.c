@@ -334,7 +334,9 @@ UI_SPSkillMenu
 void UI_SPSkillMenu(const char *arenaInfo) {
 
 	UI_SPSkillMenu_Init();
+
 	skillMenuInfo.arenaInfo = arenaInfo;
+
 	UI_PushMenu(&skillMenuInfo.menu);
 	Menu_SetCursorToItem(&skillMenuInfo.menu, &skillMenuInfo.item_fight);
 }

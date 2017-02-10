@@ -217,6 +217,7 @@ qboolean Netchan_Process(netchan_t *chan, msg_t *msg) {
 //	Netchan_UnScramblePacket(msg);
 	// get sequence numbers
 	MSG_BeginReadingOOB(msg);
+
 	sequence = MSG_ReadLong(msg);
 	// check for fragment information
 	if (sequence & FRAGMENT_BIT) {

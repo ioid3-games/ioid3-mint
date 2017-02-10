@@ -290,7 +290,7 @@ void SpectatorThink(gentity_t *ent, usercmd_t *ucmd) {
 			player->ps.pm_type = PM_SPECTATOR;
 		}
 
-		player->ps.speed = 400;	// faster than normal
+		player->ps.speed = 400; // faster than normal
 		// set up for pmove
 		memset(&pm, 0, sizeof(pm));
 

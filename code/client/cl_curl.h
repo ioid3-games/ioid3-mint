@@ -1,6 +1,6 @@
 /*
 =======================================================================================================================================
-Copyright (C) 2006 Tony J. White (tjw@tjw.org)
+Copyright (C) 2006 Tony J. White (tjw@tjw.org).
 
 This file is part of Spearmint Source Code.
 

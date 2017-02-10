@@ -421,6 +421,7 @@ int BotAddressedToBot(bot_state_t *bs, bot_match_t *match) {
 	bot_match_t addresseematch;
 
 	BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 	playerNum = PlayerOnSameTeamFromName(bs, netname);
 
 	if (playerNum < 0) {

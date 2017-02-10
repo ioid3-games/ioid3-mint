@@ -257,7 +257,7 @@ void BotTestAAS(vec3_t origin) {
 		areanum = BotPointAreaNum(origin);
 
 		if (areanum) {
-			BotAI_Print(PRT_MESSAGE, "\rempty area");
+			BotAI_Print(PRT_MESSAGE, "\rEmpty area");
 		} else {
 			BotAI_Print(PRT_MESSAGE, "\r^1SOLID area");
 		}
@@ -272,7 +272,7 @@ void BotTestAAS(vec3_t origin) {
 			BotAI_Print(PRT_MESSAGE, "\r^1Solid!");
 		} else {
 			trap_AAS_AreaInfo(areanum, &info);
-			BotAI_Print(PRT_MESSAGE, "\rarea %d, cluster %d", areanum, info.cluster);
+			BotAI_Print(PRT_MESSAGE, "\rArea %d, Cluster %d", areanum, info.cluster);
 		}
 	}
 }
@@ -1764,6 +1764,7 @@ int BotInitLibrary(void) {
 	// set the maxclients and maxentities library variables before calling BotSetupLibrary
 	Com_sprintf(buf, sizeof(buf), "%d", level.maxplayers);
 	trap_BotLibVarSet("maxclients", buf);
+
 	Com_sprintf(buf, sizeof(buf), "%d", MAX_GENTITIES);
 	trap_BotLibVarSet("maxentities", buf);
 	// bsp checksum
