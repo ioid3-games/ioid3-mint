@@ -389,7 +389,6 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder) {
 					} else if (depthBits == 16) {
 						depthBits = 8;
 					}
-
 				case 3 :
 					if (stencilBits == 24) {
 						stencilBits = 16;

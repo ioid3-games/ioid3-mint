@@ -59,7 +59,7 @@ cvar_t *sv_gametypeName;
 cvar_t *sv_gametypeNetName;
 cvar_t *sv_pure;
 cvar_t *sv_floodProtect;
-cvar_t *sv_lanForceRate; // dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
+cvar_t *sv_lanForceRate;	// dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 cvar_t *sv_banFile;
 cvar_t *sv_public;
 
@@ -789,6 +789,7 @@ An rcon packet arrived from the network. Shift down the remaining args. Redirect
 static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 	qboolean valid;
 	char remaining[1024];
+
 	// TTimo - scaled down to accumulate, but not overflow anything network wise, print wise etc.
 	// (OOB messages are the bottleneck here)
 #define SV_OUTPUTBUF_LENGTH (1024 - 16)
