@@ -274,8 +274,7 @@ void CG_DrawRect(float x, float y, float width, float height, float size, const 
 =======================================================================================================================================
 CG_ClearViewport
 
-Wide and narrow aspect ratios screens need to have the sides cleared.
-Used when drawing fullscreen 4:3 UI.
+Wide and narrow aspect ratios screens need to have the sides cleared. Used when drawing fullscreen 4:3 UI.
 =======================================================================================================================================
 */
 void CG_ClearViewport(void) {

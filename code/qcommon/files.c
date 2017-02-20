@@ -574,6 +574,7 @@ FS_HomeRemove
 int FS_HomeRemove(const char *homePath) {
 
 	FS_CheckFilenameIsMutable(homePath, __func__);
+
 	return remove(FS_BuildOSPath(fs_homepath->string, fs_gamedir, homePath)) != -1;
 }
 
@@ -719,7 +720,7 @@ long FS_SV_FOpenFileRead(const char *filename, fileHandle_t *fp) {
 	ospath[strlen(ospath) - 1] = '\0';
 
 	if (fs_debug->integer) {
-		Com_Printf("FS_SV_FOpenFileRead(fs_homepath): %s\n", ospath);
+		Com_Printf("FS_SV_FOpenFileRead (fs_homepath): %s\n", ospath);
 	}
 
 	fsh[f].handleFiles.file.o = Sys_FOpen(ospath, "rb");
@@ -733,7 +734,7 @@ long FS_SV_FOpenFileRead(const char *filename, fileHandle_t *fp) {
 			ospath[strlen(ospath) - 1] = '\0';
 
 			if (fs_debug->integer) {
-				Com_Printf("FS_SV_FOpenFileRead(fs_basepath): %s\n", ospath);
+				Com_Printf("FS_SV_FOpenFileRead (fs_basepath): %s\n", ospath);
 			}
 
 			fsh[f].handleFiles.file.o = Sys_FOpen(ospath, "rb");
@@ -746,7 +747,7 @@ long FS_SV_FOpenFileRead(const char *filename, fileHandle_t *fp) {
 			ospath[strlen(ospath) - 1] = '\0';
 
 			if (fs_debug->integer) {
-				Com_Printf("FS_SV_FOpenFileRead(fs_cdpath): %s\n", ospath);
+				Com_Printf("FS_SV_FOpenFileRead (fs_cdpath): %s\n", ospath);
 			}
 
 			fsh[f].handleFiles.file.o = Sys_FOpen(ospath, "rb");
@@ -1212,8 +1213,8 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 				// case and separator insensitive comparisons
 				if (!FS_FilenameCompare(pakFile->name, filename)) {
 					// found it!
-					// Mark the pak as having been referenced 
-					// Shaders, txt, arena files by themselves do not count as a reference as these are loaded from all pk3s from every pk3 file.
+					// Mark the pak as having been referenced.
+					// Shaders, txt, and arena files by themselves do not count as a reference as these are loaded from all pk3s from every pk3 file.
 					len = strlen(filename);
 
 					if (!pak->referenced) {
@@ -4553,8 +4554,7 @@ void FS_GameValid(void) {
 =======================================================================================================================================
 FS_ConditionalRestart
 
-Restart if necessary.
-Return qtrue if restarting due to game directory changed, qfalse otherwise.
+Restart if necessary. Return qtrue if restarting due to game directory changed, qfalse otherwise.
 =======================================================================================================================================
 */
 qboolean FS_ConditionalRestart(qboolean disconnect) {

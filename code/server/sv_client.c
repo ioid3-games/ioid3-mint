@@ -205,7 +205,7 @@ void SV_AddPlayer(client_t *client, int localPlayerNum, const char *infoString) 
 	// check for privateClient password
 	password = Info_ValueForKey(userinfo, "password");
 
-	if (!strcmp(password, sv_privatePassword->string)) {
+	if (*password && !strcmp(password, sv_privatePassword->string)) {
 		startIndex = 0;
 	} else {
 		// skip past the reserved slots

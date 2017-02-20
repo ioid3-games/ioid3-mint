@@ -1137,7 +1137,6 @@ void PerpendicularVector(vec3_t dst, const vec3_t src) {
 }
 
 #define LINE_DISTANCE_EPSILON 1e-05f
-
 /*
 =======================================================================================================================================
 DistanceBetweenLineSegmentsSquared

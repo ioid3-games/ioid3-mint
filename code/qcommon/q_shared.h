@@ -609,7 +609,6 @@ static ID_INLINE float IntAsFloat(int i) {
 #else
 int VectorEmpty(const vec3_t v);
 int VectorCompare(const vec3_t v1, const vec3_t v2);
-// VectorCompareEpsilon
 vec_t VectorLength(const vec3_t v);
 vec_t VectorLengthSquared(const vec3_t v);
 vec_t Distance(const vec3_t p1, const vec3_t p2);
@@ -851,7 +850,6 @@ typedef struct {
 	byte b6;
 	byte b7;
 } qint64;
-
 #ifdef Q3_PORTABLE_ENDIAN
 short BigShort(short l);
 short LittleShort(short l);
@@ -868,7 +866,7 @@ void Swap_Init(void);
 char *QDECL va(char *format, ...) __attribute__((format(printf, 1, 2)));
 #define TRUNCATE_LENGTH 64
 void Com_TruncateLongString(char *buffer, const char *s);
-// key / value info strings
+// key/value info strings
 char *Info_ValueForKey(const char *s, const char *key);
 void Info_RemoveKey(char *s, const char *key);
 void Info_RemoveKey_Big(char *s, const char *key);

@@ -135,7 +135,6 @@ void CG_SetEntitySoundPosition(centity_t *cent) {
 }
 
 #define LS_FRAMETIME 100 // (ms) cycle through lightstyle characters at 10fps
-
 /*
 =======================================================================================================================================
 CG_AddLightstyle

@@ -860,6 +860,7 @@ CM_ClearMap
 void CM_ClearMap(void) {
 
 	BSP_Free(cm_bsp);
+
 	cm_bsp = NULL;
 
 	Com_Memset(&cm, 0, sizeof(cm));

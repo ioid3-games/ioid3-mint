@@ -247,7 +247,7 @@ VORBISDIR=$(MOUNT_DIR)/libvorbis-1.3.4
 OPUSDIR=$(MOUNT_DIR)/opus-1.1
 OPUSFILEDIR=$(MOUNT_DIR)/opusfile-0.5
 ZDIR=$(MOUNT_DIR)/zlib
-FTDIR=$(MOUNT_DIR)/freetype-2.6
+FTDIR=$(MOUNT_DIR)/freetype-2.7.1
 NSISDIR=misc/nsis
 SDLHDIR=$(MOUNT_DIR)/SDL2
 LIBSDIR=$(MOUNT_DIR)/libs
@@ -336,6 +336,9 @@ ifneq (,$(findstring "$(PLATFORM)", "linux" "gnu_kfreebsd" "kfreebsd-gnu" "gnu")
   ifeq ($(ARCH),sparc)
     OPTIMIZE += -mtune=ultrasparc3 -mv8plus
     OPTIMIZEVM += -mtune=ultrasparc3 -mv8plus
+    HAVE_VM_COMPILED=true
+  endif
+  ifeq ($(ARCH),armv7l)
     HAVE_VM_COMPILED=true
   endif
   ifeq ($(ARCH),alpha)
@@ -1194,6 +1197,7 @@ targets: makedirs
 	@echo "  VERSION: $(VERSION)"
 	@echo "  COMPILE_PLATFORM: $(COMPILE_PLATFORM)"
 	@echo "  COMPILE_ARCH: $(COMPILE_ARCH)"
+	@echo "  HAVE_VM_COMPILED: $(HAVE_VM_COMPILED)"
 	@echo "  CC: $(CC)"
 ifeq ($(PLATFORM),mingw32)
 	@echo "  WINDRES: $(WINDRES)"
@@ -1799,6 +1803,9 @@ ifeq ($(HAVE_VM_COMPILED),true)
   ifeq ($(ARCH),sparc)
     Q3OBJ += $(B)/client/vm_sparc.o
   endif
+  ifeq ($(ARCH),armv7l)
+    Q3OBJ += $(B)/client/vm_armv7l.o
+  endif
 endif
 
 ifdef MINGW
@@ -1975,6 +1982,9 @@ ifeq ($(HAVE_VM_COMPILED),true)
   endif
   ifeq ($(ARCH),sparc)
     Q3DOBJ += $(B)/ded/vm_sparc.o
+  endif
+  ifeq ($(ARCH),armv7l)
+    Q3DOBJ += $(B)/client/vm_armv7l.o
   endif
 endif
 

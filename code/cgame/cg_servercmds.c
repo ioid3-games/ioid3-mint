@@ -188,8 +188,7 @@ static void CG_ParseTeamInfo(int start) {
 =======================================================================================================================================
 CG_ParseServerinfo
 
-This is called explicitly when the gamestate is first received, and whenever
-the server updates any serverinfo flagged cvars.
+This is called explicitly when the gamestate is first received, and whenever the server updates any serverinfo flagged cvars.
 =======================================================================================================================================
 */
 void CG_ParseServerinfo(void) {
@@ -197,6 +196,7 @@ void CG_ParseServerinfo(void) {
 	char *mapname;
 
 	info = CG_ConfigString(CS_SERVERINFO);
+
 	Q_strncpyz(cgs.gametypeName, Info_ValueForKey(info, "sv_gametypeName"), sizeof(cgs.gametypeName));
 	cgs.gametype = atoi(Info_ValueForKey(info, "g_gametype"));
 	trap_Cvar_SetValue("g_gametype", cgs.gametype);

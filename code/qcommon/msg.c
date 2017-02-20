@@ -186,7 +186,6 @@ void MSG_WriteBits(msg_t *msg, int value, int bits) {
 			Com_Error(ERR_DROP, "can't write %d bits", bits);
 		}
 	} else {
-//		fp = fopen("c:\\netchan.bin", "a");
 		value &= (0xffffffff >> (32 - bits));
 
 		if (bits&7) {
@@ -203,14 +202,12 @@ void MSG_WriteBits(msg_t *msg, int value, int bits) {
 
 		if (bits) {
 			for (i = 0; i < bits; i += 8) {
-//				fwrite(bp, 1, 1, fp);
 				Huff_offsetTransmit(&msgHuff.compressor, (value & 0xff), msg->data, &msg->bit);
 				value = (value >> 8);
 			}
 		}
 
 		msg->cursize = (msg->bit >> 3) + 1;
-//		fclose(fp);
 	}
 }
 
@@ -1443,7 +1440,7 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to, netFields_t
 			endBit = (msg->readcount - 1) * 8 + msg->bit - GENTITYNUM_BITS;
 		}
 
-		Com_Printf("(%i bits)\n", endBit - startBit);
+		Com_Printf(" (%i bits)\n", endBit - startBit);
 	}
 }
 

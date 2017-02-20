@@ -1483,8 +1483,10 @@ static void CG_RegisterGraphics(void) {
 
 	if (cgs.gametype == GT_HARVESTER || cg_buildScript.integer) {
 		cgs.media.harvesterModel = trap_R_RegisterModel("models/powerups/harvester/harvester.md3");
+
 		CG_RegisterSkin("models/powerups/harvester/red.skin", &cgs.media.harvesterRedSkin, qfalse);
 		CG_RegisterSkin("models/powerups/harvester/blue.skin", &cgs.media.harvesterBlueSkin, qfalse);
+
 		cgs.media.harvesterNeutralModel = trap_R_RegisterModel("models/powerups/obelisk/obelisk.md3");
 	}
 
