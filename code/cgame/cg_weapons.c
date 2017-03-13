@@ -1260,10 +1260,10 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent,
 	if (ps || cg.cur_lc->renderingThirdPerson || cent->currentState.number != cg.cur_lc->predictedPlayerState.playerNum) {
 		// add lightning bolt
 		CG_LightningBolt(nonPredictedCent, flash.origin);
+	}
 
-		if (weapon->flashDlightColor[0] || weapon->flashDlightColor[1] || weapon->flashDlightColor[2]) {
-			trap_R_AddLightToScene(flash.origin, 300 + (rand()&31), 1.0f, weapon->flashDlightColor[0], weapon->flashDlightColor[1], weapon->flashDlightColor[2], 0);
-		}
+	if (weapon->flashDlightColor[0] || weapon->flashDlightColor[1] || weapon->flashDlightColor[2]) {
+		trap_R_AddLightToScene(flash.origin, 300 + (rand()&31), 1.0f, weapon->flashDlightColor[0], weapon->flashDlightColor[1], weapon->flashDlightColor[2], 0);
 	}
 }
 
