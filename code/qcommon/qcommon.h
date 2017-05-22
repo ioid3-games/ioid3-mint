@@ -575,7 +575,6 @@ long FS_FOpenFileRead(const char *qpath, fileHandle_t *file, qboolean uniqueFILE
 long FS_System_FOpenFileRead(const char *ospath, fileHandle_t *fp);
 int FS_Delete(char *filename); // only works inside the 'save' directory (for deleting savegames/images)
 int FS_Write(const void *buffer, int len, fileHandle_t f);
-int FS_Read2(void *buffer, int len, fileHandle_t f);
 int FS_Read(void *buffer, int len, fileHandle_t f);
 // properly handles partial reads and reads from other dlls
 void FS_FCloseFile(fileHandle_t f);
@@ -1005,6 +1004,7 @@ char *Sys_Cwd(void);
 void Sys_SetDefaultInstallPath(const char *path);
 char *Sys_DefaultInstallPath(void);
 char *Sys_SteamPath(void);
+char *Sys_GogPath(void);
 #ifdef __APPLE__
 char *Sys_DefaultAppPath(void);
 #endif
