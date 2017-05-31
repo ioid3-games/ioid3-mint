@@ -800,8 +800,8 @@ qboolean ConstOptimize(vm_t *vm, int callProcOfsSyscall) {
 			pc++; // OP_LOAD1
 			instruction += 1;
 			return qtrue;
-		case OP_STORE4:
-			EmitMovEAXStack(vm, (vm->dataMask & ~3));
+	case OP_STORE4:
+		EmitMovEAXStack(vm, vm->dataMask);
 #if idx64
 			EmitRexString(0x41, "C7 04 01"); // mov dword ptr [r9 + eax], 0x12345678
 			Emit4(Constant4());
@@ -814,8 +814,8 @@ qboolean ConstOptimize(vm_t *vm, int callProcOfsSyscall) {
 			pc++; // OP_STORE4
 			instruction += 1;
 			return qtrue;
-		case OP_STORE2:
-			EmitMovEAXStack(vm, (vm->dataMask & ~1));
+	case OP_STORE2:
+		EmitMovEAXStack(vm, vm->dataMask);
 #if idx64
 			Emit1(0x66); // mov word ptr [r9 + eax], 0x1234
 			EmitRexString(0x41, "C7 04 01");
@@ -1330,25 +1330,25 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 #endif
 					EmitCommand(LAST_COMMAND_MOV_STACK_EAX); // mov dword ptr [edi + ebx * 4], eax
 					break;
-				case OP_STORE4:
-					EmitMovEAXStack(vm, 0);
-					EmitString("8B 54 9F FC"); // mov edx, dword ptr -4[edi + ebx * 4]
-					MASK_REG("E2", vm->dataMask & ~3); // and edx, 0x12345678
+		case OP_STORE4:
+			EmitMovEAXStack(vm, 0);	
+			EmitString("8B 54 9F FC");			// mov edx, dword ptr -4[edi + ebx * 4]
+			MASK_REG("E2", vm->dataMask);		// and edx, 0x12345678
 #if idx64
-					EmitRexString(0x41, "89 04 11"); // mov dword ptr [r9 + edx], eax
+			EmitRexString(0x41, "89 04 11");		// mov dword ptr [r9 + edx], eax
 #else
 					EmitString("89 82"); // mov dword ptr [edx + 0x12345678], eax
 					Emit4((intptr_t)vm->dataBase);
 #endif
 					EmitCommand(LAST_COMMAND_SUB_BL_2); // sub bl, 2
 					break;
-				case OP_STORE2:
-					EmitMovEAXStack(vm, 0);
-					EmitString("8B 54 9F FC"); // mov edx, dword ptr -4[edi + ebx * 4]
-					MASK_REG("E2", vm->dataMask & ~1); // and edx, 0x12345678
+		case OP_STORE2:
+			EmitMovEAXStack(vm, 0);	
+			EmitString("8B 54 9F FC");			// mov edx, dword ptr -4[edi + ebx * 4]
+			MASK_REG("E2", vm->dataMask);		// and edx, 0x12345678
 #if idx64
-					Emit1(0x66); // mov word ptr [r9 + edx], eax
-					EmitRexString(0x41, "89 04 11");
+			Emit1(0x66);					// mov word ptr [r9 + edx], eax
+			EmitRexString(0x41, "89 04 11");
 #else
 					EmitString("66 89 82"); // mov word ptr [edx + 0x12345678], eax
 					Emit4((intptr_t)vm->dataBase);

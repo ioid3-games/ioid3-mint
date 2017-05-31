@@ -1895,7 +1895,7 @@ CL_Connect_f
 =======================================================================================================================================
 */
 void CL_Connect_f(void) {
-	char *server;
+	char server[MAX_OSPATH];
 	const char *serverString;
 	int argc = Cmd_Argc();
 	netadrtype_t family = NA_UNSPEC;
@@ -1906,7 +1906,7 @@ void CL_Connect_f(void) {
 	}
 
 	if (argc == 2) {
-		server = Cmd_Argv(1);
+		Q_strncpyz(server, Cmd_Argv(1), sizeof(server));
 	} else {
 		if (!strcmp(Cmd_Argv(1), "-4")) {
 			family = NA_IP;
@@ -1916,7 +1916,7 @@ void CL_Connect_f(void) {
 			Com_Printf("warning: only -4 or -6 as address type understood.\n");
 		}
 
-		server = Cmd_Argv(2);
+		Q_strncpyz(server, Cmd_Argv(2), sizeof(server));
 	}
 	// save arguments for reconnect
 	Q_strncpyz(cl_reconnectArgs, Cmd_Args(), sizeof(cl_reconnectArgs));

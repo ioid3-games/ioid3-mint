@@ -494,6 +494,8 @@ vmHeader_t *VM_LoadQVM(vm_t *vm, qboolean alloc, qboolean unpure, int heapReques
 
 	if (alloc) {
 		// allocate zero filled space for initialized and uninitialized data
+		// leave some space beyond data mask so we can secure all mask operations
+		vm->dataAlloc = hunkLength + 4;
 		vm->dataBase = Hunk_Alloc(hunkLength, h_high);
 		vm->dataMask = hunkLength - 1;
 		// set up dynamic memory access
@@ -509,7 +511,7 @@ vmHeader_t *VM_LoadQVM(vm_t *vm, qboolean alloc, qboolean unpure, int heapReques
 		}
 	} else {
 		// clear the data, but make sure we're not clearing more than allocated
-		if (vm->dataMask + 1 != hunkLength) {
+		if (vm->dataAlloc != hunkLength + 4) {
 			VM_Free(vm);
 			FS_FreeFile(header.v);
 
@@ -517,7 +519,7 @@ vmHeader_t *VM_LoadQVM(vm_t *vm, qboolean alloc, qboolean unpure, int heapReques
 			return NULL;
 		}
 
-		Com_Memset(vm->dataBase, 0, hunkLength);
+		Com_Memset(vm->dataBase, 0, vm->dataAlloc);
 	}
 	// copy the intialized data
 	Com_Memcpy(vm->dataBase, (byte *)header.h + header.h->dataOffset, header.h->dataLength + header.h->litLength);
