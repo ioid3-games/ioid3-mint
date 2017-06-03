@@ -1293,7 +1293,6 @@ void CG_CalcVrect(void);
 void CG_SetupFrustum(void);
 qboolean CG_CullPoint(vec3_t pt);
 qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
-qboolean CG_CalcFov(refdef_t *refdef, qboolean viewWeapon);
 void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoPlayback);
 // cg_drawtools.c
 typedef enum {
@@ -1450,7 +1449,7 @@ void CG_ShotgunFire(entityState_t *es);
 void CG_Bullet(vec3_t origin, int sourceEntityNum, vec3_t normal, qboolean flesh, int fleshEntityNum);
 void CG_RailTrail(playerInfo_t *pi, vec3_t start, vec3_t end);
 void CG_GrappleTrail(centity_t *ent, const weaponInfo_t *wi);
-void CG_DrawViewWeapon(playerState_t *ps);
+void CG_AddViewWeapon(playerState_t *ps);
 void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team);
 void CG_DrawWeaponSelect(void);
 void CG_OutOfAmmoChange(int localPlayerNum);	// should this be in pmove?
