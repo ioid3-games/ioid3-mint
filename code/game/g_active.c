@@ -82,7 +82,7 @@ void P_DamageFeedback(gentity_t *ent) {
 =======================================================================================================================================
 P_WorldEffects
 
-Check for lava / slime contents and drowning.
+Check for lava/slime contents and drowning.
 =======================================================================================================================================
 */
 void P_WorldEffects(gentity_t *ent) {

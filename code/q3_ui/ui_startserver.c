@@ -1903,6 +1903,7 @@ static void UI_BotSelectMenu_BotEvent(void *ptr, int event) {
 	}
 	// set selected
 	i = ((menucommon_s *)ptr)->id;
+
 	botSelectInfo.pics[i].generic.flags |= QMF_HIGHLIGHT;
 	botSelectInfo.picbuttons[i].generic.flags &= ~QMF_PULSEIFFOCUS;
 	botSelectInfo.selectedmodel = botSelectInfo.modelpage * MAX_MODELSPERPAGE + i;
@@ -1990,7 +1991,7 @@ static void UI_BotSelectMenu_Init(char *bot) {
 			botSelectInfo.pics[k].generic.flags = QMF_LEFT_JUSTIFY|QMF_INACTIVE;
 			botSelectInfo.pics[k].generic.x = x;
 			botSelectInfo.pics[k].generic.y = y;
- 			botSelectInfo.pics[k].generic.name = botSelectInfo.boticons[k];
+			botSelectInfo.pics[k].generic.name = botSelectInfo.boticons[k];
 			botSelectInfo.pics[k].width = 64;
 			botSelectInfo.pics[k].height = 64;
 			botSelectInfo.pics[k].focuspic = BOTSELECT_SELECTED;
@@ -2018,6 +2019,7 @@ static void UI_BotSelectMenu_Init(char *bot) {
 			botSelectInfo.picnames[k].string = botSelectInfo.botnames[k];
 			botSelectInfo.picnames[k].color = color_orange;
 			botSelectInfo.picnames[k].style = UI_CENTER|UI_SMALLFONT;
+
 			x += (64 + 6);
 		}
 

@@ -86,6 +86,7 @@ void UI_LoadBestScores(const char *map, int game) {
 
 	if (trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0) {
 		int size = 0;
+
 		trap_FS_Read(&size, sizeof(int), f);
 
 		if (size == sizeof(postGameInfo_t)) {

@@ -190,8 +190,7 @@ void SV_AddServerCommand(client_t *client, int localPlayerNum, const char *cmd) 
 =======================================================================================================================================
 SV_SendServerCommand
 
-Sends a reliable command string to be interpreted by the client game module:
-"cp", "print", "chat", etc.
+Sends a reliable command string to be interpreted by the client game module: "cp", "print", "chat", etc.
 A NULL client will broadcast to all clients.
 =======================================================================================================================================
 */
@@ -281,6 +280,7 @@ void SV_MasterHeartbeat(const char *message) {
 
 			if (netenabled & NET_ENABLEV4) {
 				Com_Printf("Resolving %s (IPv4)\n", sv_master[i]->string);
+
 				res = NET_StringToAdr(sv_master[i]->string, &adr[i][0], NA_IP);
 
 				if (res == 2) {
@@ -297,6 +297,7 @@ void SV_MasterHeartbeat(const char *message) {
 
 			if (netenabled & NET_ENABLEV6) {
 				Com_Printf("Resolving %s (IPv6)\n", sv_master[i]->string);
+
 				res = NET_StringToAdr(sv_master[i]->string, &adr[i][1], NA_IP6);
 
 				if (res == 2) {
@@ -558,6 +559,7 @@ Rate limit for a particular address.
 qboolean SVC_RateLimitAddress(netadr_t from, int burst, int period) {
 
 	leakyBucket_t *bucket = SVC_BucketForAddress(from, burst, period);
+
 	return SVC_RateLimit(bucket, burst, period);
 }
 
@@ -791,9 +793,11 @@ static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 		}
 
 		valid = qfalse;
+
 		Com_Printf("Bad rcon from %s: %s\n", NET_AdrToString(from), Cmd_ArgsFrom(2));
 	} else {
 		valid = qtrue;
+
 		Com_Printf("Rcon from %s: %s\n", NET_AdrToString(from), Cmd_ArgsFrom(2));
 	}
 	// start redirecting all print outputs to the packet

@@ -1488,7 +1488,7 @@ static void S_AL_AllocateStreamChannel(int stream, int entityNum) {
 	srcHandle_t cursrc;
 	ALuint alsrc;
 
-	if ((stream < 0) || (stream >= MAX_RAW_STREAMS)) {
+	if (stream < 0 || stream >= MAX_RAW_STREAMS) {
 		return;
 	}
 
@@ -1542,7 +1542,7 @@ S_AL_FreeStreamChannel
 */
 static void S_AL_FreeStreamChannel(int stream) {
 
-	if ((stream < 0) || (stream >= MAX_RAW_STREAMS)) {
+	if (stream < 0 || stream >= MAX_RAW_STREAMS) {
 		return;
 	}
 
@@ -1579,7 +1579,7 @@ static void S_AL_RawSamples(int stream, int samples, int rate, int width, int ch
 	ALuint buffer;
 	ALuint format;
 
-	if ((stream < 0) || (stream >= MAX_RAW_STREAMS)) {
+	if (stream < 0 || stream >= MAX_RAW_STREAMS) {
 		return;
 	}
 
@@ -1712,7 +1712,7 @@ static void S_AL_StreamUpdate(int stream) {
 	int numBuffers;
 	ALint state;
 
-	if ((stream < 0) || (stream >= MAX_RAW_STREAMS)) {
+	if (stream < 0 || stream >= MAX_RAW_STREAMS) {
 		return;
 	}
 
@@ -1775,7 +1775,7 @@ S_AL_StreamDie
 */
 static void S_AL_StreamDie(int stream) {
 
-	if ((stream < 0) || (stream >= MAX_RAW_STREAMS)) {
+	if (stream < 0 || stream >= MAX_RAW_STREAMS) {
 		return;
 	}
 

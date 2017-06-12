@@ -159,7 +159,7 @@ typedef struct client_s {
 	clientSnapshot_t frames[PACKET_BACKUP]; // updates can be delta'd from here
 	qboolean needBaseline;
 	int ping;
-	int rate;					// bytes / second
+	int rate;					// bytes/second
 	int snapshotMsec;			// requests a snapshot every snapshotMsec unless rate choked
 	netchan_t netchan;
 	// TTimo

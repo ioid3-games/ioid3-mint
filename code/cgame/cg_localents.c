@@ -379,10 +379,10 @@ static void CG_AddMoveScaleFade(localEntity_t *le) {
 	re = &le->refEntity;
 
 	if (le->fadeInTime > le->startTime && cg.time < le->fadeInTime) {
-		// fade / grow time
+		// fade/grow time
 		c = 1.0 - (float)(le->fadeInTime - cg.time) / (le->fadeInTime - le->startTime);
 	} else {
-		// fade / grow time
+		// fade/grow time
 		c = (le->endTime - cg.time) * le->lifeRate;
 	}
 
@@ -421,7 +421,7 @@ static void CG_AddScaleFade(localEntity_t *le) {
 	float len;
 
 	re = &le->refEntity;
-	// fade / grow time
+	// fade/grow time
 	c = (le->endTime - cg.time) * le->lifeRate;
 
 	re->shaderRGBA[3] = 0xff * c * le->color[3];
@@ -581,7 +581,7 @@ void CG_AddKamikaze(localEntity_t *le) {
 
 	if (t > KAMI_SHOCKWAVE_STARTTIME && t < KAMI_SHOCKWAVE_ENDTIME) {
 		if (!(le->leFlags & LEF_SOUND1)) {
-//			trap_S_StartSound(re->origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.kamikazeExplodeSound);
+			//trap_S_StartSound(re->origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.kamikazeExplodeSound);
 			trap_S_StartLocalSound(cgs.media.kamikazeExplodeSound, CHAN_AUTO);
 			le->leFlags |= LEF_SOUND1;
 		}

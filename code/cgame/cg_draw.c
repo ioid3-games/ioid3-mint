@@ -525,12 +525,12 @@ static float CG_DrawSnapshot(float y) {
 	return y + 2 + CG_DrawStringLineHeight(UI_BIGFONT);
 }
 
+#define FPS_FRAMES 4
 /*
 =======================================================================================================================================
 CG_DrawFPS
 =======================================================================================================================================
 */
-#define FPS_FRAMES 4
 static float CG_DrawFPS(float y) {
 	char *s;
 	static int previousTimes[FPS_FRAMES];
@@ -1405,7 +1405,7 @@ lagometer_t lagometer;
 =======================================================================================================================================
 CG_AddLagometerFrameInfo
 
-Adds the current interpolate / extrapolate bar for this frame.
+Adds the current interpolate/extrapolate bar for this frame.
 =======================================================================================================================================
 */
 void CG_AddLagometerFrameInfo(void) {
@@ -1521,7 +1521,7 @@ static void CG_DrawLagometer(void) {
 	range = ah / 3;
 	mid = ay + range;
 	vscale = range / MAX_LAGOMETER_RANGE;
-	// draw the frame interpolate / extrapolate graph
+	// draw the frame interpolate/extrapolate graph
 	for (a = 0; a < aw; a++) {
 		i = (lagometer.frameCount - 1 - a) & (LAG_SAMPLES - 1);
 		v = lagometer.frameSamples[i];

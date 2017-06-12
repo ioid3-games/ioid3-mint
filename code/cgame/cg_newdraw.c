@@ -1405,10 +1405,11 @@ qboolean CG_YourTeamHasFlag(void) {
 	return qfalse;
 }
 #ifdef MISSIONPACK_HUD
-// THINKABOUTME: should these be exclusive or inclusive...
 /*
 =======================================================================================================================================
 CG_OwnerDrawVisible
+
+THINKABOUTME: should these be exclusive or inclusive..
 =======================================================================================================================================
 */
 qboolean CG_OwnerDrawVisible(int flags) {
@@ -1679,13 +1680,12 @@ static void CG_DrawGameType(rectDef_t *rect, float scale, vec4_t color, qhandle_
 	CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, CG_GameTypeString(), 0, 0, textStyle);
 }
 
+#define PIC_WIDTH 12
 /*
 =======================================================================================================================================
 CG_DrawNewTeamInfo
 =======================================================================================================================================
 */
-#define PIC_WIDTH 12
-
 void CG_DrawNewTeamInfo(rectDef_t *rect, float text_x, float text_y, float scale, vec4_t color, qhandle_t shader) {
 	int xx;
 	float y;

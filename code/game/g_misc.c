@@ -780,6 +780,7 @@ PortalEnable
 =======================================================================================================================================
 */
 static void PortalEnable(gentity_t *self) {
+
 	self->touch = PortalTouch;
 	self->think = G_FreeEntity;
 	self->nextthink = level.time + 2 * 60 * 1000;
