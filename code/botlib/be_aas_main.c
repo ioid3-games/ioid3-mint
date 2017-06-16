@@ -223,7 +223,7 @@ int AAS_LoadFiles(const char *mapname) {
 	}
 
 	botimport.Print(PRT_DEVELOPER, "loaded %s\n", aasfile);
-	strncpy(aasworld.filename, aasfile, MAX_PATH);
+	Q_strncpyz(aasworld.filename, aasfile, sizeof(aasworld.filename));
 	return BLERR_NOERROR;
 }
 

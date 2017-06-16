@@ -226,8 +226,6 @@ vmCvar_t pmove_fixed;
 vmCvar_t pmove_msec;
 vmCvar_t cg_pmove_msec;
 vmCvar_t cg_cameraMode;
-vmCvar_t cg_cameraOrbit;
-vmCvar_t cg_cameraOrbitDelay;
 vmCvar_t cg_timescaleFadeEnd;
 vmCvar_t cg_timescaleFadeSpeed;
 vmCvar_t cg_timescale;
@@ -278,6 +276,7 @@ vmCvar_t cg_handicap[MAX_SPLITVIEW];
 vmCvar_t cg_teamtask[MAX_SPLITVIEW];
 vmCvar_t cg_teampref[MAX_SPLITVIEW];
 vmCvar_t cg_autoswitch[MAX_SPLITVIEW];
+vmCvar_t cg_cyclePastGauntlet[MAX_SPLITVIEW];
 vmCvar_t cg_drawGun[MAX_SPLITVIEW];
 vmCvar_t cg_thirdPerson[MAX_SPLITVIEW];
 vmCvar_t cg_thirdPersonRange[MAX_SPLITVIEW];
@@ -414,8 +413,6 @@ static cvarTable_t cgameCvarTable[] = {
 	{&cg_hudFiles, "cg_hudFiles", "ui/hud.txt", CVAR_ARCHIVE, RANGE_ALL},
 #endif
 #endif
-	{&cg_cameraOrbit, "cg_cameraOrbit", "0", CVAR_CHEAT, RANGE_ALL},
-	{&cg_cameraOrbitDelay, "cg_cameraOrbitDelay", "50", CVAR_ARCHIVE, RANGE_ALL},
 	{&cg_timescaleFadeEnd, "cg_timescaleFadeEnd", "1", 0, RANGE_ALL},
 	{&cg_timescaleFadeSpeed, "cg_timescaleFadeSpeed", "0", 0, RANGE_ALL},
 	{&cg_timescale, "timescale", "1", 0, RANGE_ALL},
@@ -467,6 +464,7 @@ static userCvarTable_t userCvarTable[] = {
 	{cg_teamtask, "teamtask", "0", CVAR_USERINFO, RANGE_ALL},
 	{cg_teampref, "teampref", "", CVAR_USERINFO, RANGE_ALL},
 	{cg_autoswitch, "cg_autoswitch", "1", CVAR_ARCHIVE, RANGE_BOOL},
+	{cg_cyclePastGauntlet, "cg_cyclePastGauntlet", "1", CVAR_ARCHIVE, RANGE_BOOL},
 	{cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE, RANGE_INT(0, 3)},
 	{cg_thirdPerson, "cg_thirdPerson", "0", 0, RANGE_BOOL},
 	{cg_thirdPersonRange, "cg_thirdPersonRange", "40", CVAR_CHEAT, RANGE_ALL},
@@ -1653,6 +1651,8 @@ void CG_LocalPlayerAdded(int localPlayerNum, int playerNum) {
 	}
 
 	cg.localPlayers[localPlayerNum].playerNum = playerNum;
+
+	CG_LoadDeferredPlayers();
 }
 
 /*
@@ -2834,6 +2834,8 @@ void CG_Refresh(int serverTime, stereoFrame_t stereoView, qboolean demoPlayback,
 	}
 
 	if (!cg_dedicated.integer && state == CA_DISCONNECTED && !UI_IsFullscreen()) {
+		// if disconnected, bring up the menu
+		// ZTM: TODO: call trap_S_StopAllSounds() here. Currently it's done in cl_main.c
 		UI_SetActiveMenu(UIMENU_MAIN);
 	}
 

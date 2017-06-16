@@ -529,8 +529,7 @@ static void CG_MapRestart(void) {
 	for (i = 0; i < CG_MaxSplitView(); i++) {
 		cg.localPlayers[i].rewardTime = 0;
 		cg.localPlayers[i].rewardStack = 0;
-
-		trap_Cvar_SetValue(Com_LocalPlayerCvarName(i, "cg_thirdPerson"), 0);
+		cg.localPlayers[i].cameraOrbit = 0;
 	}
 }
 #ifdef MISSIONPACK

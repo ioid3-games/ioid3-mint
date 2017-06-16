@@ -1486,7 +1486,7 @@ void CG_NextWeapon_f(int localPlayerNum) {
 			player->weaponSelect = 0;
 		}
 
-		if (player->weaponSelect == WP_GAUNTLET) {
+		if (player->weaponSelect == WP_GAUNTLET && cg_cyclePastGauntlet[localPlayerNum].integer) {
 			continue; // never cycle to gauntlet
 		}
 
@@ -1532,7 +1532,7 @@ void CG_PrevWeapon_f(int localPlayerNum) {
 			player->weaponSelect = MAX_WEAPONS - 1;
 		}
 
-		if (player->weaponSelect == WP_GAUNTLET) {
+		if (player->weaponSelect == WP_GAUNTLET && cg_cyclePastGauntlet[localPlayerNum].integer) {
 			continue; // never cycle to gauntlet
 		}
 
@@ -1580,6 +1580,54 @@ void CG_Weapon_f(int localPlayerNum) {
 	}
 
 	player->weaponSelect = num;
+}
+
+/*
+=======================================================================================================================================
+CG_WeaponToggle_f
+
+Select weapon and store old weapon or if already selecting the weapon switch back to old weapon.
+=======================================================================================================================================
+*/
+void CG_WeaponToggle_f(int localPlayerNum) {
+	int num;
+	int weapon, oldweapon;
+	playerState_t *ps;
+	localPlayer_t *player;
+
+	if (cg.localPlayers[localPlayerNum].playerNum == -1) {
+		return;
+	}
+
+	ps = &cg.snap->pss[localPlayerNum];
+	player = &cg.localPlayers[localPlayerNum];
+
+	if (ps->pm_flags & PMF_FOLLOW) {
+		return;
+	}
+
+	num = atoi(CG_Argv(1));
+
+	if (num < 1 || num > MAX_WEAPONS - 1) {
+		return;
+	}
+
+	player->weaponSelectTime = cg.time;
+
+	if (player->weaponSelect != num) {
+		weapon = num;
+		oldweapon = player->weaponSelect;
+	} else {
+		weapon = player->weaponToggledFrom;
+		oldweapon = WP_NONE;
+	}
+
+	if (!(ps->stats[STAT_WEAPONS] & (1 << weapon))) {
+		return; // don't have the weapon
+	}
+
+	player->weaponSelect = weapon;
+	player->weaponToggledFrom = oldweapon;
 }
 
 /*

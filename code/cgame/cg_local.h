@@ -529,10 +529,11 @@ typedef struct {
 	float zoomSensitivity;
 	int itemPickup;
 	int itemPickupTime;
-	int itemPickupBlendTime; 		// the pulse around the crosshair is timed separately
+	int itemPickupBlendTime;		// the pulse around the crosshair is timed separately
 	int weaponSelectTime;
 	int weaponAnimation;
 	int weaponAnimationTime;
+	int weaponToggledFrom;
 	// blend blobs
 	float damageTime;
 	float damageX, damageY, damageValue;
@@ -553,6 +554,10 @@ typedef struct {
 	// first person gun flash origin
 	vec3_t flashOrigin;
 	// qboolean cameraMode;			// if rendering from a loaded camera
+	// orbit camera around player
+	float cameraOrbit;				// angles per second to orbit, forces third person.
+	float cameraOrbitAngle;
+	float cameraOrbitRange;
 	vec3_t lastViewPos;
 	vec3_t lastViewAngles;
 	// scoreboard
@@ -682,7 +687,6 @@ typedef struct {
 	float bobfracsin;
 	int bobcycle;
 	float xyspeed;
-	int nextOrbitTime;
 	// development tool
 	refEntity_t testModelEntity;
 	char testModelName[MAX_QPATH];
@@ -1175,8 +1179,6 @@ extern vmCvar_t pmove_overbounce;
 extern vmCvar_t pmove_fixed;
 extern vmCvar_t pmove_msec;
 //extern vmCvar_t cg_pmove_fixed;
-extern vmCvar_t cg_cameraOrbit;
-extern vmCvar_t cg_cameraOrbitDelay;
 extern vmCvar_t cg_timescaleFadeEnd;
 extern vmCvar_t cg_timescaleFadeSpeed;
 extern vmCvar_t cg_timescale;
@@ -1226,6 +1228,7 @@ extern vmCvar_t cg_handicap[MAX_SPLITVIEW];
 extern vmCvar_t cg_teamtask[MAX_SPLITVIEW];
 extern vmCvar_t cg_teampref[MAX_SPLITVIEW];
 extern vmCvar_t cg_autoswitch[MAX_SPLITVIEW];
+extern vmCvar_t cg_cyclePastGauntlet[MAX_SPLITVIEW];
 extern vmCvar_t cg_drawGun[MAX_SPLITVIEW];
 extern vmCvar_t cg_thirdPerson[MAX_SPLITVIEW];
 extern vmCvar_t cg_thirdPersonRange[MAX_SPLITVIEW];
@@ -1439,6 +1442,7 @@ qboolean CG_PositionRotatedEntityOnTag(refEntity_t *entity, const refEntity_t *p
 void CG_NextWeapon_f(int localPlayerNum);
 void CG_PrevWeapon_f(int localPlayerNum);
 void CG_Weapon_f(int localPlayerNum);
+void CG_WeaponToggle_f(int localPlayerNum);
 void CG_RegisterWeapon(int weaponNum);
 void CG_RegisterItemVisuals(int itemNum);
 void CG_FireWeapon(centity_t *cent);

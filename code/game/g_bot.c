@@ -739,7 +739,7 @@ static void G_AddBot(const char *name, float skill, const char *team, int delay,
 	Info_SetValueForKey(userinfo, "name", botname);
 	Info_SetValueForKey(userinfo, "rate", "25000");
 	Info_SetValueForKey(userinfo, "snaps", "20");
-	Info_SetValueForKey(userinfo, "skill", va("%.2f", skill));
+	Info_SetValueForKey(userinfo, "skill", va("%.2g", skill));
 	Info_SetValueForKey(userinfo, "teampref", team);
 	// handicap
 	if (skill >= 1 && skill < 2) {
@@ -851,7 +851,7 @@ void Svcmd_AddBot_f(void) {
 	if (!string[0]) {
 		skill = 4;
 	} else {
-		skill = atof(string);
+		skill = Com_Clamp(1, 5, atof(string));
 	}
 	// team
 	trap_Argv(3, team, sizeof(team));

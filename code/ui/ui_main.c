@@ -308,8 +308,6 @@ UI_ShowPostGame
 */
 void UI_ShowPostGame(qboolean newHigh) {
 
-	trap_Cvar_SetValue("cg_cameraOrbit", 0);
-	trap_Cvar_SetValue("cg_thirdPerson", 0);
 	uiInfo.soundHighScore = newHigh;
 	UI_SetActiveMenu(UIMENU_POSTGAME);
 }
@@ -3287,8 +3285,6 @@ static void UI_StartSkirmish(qboolean next) {
 	temp = trap_Cvar_VariableValue("sv_pure");
 	trap_Cvar_SetValue("ui_pure", temp);
 
-	trap_Cvar_SetValue("cg_cameraOrbit", 0);
-	trap_Cvar_SetValue("cg_thirdPerson", 0);
 	trap_Cvar_SetValue("cg_drawTimer", 1);
 	trap_Cvar_SetValue("g_doWarmup", 1);
 	trap_Cvar_SetValue("g_warmup", 15);
@@ -3494,8 +3490,6 @@ static void UI_RunMenuScript(char **args) {
 			int i, clients, oldclients;
 			float skill;
 
-			trap_Cvar_SetValue("cg_thirdPerson", 0);
-			trap_Cvar_SetValue("cg_cameraOrbit", 0);
 			trap_Cvar_SetValue("ui_singlePlayerActive", 0);
 			trap_Cvar_SetValue("dedicated", Com_Clamp(0, 2, ui_dedicated.integer));
 			trap_Cvar_SetValue("sv_public", (ui_dedicated.integer == 2));
@@ -3655,8 +3649,6 @@ static void UI_RunMenuScript(char **args) {
 			uiInfo.serverStatusInfo.numLines = 0;
 			Menu_SetFeederSelection(NULL, FEEDER_FINDPLAYER, 0, NULL);
 		} else if (Q_stricmp(name, "JoinServer") == 0) {
-			trap_Cvar_SetValue("cg_thirdPerson", 0);
-			trap_Cvar_SetValue("cg_cameraOrbit", 0);
 			trap_Cvar_SetValue("ui_singlePlayerActive", 0);
 
 			if (uiInfo.serverStatus.currentServer >= 0 && uiInfo.serverStatus.currentServer < uiInfo.serverStatus.numDisplayServers) {

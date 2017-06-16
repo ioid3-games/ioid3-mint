@@ -340,10 +340,21 @@ static void CG_OffsetThirdPersonView(void) {
 	cg.refdef.vieworg[2] += cg.cur_lc->predictedPlayerState.viewheight;
 
 	VectorCopy(cg.refdefViewAngles, focusAngles);
-	// if dead, look at killer
-	if (cg.cur_lc->predictedPlayerState.stats[STAT_HEALTH] <= 0) {
-		focusAngles[YAW] = cg.cur_lc->predictedPlayerState.stats[STAT_DEAD_YAW];
-		cg.refdefViewAngles[YAW] = cg.cur_lc->predictedPlayerState.stats[STAT_DEAD_YAW];
+
+	if (cg.cur_lc->cameraOrbit) {
+		thirdPersonAngle = cg.cur_lc->cameraOrbitAngle;
+		thirdPersonRange = cg.cur_lc->cameraOrbitRange;
+		// make camera orbit horizontal
+		focusAngles[PITCH] = 0;
+		cg.refdefViewAngles[PITCH] = 0;
+	} else {
+		thirdPersonAngle = cg_thirdPersonAngle[cg.cur_localPlayerNum].value;
+		thirdPersonRange = cg_thirdPersonRange[cg.cur_localPlayerNum].value;
+		// if dead, look at killer
+		if (cg.cur_lc->predictedPlayerState.stats[STAT_HEALTH] <= 0) {
+			focusAngles[YAW] = cg.cur_lc->predictedPlayerState.stats[STAT_DEAD_YAW];
+			cg.refdefViewAngles[YAW] = cg.cur_lc->predictedPlayerState.stats[STAT_DEAD_YAW];
+		}
 	}
 
 	if (focusAngles[PITCH] > 45) {
@@ -365,10 +376,10 @@ static void CG_OffsetThirdPersonView(void) {
 
 	AngleVectors(cg.refdefViewAngles, forward, right, up);
 
-	forwardScale = cos(cg_thirdPersonAngle[cg.cur_localPlayerNum].value / 180 * M_PI);
-	sideScale = sin(cg_thirdPersonAngle[cg.cur_localPlayerNum].value / 180 * M_PI);
-	VectorMA(view, -cg_thirdPersonRange[cg.cur_localPlayerNum].value * forwardScale, forward, view);
-	VectorMA(view, -cg_thirdPersonRange[cg.cur_localPlayerNum].value * sideScale, right, view);
+	forwardScale = cos(thirdPersonAngle / 180 * M_PI);
+	sideScale = sin(thirdPersonAngle / 180 * M_PI);
+	VectorMA(view, -thirdPersonRange * forwardScale, forward, view);
+	VectorMA(view, -thirdPersonRange * sideScale, right, view);
 	// trace a ray from the origin to the viewpoint to make sure the view isn't in a solid block. Use a 10 by 10 block to prevent the
 	// view from near clipping anything
 	if (!cg_cameraMode.integer) {
@@ -393,7 +404,7 @@ static void CG_OffsetThirdPersonView(void) {
 	}
 
 	cg.refdefViewAngles[PITCH] = -180 / M_PI * atan2(focusPoint[2], focusDist);
-	cg.refdefViewAngles[YAW] -= cg_thirdPersonAngle[cg.cur_localPlayerNum].value;
+	cg.refdefViewAngles[YAW] -= thirdPersonAngle;
 }
 
 /*
@@ -812,10 +823,8 @@ static int CG_CalcViewValues(void) {
 	VectorCopy(ps->origin, cg.refdef.vieworg);
 	VectorCopy(ps->viewangles, cg.refdefViewAngles);
 
-	if (cg_cameraOrbit.integer) {
-		if (cg.time > cg.nextOrbitTime) {
-			cg_thirdPersonAngle[cg.cur_localPlayerNum].value += cg_cameraOrbit.value;
-		}
+	if (cg.cur_lc->cameraOrbit) {
+		cg.cur_lc->cameraOrbitAngle += cg.cur_lc->cameraOrbit * cg.frametime * 0.001f;
 	}
 	// add error decay
 	if (cg_errorDecay.value > 0) {
@@ -1117,7 +1126,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		cg.cur_lc = &cg.localPlayers[i];
 		cg.cur_ps = &cg.snap->pss[i];
 		// decide on third person view
-		cg.cur_lc->renderingThirdPerson = cg.cur_ps->persistant[PERS_TEAM] != TEAM_SPECTATOR && (cg_thirdPerson[cg.cur_localPlayerNum].integer || (cg.cur_ps->stats[STAT_HEALTH] <= 0));
+		cg.cur_lc->renderingThirdPerson = cg.cur_ps->persistant[PERS_TEAM] != TEAM_SPECTATOR && (cg_thirdPerson[cg.cur_localPlayerNum].integer || (cg.cur_ps->stats[STAT_HEALTH] <= 0) || cg.cur_lc->cameraOrbit);
 		// build cg.refdef
 		inwater = CG_CalcViewValues();
 		CG_SetupFrustum();
@@ -1187,12 +1196,6 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	cg.cur_localPlayerNum = -1;
 	cg.cur_lc = NULL;
 	cg.cur_ps = NULL;
-
-	if (cg_cameraOrbit.integer) {
-		if (cg.time > cg.nextOrbitTime) {
-			cg.nextOrbitTime = cg.time + cg_cameraOrbitDelay.integer;
-		}
-	}
 	// load any models that have been deferred if a scoreboard is shown
 	if (!CG_AnyScoreboardShowing()) {
 		cg.deferredPlayerLoading = 0;

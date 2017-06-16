@@ -100,12 +100,12 @@ cvar_t *com_legacyprotocol;
 #endif
 cvar_t *com_homepath;
 cvar_t *com_busyWait;
+#ifndef DEDICATED
+cvar_t *con_autochat;
+#endif
 #ifdef USE_RENDERER_DLOPEN
 cvar_t *com_renderer;
 static void *rendererLib = NULL;
-#endif
-#ifndef DEDICATED
-cvar_t *con_autochat;
 #endif
 #if idx64
 	int (*Q_VMftol)(void);

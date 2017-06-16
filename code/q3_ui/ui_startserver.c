@@ -48,8 +48,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define GAMESERVER_ARROWSR "menu/art/gs_arrows_r"
 
 #define MAX_MAPROWS 2
-#define MAX_MAPCOLS 2
-#define MAX_MAPSPERPAGE 4
+#define MAX_MAPCOLS 4
+#define MAX_MAPSPERPAGE 8
 #define MAX_NAMELENGTH 16
 
 #define ID_GAMETYPE			10
@@ -452,8 +452,8 @@ static void StartServer_MenuInit(qboolean multiplayer) {
 	s_startserver.gametype.itemnames = gametype_items;
 
 	for (i = 0; i < MAX_MAPSPERPAGE; i++) {
-		x = (i % MAX_MAPCOLS) * (128 + 8) + 188;
-		y = (i / MAX_MAPROWS) * (128 + 8) + 96;
+		x = (i % MAX_MAPCOLS) * (128 + 8) + (SCREEN_WIDTH - (MAX_MAPCOLS * (128 + 8)) - 8) / 2;
+		y = ((i / MAX_MAPCOLS) % MAX_MAPROWS) * (128 + 8) + 96;
 
 		s_startserver.mappics[i].generic.type = MTYPE_BITMAP;
 		s_startserver.mappics[i].generic.flags = QMF_LEFT_JUSTIFY|QMF_INACTIVE;
@@ -1454,7 +1454,7 @@ static void ServerOptions_MenuInit(qboolean multiplayer) {
 	s_serveroptions.botSkill.generic.x = 32 + CG_DrawStrlen(s_serveroptions.botSkill.generic.name, UI_SMALLFONT) + 2 * SMALLCHAR_WIDTH;
 	s_serveroptions.botSkill.generic.y = y;
 	s_serveroptions.botSkill.itemnames = botSkill_list;
-	s_serveroptions.botSkill.curvalue = 1;
+	s_serveroptions.botSkill.curvalue = 3;
 
 	y += (2 * SMALLCHAR_HEIGHT);
 	s_serveroptions.player0.generic.type = MTYPE_TEXT;
