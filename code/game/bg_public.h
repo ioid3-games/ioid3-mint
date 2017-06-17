@@ -39,8 +39,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #endif
 #define GAME_VERSION MODDIR "-4"
 // used for switching fs_game
+#ifndef BASEQ3
 #define BASEQ3 "baseq3"
+#endif
+#ifndef BASETA
 #define BASETA "missionpack"
+#endif
 #define DEFAULT_GRAVITY 800
 #define GIB_HEALTH -40
 #define ARMOR_PROTECTION 0.66
