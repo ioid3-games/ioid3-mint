@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -117,8 +123,8 @@ static void CG_Obituary(entityState_t *ent) {
 	}
 
 	Q_strncpyz(targetName, Info_ValueForKey(targetInfo, "n"), sizeof(targetName) - 2);
-
 	strcat(targetName, S_COLOR_WHITE);
+
 	message2 = "";
 	// check for single player messages
 	switch (mod) {
@@ -225,6 +231,7 @@ static void CG_Obituary(entityState_t *ent) {
 	// check for kill messages from the current playerNum
 	if (CG_LocalPlayerState(attacker)) {
 		char *s;
+
 		playerState_t *ps;
 
 		for (i = 0; i < CG_MaxSplitView(); i++) {
@@ -461,6 +468,7 @@ int CG_WaterLevel(centity_t *cent) {
 	point[0] = cent->lerpOrigin[0];
 	point[1] = cent->lerpOrigin[1];
 	point[2] = cent->lerpOrigin[2] + MINS_Z + 1;
+
 	contents = CG_PointContents(point, -1);
 
 	if (contents & MASK_WATER) {
@@ -527,7 +535,7 @@ void CG_PainEvent(centity_t *cent, int health) {
 =======================================================================================================================================
 CG_EntityEvent
 
-An entity has an event value, also called by CG_CheckPlayerstateEvents.
+An entity has an event value. Also called by CG_CheckPlayerstateEvents.
 =======================================================================================================================================
 */
 #define DEBUGNAME(x) if (cg_debugEvents.integer){CG_Printf(x"\n");}
@@ -633,6 +641,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 		case EV_FALL_FAR:
 			DEBUGNAME("EV_FALL_FAR");
 			trap_S_StartSound(NULL, es->number, CHAN_AUTO, CG_CustomSound(es->number, "*fall1.wav"));
+
 			cent->pe.painTime = cg.time; // don't play a pain sound right after this
 
 			for (i = 0; i < CG_MaxSplitView(); i++) {
@@ -664,7 +673,8 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 						continue;
 					}
 					// if we are interpolating, we don't need to smooth steps
-					if (cg.demoPlayback || (ps->pm_flags & PMF_FOLLOW) || cg_nopredict.integer || cg_synchronousClients.integer) {
+					if (cg.demoPlayback || (ps->pm_flags & PMF_FOLLOW) ||
+						cg_nopredict.integer || cg_synchronousClients.integer) {
 						continue;
 					}
 					// check for stepping up before a previous step is completed
@@ -819,7 +829,9 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 		// weapon events
 		case EV_NOAMMO:
 			DEBUGNAME("EV_NOAMMO");
+
 //			trap_S_StartSound(NULL, es->number, CHAN_AUTO, cgs.media.noAmmoSound);
+
 			for (i = 0; i < CG_MaxSplitView(); i++) {
 				if (es->number == cg.snap->pss[i].playerNum) {
 					CG_OutOfAmmoChange(i);
@@ -948,6 +960,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 			break;
 		case EV_RAILTRAIL:
 			DEBUGNAME("EV_RAILTRAIL");
+
 			cent->currentState.weapon = WP_RAILGUN;
 
 			if (es->playerNum >= 0 && es->playerNum < MAX_CLIENTS) {
@@ -1015,7 +1028,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 				qboolean localHasBlue = qfalse;
 				qboolean localHasRed = qfalse;
 				qboolean localHasNeutral = qfalse;
-				// Check if any local player is on blue / red team or has flags.
+				// Check if any local player is on blue/red team or has flags.
 				for (i = 0; i < CG_MaxSplitView(); i++) {
 					if (cg.snap->playerNums[i] == -1) {
 						continue;
@@ -1042,8 +1055,8 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 					}
 				}
 				// ZTM: NOTE: Some of these sounds don't really work with local player on different teams.
-				//		New games might want to replace you/enemy sounds with red/blue.
-				//		See http:// github.com/zturtleman/spearmint/wiki/New - Sounds
+				// New games might want to replace you/enemy sounds with red/blue.
+				// See http://github.com/zturtleman/spearmint/wiki/New-Sounds
 				switch (es->eventParm) {
 					case GTS_RED_CAPTURE: // CTF: red team captured the blue flag, 1FCTF: red team captured the neutral flag
 						if (redTeam) {
@@ -1074,9 +1087,8 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 #ifdef MISSIONPACK
 						if (cgs.gametype == GT_1FCTF) {
 							CG_AddBufferedSound(cgs.media.returnOpponentSound);
-
-						CG_AddBufferedSound(cgs.media.neutralFlagReturnedSound);
-						break;
+							CG_AddBufferedSound(cgs.media.neutralFlagReturnedSound);
+							break;
 						}
 #endif
 						if (blueTeam) {
@@ -1105,10 +1117,10 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 									CG_AddBufferedSound(cgs.media.enemyTookTheFlagSound);
 								} else
 #endif
- 									CG_AddBufferedSound(cgs.media.yourTeamTookEnemyFlagSound);
+									CG_AddBufferedSound(cgs.media.yourTeamTookEnemyFlagSound);
 							}
 						} else {
-						// ZTM: NOTE: There are local players on both teams, so have no correct sound to play. New games should fix this.
+							// ZTM: NOTE: There are local players on both teams, so have no correct sound to play. New games should fix this.
 						}
 
 						break;
@@ -1124,7 +1136,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 								} else
 #endif
 									CG_AddBufferedSound(cgs.media.enemyTookYourFlagSound);
-						} else if (blueTeam) {
+							} else if (blueTeam) {
 #ifdef MISSIONPACK
 								if (cgs.gametype == GT_1FCTF) {
 									CG_AddBufferedSound(cgs.media.enemyTookTheFlagSound);
@@ -1133,7 +1145,7 @@ void CG_EntityEvent(centity_t *cent, vec3_t position) {
 									CG_AddBufferedSound(cgs.media.yourTeamTookEnemyFlagSound);
 							}
 						} else {
-						// ZTM: NOTE: There are local players on both teams, so have no correct sound to play. New games should fix this.
+							// ZTM: NOTE: There are local players on both teams, so have no correct sound to play. New games should fix this.
 						}
 
 						break;

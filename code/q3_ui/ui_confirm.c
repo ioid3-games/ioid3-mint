@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -109,7 +115,7 @@ MessageMenu_Draw
 =======================================================================================================================================
 */
 static void MessageMenu_Draw(void) {
-	int i, y;
+	int i,y;
 
 	CG_DrawNamedPic(142, 118, 359, 256, ART_CONFIRM_FRAME);
 
@@ -181,6 +187,7 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw)(void), v
 	s_confirm.draw = draw;
 	s_confirm.action = action;
 	s_confirm.style = style;
+
 	s_confirm.menu.draw = ConfirmMenu_Draw;
 	s_confirm.menu.key = ConfirmMenu_Key;
 	s_confirm.menu.wrapAround = qtrue;
@@ -236,7 +243,6 @@ Hacked over from Confirm stuff.
 =======================================================================================================================================
 */
 void UI_Message(const char **lines) {
-
 	int n1, l1;
 
 	// zero set all our globals
@@ -249,6 +255,7 @@ void UI_Message(const char **lines) {
 
 	s_confirm.lines = lines;
 	s_confirm.style = UI_CENTER|UI_INVERSE|UI_SMALLFONT;
+
 	s_confirm.menu.draw = MessageMenu_Draw;
 	s_confirm.menu.key = ConfirmMenu_Key;
 	s_confirm.menu.wrapAround = qtrue;

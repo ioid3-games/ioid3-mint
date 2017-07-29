@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -1156,6 +1162,7 @@ void NET_OpenSocks(int port) {
 		// build the request
 		ulen = strlen(net_socksUsername->string);
 		plen = strlen(net_socksPassword->string);
+
 		buf[0] = 1; // username/password authentication version
 		buf[1] = ulen;
 
@@ -1425,7 +1432,7 @@ static qboolean NET_GetCvars(void) {
 	// I want server owners to explicitly turn on ipv6 support.
 	net_enabled = Cvar_Get("net_enabled", "1", CVAR_LATCH|CVAR_ARCHIVE);
 #else
-	// End users have it enabled so they can connect to ipv6-only hosts, but ipv4 will be used if available due to ping
+	// end users have it enabled so they can connect to ipv6-only hosts, but ipv4 will be used if available due to ping
 	net_enabled = Cvar_Get("net_enabled", "3", CVAR_LATCH|CVAR_ARCHIVE);
 #endif
 	modified = net_enabled->modified;
@@ -1446,7 +1453,7 @@ static qboolean NET_GetCvars(void) {
 	net_port6 = Cvar_Get("net_port6", va("%i", PORT_SERVER), CVAR_LATCH);
 	modified += net_port6->modified;
 	net_port6->modified = qfalse;
-	// Some cvars for configuring multicast options which facilitates scanning for servers on local subnets.
+	// some cvars for configuring multicast options which facilitates scanning for servers on local subnets.
 	net_mcast6addr = Cvar_Get("net_mcast6addr", NET_MULTICAST_IP6, CVAR_LATCH|CVAR_ARCHIVE);
 	modified += net_mcast6addr->modified;
 	net_mcast6addr->modified = qfalse;
@@ -1574,10 +1581,10 @@ void NET_Init(void) {
 	}
 
 	winsockInitialized = qtrue;
+
 	Com_Printf("Winsock Initialized\n");
 #endif
 	NET_Config(qtrue);
-
 	Cmd_AddCommand("net_restart", NET_Restart_f);
 }
 
@@ -1595,6 +1602,7 @@ void NET_Shutdown(void) {
 	NET_Config(qfalse);
 #ifdef _WIN32
 	WSACleanup();
+
 	winsockInitialized = qfalse;
 #endif
 }

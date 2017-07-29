@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -31,7 +37,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define UI_TIMER_ATTACK 500
 #define UI_TIMER_MUZZLE_FLASH 20
 #define UI_TIMER_WEAPON_DELAY 250
-
 #define JUMP_HEIGHT 56
 #define SWINGSPEED 0.3f
 #define SPIN_SPEED 0.9f
@@ -40,6 +45,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 static int dp_realtime;
 static float jumpHeight;
 sfxHandle_t weaponChangeSound;
+
 
 /*
 =======================================================================================================================================
@@ -74,6 +80,7 @@ tryagain:
 		}
 
 		weaponNum = WP_MACHINEGUN;
+
 		goto tryagain;
 	}
 
@@ -83,7 +90,6 @@ tryagain:
 
 	COM_StripExtension(item->world_model[0], path, sizeof(path));
 	Q_strcat(path, sizeof(path), "_flash.md3");
-
 	pi->flashModel = trap_R_RegisterModel(path);
 
 	switch (weaponNum) {
@@ -141,7 +147,7 @@ UI_ForceLegsAnim
 */
 static void UI_ForceLegsAnim(uiPlayerInfo_t *pi, int anim) {
 
-	pi->legsAnim = ((pi->legsAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
+	pi->legsAnim = ((pi->legsAnim & ANIM_TOGGLEBIT)^ ANIM_TOGGLEBIT)|anim;
 
 	if (anim == LEGS_JUMP) {
 		pi->legsAnimationTimer = UI_TIMER_JUMP;
@@ -170,7 +176,7 @@ UI_ForceTorsoAnim
 */
 static void UI_ForceTorsoAnim(uiPlayerInfo_t *pi, int anim) {
 
-	pi->torsoAnim = ((pi->torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
+	pi->torsoAnim = ((pi->torsoAnim & ANIM_TOGGLEBIT)^ ANIM_TOGGLEBIT)|anim;
 
 	if (anim == TORSO_GESTURE) {
 		pi->torsoAnimationTimer = UI_TIMER_GESTURE;
@@ -290,7 +296,7 @@ static qboolean UI_PositionEntityOnTag(refEntity_t *entity, const refEntity_t *p
 		VectorMA(entity->origin, lerped.origin[i], parent->axis[i], entity->origin);
 	}
 	// cast away const because of compiler problems
-	MatrixMultiply(lerped.axis, ((refEntity_t *)parent)->axis, entity->axis);
+	MatrixMultiply(lerped.axis, ((refEntity_t*)parent)->axis, entity->axis);
 	entity->backlerp = parent->backlerp;
 
 	return returnValue;
@@ -660,7 +666,7 @@ float UI_MachinegunSpinAngle(uiPlayerInfo_t *pi) {
 		angle = pi->barrelAngle + delta * speed;
 	}
 
-	torsoAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
+	torsoAnim = pi->torsoAnim  & ~ANIM_TOGGLEBIT;
 
 	if (torsoAnim == TORSO_ATTACK2) {
 		torsoAnim = TORSO_ATTACK;
@@ -759,7 +765,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	trap_R_ClearScene();
 	// get the rotation information
 	UI_PlayerAngles(pi, legs.axis, torso.axis, head.axis);
-	// get the animation state (after rotation, to allow feet shuffle)
+	// get the animation state(after rotation, to allow feet shuffle)
 	UI_PlayerAnimation(pi, &legs.oldframe, &legs.frame, &legs.backlerp, &torso.oldframe, &torso.frame, &torso.backlerp);
 
 	renderfx = RF_LIGHTING_ORIGIN|RF_NOSHADOW;
@@ -773,9 +779,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	legs.renderfx = renderfx;
 
 	VectorCopy(legs.origin, legs.oldorigin);
-
 	Byte4Copy(pi->c1RGBA, legs.shaderRGBA);
-
 	CG_AddRefEntityWithMinLight(&legs);
 
 	if (!legs.hModel) {
@@ -791,13 +795,11 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	torso.customSkin = legs.customSkin;
 
 	VectorCopy(origin, torso.lightingOrigin);
-
 	UI_PositionRotatedEntityOnTag(&torso, &legs, pi->legsModel, "tag_torso");
 
 	torso.renderfx = renderfx;
 
 	Byte4Copy(pi->c1RGBA, torso.shaderRGBA);
-
 	CG_AddRefEntityWithMinLight(&torso);
 	// add the head
 	head.hModel = pi->headModel;
@@ -809,25 +811,24 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	head.customSkin = legs.customSkin;
 
 	VectorCopy(origin, head.lightingOrigin);
-
 	UI_PositionRotatedEntityOnTag(&head, &torso, pi->torsoModel, "tag_head");
 
 	head.renderfx = renderfx;
 
 	Byte4Copy(pi->c1RGBA, head.shaderRGBA);
-
 	CG_AddRefEntityWithMinLight(&head);
 	// add the gun
 	if (pi->currentWeapon != WP_NONE) {
 		memset(&gun, 0, sizeof(gun));
 
 		gun.hModel = pi->weaponModel;
+
 		Byte4Copy(pi->c1RGBA, gun.shaderRGBA);
 		VectorCopy(origin, gun.lightingOrigin);
-
 		UI_PositionEntityOnTag(&gun, &torso, pi->torsoModel, "tag_weapon");
 
 		gun.renderfx = renderfx;
+
 		CG_AddRefEntityWithMinLight(&gun);
 	}
 	// add the spinning barrel
@@ -846,9 +847,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 		angles[ROLL] = UI_MachinegunSpinAngle(pi);
 
 		AnglesToAxis(angles, barrel.axis);
-
 		UI_PositionRotatedEntityOnTag(&barrel, &gun, pi->weaponModel, "tag_barrel");
-
 		CG_AddRefEntityWithMinLight(&barrel);
 	}
 	// add muzzle flash
@@ -857,12 +856,13 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 			memset(&flash, 0, sizeof(flash));
 
 			flash.hModel = pi->flashModel;
+
 			Byte4Copy(pi->c1RGBA, flash.shaderRGBA);
 			VectorCopy(origin, flash.lightingOrigin);
-
 			UI_PositionEntityOnTag(&flash, &gun, pi->weaponModel, "tag_flash");
 
 			flash.renderfx = renderfx;
+
 			CG_AddRefEntityWithMinLight(&flash);
 		}
 		// make a dlight for the flash
@@ -898,7 +898,7 @@ static qboolean UI_FileExists(const char *filename) {
 
 	len = trap_FS_FOpenFile(filename, NULL, FS_READ);
 
-	if (len > 0) {
+	if (len>0) {
 		return qtrue;
 	}
 
@@ -1035,6 +1035,7 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 	// parse the text
 	text_p = text;
 	skip = 0; // quite the compiler warning
+
 	// read optional parameters
 	while (1) {
 		prev = text_p; // so we can unget
@@ -1077,7 +1078,7 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 		}
 		// if it is a number, start parsing animations
 		if (token[0] >= '0' && token[0] <= '9') {
-			text_p = prev; // unget the token
+			text_p = prev;	// unget the token
 			break;
 		}
 
@@ -1119,7 +1120,6 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 		}
 
 		animations[i].numFrames = atoi(token);
-
 		token = COM_Parse(&text_p);
 
 		if (!token[0]) {
@@ -1127,7 +1127,6 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 		}
 
 		animations[i].loopFrames = atoi(token);
-
 		token = COM_Parse(&text_p);
 
 		if (!token[0]) {
@@ -1173,7 +1172,6 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 	}
 
 	Q_strncpyz(modelName, modelSkinName, sizeof(modelName));
-
 	slash = strchr(modelName, '/');
 
 	if (!slash) {
@@ -1205,6 +1203,7 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 	}
 
 	Com_sprintf(filename, sizeof(filename), "models/players/%s/upper.md3", modelName);
+
 	pi->torsoModel = trap_R_RegisterModel(filename);
 
 	if (!pi->torsoModel) {
@@ -1222,6 +1221,7 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 
 	if (!pi->headModel && headModelName[0] != '*') {
 		Com_sprintf(filename, sizeof(filename), "models/players/heads/%s/%s.md3", headModelName, headModelName);
+
 		pi->headModel = trap_R_RegisterModel(filename);
 	}
 
@@ -1275,6 +1275,7 @@ UI_PlayerInfo_UpdateColor
 =======================================================================================================================================
 */
 void UI_PlayerInfo_UpdateColor(uiPlayerInfo_t *pi) {
+
 	CG_PlayerColorFromIndex(trap_Cvar_VariableIntegerValue("color1"), pi->color1);
 
 	pi->c1RGBA[0] = 255 * pi->color1[0];
@@ -1322,7 +1323,6 @@ void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3
 			pi->lastWeapon = weaponNumber;
 			pi->pendingWeapon = WP_NUM_WEAPONS;
 			pi->weaponTimer = 0;
-
 			UI_PlayerInfo_SetWeapon(pi, pi->weapon);
 		}
 
@@ -1331,9 +1331,11 @@ void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3
 	// weapon
 	if (weaponNumber == WP_NUM_WEAPONS) {
 		pi->pendingWeapon = WP_NUM_WEAPONS;
+
 		pi->weaponTimer = 0;
 	} else if (weaponNumber != WP_NONE) {
 		pi->pendingWeapon = weaponNumber;
+
 		pi->weaponTimer = dp_realtime + UI_TIMER_WEAPON_DELAY;
 	}
 
@@ -1395,7 +1397,6 @@ void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3
 		pi->pendingTorsoAnim = torsoAnim;
 	} else if (torsoAnim != currentAnim) {
 		pi->pendingTorsoAnim = 0;
-
 		UI_ForceTorsoAnim(pi, torsoAnim);
 	}
 }

@@ -1,25 +1,31 @@
 /*
-=======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+===========================================================================
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, 
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-=======================================================================================================================================
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
+Suite 120, Rockville, Maryland 20850 USA.
+===========================================================================
 */
 
 #include "g_local.h"
@@ -145,15 +151,15 @@ static __attribute__((format(printf, 2, 3))) void QDECL PrintMsg(gentity_t *ent,
 		*p = '\'';
 	}
 
-	trap_SendServerCommand(((ent == NULL) ? -1 : ent - g_entities), va("print \"%s\"", msg));
+	trap_SendServerCommand(((ent == NULL) ? -1 : ent- g_entities), va("print \"%s\"", msg));
 }
 
 /*
 =======================================================================================================================================
 AddTeamScore
 
-For gametype GT_TEAM this is called in AddScore in g_combat.c (checks fraglimit to win). For gametype > GT_TEAM this is called when
-gametype-specific scoring happens (checks capturelimit to win (e.g. capture flag, kill obelisk, return skulls)).
+For gametype GT_TEAM this is called in AddScore in g_combat.c(checks fraglimit to win). For gametype > GT_TEAM this is called when
+gametype-specific scoring happens (checks capturelimit to win, e.g. capture flag, kill obelisk, return skulls).
 =======================================================================================================================================
 */
 void AddTeamScore(vec3_t origin, int team, int score) {
@@ -172,14 +178,14 @@ void AddTeamScore(vec3_t origin, int team, int score) {
 		// teams are tied sound
 		eventParm = GTS_TEAMS_ARE_TIED;
 	} else if (level.teamScores[team] >= level.teamScores[otherTeam] && level.teamScores[team] + score < level.teamScores[otherTeam]) {
-		// other team took the lead sound (negative score)
-		eventParm = (otherTeam == TEAM_RED) ? GTS_REDTEAM_TOOK_LEAD : GTS_BLUETEAM_TOOK_LEAD;
+		// other team took the lead sound(negative score)
+		eventParm = (otherTeam == TEAM_RED)? GTS_REDTEAM_TOOK_LEAD : GTS_BLUETEAM_TOOK_LEAD;
 	} else if (level.teamScores[team] <= level.teamScores[otherTeam] && level.teamScores[team] + score > level.teamScores[otherTeam]) {
 		// this team took the lead sound
-		eventParm = (team == TEAM_RED) ? GTS_REDTEAM_TOOK_LEAD : GTS_BLUETEAM_TOOK_LEAD;
+		eventParm = (team == TEAM_RED)? GTS_REDTEAM_TOOK_LEAD : GTS_BLUETEAM_TOOK_LEAD;
 	} else if (score > 0 && g_gametype.integer != GT_TEAM) {
 		// team scored sound
-		eventParm = (team == TEAM_RED) ? GTS_REDTEAM_SCORED : GTS_BLUETEAM_SCORED;
+		eventParm = (team == TEAM_RED)? GTS_REDTEAM_SCORED : GTS_BLUETEAM_SCORED;
 	}
 
 	if (eventParm != -1) {
@@ -198,7 +204,7 @@ OnSameTeam
 */
 qboolean OnSameTeam(gentity_t *ent1, gentity_t *ent2) {
 
-	if (!ent1->player || !ent2->player) {
+	if (!ent1 || !ent1->player || !ent2 || !ent2->player) {
 		return qfalse;
 	}
 
@@ -347,15 +353,14 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 	}
 #ifdef MISSIONPACK
 	if (g_gametype.integer == GT_1FCTF) {
+		flag_pw = PW_NEUTRALFLAG;
 		enemy_flag_pw = PW_NEUTRALFLAG;
 	}
 #endif
 	// did the attacker frag the flag carrier?
 	if (targ->player->ps.powerups[enemy_flag_pw]) {
 		attacker->player->pers.teamState.lastfraggedcarrier = level.time;
-
 		AddScore(attacker, targ->r.currentOrigin, CTF_FRAG_CARRIER_BONUS);
-
 		PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's flag carrier!\n", attacker->player->pers.netname, TeamName(team));
 		// the target had the flag, clear the hurt carrier field on the other team
 		for (i = 0; i < g_maxplayers.integer; i++) {
@@ -374,9 +379,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		int tokens = targ->player->ps.tokens;
 
 		attacker->player->pers.teamState.lastfraggedcarrier = level.time;
-
 		AddScore(attacker, targ->r.currentOrigin, CTF_FRAG_CARRIER_BONUS * tokens * tokens);
-
 		PrintMsg(NULL, "%s" S_COLOR_WHITE " fragged %s's skull carrier!\n", attacker->player->pers.netname, TeamName(team));
 		// the target had the flag, clear the hurt carrier field on the other team
 		for (i = 0; i < g_maxplayers.integer; i++) {
@@ -393,20 +396,6 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 	if (targ->player->pers.teamState.lasthurtcarrier && level.time - targ->player->pers.teamState.lasthurtcarrier < CTF_CARRIER_DANGER_PROTECT_TIMEOUT && !attacker->player->ps.powerups[flag_pw]) {
 		// attacker is on the same team as the flag carrier and fragged a guy who hurt our flag carrier
 		AddScore(attacker, targ->r.currentOrigin, CTF_CARRIER_DANGER_PROTECT_BONUS);
-
-		targ->player->pers.teamState.lasthurtcarrier = 0;
-		attacker->player->ps.persistant[PERS_DEFEND_COUNT]++;
-		// add the sprite over the player's head
-		attacker->player->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE|EF_AWARD_EXCELLENT|EF_AWARD_GAUNTLET|EF_AWARD_ASSIST|EF_AWARD_DEFEND|EF_AWARD_CAP);
-		attacker->player->ps.eFlags |= EF_AWARD_DEFEND;
-		attacker->player->rewardTime = level.time + REWARD_SPRITE_TIME;
-		return;
-	}
-
-	if (targ->player->pers.teamState.lasthurtcarrier && level.time - targ->player->pers.teamState.lasthurtcarrier < CTF_CARRIER_DANGER_PROTECT_TIMEOUT) {
-		// attacker is on the same team as the skull carrier and
-		AddScore(attacker, targ->r.currentOrigin, CTF_CARRIER_DANGER_PROTECT_BONUS);
-
 		targ->player->pers.teamState.lasthurtcarrier = 0;
 		attacker->player->ps.persistant[PERS_DEFEND_COUNT]++;
 		// add the sprite over the player's head
@@ -436,27 +425,27 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 		c = "team_neutralobelisk";
 	} else {
 #endif
-		// find the flag
-		switch (attacker->player->sess.sessionTeam) {
-			case TEAM_RED:
-				c = "team_CTF_redflag";
-				break;
-			case TEAM_BLUE:
-				c = "team_CTF_blueflag";
-				break;
-			default:
-				return;
-		}
-		// find attacker's team's flag carrier
-		for (i = 0; i < g_maxplayers.integer; i++) {
-			carrier = g_entities + i;
+	// find the flag
+	switch (attacker->player->sess.sessionTeam) {
+		case TEAM_RED:
+			c = "team_CTF_redflag";
+			break;
+		case TEAM_BLUE:
+			c = "team_CTF_blueflag";
+			break;
+		default:
+			return;
+	}
+	// find attacker's team's flag carrier
+	for (i = 0; i < g_maxplayers.integer; i++) {
+		carrier = g_entities + i;
 
-			if (carrier->inuse && carrier->player->ps.powerups[flag_pw]) {
-				break;
-			}
-
-			carrier = NULL;
+		if (carrier->inuse && carrier->player->ps.powerups[flag_pw]) {
+			break;
 		}
+
+		carrier = NULL;
+	}
 #ifdef MISSIONPACK
 	}
 #endif
@@ -491,7 +480,7 @@ void Team_FragBonuses(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker
 
 	if (carrier && carrier != attacker) {
 		VectorSubtract(targ->r.currentOrigin, carrier->r.currentOrigin, v1);
-		VectorSubtract(attacker->r.currentOrigin, carrier->r.currentOrigin, v1);
+		VectorSubtract(attacker->r.currentOrigin, carrier->r.currentOrigin, v2);
 
 		if (((VectorLength(v1) < CTF_ATTACKER_PROTECT_RADIUS && trap_InPVS(carrier->r.currentOrigin, targ->r.currentOrigin)) || (VectorLength(v2) < CTF_ATTACKER_PROTECT_RADIUS && trap_InPVS(carrier->r.currentOrigin, attacker->r.currentOrigin))) && attacker->player->sess.sessionTeam != targ->player->sess.sessionTeam) {
 			AddScore(attacker, targ->r.currentOrigin, CTF_CARRIER_PROTECT_BONUS);
@@ -525,6 +514,11 @@ void Team_CheckHurtCarrier(gentity_t *targ, gentity_t *attacker) {
 	} else {
 		flag_pw = PW_REDFLAG;
 	}
+#ifdef MISSIONPACK
+	if (g_gametype.integer == GT_1FCTF) {
+		flag_pw = PW_NEUTRALFLAG;
+	}
+#endif
 	// flags
 	if (targ->player->ps.powerups[flag_pw] && targ->player->sess.sessionTeam != attacker->player->sess.sessionTeam) {
 		attacker->player->pers.teamState.lasthurtcarrier = level.time;
@@ -737,7 +731,7 @@ void Team_DroppedFlagThink(gentity_t *ent) {
 	}
 
 	Team_ReturnFlagSound(Team_ResetFlag(team), team);
-	// Reset Flag will delete this entity
+	// reset Flag will delete this entity
 }
 
 /*
@@ -783,7 +777,7 @@ int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 		trap_SendServerCommand(-1, va("cp \"%s" S_COLOR_WHITE "\ncaptured the flag!\n\"", cl->pers.netname));
 	} else {
 #endif
-		trap_SendServerCommand(-1, va("cp \"%s" S_COLOR_WHITE "\ncaptured the %s flag!\n\"", cl->pers.netname, TeamName(OtherTeam(team))));
+	trap_SendServerCommand(-1, va("cp \"%s" S_COLOR_WHITE "\ncaptured the %s flag!\n\"", cl->pers.netname, TeamName(OtherTeam(team))));
 #ifdef MISSIONPACK
 	}
 #endif
@@ -793,7 +787,6 @@ int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 	teamgame.last_capture_team = team;
 	// Increase the team's score
 	AddTeamScore(ent->s.pos.trBase, other->player->sess.sessionTeam, 1);
-
 	Team_ForceGesture(other->player->sess.sessionTeam);
 	// add the sprite over the player's head
 	other->player->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE|EF_AWARD_EXCELLENT|EF_AWARD_GAUNTLET|EF_AWARD_ASSIST|EF_AWARD_DEFEND|EF_AWARD_CAP);
@@ -842,10 +835,9 @@ int Team_TouchOurFlag(gentity_t *ent, gentity_t *other, int team) {
 	}
 
 	Team_ResetFlags();
-
 	CalculateRanks();
 
-	return 0; // Do not respawn this automatically
+	return 0; // do not respawn this automatically
 }
 
 /*
@@ -866,7 +858,7 @@ int Team_TouchEnemyFlag(gentity_t *ent, gentity_t *other, int team) {
 		} else {
 			Team_SetFlagStatus(TEAM_FREE, FLAG_TAKEN_BLUE);
 		}
-	} else {
+	} else{
 #endif
 		PrintMsg(NULL, "%s" S_COLOR_WHITE " got the %s flag!\n", other->player->pers.netname, TeamName(team));
 
@@ -884,7 +876,7 @@ int Team_TouchEnemyFlag(gentity_t *ent, gentity_t *other, int team) {
 #endif
 	Team_TakeFlagSound(ent, team);
 
-	return -1; // Do not respawn this automatically, but do delete it if it was FL_DROPPED
+	return -1; // do not respawn this automatically, but do delete it if it was FL_DROPPED
 }
 
 /*
@@ -919,7 +911,7 @@ int Pickup_Team(gentity_t *ent, gentity_t *other) {
 		team = TEAM_BLUE;
 	}
 #ifdef MISSIONPACK
-	else if (strcmp(ent->classname, "team_CTF_neutralflag") == 0) {
+	else if (strcmp(ent->classname, "team_CTF_neutralflag") == 0 ) {
 		team = TEAM_FREE;
 	}
 #endif
@@ -960,6 +952,10 @@ gentity_t *Team_GetLocation(gentity_t *ent) {
 	float bestlen, len;
 	vec3_t origin;
 
+	if (!ent) {
+		return NULL;
+	}
+
 	best = NULL;
 	bestlen = 3 * 8192.0 * 8192.0;
 
@@ -986,8 +982,6 @@ gentity_t *Team_GetLocation(gentity_t *ent) {
 /*
 =======================================================================================================================================
 Team_GetLocationMsg
-
-Report a location for the player. Uses placed nearby target_location entities.
 =======================================================================================================================================
 */
 qboolean Team_GetLocationMsg(gentity_t *ent, char *loc, int loclen) {
@@ -1095,7 +1089,7 @@ gentity_t *SelectCTFSpawnPoint(team_t team, int teamstate, vec3_t origin, vec3_t
 
 /*
 =======================================================================================================================================
-SortClients
+SortPlayers
 =======================================================================================================================================
 */
 static int QDECL SortPlayers(const void *a, const void *b) {
@@ -1106,7 +1100,7 @@ static int QDECL SortPlayers(const void *a, const void *b) {
 =======================================================================================================================================
 TeamplayInfoMessage
 
-Format: clientNum location health armor weapon powerups.
+Format: playerNum location health armor weapon powerups.
 =======================================================================================================================================
 */
 void TeamplayInfoMessage(gentity_t *ent) {
@@ -1146,7 +1140,7 @@ void TeamplayInfoMessage(gentity_t *ent) {
 			players[cnt++] = level.sortedPlayers[i];
 		}
 	}
-	// We have the top eight players, sort them by playerNum
+	// we have the top eight players, sort them by playerNum
 	qsort(players, cnt, sizeof(players[0]), SortPlayers);
 	// send the latest information on all players
 	string[0] = 0;
@@ -1168,6 +1162,7 @@ void TeamplayInfoMessage(gentity_t *ent) {
 			}
 
 			Com_sprintf(entry, sizeof(entry), " %i %i %i %i %i %i", i, player->player->pers.teamState.location, h, a, player->player->ps.weapon, player->s.powerups);
+
 			j = strlen(entry);
 
 			if (stringlength + j >= sizeof(string)) {
@@ -1202,7 +1197,7 @@ void CheckTeamStatus(void) {
 				continue;
 			}
 
-			if (ent->inuse && (ent->player->sess.sessionTeam == TEAM_RED || ent->player->sess.sessionTeam == TEAM_BLUE)) {
+			if (ent->inuse &&(ent->player->sess.sessionTeam == TEAM_RED || ent->player->sess.sessionTeam == TEAM_BLUE)) {
 				loc = Team_GetLocation(ent);
 
 				if (loc) {
@@ -1317,7 +1312,6 @@ static void ObeliskDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacke
 	self->activator->s.frame = 2;
 
 	G_AddEvent(self->activator, EV_OBELISKEXPLODE, 0);
-
 	AddScore(attacker, self->r.currentOrigin, CTF_CAPTURE_BONUS);
 	// add the sprite over the player's head
 	attacker->player->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE|EF_AWARD_EXCELLENT|EF_AWARD_GAUNTLET|EF_AWARD_ASSIST|EF_AWARD_DEFEND|EF_AWARD_CAP);
@@ -1359,12 +1353,9 @@ static void ObeliskTouch(gentity_t *self, gentity_t *other, trace_t *trace) {
 	}
 
 	trap_SendServerCommand(-1, va("cp \"%s" S_COLOR_WHITE "\nbrought in %i %s %s.\n\"", other->player->pers.netname, tokens, TeamName(otherTeam), (tokens == 1) ? "skull" : "skulls"));
-
 	AddTeamScore(self->s.pos.trBase, other->player->sess.sessionTeam, tokens);
-
 	Team_ForceGesture(other->player->sess.sessionTeam);
-
-	AddScore(other, self->r.currentOrigin, CTF_CAPTURE_BONUS * tokens);
+	AddScore(other, self->r.currentOrigin, CTF_CAPTURE_BONUS*tokens);
 	// add the sprite over the player's head
 	other->player->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE|EF_AWARD_EXCELLENT|EF_AWARD_GAUNTLET|EF_AWARD_ASSIST|EF_AWARD_DEFEND|EF_AWARD_CAP);
 	other->player->ps.eFlags |= EF_AWARD_CAP;
@@ -1373,7 +1364,6 @@ static void ObeliskTouch(gentity_t *self, gentity_t *other, trace_t *trace) {
 	other->player->ps.tokens = 0;
 
 	CalculateRanks();
-
 	Team_CaptureFlagSound(self, self->spawnflags);
 }
 
@@ -1403,6 +1393,8 @@ static void ObeliskPain(gentity_t *self, gentity_t *attacker, int damage) {
 /*
 =======================================================================================================================================
 SpawnObelisk
+
+Spawn invisible damagable obelisk entity/harvester base trigger.
 =======================================================================================================================================
 */
 gentity_t *SpawnObelisk(vec3_t origin, vec3_t mins, vec3_t maxs, int team) {
@@ -1413,7 +1405,6 @@ gentity_t *SpawnObelisk(vec3_t origin, vec3_t mins, vec3_t maxs, int team) {
 	VectorCopy(origin, ent->s.origin);
 	VectorCopy(origin, ent->s.pos.trBase);
 	VectorCopy(origin, ent->r.currentOrigin);
-
 	VectorCopy(mins, ent->s.mins);
 	VectorCopy(maxs, ent->s.maxs);
 
@@ -1447,6 +1438,8 @@ gentity_t *SpawnObelisk(vec3_t origin, vec3_t mins, vec3_t maxs, int team) {
 /*
 =======================================================================================================================================
 ObeliskInit
+
+Setup entity for team base model/obelisk model.
 =======================================================================================================================================
 */
 void ObeliskInit(gentity_t *ent) {
@@ -1473,6 +1466,7 @@ void ObeliskInit(gentity_t *ent) {
 			G_Printf("SpawnObelisk: %s startsolid at %s\n", ent->classname, vtos(ent->s.origin));
 
 			ent->s.groundEntityNum = ENTITYNUM_NONE;
+
 			G_SetOrigin(ent, ent->s.origin);
 		} else {
 			// allow to ride movers
@@ -1553,7 +1547,7 @@ void SP_team_neutralobelisk(gentity_t *ent) {
 
 	if (g_gametype.integer == GT_HARVESTER) {
 		neutralObelisk = SpawnObelisk(ent->s.origin, ent->s.mins, ent->s.maxs, TEAM_FREE);
-		neutralObelisk->spawnflags = TEAM_FREE;
+		neutralObelisk->activator = ent;
 	}
 
 	ent->s.modelindex = TEAM_FREE;

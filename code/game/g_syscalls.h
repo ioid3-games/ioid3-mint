@@ -1,39 +1,46 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
 #ifndef __G_SYSCALLS_H__
 #define __G_SYSCALLS_H__
 
-
+//
 // system traps
 // These functions are how game communicates with the server system
-
+//
 
 // Additional shared traps in bg_public.h
 
 void trap_LocateGameData(gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *gameClients, int sizeofGameClient);
-void trap_SetNetFields(int entityStateSize, int entityNetworkSize, vmNetField_t *entityStateFields, int numEntityStateFields, int playerStateSize, int playerNetworkSize, vmNetField_t *playerStateFields, int numPlayerStateFields);
+void trap_SetNetFields(int entityStateSize, int entityNetworkSize, vmNetField_t *entityStateFields, int numEntityStateFields,
+						   int playerStateSize, int playerNetworkSize, vmNetField_t *playerStateFields, int numPlayerStateFields);
 void trap_DropPlayer(int playerNum, const char *reason);
 void trap_SendServerCommandEx(int connectionNum, int localPlayerNum, const char *text);
 void trap_SetConfigstring(int num, const char *string);
@@ -61,15 +68,29 @@ void trap_BotFreeClient(int clientNum);
 void trap_GetUsercmd(int playerNum, usercmd_t *cmd);
 qboolean trap_GetEntityToken(int *parseOffset, char *buffer, int bufferSize);
 void trap_ClientCommand(int playerNum, const char *command);
+
 int trap_DebugPolygonCreate(int color, int numPoints, vec3_t *points);
 void trap_DebugPolygonShow(int id, int color, int numPoints, vec3_t *points);
 void trap_DebugPolygonDelete(int id);
 
 qhandle_t trap_R_RegisterModel(const char *name);
 int trap_R_ModelBounds(clipHandle_t handle, vec3_t mins, vec3_t maxs, int startFrame, int endFrame, float frac);
-int trap_R_LerpTag(orientation_t *tag, clipHandle_t handle, int startFrame, int endFrame, float frac, const char *tagName);
-int trap_R_LerpTagFrameModel(orientation_t *tag, clipHandle_t mod, clipHandle_t frameModel, int startFrame, clipHandle_t endFrameModel, int endFrame, float frac, const char *tagName, int *tagIndex);
-int trap_R_LerpTagTorso(orientation_t *tag, clipHandle_t mod, clipHandle_t frameModel, int startFrame, clipHandle_t endFrameModel, int endFrame, float frac, const char *tagName, int *tagIndex, const vec3_t *torsoAxis, qhandle_t torsoFrameModel, int torsoFrame, qhandle_t oldTorsoFrameModel, int oldTorsoFrame, float torsoFrac);
+int trap_R_LerpTag(orientation_t *tag, clipHandle_t handle, int startFrame, int endFrame,
+					   float frac, const char *tagName);
+int trap_R_LerpTagFrameModel(orientation_t *tag, clipHandle_t mod,
+					   clipHandle_t frameModel, int startFrame,
+					   clipHandle_t endFrameModel, int endFrame,
+					   float frac, const char *tagName,
+					   int *tagIndex);
+int trap_R_LerpTagTorso(orientation_t *tag, clipHandle_t mod,
+					   clipHandle_t frameModel, int startFrame,
+					   clipHandle_t endFrameModel, int endFrame,
+					   float frac, const char *tagName,
+					   int *tagIndex, const vec3_t *torsoAxis,
+					   qhandle_t torsoFrameModel, int torsoFrame,
+					   qhandle_t oldTorsoFrameModel, int oldTorsoFrame,
+					   float torsoFrac);
+
 int trap_BotLibSetup(void);
 int trap_BotLibShutdown(void);
 int trap_BotLibVarSet(const char *var_name, char *value);
@@ -78,25 +99,31 @@ int trap_BotLibStartFrame(float time);
 int trap_BotLibLoadMap(const char *mapname);
 int trap_BotLibUpdateEntity(int ent, void /* struct bot_updateentity_s */ *bue);
 int trap_BotLibTest(int parm0, char *parm1, vec3_t parm2, vec3_t parm3);
+
 int trap_BotGetSnapshotEntity(int playerNum, int sequence);
 int trap_BotGetServerCommand(int playerNum, char *message, int size);
 void trap_BotUserCommand(int playerNum, usercmd_t *ucmd);
+
 int trap_AAS_BBoxAreas(vec3_t absmins, vec3_t absmaxs, int *areas, int maxareas);
 int trap_AAS_AreaInfo(int areanum, void /* struct aas_areainfo_s */ *info);
+
 int trap_AAS_Loaded(void);
 int trap_AAS_Initialized(void);
 void trap_AAS_PresenceTypeBoundingBox(int presencetype, vec3_t mins, vec3_t maxs);
 float trap_AAS_Time(void);
+
 int trap_AAS_PointAreaNum(vec3_t point);
 int trap_AAS_PointReachabilityAreaIndex(vec3_t point);
 void trap_AAS_TracePlayerBBox(void /* aas_trace_t */ *trace, vec3_t start, vec3_t end, int presencetype, int passent, int contentmask);
 int trap_AAS_TraceAreas(vec3_t start, vec3_t end, int *areas, vec3_t *points, int maxareas);
+
 int trap_AAS_PointContents(vec3_t point);
 int trap_AAS_NextBSPEntity(int ent);
 int trap_AAS_ValueForBSPEpairKey(int ent, char *key, char *value, int size);
 int trap_AAS_VectorForBSPEpairKey(int ent, char *key, vec3_t v);
 int trap_AAS_FloatForBSPEpairKey(int ent, char *key, float *value);
 int trap_AAS_IntForBSPEpairKey(int ent, char *key, int *value);
+
 int trap_AAS_AreaReachability(int areanum);
 int trap_AAS_BestReachableArea(vec3_t origin, vec3_t mins, vec3_t maxs, vec3_t goalorigin);
 int trap_AAS_BestReachableFromJumpPadArea(vec3_t origin, vec3_t mins, vec3_t maxs);
@@ -111,6 +138,7 @@ int trap_AAS_AreaGrounded(int areanum);
 int trap_AAS_AreaLadder(int areanum);
 int trap_AAS_AreaJumpPad(int areanum);
 int trap_AAS_AreaDoNotEnter(int areanum);
+
 int trap_AAS_TravelFlagForType(int traveltype);
 int trap_AAS_AreaContentsTravelFlags(int areanum);
 int trap_AAS_NextAreaReachability(int areanum, int reachnum);
@@ -119,8 +147,13 @@ int trap_AAS_RandomGoalArea(int areanum, int travelflags, int contentmask, int *
 int trap_AAS_EnableRoutingArea(int areanum, int enable);
 unsigned short int trap_AAS_AreaTravelTime(int areanum, vec3_t start, vec3_t end);
 int trap_AAS_AreaTravelTimeToGoalArea(int areanum, vec3_t origin, int goalareanum, int travelflags);
-int trap_AAS_PredictRoute(void /*struct aas_predictroute_s*/ *route, int areanum, vec3_t origin, int goalareanum, int travelflags, int maxareas, int maxtime, int stopevent, int stopcontents, int stoptfl, int stopareanum);
-int trap_AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int goalareanum, int travelflags, void /*struct aas_altroutegoal_s*/ *altroutegoals, int maxaltroutegoals, int type);
+int trap_AAS_PredictRoute(void /*struct aas_predictroute_s*/ *route, int areanum, vec3_t origin,
+							int goalareanum, int travelflags, int maxareas, int maxtime,
+							int stopevent, int stopcontents, int stoptfl, int stopareanum);
+
+int trap_AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int goalareanum, int travelflags,
+										void /*struct aas_altroutegoal_s*/ *altroutegoals, int maxaltroutegoals,
+										int type);
 
 
 int trap_AAS_PredictPlayerMovement(void /* aas_clientmove_s */ *move, int entnum, vec3_t origin, int presencetype, int onground, vec3_t velocity, vec3_t cmdmove, int cmdframes, int maxframes, float frametime, int stopevent, int stopareanum, int visualize, int contentmask);

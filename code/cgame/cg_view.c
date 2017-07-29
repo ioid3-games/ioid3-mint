@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -104,6 +110,7 @@ Replaces the current view weapon with the given model.
 void CG_TestGun_f(void) {
 
 	CG_TestModel_f();
+
 	cg.testGun = qtrue;
 	cg.testModelEntity.renderfx = RF_DEPTHHACK|RF_NO_MIRROR;
 }
@@ -116,6 +123,7 @@ CG_TestModelNextFrame_f
 void CG_TestModelNextFrame_f(void) {
 
 	cg.testModelEntity.frame++;
+
 	CG_Printf("frame %i\n", cg.testModelEntity.frame);
 }
 
@@ -143,6 +151,7 @@ CG_TestModelNextSkin_f
 void CG_TestModelNextSkin_f(void) {
 
 	cg.testModelEntity.skinNum++;
+
 	CG_Printf("skin %i\n", cg.testModelEntity.skinNum);
 }
 
@@ -208,7 +217,7 @@ void CG_CalcVrect(void) {
 	cg.viewportX = cg.viewportY = 0;
 	cg.viewportWidth = cgs.glconfig.vidWidth;
 	cg.viewportHeight = cgs.glconfig.vidHeight;
-	// Splitscreen viewports
+	// splitscreen viewports
 	if (cg.numViewports == 2) {
 		if (cg_splitviewVertical.integer) {
 			cg.viewportWidth *= 0.5f;
@@ -262,7 +271,7 @@ void CG_CalcVrect(void) {
 			cg.viewportY += cg.viewportHeight;
 		}
 	}
-	// Viewport scale and offset
+	// viewport scale and offset
 	cgs.screenXScaleStretch = cg.viewportWidth * (1.0 / 640.0);
 	cgs.screenYScaleStretch = cg.viewportHeight * (1.0 / 480.0);
 
@@ -291,7 +300,7 @@ void CG_CalcVrect(void) {
 	} else {
 		size = cg_viewsize.integer;
 	}
-	// Rendered window for drawing world
+	// rendered window for drawing world
 	cg.refdef.width = cg.viewportWidth * size / 100;
 	cg.refdef.width &= ~1;
 
@@ -306,7 +315,7 @@ void CG_CalcVrect(void) {
 =======================================================================================================================================
 CG_StepOffset
 
-NOTE: This causes a compiler bug on mac MrC compiler.
+This causes a compiler bug on mac MrC compiler.
 =======================================================================================================================================
 */
 void CG_StepOffset(vec3_t vieworg) {
@@ -320,12 +329,12 @@ void CG_StepOffset(vec3_t vieworg) {
 	}
 }
 
+#define FOCUS_DISTANCE 512
 /*
 =======================================================================================================================================
 CG_OffsetThirdPersonView
 =======================================================================================================================================
 */
-#define FOCUS_DISTANCE 512
 static void CG_OffsetThirdPersonView(void) {
 	vec3_t forward, right, up;
 	vec3_t view;
@@ -336,6 +345,7 @@ static void CG_OffsetThirdPersonView(void) {
 	vec3_t focusPoint;
 	float focusDist;
 	float forwardScale, sideScale;
+	float thirdPersonAngle, thirdPersonRange;
 
 	cg.refdef.vieworg[2] += cg.cur_lc->predictedPlayerState.viewheight;
 
@@ -378,6 +388,7 @@ static void CG_OffsetThirdPersonView(void) {
 
 	forwardScale = cos(thirdPersonAngle / 180 * M_PI);
 	sideScale = sin(thirdPersonAngle / 180 * M_PI);
+
 	VectorMA(view, -thirdPersonRange * forwardScale, forward, view);
 	VectorMA(view, -thirdPersonRange * sideScale, right, view);
 	// trace a ray from the origin to the viewpoint to make sure the view isn't in a solid block. Use a 10 by 10 block to prevent the
@@ -397,6 +408,7 @@ static void CG_OffsetThirdPersonView(void) {
 	VectorCopy(view, cg.refdef.vieworg);
 	// select pitch to look at focus point from vieword
 	VectorSubtract(focusPoint, cg.refdef.vieworg, focusPoint);
+
 	focusDist = sqrt(focusPoint[0] * focusPoint[0] + focusPoint[1] * focusPoint[1]);
 
 	if (focusDist < 1) {
@@ -432,6 +444,7 @@ static void CG_OffsetFirstPersonView(void) {
 
 	origin = cg.firstPersonViewOrg;
 	angles = cg.firstPersonViewAngles;
+
 	// if dead, fix the angle and don't add any kick
 	if (cg.cur_ps->stats[STAT_HEALTH] <= 0) {
 		angles[ROLL] = 40;
@@ -461,7 +474,7 @@ static void CG_OffsetFirstPersonView(void) {
 #if 0
 	ratio = (cg.time - cg.cur_lc->landTime) / FALL_TIME;
 
-	if (ratio < 0) {
+	if (ratio < 0){
 		ratio = 0;
 	}
 
@@ -480,23 +493,18 @@ static void CG_OffsetFirstPersonView(void) {
 
 		// make sure the bob is visible even at low speeds
 		speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
-
 		delta = cg.bobfracsin * cg_bobpitch.value * speed;
 
-		if (cg.cur_lc->predictedPlayerState.pm_flags & PMF_DUCKED) {
-			delta *= 3; // crouching
-		}
-
+		if (cg.cur_lc->predictedPlayerState.pm_flags & PMF_DUCKED)
+			delta *= 3;		// crouching
 		angles[PITCH] += delta;
+
 		delta = cg.bobfracsin * cg_bobroll.value * speed;
 
-		if (cg.cur_lc->predictedPlayerState.pm_flags & PMF_DUCKED) {
-			delta *= 3; // crouching accentuates roll
-		}
-
-		if (cg.bobcycle & 1) {
+		if (cg.cur_lc->predictedPlayerState.pm_flags & PMF_DUCKED)
+			delta *= 3;		// crouching accentuates roll
+		if (cg.bobcycle & 1)
 			delta = -delta;
-		}
 
 		angles[ROLL] += delta;
 		// add bob height
@@ -508,7 +516,6 @@ static void CG_OffsetFirstPersonView(void) {
 
 		origin[2] += bob;
 	}
-
 	// add view height
 	origin[2] += cg.cur_lc->predictedPlayerState.viewheight;
 	// smooth out duck height changes
@@ -534,12 +541,12 @@ static void CG_OffsetFirstPersonView(void) {
 #if 0
 	{
 #define NECK_LENGTH 8
-		vec3_t forward, up;
+	vec3_t forward, up;
 
-		origin[2] -= NECK_LENGTH;
-		AngleVectors(cg.refdefViewAngles, forward, NULL, up);
-		VectorMA(origin, 3, forward, origin);
-		VectorMA(origin, NECK_LENGTH, up, origin);
+	origin[2] -= NECK_LENGTH;
+	AngleVectors(cg.refdefViewAngles, forward, NULL, up);
+	VectorMA(origin, 3, forward, origin);
+	VectorMA(origin, NECK_LENGTH, up, origin);
 	}
 #endif
 }
@@ -550,7 +557,6 @@ CG_ZoomDown_f
 =======================================================================================================================================
 */
 void CG_ZoomDown_f(int localPlayerNum) {
-
 	localPlayer_t *player = &cg.localPlayers[localPlayerNum];
 
 	if (player->zoomed) {
@@ -567,7 +573,6 @@ CG_ZoomUp_f
 =======================================================================================================================================
 */
 void CG_ZoomUp_f(int localPlayerNum) {
-
 	localPlayer_t *player = &cg.localPlayers[localPlayerNum];
 
 	if (!player->zoomed) {
@@ -578,6 +583,8 @@ void CG_ZoomUp_f(int localPlayerNum) {
 	player->zoomTime = cg.time;
 }
 
+#define WAVE_AMPLITUDE 1
+#define WAVE_FREQUENCY 0.4
 /*
 =======================================================================================================================================
 CG_CalcFov
@@ -585,8 +592,6 @@ CG_CalcFov
 Fixed fov at intermissions, otherwise account for fov variable and zooms.
 =======================================================================================================================================
 */
-#define WAVE_AMPLITUDE 1
-#define WAVE_FREQUENCY 0.4
 static void CG_CalcFov2(const refdef_t *refdef, float *input_fov, float *out_fov_x, float *out_fov_y) {
 	float x;
 	float phase;
@@ -629,12 +634,13 @@ static void CG_CalcFov2(const refdef_t *refdef, float *input_fov, float *out_fov
 	}
 
 	if (cg_fovAspectAdjust.integer) {
-		// based on LordHavoc's code for Darkplaces -> http://www.quakeworld.nu/forum/topic/53/what-does-your-qw-look-like/page/30
+		// Based on LordHavoc's code for Darkplaces
+		// http:// www.quakeworld.nu/forum/topic/53/what-does-your-qw-look-like/page/30
 		const float baseAspect = 0.75f; // 3/4
-		const float aspect = (float)refdef->width / (float)refdef->height;
+		const float aspect = (float)refdef->width/(float)refdef->height;
 		const float desiredFov = fov_x;
 
-		fov_x = atan(tan(desiredFov * M_PI / 360.0f) * baseAspect * aspect) * 360.0f / M_PI;
+		fov_x = atan(tan(desiredFov*M_PI / 360.0f) * baseAspect*aspect) *360.0f / M_PI;
 	}
 
 	x = refdef->width / tan(fov_x / 360 * M_PI);
@@ -674,6 +680,7 @@ static int CG_CalcFov(void) {
 	CG_CalcFov2(&cg.refdef, &fov, &cg.refdef.fov_x, &cg.refdef.fov_y);
 	// set view weapon fov
 	cg.viewWeaponFov = cg_weaponFov.integer ? cg_weaponFov.integer : cg_fov.integer;
+
 	CG_CalcFov2(&cg.refdef, &cg.viewWeaponFov, &cg.refdef.weapon_fov_x, &cg.refdef.weapon_fov_y);
 
 	if (!cg.cur_lc->zoomed) {
@@ -744,7 +751,7 @@ static void CG_DamageBlendBlob(void) {
 	if (!cg.cur_lc->damageValue) {
 		return;
 	}
-	//if (cg.cameraMode) {
+	//if(cg.cameraMode) {
 	//	return;
 	//}
 
@@ -933,11 +940,7 @@ static void CG_PlayBufferedSounds(void) {
 }
 
 /*
-=======================================================================================================================================
-
-	FRUSTUM CODE
-
-=======================================================================================================================================
+**  Frustum code
 */
 
 // some culling bits
@@ -983,13 +986,9 @@ void CG_SetupFrustum(void) {
 	}
 }
 
-/*
-=======================================================================================================================================
-CG_CullPoint
-
-Returns true if culled.
-=======================================================================================================================================
-*/
+//
+//	CG_CullPoint - returns true if culled
+//
 qboolean CG_CullPoint(vec3_t pt) {
 	int i;
 	plane_t *frust;
@@ -1006,11 +1005,6 @@ qboolean CG_CullPoint(vec3_t pt) {
 	return (qfalse);
 }
 
-/*
-=======================================================================================================================================
-CG_CullPointAndRadius
-=======================================================================================================================================
-*/
 qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius) {
 	int i;
 	plane_t *frust;
@@ -1026,6 +1020,8 @@ qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius) {
 
 	return (qfalse);
 }
+
+//=========================================================================
 
 /*
 =======================================================================================================================================
@@ -1065,7 +1061,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	}
 	// this counter will be bumped for every valid scene we generate
 	cg.clientFrame++;
-	// Use single camera/viewport at intermission
+	// use single camera/viewport at intermission
 	for (i = 0; i < CG_MaxSplitView(); i++) {
 		if (cg.localPlayers[i].playerNum != -1 && cg.snap->pss[i].pm_type != PM_INTERMISSION) {
 			// player present and not at intermission, keep viewports separate.
@@ -1084,6 +1080,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 
 		cg.cur_localPlayerNum = i;
 		cg.cur_lc = &cg.localPlayers[i];
+
 		cg.cur_ps = &cg.snap->pss[i];
 		// Check if viewport should be drawn.
 		if (cg.singleCamera && cg.numViewports >= 1) {
@@ -1103,7 +1100,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	cg.cur_localPlayerNum = -1;
 	cg.cur_lc = NULL;
 	cg.cur_ps = NULL;
-	// If all local players dropped out from playing still draw main local player.
+	// if all local players dropped out from playing still draw main local player.
 	if (cg.numViewports == 0) {
 		cg.numViewports = 1;
 		renderPlayerViewport[0] = qtrue;
@@ -1129,8 +1126,8 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		cg.cur_lc->renderingThirdPerson = cg.cur_ps->persistant[PERS_TEAM] != TEAM_SPECTATOR && (cg_thirdPerson[cg.cur_localPlayerNum].integer || (cg.cur_ps->stats[STAT_HEALTH] <= 0) || cg.cur_lc->cameraOrbit);
 		// build cg.refdef
 		inwater = CG_CalcViewValues();
-		CG_SetupFrustum();
 
+		CG_SetupFrustum();
 		CG_DrawSkyBoxPortal();
 		// first person blend blobs, done after AnglesToAxis
 		if (!cg.cur_lc->renderingThirdPerson) {
@@ -1138,7 +1135,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		}
 		// build the render lists
 		if (!cg.cur_lc->hyperspace) {
-			CG_AddPacketEntities(); // adter calcViewValues, so predicted player state is correct
+			CG_AddPacketEntities(); // alter calcViewValues, so predicted player state is correct
 			CG_AddMarks();
 			CG_AddParticles();
 			CG_AddLocalEntities();
@@ -1167,6 +1164,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 			}
 
 			cg.oldTime = cg.time;
+
 			CG_AddLagometerFrameInfo();
 		}
 
@@ -1209,7 +1207,6 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		cg.viewport = 3;
 		// calculate size of viewport
 		CG_CalcVrect();
-
 		CG_ClearViewport();
 		CG_DrawTourneyScoreboard();
 	}

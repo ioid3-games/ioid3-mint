@@ -1,25 +1,18 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com).
+Copyright (C) 1999-2005 Id Software, Inc.
+Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com)
 
-This file is part of Spearmint Source Code.
+This file is part of Quake III Arena source code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Quake III Arena source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Quake III Arena source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
-
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
-
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+You should have received a copy of the GNU General Public License along with Quake III Arena source code; if not, write to the Free
+Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 =======================================================================================================================================
 */
 
@@ -48,12 +41,12 @@ typedef struct snd_stream_s {
 	int pos;
 	void *ptr;
 } snd_stream_t;
-// Codec functions
+// codec functions
 typedef void *(*CODEC_LOAD)(const char *filename, snd_info_t *info);
 typedef snd_stream_t *(*CODEC_OPEN)(const char *filename);
 typedef int (*CODEC_READ)(snd_stream_t *stream, int bytes, void *buffer);
 typedef void (*CODEC_CLOSE)(snd_stream_t *stream);
-// Codec data structure
+// codec data structure
 struct snd_codec_s {
 	char *ext;
 	CODEC_LOAD load;
@@ -62,7 +55,7 @@ struct snd_codec_s {
 	CODEC_CLOSE close;
 	snd_codec_t *next;
 };
-// Codec management
+// codec management
 void S_CodecInit(void);
 void S_CodecShutdown(void);
 void S_CodecRegister(snd_codec_t *codec);
@@ -70,7 +63,7 @@ void *S_CodecLoad(const char *filename, snd_info_t *info);
 snd_stream_t *S_CodecOpenStream(const char *filename);
 void S_CodecCloseStream(snd_stream_t *stream);
 int S_CodecReadStream(snd_stream_t *stream, int bytes, void *buffer);
-// Util functions (used by codecs)
+// util functions (used by codecs)
 snd_stream_t *S_CodecUtilOpen(const char *filename, snd_codec_t *codec);
 void S_CodecUtilClose(snd_stream_t **stream);
 // WAV Codec

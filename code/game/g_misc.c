@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -61,14 +67,14 @@ void SP_light(gentity_t *self) {
 	G_FreeEntity(self);
 }
 
-/*QUAKED lightJunior (0 0.7 0.3) (-8 -8 -8) (8 8 8) nonlinear angle negative_spot negative_point
+/*QUAKED lightJunior(0 0.7 0.3)(-8 -8 -8)(8 8 8)nonlinear angle negative_spot negative_point
 Non-displayed light that only affects dynamic game models, but does not contribute to lightmaps
 "light" overrides the default 300 intensity.
 Nonlinear checkbox gives inverse square falloff instead of linear
-Angle adds light:surface angle calculations (only valid for "Linear" lights)
+Angle adds light:surface angle calculations(only valid for "Linear" lights)
 Lights pointed at a target will be spotlights.
 "radius" overrides the default 64 unit radius of a spotlight at the target point.
-"fade" falloff/radius adjustment value. multiply the run of the slope by "fade" (1.0f default) (only valid for "Linear" lights)
+"fade" falloff/radius adjustment value. multiply the run of the slope by "fade"(1.0f default)(only valid for "Linear" lights)
 */
 void SP_lightJunior(gentity_t *self) {
 	G_FreeEntity(self);
@@ -82,11 +88,6 @@ void SP_lightJunior(gentity_t *self) {
 =======================================================================================================================================
 */
 
-/*
-=======================================================================================================================================
-TeleportPlayer
-=======================================================================================================================================
-*/
 void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
 	gentity_t *tent;
 	qboolean noAngles;
@@ -96,20 +97,20 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
 	if (player->player->sess.sessionTeam != TEAM_SPECTATOR) {
 		tent = G_TempEntity(player->player->ps.origin, EV_PLAYER_TELEPORT_OUT);
 		tent->s.playerNum = player->s.playerNum;
-
 		tent = G_TempEntity(origin, EV_PLAYER_TELEPORT_IN);
 		tent->s.playerNum = player->s.playerNum;
 	}
 	// unlink to make sure it can't possibly interfere with G_KillBox
 	trap_UnlinkEntity(player);
-
 	VectorCopy(origin, player->player->ps.origin);
+
 	player->player->ps.origin[2] += 1;
 
 	if (!noAngles) {
 		// spit the player out
 		AngleVectors(angles, player->player->ps.velocity, NULL, NULL);
 		VectorScale(player->player->ps.velocity, 400, player->player->ps.velocity);
+
 		player->player->ps.pm_time = 160; // hold time
 		player->player->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 		// set angles
@@ -142,14 +143,6 @@ void SP_misc_teleporter_dest(gentity_t *ent) {
 
 }
 
-/*
-=======================================================================================================================================
-
-	MODELS
-
-=======================================================================================================================================
-*/
-
 /*QUAKED misc_model (1 0 0) (-16 -16 -16) (16 16 16)
 "model" arbitrary .md3 file to display
 */
@@ -159,9 +152,7 @@ void SP_misc_model(gentity_t *ent) {
 
 	VectorSet(ent->s.mins, -16, -16, -16);
 	VectorSet(ent->s.maxs, 16, 16, 16);
-
 	trap_LinkEntity(ent);
-
 	G_SetOrigin(ent, ent->s.origin);
 	VectorCopy(ent->s.angles, ent->s.apos.trBase);
 #else
@@ -169,12 +160,13 @@ void SP_misc_model(gentity_t *ent) {
 #endif
 }
 
-/*QUAKED misc_gamemodel (1 0 0) (-16 -16 -16) (16 16 16)
-md3 placed in the game at runtime (rather than in the bsp)
+/*QUAKED misc_gamemodel(1 0 0)(-16 -16 -16)(16 16 16)
+md3 placed in the game at runtime(rather than in the bsp)
 "model" arbitrary .md3 file to display
-"modelscale" scale multiplier (defaults to 1x, and scales uniformly)
-"modelscale_vec" scale multiplier (defaults to 1 1 1, scales each axis as requested)
-"modelscale_vec" - Set scale per-axis. Overrides "modelscale", so if you have both, the "modelscale" is ignored
+"modelscale" scale multiplier(defaults to 1x, and scales uniformly)
+"modelscale_vec" scale multiplier(defaults to 1 1 1, scales each axis as requested)
+
+"modelscale_vec" - Set scale per-axis.  Overrides "modelscale", so if you have both, the "modelscale" is ignored
 */
 // ZTM: FIXME: Stub. Currently just loaded by cgame
 void SP_misc_gamemodel(gentity_t *ent) {
@@ -194,86 +186,69 @@ void SP_props_skyportal(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-
-	VIS_DUMMY
-
+locateMaster
 =======================================================================================================================================
 */
-
-/*
-=======================================================================================================================================
-LocateMaster
-=======================================================================================================================================
-*/
-void LocateMaster(gentity_t *ent) {
+void locateMaster(gentity_t *ent) {
 
 	ent->target_ent = G_PickTarget(ent->target);
 
 	if (ent->target_ent) {
 		ent->r.visDummyNum = ent->target_ent->s.number;
 	} else {
-		G_Printf("Couldn't find target(%s) for misc_vis_dummy at %s\n", ent->target, vtos(ent->r.currentOrigin));
+		G_Printf("Couldn't find target(%s)for misc_vis_dummy at %s\n", ent->target, vtos(ent->r.currentOrigin));
 		G_FreeEntity(ent);
 	}
 }
 
-/*QUAKED misc_vis_dummy (1 .5 0) (-8 -8 -8) (8 8 8)
-If this entity is "visible" (in player's PVS) then it's target is forced to be active whether it is in the player's PVS or not.
+/*QUAKED misc_vis_dummy(1 .5 0)(-8 -8 -8)(8 8 8)
+If this entity is "visible"(in player's PVS)then it's target is forced to be active whether it is in the player's PVS or not.
 This entity itself is never visible or transmitted to clients.
-For safety, you should have each dummy only point at one entity (however, it's okay to have many dummies pointing at one entity)
+For safety, you should have each dummy only point at one entity(however, it's okay to have many dummies pointing at one entity)
 */
 void SP_misc_vis_dummy(gentity_t *ent) {
 
 	if (!ent->target) {
 		G_Printf("No target specified for misc_vis_dummy at %s\n", vtos(ent->r.currentOrigin));
+
 		G_FreeEntity(ent);
 		return;
 	}
 
 	ent->r.svFlags |= SVF_VISDUMMY;
-
 	G_SetOrigin(ent, ent->s.origin);
-
 	trap_LinkEntity(ent);
 
-	ent->think = LocateMaster;
+	ent->think = locateMaster;
 	ent->nextthink = level.time + 1000;
+
 }
 
-/*QUAKED misc_vis_dummy_multiple (1 .5 0) (-8 -8 -8) (8 8 8)
-If this entity is "visible" (in player's PVS) then it's target is forced to be active whether it is in the player's PVS or not.
+/*QUAKED misc_vis_dummy_multiple(1 .5 0)(-8 -8 -8)(8 8 8)
+If this entity is "visible"(in player's PVS)then it's target is forced to be active whether it is in the player's PVS or not.
 This entity itself is never visible or transmitted to clients.
 This entity was created to have multiple speakers targeting it
 */
 void SP_misc_vis_dummy_multiple(gentity_t *ent) {
-
 	if (!ent->targetname) {
 		G_Printf("misc_vis_dummy_multiple needs a targetname at %s\n", vtos(ent->r.currentOrigin));
+
 		G_FreeEntity(ent);
 		return;
 	}
 
 	ent->r.svFlags |= SVF_VISDUMMY_MULTIPLE;
-
 	G_SetOrigin(ent, ent->s.origin);
-
 	trap_LinkEntity(ent);
+
 }
 
 /*
 =======================================================================================================================================
-
-	PORTALS
-
+locateCamera
 =======================================================================================================================================
 */
-
-/*
-=======================================================================================================================================
-LocateCamera
-=======================================================================================================================================
-*/
-void LocateCamera(gentity_t *ent) {
+void locateCamera(gentity_t *ent) {
 	vec3_t dir;
 	gentity_t *target;
 	gentity_t *owner;
@@ -281,7 +256,7 @@ void LocateCamera(gentity_t *ent) {
 	owner = G_PickTarget(ent->target);
 
 	if (!owner) {
-		G_Printf("Couldn't find target for misc_partal_surface\n");
+		G_Printf("Couldn't find target for misc_portal_surface\n");
 		G_FreeEntity(ent);
 		return;
 	}
@@ -325,7 +300,6 @@ void SP_misc_portal_surface(gentity_t *ent) {
 
 	VectorClear(ent->s.mins);
 	VectorClear(ent->s.maxs);
-
 	trap_LinkEntity(ent);
 
 	ent->r.svFlags = SVF_PORTAL;
@@ -334,7 +308,7 @@ void SP_misc_portal_surface(gentity_t *ent) {
 	if (!ent->target) {
 		VectorCopy(ent->s.origin, ent->s.origin2);
 	} else {
-		ent->think = LocateCamera;
+		ent->think = locateCamera;
 		ent->nextthink = level.time + 100;
 	}
 }
@@ -348,9 +322,7 @@ void SP_misc_portal_camera(gentity_t *ent) {
 
 	VectorClear(ent->s.mins);
 	VectorClear(ent->s.maxs);
-
 	trap_LinkEntity(ent);
-
 	G_SpawnFloat("roll", "0", &roll);
 
 	ent->s.playerNum = roll / 360.0 * 256;
@@ -431,7 +403,6 @@ void InitShooter(gentity_t *ent, int weapon) {
 	ent->s.weapon = weapon;
 
 	RegisterItem(BG_FindItemForWeapon(weapon));
-
 	G_SetMovedir(ent->s.angles, ent->movedir);
 
 	if (!ent->random) {
@@ -448,7 +419,7 @@ void InitShooter(gentity_t *ent, int weapon) {
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED shooter_rocket (1 0 0) (-16 -16 -16) (16 16 16)
+/*QUAKED shooter_rocket (1 0 0)(-16 -16 -16) (16 16 16)
 Fires at either the target or the current direction.
 "random" the number of degrees of deviance from the taget. (1.0 default)
 */
@@ -473,8 +444,8 @@ void SP_shooter_grenade(gentity_t *ent) {
 }
 
 /*QUAKED corona (0 1 0) (-4 -4 -4) (4 4 4) START_OFF
-Use color picker to set color or key "color". values are 0.0-1.0 for each color(rgb).
-"scale" will designate a multiplier to the default size. (so 2.0 is 2xdefault size, 0.5 is half)
+Use color picker to set color or key "color". Values are 0.0-1.0 for each color (rgb).
+"scale" will designate a multiplier to the default size. (so 2.0 is 2 x default size, 0.5 is half)
 */
 
 /*
@@ -485,7 +456,6 @@ So level designers can toggle them on/off.
 =======================================================================================================================================
 */
 void use_corona(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-
 	if (ent->r.linked) {
 		trap_UnlinkEntity(ent);
 	} else {
@@ -502,17 +472,15 @@ void SP_corona(gentity_t *ent) {
 	float scale;
 
 	ent->s.eType = ET_CORONA;
-	// if it's black or has no color assigned
-	if (ent->dl_color[0] <= 0 && ent->dl_color[1] <= 0 && ent->dl_color[2] <= 0) {
-		ent->dl_color[0] = ent->dl_color[1] = ent->dl_color[2] = 1; // set white
 
+	if (ent->dl_color[0] <= 0 && ent->dl_color[1] <= 0 && ent->dl_color[2] <= 0) { // if it's black or has no color assigned
+		ent->dl_color[0] = ent->dl_color[1] = ent->dl_color[2] = 1; // set white
 	}
 
 	ent->dl_color[0] = ent->dl_color[0] * 255;
 	ent->dl_color[1] = ent->dl_color[1] * 255;
 	ent->dl_color[2] = ent->dl_color[2] * 255;
-
-	ent->s.dl_intensity = (int)ent->dl_color[0]|((int)ent->dl_color[1] << 8)|((int)ent->dl_color[2] << 16);
+	ent->s.dl_intensity = (int)ent->dl_color[0] |((int)ent->dl_color[1] << 8)|((int)ent->dl_color[2] << 16);
 
 	G_SpawnFloat("scale", "1", &scale);
 
@@ -525,14 +493,33 @@ void SP_corona(gentity_t *ent) {
 }
 
 char *predef_lightstyles[] = {
-	"mmnmmommommnonmmonqnmmo", "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba", "mmmmmaaaaammmmmaaaaaabcdefgabcdefg", "ma", "jklmnopqrstuvwxyzyxwvutsrqponmlkj", "nmonqnmomnmomomono", "mmmaaaabcdefgmmmmaaaammmaamm", "aaaaaaaazzzzzzzz", "mmamammmmammamamaaamammma", "abcdefghijklmnopqrrqponmlkjihgfedcba", "mmnommomhkmmomnonmmonqnmmo", "kmamaamakmmmaakmamakmakmmmma", "kmmmakakmmaaamammamkmamakmmmma", "mmnnoonnmmmmmmmmmnmmmmnonmmmmmmm", "mmmmnonmmmmnmmmmmnonmmmmmnmmmmmmm", "zzzzzzzzaaaaaaaa", "zzzzzzzzaaaaaaaaaaaaaaaa", "aaaaaaaazzzzzzzzaaaaaaaa", "aaaaaaaaaaaaaaaazzzzzzzz"
+	"mmnmmommommnonmmonqnmmo",
+	"abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba",
+	"mmmmmaaaaammmmmaaaaaabcdefgabcdefg",
+	"ma",
+	"jklmnopqrstuvwxyzyxwvutsrqponmlkj",
+	"nmonqnmomnmomomono",
+	"mmmaaaabcdefgmmmmaaaammmaamm",
+	"aaaaaaaazzzzzzzz",
+	"mmamammmmammamamaaamammma",
+	"abcdefghijklmnopqrrqponmlkjihgfedcba",
+	"mmnommomhkmmomnonmmonqnmmo",
+	"kmamaamakmmmaakmamakmakmmmma",
+	"kmmmakakmmaaamammamkmamakmmmma",
+	"mmnnoonnmmmmmmmmmnmmmmnonmmmmmmm",
+	"mmmmnonmmmmnmmmmmnonmmmmmnmmmmmmm",
+	"zzzzzzzzaaaaaaaa",
+	"zzzzzzzzaaaaaaaaaaaaaaaa",
+	"aaaaaaaazzzzzzzzaaaaaaaa",
+	"aaaaaaaaaaaaaaaazzzzzzzz"
 };
+
 
 /*
 =======================================================================================================================================
 dlight_finish_spawning
 
-All the dlights should call this on the same frame, thereby being synched, starting	their sequences all at the same time.
+All the dlights should call this on the same frame, thereby being synched, starting their sequences all at the same time.
 =======================================================================================================================================
 */
 void dlight_finish_spawning(gentity_t *ent) {
@@ -541,13 +528,13 @@ void dlight_finish_spawning(gentity_t *ent) {
 
 static int dlightstarttime = 0;
 
-/*QUAKED dlight (0 1 0) (-12 -12 -12) (12 12 12) FORCEACTIVE STARTOFF ONETIME
+/*QUAKED dlight(0 1 0)(-12 -12 -12)(12 12 12)FORCEACTIVE STARTOFF ONETIME
 "style": value is an int from 1-19 that contains a pre-defined 'flicker' string.
-"stylestring": set your own 'flicker' string. (ex. "klmnmlk"). NOTE: this should be all lowercase
+"stylestring": set your own 'flicker' string.(ex. "klmnmlk"). NOTE: this should be all lowercase
 Stylestring characters run at 10 cps in the game.(meaning the alphabet, at 24 characters, would take 2.4 seconds to cycle)
-"offset": change the initial index in a style string. So val of 3 in the above example would start this light at 'N'. (used to get dlights using the same style out of sync).
-"atten": offset from the alpha values of the stylestring. stylestring of "ddeeffzz" with an atten of -1 would result in "ccddeeyy"
-Use color picker to set color or key "color". values are 0.0-1.0 for each color(rgb).
+"offset": change the initial index in a style string.  So val of 3 in the above example would start this light at 'N'.(used to get dlights using the same style out of sync).
+"atten": offset from the alpha values of the stylestring.  stylestring of "ddeeffzz" with an atten of -1 would result in "ccddeeyy"
+Use color picker to set color or key "color".  values are 0.0-1.0 for each color(rgb).
 FORCEACTIVE	- toggle makes sure this light stays alive in a map even if the user has r_dynamiclight set to 0.
 STARTOFF	- means the dlight doesn't spawn in until ent is triggered
 ONETIME		- when the dlight is triggered, it will play through it's cycle once, then shut down until triggered again
@@ -660,8 +647,8 @@ void SP_dlight(gentity_t *ent) {
 	}
 
 	ent->nextthink = dlightstarttime;
-	// if it's black or has no color assigned, make it white
-	if (ent->dl_color[0] <= 0 && ent->dl_color[1] <= 0 && ent->dl_color[2] <= 0) {
+
+	if (ent->dl_color[0] <= 0 && ent->dl_color[1] <= 0 && ent->dl_color[2] <= 0) { // if it's black or has no color assigned, make it white
 		ent->dl_color[0] = ent->dl_color[1] = ent->dl_color[2] = 1;
 	}
 
@@ -679,155 +666,3 @@ void SP_dlight(gentity_t *ent) {
 		trap_LinkEntity(ent);
 	}
 }
-#ifdef MISSIONPACK
-/*
-=======================================================================================================================================
-PortalDie
-=======================================================================================================================================
-*/
-static void PortalDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
-	G_FreeEntity(self);
-	// FIXME do something more interesting
-}
-
-/*
-=======================================================================================================================================
-DropPortalDestination
-=======================================================================================================================================
-*/
-void DropPortalDestination(gentity_t *player) {
-	gentity_t *ent;
-	vec3_t snapped;
-
-	// create the portal destination
-	ent = G_Spawn();
-	ent->s.modelindex = G_ModelIndex("models/powerups/teleporter/tele_exit.md3");
-
-	VectorCopy(player->s.pos.trBase, snapped);
-	SnapVector(snapped);
-	G_SetOrigin(ent, snapped);
-
-	VectorCopy(player->s.mins, ent->s.mins);
-	VectorCopy(player->s.maxs, ent->s.maxs);
-
-	ent->classname = "hi_portal destination";
-	ent->s.pos.trType = TR_STATIONARY;
-	ent->s.contents = CONTENTS_CORPSE;
-	ent->takedamage = qtrue;
-	ent->health = 200;
-	ent->die = PortalDie;
-
-	VectorCopy(player->s.apos.trBase, ent->s.angles);
-
-	ent->think = G_FreeEntity;
-	ent->nextthink = level.time + 2 * 60 * 1000;
-
-	trap_LinkEntity(ent);
-
-	player->player->portalID = ++level.portalSequence;
-
-	ent->count = player->player->portalID;
-	// give the item back so they can drop the source now
-	player->player->ps.stats[STAT_HOLDABLE_ITEM] = BG_ItemNumForItem(BG_FindItem("Portal"));
-}
-
-/*
-=======================================================================================================================================
-PortalTouch
-=======================================================================================================================================
-*/
-static void PortalTouch(gentity_t *self, gentity_t *other, trace_t *trace) {
-	gentity_t *destination;
-
-	// see if we will even let other try to use it
-	if (other->health <= 0) {
-		return;
-	}
-
-	if (!other->player) {
-		return;
-	}
-
-//	if (other->player->ps.persistant[PERS_TEAM] != self->spawnflags) {
-//		return;
-//	}
-
-	TossPlayerGametypeItems(other);
-	// find the destination
-	destination = NULL;
-
-	while ((destination = G_Find(destination, FOFS(classname), "hi_portal destination")) != NULL) {
-		if (destination->count == self->count) {
-			break;
-		}
-	}
-	// if there is not one, die!
-	if (!destination) {
-		if (self->pos1[0] || self->pos1[1] || self->pos1[2]) {
-			TeleportPlayer(other, self->pos1, self->s.angles);
-		}
-
-		G_Damage(other, other, other, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
-		return;
-	}
-
-	TeleportPlayer(other, destination->s.pos.trBase, destination->s.angles);
-}
-
-/*
-=======================================================================================================================================
-PortalEnable
-=======================================================================================================================================
-*/
-static void PortalEnable(gentity_t *self) {
-
-	self->touch = PortalTouch;
-	self->think = G_FreeEntity;
-	self->nextthink = level.time + 2 * 60 * 1000;
-}
-
-/*
-=======================================================================================================================================
-DropPortalSource
-=======================================================================================================================================
-*/
-void DropPortalSource(gentity_t *player) {
-	gentity_t *ent;
-	gentity_t *destination;
-	vec3_t snapped;
-
-	// create the portal source
-	ent = G_Spawn();
-	ent->s.modelindex = G_ModelIndex("models/powerups/teleporter/tele_enter.md3");
-
-	VectorCopy(player->s.pos.trBase, snapped);
-	SnapVector(snapped);
-	G_SetOrigin(ent, snapped);
-	VectorCopy(player->s.mins, ent->s.mins);
-	VectorCopy(player->s.maxs, ent->s.maxs);
-
-	ent->classname = "hi_portal source";
-	ent->s.pos.trType = TR_STATIONARY;
-	ent->s.contents = CONTENTS_CORPSE|CONTENTS_TRIGGER;
-	ent->takedamage = qtrue;
-	ent->health = 200;
-	ent->die = PortalDie;
-
-	trap_LinkEntity(ent);
-
-	ent->count = player->player->portalID;
-	player->player->portalID = 0;
-//	ent->spawnflags = player->player->ps.persistant[PERS_TEAM];
-	ent->nextthink = level.time + 1000;
-	ent->think = PortalEnable;
-	// find the destination
-	destination = NULL;
-
-	while ((destination = G_Find(destination, FOFS(classname), "hi_portal destination")) != NULL) {
-		if (destination->count == ent->count) {
-			VectorCopy(destination->s.pos.trBase, ent->pos1);
-			break;
-		}
-	}
-}
-#endif

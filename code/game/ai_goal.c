@@ -1,30 +1,41 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- Goal AI.
-**************************************************************************************************************************************/
+/*****************************************************************************
+	* name:		ai_goal.c
+	*
+	* desc:		goal AI
+	*
+	* $Archive: /MissionPack/code/game/ai_goal.c $
+	*
+	*****************************************************************************/
 
 #include "g_local.h"
 #include "../botlib/botlib.h"
@@ -52,7 +63,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 //#define DEBUG_AI_GOAL
 #ifdef RANDOMIZE
 #define UNDECIDEDFUZZY
-#endif // RANDOMIZE
+#endif //RANDOMIZE
 #define DROPPEDWEIGHT
 // minimum avoid goal time
 #define AVOID_MINIMUM_TIME 10
@@ -60,6 +71,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define AVOID_DEFAULT_TIME 30
 // avoid dropped goal time
 #define AVOID_DROPPED_TIME 10
+//
 #define TRAVELTIME_SCALE 0.01
 // item flags
 #define IFL_NOTFREE		 1 // not in free for all
@@ -67,6 +79,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define IFL_NOTSINGLE	 4 // not in single player
 #define IFL_NOTBOT		 8 // bot should never go for this
 #define IFL_ROAM		16 // bot roam goal
+
 // camp spots "info_camp"
 typedef struct campspot_s {
 	vec3_t origin;
@@ -80,15 +93,15 @@ typedef struct campspot_s {
 } campspot_t;
 
 typedef struct levelitem_s {
-	int number;			// number of the level item
-	int iteminfo;		// index into the item info
-	int flags;			// item flags
-	float weight;		// fixed roam weight
-	vec3_t origin;		// origin of the item
-	int goalareanum;	// area the item is in
-	vec3_t goalorigin;	// goal origin within the area
-	int entitynum;		// entity number
-	float timeout;		// item is removed after this time
+	int number;						// number of the level item
+	int iteminfo;					// index into the item info
+	int flags;						// item flags
+	float weight;					// fixed roam weight
+	vec3_t origin;					// origin of the item
+	int goalareanum;				// area the item is in
+	vec3_t goalorigin;				// goal origin within the area
+	int entitynum;					// entity number
+	float timeout;					// item is removed after this time
 	struct levelitem_s *prev, *next;
 } levelitem_t;
 
@@ -181,9 +194,9 @@ BotSaveGoalFuzzyLogic
 =======================================================================================================================================
 */
 void BotSaveGoalFuzzyLogic(int goalstate, char *filename) {
-	//bot_goalstate_t *gs;
+	// bot_goalstate_t *gs;
 
-	//gs = BotGoalStateFromHandle(goalstate);
+	// gs = BotGoalStateFromHandle(goalstate);
 
 	//WriteWeightConfig(filename, gs->itemweightconfig);
 }
@@ -222,7 +235,9 @@ itemconfig_t *LoadItemConfig(char *filename) {
 	}
 	// initialize item config
 	ic = &bot_itemconfig;
+
 	Com_Memset(ic, 0, sizeof(itemconfig_t));
+
 	ic->numiteminfo = 0;
 	// parse the item config file
 	while (trap_PC_ReadToken(source, &token)) {
@@ -394,7 +409,6 @@ void BotInitInfoEntities(void) {
 	}
 
 	bot_loadedInfoEntities = qtrue;
-
 	numcampspots = 0;
 
 	for (ent = trap_AAS_NextBSPEntity(0); ent; ent = trap_AAS_NextBSPEntity(ent)) {
@@ -407,8 +421,7 @@ void BotInitInfoEntities(void) {
 			int areanum;
 
 			trap_AAS_VectorForBSPEpairKey(ent, "origin", origin);
-			//origin[2] += 16;
-
+			// origin[2] += 16;
 			areanum = trap_AAS_PointAreaNum(origin);
 
 			if (!areanum) {
@@ -425,9 +438,9 @@ void BotInitInfoEntities(void) {
 			trap_AAS_FloatForBSPEpairKey(ent, "weight", &cs->weight);
 			trap_AAS_FloatForBSPEpairKey(ent, "wait", &cs->wait);
 			trap_AAS_FloatForBSPEpairKey(ent, "random", &cs->random);
-
 			cs->areanum = areanum;
 			cs->next = campspots;
+
 			campspots = cs;
 			//AAS_DrawPermanentCross(cs->origin, 4, LINECOLOR_YELLOW);
 			numcampspots++;
@@ -436,13 +449,12 @@ void BotInitInfoEntities(void) {
 
 	BotAI_Print(PRT_DEVELOPER, "%d camp spots\n", numcampspots);
 }
-
+#ifdef MISSIONPACK
 /*
 =======================================================================================================================================
 BotUnlinkSolidItems
 =======================================================================================================================================
 */
-#ifdef MISSIONPACK
 void BotUnlinkSolidItems(qboolean unlink) {
 	int i;
 	gentity_t *ent;
@@ -510,6 +522,7 @@ void BotInitLevelItems(void) {
 		}
 
 		spawnflags = 0;
+
 		trap_AAS_IntForBSPEpairKey(ent, "spawnflags", &spawnflags);
 
 		for (i = 0; i < ic->numiteminfo; i++) {
@@ -532,9 +545,11 @@ void BotInitLevelItems(void) {
 		// if it is a floating item
 		if (spawnflags & 1) {
 			// if the item is not floating in water
-			if (!(trap_AAS_PointContents(origin) & CONTENTS_WATER)) {
+			if (!(trap_AAS_PointContents(origin)& CONTENTS_WATER)) {
 				VectorCopy(origin, end);
+
 				end[2] -= 32;
+
 				trap_Trace(&trace, origin, ic->iteminfo[i].mins, ic->iteminfo[i].maxs, end, -1, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
 				// if the item not near the ground
 				if (trace.fraction >= 1) {
@@ -591,7 +606,7 @@ void BotInitLevelItems(void) {
 		// if not a stationary item
 		if (!(spawnflags & 1)) {
 			if (!trap_AAS_DropToFloor(origin, ic->iteminfo[i].mins, ic->iteminfo[i].maxs, 0, CONTENTS_SOLID)) {
-				BotAI_Print(PRT_MESSAGE, "%s in solid at (%1.1f %1.1f %1.1f)\n", classname, origin[0], origin[1], origin[2]);
+				BotAI_Print(PRT_MESSAGE, "%s in solid at(%1.1f %1.1f %1.1f)\n", classname, origin[0], origin[1], origin[2]);
 			}
 		}
 		// item info of the level item
@@ -607,7 +622,7 @@ void BotInitLevelItems(void) {
 			li->goalareanum = trap_AAS_BestReachableArea(origin, ic->iteminfo[i].mins, ic->iteminfo[i].maxs, li->goalorigin);
 
 			if (!li->goalareanum) {
-				BotAI_Print(PRT_MESSAGE, "%s not reachable for bots at (%1.1f %1.1f %1.1f)\n", classname, origin[0], origin[1], origin[2]);
+				BotAI_Print(PRT_MESSAGE, "%s not reachable for bots at(%1.1f %1.1f %1.1f)\n", classname, origin[0], origin[1], origin[2]);
 			}
 		}
 
@@ -916,7 +931,7 @@ int BotGetNextCampSpotGoal(int num, bot_goal_t *goal) {
 			goal->entitynum = 0;
 			VectorCopy(mins, goal->mins);
 			VectorCopy(maxs, goal->maxs);
-			return num + 1;
+			return num+1;
 		}
 	}
 
@@ -1014,9 +1029,7 @@ void BotUpdateEntityItems(void) {
 		BotEntityInfo(ent, &entinfo);
 		// FIXME: don't do this
 		// skip all floating items for now
-		//if (entinfo.groundent != ENTITYNUM_WORLD) {
-		//	continue;
-		//}
+		//if(entinfo.groundent != ENTITYNUM_WORLD)continue;
 		// if the entity is still moving
 		if (entinfo.origin[0] != entinfo.lastvisorigin[0] || entinfo.origin[1] != entinfo.lastvisorigin[1] || entinfo.origin[2] != entinfo.lastvisorigin[2]) {
 			continue;
@@ -1061,7 +1074,7 @@ void BotUpdateEntityItems(void) {
 			}
 
 			if (g_gametype.integer >= GT_TEAM) {
-				if (li->flags & IFL_NOTTEAM){
+				if (li->flags & IFL_NOTTEAM) {
 					continue;
 				}
 			} else {
@@ -1084,7 +1097,6 @@ void BotUpdateEntityItems(void) {
 						// also update the goal area number
 						li->goalareanum = trap_AAS_BestReachableArea(li->origin, ic->iteminfo[li->iteminfo].mins, ic->iteminfo[li->iteminfo].maxs, li->goalorigin);
 					}
-
 					//BotAI_Print(PRT_DEVELOPER, "linked item %s to an entity\n", ic->iteminfo[li->iteminfo].classname);
 					break;
 				}
@@ -1137,7 +1149,8 @@ void BotUpdateEntityItems(void) {
 		if (!li->entitynum) {
 			BotFindEntityForLevelItem(li);
 		}
-	}*/
+	}
+	*/
 }
 
 /*
@@ -1176,8 +1189,9 @@ void BotPushGoal(int goalstate, bot_goal_t *goal) {
 		return;
 	}
 
-	if (gs->goalstacktop >= MAX_GOALSTACK - 1) {
+	if (gs->goalstacktop >= MAX_GOALSTACK-1) {
 		BotAI_Print(PRT_ERROR, "goal heap overflow\n");
+
 		BotDumpGoalStack(goalstate);
 		return;
 	}
@@ -1263,7 +1277,7 @@ int BotGetSecondGoal(int goalstate, bot_goal_t *goal) {
 		return qfalse;
 	}
 
-	Com_Memcpy(goal, &gs->goalstack[gs->goalstacktop - 1], sizeof(bot_goal_t));
+	Com_Memcpy(goal, &gs->goalstack[gs->goalstacktop-1], sizeof(bot_goal_t));
 	return qtrue;
 }
 
@@ -1289,7 +1303,7 @@ int BotChooseLTGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 		return qfalse;
 	}
 
-	if (!gs->itemweightconfig)
+	if (!gs->itemweightconfig) {
 		return qfalse;
 	}
 	// get the area the bot is in
@@ -1337,11 +1351,11 @@ int BotChooseLTGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 		if (li->flags & IFL_NOTBOT) {
 			continue;
 		}
-		// if the item is NOT in a possible goal area
+		// if the item is not in a possible goal area
 		if (!li->goalareanum) {
 			continue;
 		}
-		// FIXME: is this a good thing? added this for items that never spawned into the game (f.i. CTF flags in obelisk)
+		//FIXME: is this a good thing? added this for items that never spawned into the game(f.i. CTF flags in obelisk)
 		if (!li->entitynum && !(li->flags & IFL_ROAM)) {
 			continue;
 		}
@@ -1413,9 +1427,11 @@ int BotChooseLTGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 	}
 	// create a bot goal for this item
 	iteminfo = &ic->iteminfo[bestitem->iteminfo];
+
 	VectorCopy(bestitem->goalorigin, goal.origin);
 	VectorCopy(iteminfo->mins, goal.mins);
 	VectorCopy(iteminfo->maxs, goal.maxs);
+
 	goal.areanum = bestitem->goalareanum;
 	goal.entitynum = bestitem->entitynum;
 	goal.number = bestitem->number;
@@ -1526,11 +1542,11 @@ int BotChooseNBGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 		if (li->flags & IFL_NOTBOT) {
 			continue;
 		}
-		// if the item is NOT in a possible goal area
+		// if the item is in a possible goal area
 		if (!li->goalareanum) {
 			continue;
 		}
-		// FIXME: is this a good thing? added this for items that never spawned into the game (f.i. CTF flags in obelisk)
+		// FIXME: is this a good thing? added this for items that never spawned into the game(f.i. CTF flags in obelisk)
 		if (!li->entitynum && !(li->flags & IFL_ROAM)) {
 			continue;
 		}
@@ -1547,7 +1563,7 @@ int BotChooseNBGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 		weight = FuzzyWeight(inventory, gs->itemweightconfig, weightnum);
 #endif // UNDECIDEDFUZZY
 #ifdef DROPPEDWEIGHT
-		// HACK: to make dropped items more attractive
+		//HACK: to make dropped items more attractive
 		if (li->timeout) {
 			weight += bot_droppedweight.value;
 		}
@@ -1573,7 +1589,6 @@ int BotChooseNBGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 
 				if (weight > bestweight) {
 					t = 0;
-
 					if (ltg && !li->timeout) {
 						// get the travel time from the goal to the long term goal
 						t = trap_AAS_AreaTravelTimeToGoalArea(li->goalareanum, li->goalorigin, ltg->areanum, travelflags);
@@ -1593,9 +1608,11 @@ int BotChooseNBGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 	}
 	// create a bot goal for this item
 	iteminfo = &ic->iteminfo[bestitem->iteminfo];
+
 	VectorCopy(bestitem->goalorigin, goal.origin);
 	VectorCopy(iteminfo->mins, goal.mins);
 	VectorCopy(iteminfo->maxs, goal.maxs);
+
 	goal.areanum = bestitem->goalareanum;
 	goal.entitynum = bestitem->entitynum;
 	goal.number = bestitem->number;
@@ -1683,17 +1700,14 @@ int BotItemGoalInVisButNotVisible(int viewer, vec3_t eye, vec3_t viewangles, bot
 	trap_Trace(&trace, eye, NULL, NULL, middle, viewer, CONTENTS_SOLID);
 	// if the goal middle point is visible
 	if (trace.fraction >= 1) {
-		// the goal entity number doesn't have to be valid, just assume it's valid
+		// the goal entity number doesn't have to be valid just assume it's valid
 		if (goal->entitynum <= 0) {
 			return qfalse;
 		}
 		// if the entity data isn't valid
 		BotEntityInfo(goal->entitynum, &entinfo);
 		// NOTE: for some wacko reason entities are sometimes not updated
-		//if (!entinfo.valid) {
-		//	return qtrue;
-		//}
-
+		// if(!entinfo.valid) return qtrue;
 		if (entinfo.ltime < trap_AAS_Time() - 0.5) {
 			return qtrue;
 		}
@@ -1719,6 +1733,7 @@ void BotResetGoalState(int goalstate) {
 	Com_Memset(gs->goalstack, 0, MAX_GOALSTACK * sizeof(bot_goal_t));
 
 	gs->goalstacktop = 0;
+
 	BotResetAvoidGoals(goalstate);
 }
 
@@ -1767,8 +1782,8 @@ void BotFreeItemWeights(int goalstate) {
 		return;
 	}
 
-	if (gs->itemweightconfig)FreeWeightConfig) {
-		(gs->itemweightconfig);
+	if (gs->itemweightconfig) {
+		FreeWeightConfig(gs->itemweightconfig);
 	}
 }
 
@@ -1812,7 +1827,6 @@ int BotSetupGoalAI(void) {
 		BotAI_Print(PRT_FATAL, "couldn't load item config\n");
 		return BLERR_CANNOTLOADITEMCONFIG;
 	}
-
 	// everything went ok
 	return BLERR_NOERROR;
 }

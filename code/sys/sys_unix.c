@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -113,11 +119,6 @@ char *Sys_GogPath(void) {
 }
 
 /*
-=======================================================================================================================================
-Sys_Milliseconds
-=======================================================================================================================================
-*/
-/*
  base time in seconds, that's our origin
  timeval:tv_sec is an int:
  assuming this wraps every 0x7fffffff - ~68 years since the Epoch (1970) - we're safe till 2038
@@ -131,6 +132,11 @@ unsigned long sys_timeBase = 0;
 */
 int curtime;
 
+/*
+=======================================================================================================================================
+Sys_Milliseconds
+=======================================================================================================================================
+*/
 int Sys_Milliseconds(void) {
 	struct timeval tp;
 
@@ -300,9 +306,9 @@ FILE *Sys_Mkfifo(const char *ospath) {
 Sys_StatFile
 
 Test a file given OS path:
-	returns -1 if not found.
-	returns 1 if directory.
-	returns 0 otherwise.
+returns -1 if not found
+returns 1 if directory
+returns 0 otherwise
 =======================================================================================================================================
 */
 int Sys_StatFile(char *ospath) {
@@ -914,6 +920,7 @@ Unix specific deinitialisation.
 =======================================================================================================================================
 */
 void Sys_PlatformExit(void) {
+
 }
 
 /*
@@ -947,43 +954,40 @@ Sys_PIDIsRunning
 =======================================================================================================================================
 */
 qboolean Sys_PIDIsRunning(int pid) {
-	return kill( pid, 0 ) == 0;
+	return kill(pid, 0) == 0;
 }
 
 /*
-=================
+=======================================================================================================================================
 Sys_DllExtension
 
 Check if filename should be allowed to be loaded as a DLL.
-=================
+=======================================================================================================================================
 */
-qboolean Sys_DllExtension( const char *name ) {
+qboolean Sys_DllExtension(const char *name) {
 	const char *p;
 	char c = 0;
 
-	if ( COM_CompareExtension( name, DLL_EXT ) ) {
+	if (COM_CompareExtension(name, DLL_EXT)) {
 		return qtrue;
 	}
+	// check for format of filename.so.1.2.3
+	p = strstr(name, DLL_EXT ".");
 
-	// Check for format of filename.so.1.2.3
-	p = strstr( name, DLL_EXT "." );
-
-	if ( p ) {
-		p += strlen( DLL_EXT );
-
-		// Check if .so is only followed for periods and numbers.
-		while ( *p ) {
+	if (p) {
+		p += strlen(DLL_EXT);
+		// check if .so is only followed for periods and numbers.
+		while (*p) {
 			c = *p;
 
-			if ( !isdigit( c ) && c != '.' ) {
+			if (!isdigit(c) && c != '.') {
 				return qfalse;
 			}
 
 			p++;
 		}
-
-		// Don't allow filename to end in a period. file.so., file.so.0., etc
-		if ( c != '.' ) {
+		// don't allow filename to end in a period. file.so., file.so.0., etc.
+		if (c != '.') {
 			return qtrue;
 		}
 	}

@@ -1,30 +1,41 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- Bot characters.
-**************************************************************************************************************************************/
+/*****************************************************************************
+	* name:		ai_char.c
+	*
+	* desc:		bot characters
+	*
+	* $Archive: /source/code/game/ai_char.c $
+	*
+	*****************************************************************************/
 
 #include "g_local.h"
 #include "../botlib/botlib.h"
@@ -44,10 +55,10 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "ai_vcmd.h"
 #include "ai_dmnet.h"
 #include "ai_team.h"
-#include "chars.h" // characteristics
-#include "inv.h" // indexes into the inventory
-#include "syn.h" // synonyms
-#include "match.h" // string matching types and vars
+#include "chars.h"	// characteristics
+#include "inv.h"	// indexes into the inventory
+#include "syn.h"	// synonyms
+#include "match.h"	// string matching types and vars
 
 #define CT_INTEGER	1
 #define CT_FLOAT	2
@@ -55,7 +66,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #define DEFAULT_CHARACTER "bots/default_c.c"
 // interpolation requires 3 slots per-character plus 2 default character slots, and account for handle 0 being a dummy
-#define MAX_BOT_CHARACTERS (3 * MAX_CLIENTS + 2 + 1)
+#define MAX_BOT_CHARACTERS(3 * MAX_CLIENTS + 2 + 1)
+
 // characteristic value
 union cvalue {
 	int integer;
@@ -198,7 +210,7 @@ void BotDefaultCharacteristics(bot_character_t *ch, bot_character_t *defaultch) 
 			ch->c[i].value.integer = defaultch->c[i].value.integer;
 		} else if (defaultch->c[i].type == CT_STRING) {
 			ch->c[i].type = CT_STRING;
-			ch->c[i].value.string = (char *)trap_HeapMalloc(strlen(defaultch->c[i].value.string) + 1);
+			ch->c[i].value.string = (char *)trap_HeapMalloc(strlen(defaultch->c[i].value.string) +1);
 			strcpy(ch->c[i].value.string, defaultch->c[i].value.string);
 		}
 	}
@@ -288,7 +300,7 @@ qboolean BotLoadCharacterFromFile(char *charfile, int skill, bot_character_t *ch
 					} else if (token.type == TT_STRING) {
 						// ZTM: FIXME: ### I think I made this be done in the engine
 						//StripDoubleQuotes(token.string);
-						ch->c[index].value.string = trap_HeapMalloc(strlen(token.string) + 1);
+						ch->c[index].value.string = trap_HeapMalloc(strlen(token.string) +1);
 						strcpy(ch->c[index].value.string, token.string);
 						ch->c[index].type = CT_STRING;
 					} else {
@@ -344,9 +356,7 @@ int BotFindCachedCharacter(char *charfile, float skill) {
 	int handle;
 
 	for (handle = 1; handle < MAX_BOT_CHARACTERS; handle++) {
-		if (!botcharacters[handle].skill) {
-			continue;
-		}
+		if (!botcharacters[handle].skill)continue;
 
 		if (strcmp(botcharacters[handle].filename, charfile) == 0 && (skill < 0 || fabs(botcharacters[handle].skill - skill) < 0.01)) {
 			return handle;
@@ -394,7 +404,7 @@ int BotLoadCachedCharacter(char *charfile, float skill, int reload) {
 		BotAI_Print(PRT_DEVELOPER, "loaded skill %d from %s\n", intskill, charfile);
 #ifdef DEBUG
 		BotAI_Print(PRT_DEVELOPER, "skill %d loaded in %d msec from %s\n", intskill, trap_Milliseconds() - starttime, charfile);
-#endif // DEBUG
+#endif //DEBUG
 		return handle;
 	}
 
@@ -497,7 +507,6 @@ int BotInterpolateCharacters(int handle1, int handle2, float desiredskill) {
 
 	out = &botcharacters[handle];
 	out->skill = desiredskill;
-
 	strcpy(out->filename, ch1->filename);
 
 	scale = (float)(desiredskill - ch1->skill) / (ch2->skill - ch1->skill);
@@ -575,7 +584,7 @@ int BotLoadCharacter(char *charfile, float skill) {
 	// interpolate between the two skills
 	handle = BotInterpolateCharacters(firstskill, secondskill, skill);
 
-	if (!handle) {
+	if (!handle){
 		return 0;
 	}
 #if 0 // ZTM: FIXME: add new bot logfile for game to write to?
@@ -595,9 +604,7 @@ int CheckCharacteristicIndex(int character, int index) {
 
 	ch = BotCharacterFromHandle(character);
 
-	if (!ch) {
-		return qfalse;
-	}
+	if (!ch) return qfalse;
 
 	if (index < 0 || index >= MAX_CHARACTERISTICS) {
 		BotAI_Print(PRT_ERROR, "characteristic %d does not exist\n", index);
@@ -703,6 +710,7 @@ int Characteristic_Integer(int character, int index) {
 		BotAI_Print(PRT_ERROR, "characteristic %d is not an integer\n", index);
 		return 0;
 	}
+
 //	return 0;
 }
 

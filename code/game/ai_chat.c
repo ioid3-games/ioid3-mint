@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -433,26 +439,27 @@ int BotValidChatPosition(bot_state_t *bs) {
 		return qfalse;
 	}
 	// must be on the ground
-	//if (bs->cur_ps.groundEntityNum != ENTITYNUM_NONE) {
+	//if(bs->cur_ps.groundEntityNum != ENTITYNUM_NONE) {
 	//	return qfalse;
 	//}
 	// do not chat if in lava or slime
 	VectorCopy(bs->origin, point);
 	point[2] -= 24;
 
-	if (trap_PointContents(point, bs->entitynum) & (CONTENTS_LAVA|CONTENTS_SLIME)) {
+	if (trap_PointContents(point,bs->entitynum & (CONTENTS_LAVA|CONTENTS_SLIME)) {
 		return qfalse;
 	}
 	// do not chat if under water
 	VectorCopy(bs->origin, point);
 	point[2] += 32;
 
-	if (trap_PointContents(point, bs->entitynum) & MASK_WATER) {
+	if (trap_PointContents(point,bs->entitynum) & MASK_WATER) {
 		return qfalse;
 	}
 	// must be standing on the world entity
 	VectorCopy(bs->origin, start);
 	VectorCopy(bs->origin, end);
+
 	start[2] += 1;
 	end[2] -= 10;
 
@@ -713,6 +720,7 @@ int BotChat_Death(bot_state_t *bs) {
 		}
 
 		BotAI_BotInitialChat(bs, "death_teammate", name, NULL);
+
 		bs->chatto = CHAT_TEAM;
 	} else {
 		// teamplay
@@ -742,7 +750,7 @@ int BotChat_Death(bot_state_t *bs) {
 #endif
 		} else {
 			if ((bs->botdeathtype == MOD_GAUNTLET || bs->botdeathtype == MOD_RAILGUN || bs->botdeathtype == MOD_BFG || bs->botdeathtype == MOD_BFG_SPLASH) && random() < 0.5) {
-				if (bs->botdeathtype == MOD_GAUNTLET) {
+				if (bs->botdeathtype == MOD_GAUNTLET)
 					BotAI_BotInitialChat(bs, "death_gauntlet", name, BotWeaponNameForMeansOfDeath(bs->botdeathtype), NULL);
 				} else if (bs->botdeathtype == MOD_RAILGUN) {
 					BotAI_BotInitialChat(bs, "death_rail", name, BotWeaponNameForMeansOfDeath(bs->botdeathtype), NULL);
@@ -815,6 +823,7 @@ int BotChat_Kill(bot_state_t *bs) {
 
 	if (TeamPlayIsOn() && BotSameTeam(bs, bs->lastkilledplayer)) {
 		BotAI_BotInitialChat(bs, "kill_teammate", name, NULL);
+
 		bs->chatto = CHAT_TEAM;
 	} else {
 		// don't chat in teamplay
@@ -962,6 +971,7 @@ int BotChat_HitTalking(bot_state_t *bs) {
 	}
 
 	PlayerName(g_entities[bs->playernum].player->lasthurt_player, name, sizeof(name));
+
 	weap = BotWeaponNameForMeansOfDeath(g_entities[bs->playernum].player->lasthurt_mod);
 
 	BotAI_BotInitialChat(bs, "hit_talking", name, weap, NULL);
@@ -1039,6 +1049,7 @@ int BotChat_HitNoDeath(bot_state_t *bs) {
 	}
 
 	PlayerName(lasthurt_player, name, sizeof(name));
+
 	weap = BotWeaponNameForMeansOfDeath(g_entities[bs->playernum].player->lasthurt_mod);
 
 	BotAI_BotInitialChat(bs, "hit_nodeath", name, weap, NULL);
@@ -1101,6 +1112,7 @@ int BotChat_HitNoKill(bot_state_t *bs) {
 	}
 
 	PlayerName(bs->enemy, name, sizeof(name));
+
 	weap = BotWeaponNameForMeansOfDeath(g_entities[bs->enemy].player->lasthurt_mod);
 
 	BotAI_BotInitialChat(bs, "hit_nokill", name, weap, NULL);
@@ -1200,7 +1212,7 @@ float BotChatTime(bot_state_t *bs) {
 	//int cpm;
 
 	//cpm = Characteristic_BInteger(bs->character, CHARACTERISTIC_CHAT_CPM, 1, 4000);
-	return 2.0;	//(float)BotChatLength(bs->cs) * 30 / cpm;
+	return 2.0; //(float)BotChatLength(bs->cs) * 30 / cpm;
 }
 
 /*

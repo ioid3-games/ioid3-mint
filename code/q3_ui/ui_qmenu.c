@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -59,7 +65,7 @@ vec4_t text_banner_color;
 vec4_t bitmap_banner_color = {1.00f, 1.00f, 1.00f, 1.00f};	// bright white
 vec4_t ttf_banner_color = {0.70f, 0.00f, 0.00f, 1.00f};		// dark red
 vec4_t text_big_color = {1.00f, 0.00f, 0.00f, 1.00f};		// bright red
-vec4_t text_small_title_color = {1.00f, 0.00f, 0.00f, 1.00f}; // bright red
+vec4_t text_small_title_color={1.00f, 0.00f, 0.00f, 1.00f};	// bright red
 // action widget
 static void Action_Init(menuaction_s *a);
 static void Action_Draw(menuaction_s *a);
@@ -419,7 +425,6 @@ static sfxHandle_t RadioButton_Key(menuradiobutton_s *rb, int key) {
 			if (!(rb->generic.flags & QMF_HASMOUSEFOCUS)) {
 				break;
 			}
-
 		case K_JOY_A:
 		case K_JOY_DPAD_LEFT:
 		case K_JOY_DPAD_RIGHT:
@@ -716,7 +721,6 @@ static void SpinControl_Init(menulist_s *s) {
 	const char *str;
 
 	len = CG_DrawStrlen(s->generic.name, UI_SMALLFONT);
-
 	s->generic.left = s->generic.x - SMALLCHAR_WIDTH - len;
 	len = s->numitems = 0;
 
@@ -765,6 +769,7 @@ static sfxHandle_t SpinControl_Key(menulist_s *s, int key) {
 
 			sound = menu_move_sound;
 			break;
+		
 		case K_JOY_DPAD_LEFT:
 		case K_JOY_LEFTSTICK_LEFT:
 		case K_2JOY_DPAD_LEFT:
@@ -844,12 +849,12 @@ static void ScrollList_Init(menulist_s *l) {
 
 	if (!l->columns) {
 		l->columns = 1;
-		l->separation = 0;
-	} else if (!l->separation) {
-		l->separation = 3;
+		l->seperation = 0;
+	} else if (!l->seperation) {
+		l->seperation = 3;
 	}
 
-	w = ((l->width + l->separation) * l->columns - l->separation) * SMALLCHAR_WIDTH;
+	w = ((l->width + l->seperation) * l->columns - l->seperation) * SMALLCHAR_WIDTH;
 
 	l->generic.left = l->generic.x;
 	l->generic.top = l->generic.y;
@@ -885,7 +890,7 @@ sfxHandle_t ScrollList_Key(menulist_s *l, int key) {
 				// check scroll region
 				x = l->generic.x;
 				y = l->generic.y;
-				w = ((l->width + l->separation) * l->columns - l->separation) * SMALLCHAR_WIDTH;
+				w = ((l->width + l->seperation) * l->columns - l->seperation) * SMALLCHAR_WIDTH;
 
 				if (l->generic.flags & QMF_CENTER_JUSTIFY) {
 					x -= w / 2;
@@ -893,7 +898,7 @@ sfxHandle_t ScrollList_Key(menulist_s *l, int key) {
 
 				if (UI_CursorInRect(x, y, w, l->height * SMALLCHAR_HEIGHT)) {
 					cursorx = (uis.cursorx - x) / SMALLCHAR_WIDTH;
-					column = cursorx / (l->width + l->separation);
+					column = cursorx / (l->width + l->seperation);
 					cursory = (uis.cursory - y) / SMALLCHAR_HEIGHT;
 					index = column * l->height + cursory;
 
@@ -1030,7 +1035,7 @@ sfxHandle_t ScrollList_Key(menulist_s *l, int key) {
 				return menu_null_sound;
 			}
 
-			if (l->top < l->numitems-l->height) {
+			if (l->top < l->numitems - l->height) {
 				// if scrolling 3 items would replace over half of the displayed items, only scroll 1 item at a time.
 				int scroll = l->height < 6 ? 1 : 3;
 
@@ -1220,6 +1225,7 @@ void ScrollList_Draw(menulist_s *l) {
 				}
 
 				CG_FillRect(u, y, l->width * SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT + 2, listbar_color);
+
 				color = text_color_highlight;
 
 				if (hasfocus) {
@@ -1242,7 +1248,7 @@ void ScrollList_Draw(menulist_s *l) {
 			y += SMALLCHAR_HEIGHT;
 		}
 
-		x += (l->width + l->separation) * SMALLCHAR_WIDTH;
+		x += (l->width + l->seperation) * SMALLCHAR_WIDTH;
 	}
 }
 
@@ -1719,7 +1725,6 @@ void Menu_Cache(void) {
 	uis.cursor = trap_R_RegisterShaderNoMip("menu/art/3_cursor2");
 	uis.rb_on = trap_R_RegisterShaderNoMip("menu/art/switch_on");
 	uis.rb_off = trap_R_RegisterShaderNoMip("menu/art/switch_off");
-
 	uis.whiteShader = trap_R_RegisterShaderNoMip("white");
 	uis.menuBackShader = trap_R_RegisterShaderNoMip("menuback");
 	uis.menuBackNoLogoShader = trap_R_RegisterShaderNoMip("menubacknologo");

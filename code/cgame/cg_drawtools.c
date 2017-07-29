@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -160,10 +166,10 @@ void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
 			if (cg_horizontalPlacement == PLACE_CENTER) {
 				*x += cgs.screenXBias;
 			} else if (cg_horizontalPlacement == PLACE_RIGHT) {
-				*x += cgs.screenXBias * 2;
+				*x += cgs.screenXBias*2;
 			}
 			// Offset for widescreen
-			*x += cgs.screenXBias * (viewXBias);
+			*x += cgs.screenXBias*(viewXBias);
 		}
 	}
 
@@ -186,10 +192,10 @@ void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
 			if (cg_verticalPlacement == PLACE_CENTER) {
 				*y += cgs.screenYBias;
 			} else if (cg_verticalPlacement == PLACE_BOTTOM) {
-				*y += cgs.screenYBias * 2;
+				*y += cgs.screenYBias*2;
 			}
 			// Offset for narrow-screen
-			*y += cgs.screenYBias * (viewYBias);
+			*y += cgs.screenYBias*(viewYBias);
 		}
 	}
 }
@@ -204,9 +210,7 @@ Coordinates are 640 * 480 virtual values.
 void CG_FillRect(float x, float y, float width, float height, const float *color) {
 
 	trap_R_SetColor(color);
-
 	CG_AdjustFrom640(&x, &y, &width, &height);
-
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 0, 0, cgs.media.whiteShader);
 	trap_R_SetColor(NULL);
 }
@@ -263,10 +267,8 @@ Coordinates are 640 * 480 virtual values.
 void CG_DrawRect(float x, float y, float width, float height, float size, const float *color) {
 
 	trap_R_SetColor(color);
-
 	CG_DrawTopBottom(x, y, width, height, size);
 	CG_DrawSides(x, y + size, width, height - size * 2, size);
-
 	trap_R_SetColor(NULL);
 }
 
@@ -323,7 +325,7 @@ void CG_DrawPic(float x, float y, float width, float height, qhandle_t hShader) 
 =======================================================================================================================================
 CG_DrawNamedPic
 
-Coordinates are 640 * 480 virtual values.
+Coordinates are 640*480 virtual values.
 =======================================================================================================================================
 */
 void CG_DrawNamedPic(float x, float y, float width, float height, const char *picname) {
@@ -334,7 +336,7 @@ void CG_DrawNamedPic(float x, float y, float width, float height, const char *pi
 =======================================================================================================================================
 CG_DrawPicColor
 
-Coordinates are 640 * 480 virtual values.
+Coordinates and size in 640 * 480 virtual screen size.
 =======================================================================================================================================
 */
 void CG_DrawPicColor(float x, float y, float width, float height, qhandle_t hShader, const float *color) {
@@ -460,7 +462,7 @@ void CG_DrawStringDirect(int x, int y, const char *str, int style, const vec4_t 
 		color = colorWhite;
 	}
 
-	if ((style & UI_BLINK) && ((cg.realTime / BLINK_DIVISOR) & 1)) {
+	if ((style & UI_BLINK) && ((cg.realTime/BLINK_DIVISOR)& 1)) {
 		return;
 	}
 
@@ -517,15 +519,16 @@ void CG_DrawStringDirect(int x, int y, const char *str, int style, const vec4_t 
 	}
 
 	if (style & UI_PULSE) {
-		lowlight[0] = 0.8 * color[0];
-		lowlight[1] = 0.8 * color[1];
-		lowlight[2] = 0.8 * color[2];
-		lowlight[3] = 0.8 * color[3];
-		CG_LerpColor(color, lowlight, newcolor, 0.5 + 0.5 * sin(cg.realTime / PULSE_DIVISOR));
+		lowlight[0] = 0.8*color[0];
+		lowlight[1] = 0.8*color[1];
+		lowlight[2] = 0.8*color[2];
+		lowlight[3] = 0.8*color[3];
+
+		CG_LerpColor(color,lowlight,newcolor,0.5+0.5*sin(cg.realTime/PULSE_DIVISOR));
+
 		drawcolor = newcolor;
-	} else {
+	} else
 		drawcolor = color;
-	}
 
 	if (wrapX <= 0) {
 		switch (style & UI_FORMATMASK) {
@@ -546,11 +549,11 @@ void CG_DrawStringDirect(int x, int y, const char *str, int style, const vec4_t 
 		switch (style & UI_VA_FORMATMASK) {
 			case UI_VA_CENTER:
 				// center justify at y
-				y = y - charh /*Text_Height(str, font, scale, 0)*// 2;
+				y = y - charh /*Text_Height(str, font, scale, 0) */ / 2;
 				break;
 			case UI_VA_BOTTOM:
 				// bottom justify at y
-				y = y - charh /*Text_Height(str, font, scale, 0)*/;
+				y = y - charh /*Text_Height(str, font, scale, 0) */;
 				break;
 			case UI_VA_TOP:
 			default:
@@ -558,12 +561,12 @@ void CG_DrawStringDirect(int x, int y, const char *str, int style, const vec4_t 
 				break;
 		}
 	}
-	// this function expects that y is top of line, text_paint expects at baseline
+	// This function expects that y is top of line, text_paint expects at baseline
 	decent = -font->glyphs[(int)'g'].top + font->glyphs[(int)'g'].height;
 	y = y + charh - decent * scale * font->glyphScale;
 
 	if (decent != 0) {
-		// make TrueType fonts line up with bigchars bitmap font which has 2 transparent pixels above glyphs at 16 point font size
+		// Make TrueType fonts line up with bigchars bitmap font which has 2 transparent pixels above glyphs at 16 point font size
 		y += 2.0f * charh / 16.0f;
 	}
 
@@ -771,14 +774,6 @@ int CG_DrawStringLineHeight(int style) {
 
 /*
 =======================================================================================================================================
-
-	COMMON UI FUNCTIONS
-
-=======================================================================================================================================
-*/
-
-/*
-=======================================================================================================================================
 CG_TileClearBox
 
 This repeats a 64 * 64 tile graphic to fill the screen around a sized down refresh window.
@@ -815,7 +810,7 @@ void CG_TileClear(void) {
 	h = cg.viewportHeight;
 	// view screen coords
 	top = cg.refdef.y;
-	bottom = top + cg.refdef.height - 1;
+	bottom = top + cg.refdef.heigh t- 1;
 	left = cg.refdef.x;
 	right = left + cg.refdef.width - 1;
 	// clear above view screen

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -73,6 +79,7 @@ CreateRotationMatrix
 =======================================================================================================================================
 */
 void CreateRotationMatrix(const vec3_t angles, vec3_t matrix[3]) {
+
 	AngleVectors(angles, matrix[0], matrix[1], matrix[2]);
 	VectorInverse(matrix[1]);
 }
@@ -322,7 +329,9 @@ void CM_TestCapsuleInCapsule(traceWork_t *tw, clipHandle_t model) {
 	r = Square(tw->sphere.radius + radius);
 	// check if any of the spheres overlap
 	VectorCopy(offset, p1);
+
 	p1[2] += offs;
+
 	VectorSubtract(p1, top, tmp);
 
 	if (VectorLengthSquared(tmp) < r) {
@@ -342,7 +351,9 @@ void CM_TestCapsuleInCapsule(traceWork_t *tw, clipHandle_t model) {
 	}
 
 	VectorCopy(offset, p2);
+
 	p2[2] -= offs;
+
 	VectorSubtract(p2, top, tmp);
 
 	if (VectorLengthSquared(tmp) < r) {
@@ -414,7 +425,7 @@ void CM_TestBoundingBoxInCapsule(traceWork_t *tw, clipHandle_t model) {
 	}
 	// replace the bounding box with the capsule
 	tw->type = TT_CAPSULE;
-	tw->sphere.radius = (tw->size[1][0] > tw->size[1][2]) ? tw->size[1][2] : tw->size[1][0];
+	tw->sphere.radius = (tw->size[1][0] > tw->size[1][2]) ? tw->size[1][2]: tw->size[1][0];
 	tw->sphere.halfheight = tw->size[1][2];
 
 	VectorSet(tw->sphere.offset, 0, 0, tw->size[1][2] - tw->sphere.radius);
@@ -540,9 +551,9 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 			d2 = DotProduct(tw->end, plane->normal) - (plane->dist + tw->biSphere.endRadius);
 
 			if (d2 > 0) {
-				getout = qtrue;	// endpoint is not in solid
+				getout = qtrue; // endpoint is not in solid
 			}
-		
+			
 			if (d1 > 0) {
 				startout = qtrue;
 			}
@@ -550,7 +561,7 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 			if (d1 > 0 && (d2 >= SURFACE_CLIP_EPSILON || d2 >= d1)) {
 				return;
 			}
-			// if it doesn't cross the plane, the plane isn't relevant
+			// if it doesn't cross the plane, the plane isn't relevent
 			if (d1 <= 0 && d2 <= 0) {
 				continue;
 			}
@@ -744,7 +755,7 @@ CM_ProximityToBrush
 static void CM_ProximityToBrush(traceWork_t *tw, cbrush_t *brush) {
 	int i;
 	cbrushedge_t *edge;
-	float dist, minDist = 1e+10f;
+	float dist, minDist = 1e + 10f;
 	float s, t;
 	float sAtMin = 0.0f;
 	float radius = 0.0f, fraction;
@@ -789,7 +800,7 @@ static void CM_ProximityToBrush(traceWork_t *tw, cbrush_t *brush) {
 		}
 	} else {
 		tw->trace.lateralFraction = 0.0f;
-	} 
+	}
 }
 
 /*
@@ -883,7 +894,7 @@ void CM_TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 			if (!(patch->contents & tw->contents)) {
 				continue;
 			}
-			
+
 			CM_TraceThroughPatch(tw, patch, surfnum);
 
 			if (!tw->trace.fraction) {
@@ -924,7 +935,7 @@ void CM_TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 			if (!(patch->contents & tw->contents)) {
 				continue;
 			}
-
+			
 			CM_ProximityToPatch(tw, patch, surfnum);
 
 			if (!tw->trace.lateralFraction) {
@@ -1020,10 +1031,12 @@ void CM_TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t 
 #endif
 #if 1 // ZTM: NOTE: Old method caused CM_Trace to fail assert at bottom of CM_Trace sometimes.
 			VectorNormalize2(dir, tw->trace.plane.normal);
-#else		
+#else
 			{
 				float scale;
-				scale = 1 / (radius + RADIUS_EPSILON);
+
+				scale = 1 / (radius+ RADIUS_EPSILON);
+
 				VectorScale(dir, scale, dir);
 				VectorCopy(dir, tw->trace.plane.normal);
 			}
@@ -1069,6 +1082,7 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 			if (end[2] <= origin[2] + halfheight && end[2] >= origin[2] - halfheight) {
 				// test for allsolid
 				VectorSubtract(end2d, org2d, dir);
+
 				l1 = VectorLengthSquared(dir);
 
 				if (l1 < Square(radius)) {
@@ -1124,7 +1138,9 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 			// if the intersection is between the cylinder lower and upper bound
 			if (intersection[2] <= origin[2] + halfheight && intersection[2] >= origin[2] - halfheight) {
 				tw->trace.fraction = fraction;
+
 				VectorSubtract(intersection, origin, dir);
+
 				dir[2] = 0;
 #ifdef CAPSULE_DEBUG
 				l2 = VectorLength(dir);
@@ -1135,7 +1151,7 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 #endif
 #if 1 // ZTM: NOTE: Old method caused CM_Trace to fail assert at bottom of CM_Trace sometimes.
 				VectorNormalize2(dir, tw->trace.plane.normal);
-#else			
+#else
 				{
 					float scale;
 					scale = 1 / (radius + RADIUS_EPSILON);
@@ -1144,6 +1160,7 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 				}
 #endif
 				VectorAdd(tw->modelOrigin, intersection, intersection);
+
 				tw->trace.plane.dist = DotProduct(tw->trace.plane.normal, intersection);
 				tw->trace.contents = contents;
 			}
@@ -1263,6 +1280,7 @@ void CM_TraceBoundingBoxThroughCapsule(traceWork_t *tw, clipHandle_t model) {
 	h = CM_TempBoxModel(bboxSize[0], bboxSize[1], CT_AABB, capsule_contents);
 	// calculate collision
 	cmod = CM_ClipHandleToModel(h);
+
 	CM_TraceThroughLeaf(tw, &cmod->leaf);
 }
 
@@ -1612,7 +1630,6 @@ void CM_TransformedBoxTrace(trace_t *results, const vec3_t start, const vec3_t e
 
 	halfwidth = symetricSize[1][0];
 	halfheight = symetricSize[1][2];
-
 	sphere.radius = (halfwidth > halfheight) ? halfheight : halfwidth;
 	sphere.halfheight = halfheight;
 	t = halfheight - sphere.radius;
@@ -1662,8 +1679,8 @@ void CM_BiSphereTrace(trace_t *results, const vec3_t start, const vec3_t end, fl
 	cmodel_t *cmod;
 
 	cmod = CM_ClipHandleToModel(model);
-	cm.checkcount++;	// for multi-check avoidance
-	c_traces++;			// for statistics, may be zeroed
+	cm.checkcount++;		// for multi-check avoidance
+	c_traces++;				// for statistics, may be zeroed
 	// fill in a default trace
 	Com_Memset(&tw, 0, sizeof(tw));
 
@@ -1720,6 +1737,7 @@ void CM_BiSphereTrace(trace_t *results, const vec3_t start, const vec3_t end, fl
 	// If fraction == 1.0, we never hit anything, and thus the plane is not valid.
 	// Otherwise, the normal on the plane should have unit length
 	assert(tw.trace.allsolid || tw.trace.fraction == 1.0 || VectorLengthSquared(tw.trace.plane.normal) > 0.9999);
+
 	*results = tw.trace;
 }
 

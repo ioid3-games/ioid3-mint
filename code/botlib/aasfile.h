@@ -1,40 +1,48 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
 #ifndef AASFILE_H
 #define AASFILE_H
 
-// NOTE: int = default signed
-//			   default long
+//NOTE:	int = default signed
+//				default long
 
-#define AASID (('S' << 24) + ('A' << 16) + ('A' << 8) + 'E')
+#define AASID			(('S'<<24) + ('A'<<16) + ('A'<<8) +'E')
 #define AASVERSION_OLD	4
 #define AASVERSION		5
+
 // presence types
 #define PRESENCE_NONE	1
 #define PRESENCE_NORMAL	2
 #define PRESENCE_CROUCH	4
+
 // travel types
 #define MAX_TRAVELTYPES 32
 
@@ -57,18 +65,21 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define TRAVEL_STRAFEJUMP	17 // strafe jump
 #define TRAVEL_JUMPPAD		18 // jump pad
 #define TRAVEL_FUNCBOB		19 // func bob
+
 // additional travel flags
-#define TRAVELTYPE_MASK 0xFFFFFF
-#define TRAVELFLAG_NOTTEAM1	(1 << 24)
-#define TRAVELFLAG_NOTTEAM2	(2 << 24)
+#define TRAVELTYPE_MASK				0xFFFFFF
+#define TRAVELFLAG_NOTTEAM1			(1 << 24)
+#define TRAVELFLAG_NOTTEAM2			(2 << 24)
+
 // face flags
-#define FACE_SOLID			 1 // just solid at the other side
-#define FACE_LADDER			 2 // ladder
-#define FACE_GROUND			 4 // standing on ground when in this face
-#define FACE_GAP			 8 // gap in the ground
-#define FACE_LIQUID			16 // face separating two areas with liquid
-#define FACE_LIQUIDSURFACE	32 // face separating liquid and air
-#define FACE_BRIDGE			64 // can walk over this face if bridge is closed
+#define FACE_SOLID					1 // just solid at the other side
+#define FACE_LADDER					2 // ladder
+#define FACE_GROUND					4 // standing on ground when in this face
+#define FACE_GAP					8 // gap in the ground
+#define FACE_LIQUID					16 // face separating two areas with liquid
+#define FACE_LIQUIDSURFACE			32 // face separating liquid and air
+#define FACE_BRIDGE					64 // can walk over this face if bridge is closed
+
 // area contents
 #define AREACONTENTS_WATER			   1
 #define AREACONTENTS_LAVA			   2
@@ -84,15 +95,17 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define AREACONTENTS_NOTTEAM1		2048
 #define AREACONTENTS_NOTTEAM2		4096
 // number of model of the mover inside this area
-#define AREACONTENTS_MODELNUMSHIFT	24
-#define AREACONTENTS_MAXMODELNUM	0xFF
-#define AREACONTENTS_MODELNUM		(AREACONTENTS_MAXMODELNUM << AREACONTENTS_MODELNUMSHIFT)
+#define AREACONTENTS_MODELNUMSHIFT 24
+#define AREACONTENTS_MAXMODELNUM 0xFF
+#define AREACONTENTS_MODELNUM (AREACONTENTS_MAXMODELNUM << AREACONTENTS_MODELNUMSHIFT)
+
 // area flags
 #define AREA_GROUNDED	 1 // bot can stand on the ground
 #define AREA_LADDER		 2 // area contains one or more ladder faces
 #define AREA_LIQUID		 4 // area contains a liquid
 #define AREA_DISABLED	 8 // area is disabled for routing when set
 #define AREA_BRIDGE		16 // area ontop of a bridge
+
 // aas file header lumps
 #define AAS_LUMPS 14
 
@@ -111,7 +124,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define AASLUMP_PORTALINDEX	12
 #define AASLUMP_CLUSTERS	13
 
-// ========== bounding box =========
+//========== bounding box =========
 
 // bounding box
 typedef struct aas_bbox_s {
@@ -120,7 +133,7 @@ typedef struct aas_bbox_s {
 	vec3_t mins, maxs;
 } aas_bbox_t;
 
-// ============ settings ===========
+//============ settings ===========
 
 // reachability to another area
 typedef struct aas_reachability_s {
@@ -132,6 +145,7 @@ typedef struct aas_reachability_s {
 	int traveltype;					// type of travel required to get to the area
 	unsigned short int traveltime;	// travel time of the inter area movement
 } aas_reachability_t;
+
 // area settings
 typedef struct aas_areasettings_s {
 	// could also add all kind of statistic fields
@@ -143,6 +157,7 @@ typedef struct aas_areasettings_s {
 	int numreachableareas;	// number of reachable areas from this one
 	int firstreachablearea;	// first reachable area in the reachable area index
 } aas_areasettings_t;
+
 // cluster portal
 typedef struct aas_portal_s {
 	int areanum;			// area that is the actual portal
@@ -150,8 +165,10 @@ typedef struct aas_portal_s {
 	int backcluster;		// cluster at back of portal
 	int clusterareanum[2];	// number of the area in the front and back cluster
 } aas_portal_t;
+
 // cluster portal index
 typedef int aas_portalindex_t;
+
 // cluster
 typedef struct aas_cluster_s {
 	int numareas;				// number of areas in the cluster
@@ -160,42 +177,49 @@ typedef struct aas_cluster_s {
 	int firstportal;			// first cluster portal in the index
 } aas_cluster_t;
 
-// ============ 3d definition ============
+//============ 3d definition ============
 
 typedef vec3_t aas_vertex_t;
+
 // just a plane in the third dimension
 typedef struct aas_plane_s {
 	vec3_t normal;	// normal vector of the plane
-	float dist;		// distance of the plane (normal vector * distance = point in plane)
+	float dist;		// distance of the plane(normal vector * distance = point in plane)
 	int type;
 } aas_plane_t;
+
 // edge
 typedef struct aas_edge_s {
-	int v[2]; // numbers of the vertexes of this edge
+	int v[2];	// numbers of the vertexes of this edge
 } aas_edge_t;
+
 // edge index, negative if vertexes are reversed
 typedef int aas_edgeindex_t;
-// a face bounds an area, often it will also separate two areas
+
+// a face bounds an area, often it will also seperate two areas
 typedef struct aas_face_s {
 	int planenum;	// number of the plane this face is in
-	int faceflags;	// face flags (no use to create face settings for just this field)
+	int faceflags;	// face flags(no use to create face settings for just this field)
 	int numedges;	// number of edges in the boundary of the face
 	int firstedge;	// first edge in the edge index
 	int frontarea;	// area at the front of this face
 	int backarea;	// area at the back of this face
 } aas_face_t;
+
 // face index, stores a negative index if backside of face
 typedef int aas_faceindex_t;
+
 // area with a boundary of faces
 typedef struct aas_area_s {
 	int areanum;	// number of this area
-	// 3d definition
+	//3d definition
 	int numfaces;	// number of faces used for the boundary of the area
 	int firstface;	// first face in the face index used for the boundary of the area
 	vec3_t mins;	// mins of the area
 	vec3_t maxs;	// maxs of the area
-	vec3_t center;	// 'center' of the area
+	vec3_t center;	//'center' of the area
 } aas_area_t;
+
 // nodes of the bsp tree
 typedef struct aas_node_s {
 	int planenum;
@@ -203,13 +227,15 @@ typedef struct aas_node_s {
 						// when a child is zero it's a solid leaf
 } aas_node_t;
 
-// =========== aas file ===============
+//=========== aas file ===============
 
 // header lump
-typedef struct {
+typedef struct
+{
 	int fileofs;
 	int filelen;
 } aas_lump_t;
+
 // aas file header
 typedef struct aas_header_s {
 	int ident;
@@ -219,15 +245,17 @@ typedef struct aas_header_s {
 	aas_lump_t lumps[AAS_LUMPS];
 } aas_header_t;
 
-// ====== additional information ======
+
+//====== additional information ======
 /*
+
 -	when a node child is a solid leaf the node child number is zero
--	two adjacent areas (sharing a plane at opposite sides) share a face
+-	two adjacent areas(sharing a plane at opposite sides)share a face
 	this face is a portal between the areas
 -	when an area uses a face from the faceindex with a positive index
 	then the face plane normal points into the area
 -	the face edges are stored counter clockwise using the edgeindex
--	two adjacent convex areas (sharing a face) only share One face
+-	two adjacent convex areas(sharing a face)only share One face
 	this is a simple result of the areas being convex
 -	the areas can't have a mixture of ground and gap faces
 	other mixtures of faces in one area are allowed
@@ -238,4 +266,5 @@ typedef struct aas_header_s {
 -	area zero is a dummy
 -	node zero is a dummy
 */
+
 #endif // AASFILE_H

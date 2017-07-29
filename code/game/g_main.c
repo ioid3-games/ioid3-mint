@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -35,7 +41,7 @@ typedef struct {
 	float rangeMin;
 	float rangeMax;
 	qboolean rangeIntegral;
-	int modificationCount; // for tracking changes
+	int modificationCount;  // for tracking changes
 } cvarTable_t;
 
 // game cvar flags
@@ -45,8 +51,8 @@ typedef struct {
 
 #define RANGE_ALL 0, 0, qfalse
 #define RANGE_BOOL 0, 1, qtrue
-#define RANGE_INT(min, max) min, max, qtrue
-#define RANGE_FLOAT(min, max) min, max, qfalse
+#define RANGE_INT (min, max)min, max, qtrue
+#define RANGE_FLOAT (min, max)min, max, qfalse
 
 gentity_t g_entities[MAX_GENTITIES];
 gplayer_t g_players[MAX_CLIENTS];
@@ -111,8 +117,8 @@ static cvarTable_t gameCvarTable[] = {
 	// don't override the cheat state set by the system
 	{&g_cheats, "sv_cheats", "", 0, 0, RANGE_ALL},
 	// noset vars
-	{NULL, "gameversion", GAME_VERSION, CVAR_SERVERINFO|CVAR_ROM, 0, RANGE_ALL},
-	{NULL, "gamedate", PRODUCT_DATE, CVAR_ROM, 0, RANGE_ALL},
+	{NULL, "gameversion", GAME_VERSION , CVAR_SERVERINFO|CVAR_ROM, 0, RANGE_ALL},
+	{NULL, "gamedate", PRODUCT_DATE , CVAR_ROM, 0, RANGE_ALL},
 	{&g_restarted, "g_restarted", "0", CVAR_ROM, 0, RANGE_ALL},
 	// latched vars
 	{&g_gametype, "g_gametype", "0", CVAR_SERVERINFO|CVAR_USERINFO|CVAR_LATCH, GCF_DO_RESTART, RANGE_INT(0, GT_MAX_GAME_TYPE - 1)},
@@ -231,7 +237,7 @@ Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, in
 			return G_MapRestart(arg0, arg1);
 		case BOTAI_START_FRAME:
 			return BotAIStartFrame(arg0);
-		default:
+	default:
 			G_Error("game vmMain: unknown command %i", command);
 			break;
 	}
@@ -295,9 +301,7 @@ void QDECL G_Error(const char *fmt, ...) {
 =======================================================================================================================================
 G_FindTeams
 
-Chain together all entities with a matching team field.
-Entity teams are used for item groups and multi-entity mover groups.
-
+Chain together all entities with a matching team field. Entity teams are used for item groups and multi-entity mover groups.
 All but the first will have the FL_TEAMSLAVE flag set and teammaster field set.
 All but the last will have the teamchain field set to the next one.
 =======================================================================================================================================
@@ -411,7 +415,7 @@ void G_RegisterCvars(void) {
 	if (remapped) {
 		G_RemapTeamShaders();
 	}
-	// Don't allow single player gametype to be used in multiplayer.
+	// don't allow single player gametype to be used in multiplayer.
 	if (g_gametype.integer == GT_SINGLE_PLAYER && !g_singlePlayer.integer) {
 		trap_Cvar_SetValue("g_gametype", GT_FFA);
 		trap_Cvar_Update(&g_gametype);
@@ -471,7 +475,6 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 	srand(randomSeed);
 
 	Swap_Init();
-
 	G_RegisterCvars();
 	G_ProcessIPBans();
 	// tell server entity and player state size and network field info
@@ -481,7 +484,7 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 
 	level.time = levelTime;
 	level.startTime = levelTime;
-	level.snd_fry = G_SoundIndex("sound/player/fry.wav"); // FIXME standing in lava / slime
+	level.snd_fry = G_SoundIndex("sound/player/fry.wav"); // FIXME standing in lava/slime
 
 	if (g_gametype.integer != GT_SINGLE_PLAYER && g_logfile.string[0]) {
 		if (g_logfileSync.integer) {
@@ -626,7 +629,7 @@ void G_VidRestart(void) {
 
 /*
 =======================================================================================================================================
-G_FullMapRestart
+G_NeedFullMapRestart
 
 Check if full map restart is needed for some cvars to take affect.
 =======================================================================================================================================
@@ -656,7 +659,7 @@ qboolean G_NeedFullMapRestart(void) {
 G_MapRestart
 
 This is called by the server when map_restart command is issued and when restart time is hit.
-Return restart time, -1 to do a full map reload, or INT_MAX to prevent restart.
+return restart time, -1 to do a full map reload, or INT_MAX to prevent restart.
 =======================================================================================================================================
 */
 int G_MapRestart(int levelTime, int restartTime) {
@@ -742,7 +745,7 @@ void QDECL Com_DPrintf(const char *msg, ...) {
 /*
 =======================================================================================================================================
 
-	PLAYER COUNTING / SCORE SORTING
+	PLAYER COUNTING/SCORE SORTING
 
 =======================================================================================================================================
 */
@@ -805,13 +808,14 @@ AddTournamentQueue
 Add player to end of tournament queue.
 =======================================================================================================================================
 */
+
 void AddTournamentQueue(gplayer_t *player) {
 	int index;
 	gplayer_t *curplayer;
 
 	for (index = 0; index < level.maxplayers; index++) {
 		curplayer = &level.players[index];
-
+		
 		if (curplayer->pers.connected != CON_DISCONNECTED) {
 			if (curplayer == player) {
 				curplayer->sess.spectatorNum = 0;
@@ -951,8 +955,7 @@ int QDECL SortRanks(const void *a, const void *b) {
 =======================================================================================================================================
 CalculateRanks
 
-Recalculates the score ranks of all players.
-This will be called on every player connect, begin, disconnect, death, and team change.
+Recalculates the score ranks of all players. This will be called on every player connect, begin, disconnect, death, and team change.
 =======================================================================================================================================
 */
 void CalculateRanks(void) {
@@ -1171,7 +1174,7 @@ void BeginIntermission(void) {
 	if (level.intermissiontime) {
 		return; // already active
 	}
-	// if in tournament mode, change the wins/losses
+	// if in tournement mode, change the wins/losses
 	if (g_gametype.integer == GT_TOURNAMENT) {
 		AdjustTournamentScores();
 	}
@@ -1383,8 +1386,7 @@ void LogExit(const char *string) {
 =======================================================================================================================================
 CheckIntermissionExit
 
-The level will stay at the intermission for a minimum of 5 seconds.
-If all players wish to continue, the level will then exit.
+The level will stay at the intermission for a minimum of 5 seconds. If all players wish to continue, the level will then exit.
 If one or more players have not acknowledged the continue, the game will wait 10 seconds before going on.
 =======================================================================================================================================
 */
@@ -1419,7 +1421,6 @@ void CheckIntermissionExit(void) {
 
 		if (cl->readyToExit) {
 			ready++;
-
 			Com_ClientListAdd(&readyList, i);
 		} else {
 			notReady++;
@@ -1427,6 +1428,7 @@ void CheckIntermissionExit(void) {
 	}
 	// update configstring so it can be displayed on the scoreboard
 	trap_SetConfigstring(CS_PLAYERS_READY, Com_ClientListString(&readyList));
+
 	// never exit in less than five seconds
 	if (level.time < level.intermissiontime + 5000) {
 		return;
@@ -1719,11 +1721,11 @@ void CheckVote(void) {
 		trap_SendServerCommand(-1, "print \"Vote failed.\n\"");
 	} else {
 		// ATVI Q3 1.32 Patch #9, WNF
-		if (level.voteYes > level.numVotingPlayers / 2) {
+		if (level.voteYes > level.numVotingPlayers/2) {
 			// execute the command, then remove the vote
 			trap_SendServerCommand(-1, "print \"Vote passed.\n\"");
 			level.voteExecuteTime = level.time + 3000;
-		} else if (level.voteNo >= level.numVotingPlayers / 2) {
+		} else if (level.voteNo >= level.numVotingPlayers/2) {
 			// same behavior as a timeout
 			trap_SendServerCommand(-1, "print \"Vote failed.\n\"");
 		} else {
@@ -1733,6 +1735,7 @@ void CheckVote(void) {
 	}
 
 	level.voteTime = 0;
+
 	trap_SetConfigstring(CS_VOTE_TIME, "");
 }
 
@@ -1778,6 +1781,7 @@ void SetLeader(int team, int playerNum) {
 	}
 
 	player->sess.teamLeader = qtrue;
+
 	PlayerUserinfoChanged(playerNum);
 	PrintTeam(team, va("print \"%s is the new team leader\n\"", player->pers.netname));
 }
@@ -1868,6 +1872,7 @@ void CheckTeamVote(int team) {
 	}
 
 	level.teamVoteTime[cs_offset] = 0;
+
 	trap_SetConfigstring(CS_TEAMVOTE_TIME + cs_offset, "");
 }
 

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -27,23 +33,22 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 **************************************************************************************************************************************/
 
 #include "cg_local.h"
-
 #ifndef MISSIONPACK_HUD
 #define SCOREBOARD_X (0)
 #define SB_HEADER 86
 #define SB_TOP (SB_HEADER + 32)
-// Where the status bar starts, so we don't overwrite it
+// where the status bar starts, so we don't overwrite it
 #define SB_STATUSBAR 420
 #define SB_NORMAL_HEIGHT 40
 #define SB_INTER_HEIGHT 16 // interleaved height
 #define SB_MAXPLAYERS_NORMAL ((SB_STATUSBAR - SB_TOP) / SB_NORMAL_HEIGHT)
 #define SB_MAXPLAYERS_INTER ((SB_STATUSBAR - SB_TOP) / SB_INTER_HEIGHT - 1)
-// Used when interleaved
+// used when interleaved
 #define SB_LEFT_BOTICON_X (SCOREBOARD_X + 0)
 #define SB_LEFT_HEAD_X (SCOREBOARD_X + 32)
 #define SB_RIGHT_BOTICON_X (SCOREBOARD_X + 64)
 #define SB_RIGHT_HEAD_X (SCOREBOARD_X + 96)
-// Normal
+// normal
 #define SB_BOTICON_X (SCOREBOARD_X + 32)
 #define SB_HEAD_X (SCOREBOARD_X + 64)
 #define SB_SCORELINE_X 112
@@ -54,9 +59,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define SB_TIME_X (SB_SCORELINE_X + 17 * BIGCHAR_WIDTH + 8) // width 5
 #define SB_NAME_X (SB_SCORELINE_X + 22 * BIGCHAR_WIDTH) // width 15
 
-// The new and improved score board
+// the new and improved score board
 
-// In cases where the number of players is high, the score board heads are interleaved
+// in cases where the number of players is high, the score board heads are interleaved
 // here's the layout
 
 //  0   32   80  112  144   240  320  400   <-- pixel position
@@ -118,7 +123,7 @@ static void CG_DrawPlayerScore(int y, score_t *score, float *color, float fade, 
 			Com_sprintf(string, sizeof(string), "%i", pi->handicap);
 
 			if (cgs.gametype == GT_TOURNAMENT) {
-				CG_DrawString(iconx, y - SMALLCHAR_HEIGHT / 2, string, UI_SMALLFONT|UI_NOSCALE, color);
+				CG_DrawString(iconx, y - SMALLCHAR_HEIGHT/2, string, UI_SMALLFONT|UI_NOSCALE, color);
 			} else {
 				CG_DrawString(iconx, y, string, UI_SMALLFONT|UI_NOSCALE, color);
 			}
@@ -128,7 +133,7 @@ static void CG_DrawPlayerScore(int y, score_t *score, float *color, float fade, 
 			Com_sprintf(string, sizeof(string), "%i/%i", pi->wins, pi->losses);
 
 			if (pi->handicap < 100 && !pi->botSkill) {
-				CG_DrawString(iconx, y + SMALLCHAR_HEIGHT / 2, string, UI_SMALLFONT|UI_NOSCALE, color);
+				CG_DrawString(iconx, y + SMALLCHAR_HEIGHT/2, string, UI_SMALLFONT|UI_NOSCALE, color);
 			} else {
 				CG_DrawString(iconx, y, string, UI_SMALLFONT|UI_NOSCALE, color);
 			}
@@ -224,14 +229,13 @@ static void CG_DrawPlayerScore(int y, score_t *score, float *color, float fade, 
 		Com_sprintf(string, sizeof(string), "%5i", score->score);
 	}
 
-	CG_DrawString(SB_SCORE_X + (SB_RATING_WIDTH / 2) + 4 * BIGCHAR_WIDTH, y, string, UI_RIGHT|UI_DROPSHADOW|UI_BIGFONT|UI_NOSCALE, color);
+	CG_DrawString(SB_SCORE_X + (SB_RATING_WIDTH / 2) + 4*BIGCHAR_WIDTH, y, string, UI_RIGHT|UI_DROPSHADOW|UI_BIGFONT|UI_NOSCALE, color);
 
 	if (score->ping != -1) {
 		Com_sprintf(string, sizeof(string), "%4i", score->ping);
-		CG_DrawString(SB_PING_X - (SB_RATING_WIDTH / 2) + 4 * BIGCHAR_WIDTH, y, string, UI_RIGHT|UI_DROPSHADOW|UI_BIGFONT|UI_NOSCALE, color);
-
+		CG_DrawString(SB_PING_X - (SB_RATING_WIDTH / 2) + 4*BIGCHAR_WIDTH, y, string, UI_RIGHT|UI_DROPSHADOW|UI_BIGFONT|UI_NOSCALE, color);
 		Com_sprintf(string, sizeof(string), "%4i", score->time);
-		CG_DrawString(SB_TIME_X - (SB_RATING_WIDTH / 2) + 4 * BIGCHAR_WIDTH, y, string, UI_RIGHT|UI_DROPSHADOW|UI_BIGFONT|UI_NOSCALE, color);
+		CG_DrawString(SB_TIME_X - (SB_RATING_WIDTH / 2) + 4*BIGCHAR_WIDTH, y, string, UI_RIGHT|UI_DROPSHADOW|UI_BIGFONT|UI_NOSCALE, color);
 	}
 
 	CG_DrawString(SB_NAME_X - (SB_RATING_WIDTH / 2), y, pi->name, UI_LEFT|UI_DROPSHADOW|UI_BIGFONT|UI_NOSCALE, color);
@@ -276,7 +280,7 @@ static int CG_TeamScoreboard(int y, team_t team, float fade, int maxPlayers, int
 
 /*
 =======================================================================================================================================
-CG_DrawOldScoreboard
+CG_DrawScoreboard
 
 Draw the normal in-game scoreboard.
 =======================================================================================================================================
@@ -309,13 +313,13 @@ qboolean CG_DrawOldScoreboard(void) {
 		fadeColor = colorWhite;
 	} else {
 		fadeColor = CG_FadeColor(cg.cur_lc->scoreFadeTime, FADE_TIME);
-
+		
 		if (!fadeColor) {
 			// next time scoreboard comes up, don't print killer
 			cg.cur_lc->killerName[0] = 0;
 			return qfalse;
 		}
-		// ZTM: FIXME?: to actually fade, should be fade = fadeColor[3] and later CG_DrawString should use fadeColor
+		// ZTM: FIXME?: to actually fade, should be fade=fadeColor[3] and later CG_DrawString should use fadeColor
 		fade = *fadeColor;
 	}
 	// fragged by ... line
@@ -352,7 +356,7 @@ qboolean CG_DrawOldScoreboard(void) {
 	CG_DrawPic(SB_NAME_X - (SB_RATING_WIDTH / 2), y, 64, 32, cgs.media.scoreboardName);
 
 	y = SB_TOP;
-	// If there are more than SB_MAXPLAYERS_NORMAL, use the interleaved scores
+	// if there are more than SB_MAXPLAYERS_NORMAL, use the interleaved scores
 	if (cg.numScores > SB_MAXPLAYERS_NORMAL) {
 		maxPlayers = SB_MAXPLAYERS_INTER;
 		lineHeight = SB_INTER_HEIGHT;
@@ -369,7 +373,7 @@ qboolean CG_DrawOldScoreboard(void) {
 
 	if (cgs.gametype >= GT_TEAM) {
 		// teamplay scoreboard
-		y += lineHeight / 2;
+		y += lineHeight/2;
 
 		if (cg.teamScores[0] >= cg.teamScores[1]) {
 			n1 = CG_TeamScoreboard(y, TEAM_RED, fade, maxPlayers, lineHeight);
@@ -447,10 +451,11 @@ void CG_DrawTourneyScoreboard(void) {
 	// draw the dialog background
 	color[0] = color[1] = color[2] = 0;
 	color[3] = 1;
+
 	CG_SetScreenPlacement(PLACE_STRETCH, PLACE_STRETCH);
 	CG_FillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, color);
 	CG_PopScreenPlacement();
-	// print the message of the day
+	// print the mesage of the day
 	s = CG_ConfigString(CS_MOTD);
 
 	if (!s[0]) {
@@ -473,12 +478,14 @@ void CG_DrawTourneyScoreboard(void) {
 	if (cgs.gametype >= GT_TEAM) {
 		// teamplay scoreboard
 		CG_DrawString(8, y, "Red Team", UI_LEFT|UI_DROPSHADOW|UI_GIANTFONT|UI_NOSCALE, NULL);
+
 		s = va("%i", cg.teamScores[0]);
 		CG_DrawString(632, y, s, UI_RIGHT|UI_DROPSHADOW|UI_GIANTFONT|UI_NOSCALE, NULL);
-
+		
 		y += GIANTCHAR_HEIGHT + 16;
 
 		CG_DrawString(8, y, "Blue Team", UI_LEFT|UI_DROPSHADOW|UI_GIANTFONT|UI_NOSCALE, NULL);
+
 		s = va("%i", cg.teamScores[1]);
 		CG_DrawString(632, y, s, UI_RIGHT|UI_DROPSHADOW|UI_GIANTFONT|UI_NOSCALE, NULL);
 	} else if (cgs.gametype == GT_TOURNAMENT) {
@@ -496,6 +503,7 @@ void CG_DrawTourneyScoreboard(void) {
 
 			CG_DrawString(8, y, pi->name, UI_LEFT|UI_DROPSHADOW|UI_GIANTFONT|UI_NOSCALE, NULL);
 			s = va("%i", pi->score);
+
 			CG_DrawString(632, y, s, UI_RIGHT|UI_DROPSHADOW|UI_GIANTFONT|UI_NOSCALE, NULL);
 			y += GIANTCHAR_HEIGHT + 16;
 		}
@@ -524,6 +532,7 @@ void CG_DrawTourneyScoreboard(void) {
 
 			CG_DrawString(8, y, pi->name, UI_LEFT|UI_DROPSHADOW|UI_NOSCALE|style, NULL);
 			s = va("%i", pi->score);
+
 			CG_DrawString(632, y, s, UI_RIGHT|UI_DROPSHADOW|UI_NOSCALE|style, NULL);
 			y += gap;
 

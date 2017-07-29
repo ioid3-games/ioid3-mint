@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -63,6 +69,7 @@ static WORD CON_ColorCharToAttrib(char color) {
 		attrib = qconsole_attrib;
 	} else {
 		float *rgba = g_color_table[ColorIndex(color)];
+
 		// set foreground color
 		attrib = (rgba[0] >= 0.5 ? FOREGROUND_RED : 0)|(rgba[1] >= 0.5 ? FOREGROUND_GREEN : 0)|(rgba[2] >= 0.5 ? FOREGROUND_BLUE : 0)|(rgba[3] >= 0.5 ? FOREGROUND_INTENSITY : 0);
 		// use console's background color
@@ -76,7 +83,7 @@ static WORD CON_ColorCharToAttrib(char color) {
 =======================================================================================================================================
 CON_CtrlHandler
 
-The Windows Console doesn't use signals for terminating the application with Ctrl-C, logging off, window closing, etc. Instead it uses
+The Windows Console doesn't use signals for terminating the application with Ctrl-C, logging off, window closing, etc.  Instead it uses
 a special handler routine. Fortunately, the values for Ctrl signals don't seem to overlap with true signal codes that Windows provides,
 so calling Sys_SigHandler() with those numbers should be safe for generating unique shutdown messages.
 =======================================================================================================================================
@@ -287,7 +294,6 @@ void CON_Init(void) {
 	qconsole_backgroundAttrib = qconsole_attrib &(BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED|BACKGROUND_INTENSITY);
 
 	Com_sprintf(consoleTitle, sizeof(consoleTitle), "%s Dedicated Server Console", com_productName->string);
-
 	SetConsoleTitle(consoleTitle);
 	// initialize history
 	for (i = 0; i < QCONSOLE_HISTORY; i++) {
@@ -377,6 +383,7 @@ char *CON_Input(void) {
 			Q_strncpyz(f.buffer, qconsole_line, sizeof(f.buffer));
 			Field_AutoComplete(&f);
 			Q_strncpyz(qconsole_line, f.buffer, sizeof(qconsole_line));
+
 			qconsole_linelen = strlen(qconsole_line);
 			qconsole_cursor = qconsole_linelen;
 			break;

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -27,8 +33,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 **************************************************************************************************************************************/
 
 #include "g_local.h"
-
-#define MAX_SPAWN_POINTS 128
 
 static vec3_t playerMins = {-15, -15, -24};
 static vec3_t playerMaxs = {15, 15, 32};
@@ -114,6 +118,7 @@ SelectNearestDeathmatchSpawnPoint
 Find the spot that we DON'T want to use.
 =======================================================================================================================================
 */
+#define MAX_SPAWN_POINTS 128
 gentity_t *SelectNearestDeathmatchSpawnPoint(vec3_t from) {
 	gentity_t *spot;
 	vec3_t delta;
@@ -144,6 +149,7 @@ SelectRandomDeathmatchSpawnPoint
 Go to a random point that doesn't telefrag.
 =======================================================================================================================================
 */
+#define MAX_SPAWN_POINTS 128
 gentity_t *SelectRandomDeathmatchSpawnPoint(qboolean isbot) {
 	gentity_t *spot;
 	int count;
@@ -204,6 +210,7 @@ gentity_t *SelectRandomFurthestSpawnPoint(vec3_t avoidPoint, vec3_t origin, vec3
 		}
 
 		VectorSubtract(spot->s.origin, avoidPoint, delta);
+
 		dist = VectorLength(delta);
 
 		for (i = 0; i < numSpots; i++) {
@@ -403,9 +410,9 @@ void CopyToBodyQue(gentity_t *ent) {
 		return;
 	}
 	// grab a body que and cycle to the next one
-	body = level.bodyQue[level.bodyQueIndex];
 	level.bodyQueIndex = (level.bodyQueIndex + 1) % BODY_QUEUE_SIZE;
 
+	body = level.bodyQue[level.bodyQueIndex];
 	body->s = ent->s;
 	body->s.eFlags = EF_DEAD; // clear EF_TALK, etc.
 #ifdef MISSIONPACK
@@ -627,7 +634,7 @@ static void PlayerCleanName(const char *in, char *out, int outSize) {
 				colorlessLen--;
 
 				if (ColorIndex(*in) == 0) {
-					// Disallow color black in names to prevent players from getting advantage playing in front of black backgrounds
+					// disallow color black in names to prevent players from getting advantage playing in front of black backgrounds
 					outpos--;
 					continue;
 				}
@@ -717,7 +724,9 @@ void PlayerUserinfoChanged(int playerNum) {
 	player->pers.antiLag = atoi(s);
 	// set name
 	Q_strncpyz(oldname, player->pers.netname, sizeof(oldname));
+
 	s = Info_ValueForKey(userinfo, "name");
+
 	PlayerCleanName(s, player->pers.netname, sizeof(player->pers.netname));
 
 	if (player->sess.sessionTeam == TEAM_SPECTATOR) {
@@ -769,39 +778,34 @@ void PlayerUserinfoChanged(int playerNum) {
 	*/
 	// team task (0 = none, 1 = offence, 2 = defence)
 	teamTask = atoi(Info_ValueForKey(userinfo, "teamtask"));
-	// team Leader(1 = leader, 0 is normal player)
+	// team leader (1 = leader, 0 is normal player)
 	teamLeader = player->sess.teamLeader;
 	// colors
 	strcpy(c1, Info_ValueForKey(userinfo, "color1"));
 	strcpy(c2, Info_ValueForKey(userinfo, "color2"));
 	// send over a subset of the userinfo keys so other clients can print scoreboards, display models, and play custom sounds
 	if (ent->r.svFlags & SVF_BOT) {
-		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d", player->pers.netname, player->sess.sessionTeam, model, headModel, c1, c2,
-			player->pers.maxHealth, player->sess.wins, player->sess.losses, Info_ValueForKey(userinfo, "skill"), teamTask, teamLeader);
+		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d", player->pers.netname, player->sess.sessionTeam, model, headModel, c1, c2, 
+		player->pers.maxHealth, player->sess.wins, player->sess.losses, Info_ValueForKey(userinfo, "skill"), teamTask, teamLeader);
 	} else {
-		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d", player->pers.netname, player->sess.sessionTeam, model, headModel, c1, c2,
-			player->pers.maxHealth, player->sess.wins, player->sess.losses, teamTask, teamLeader);
+		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d", player->pers.netname, player->sess.sessionTeam, model, headModel, c1, c2, 
+		player->pers.maxHealth, player->sess.wins, player->sess.losses, teamTask, teamLeader);
 	}
 
-	trap_SetConfigstring(CS_PLAYERS + playerNum, s);
+	trap_SetConfigstring(CS_PLAYERS+playerNum, s);
 	// this is not the userinfo, more like the configstring actually
 	G_LogPrintf("PlayerUserinfoChanged: %i %s\n", playerNum, s);
 }
 
 /*
 =======================================================================================================================================
-PlayerConnect
+ClientConnect
 
-Called when a player begins connecting to the server.
-Called again for every map change or tournament restart.
-
+Called when a player begins connecting to the server. Called again for every map change or tournament restart.
 The session information will be valid after exit.
-
-Return NULL if the player should be allowed, otherwise return a string with the reason for denial.
-
-Otherwise, the player will be sent the current gamestate and will eventually get to PlayerBegin.
-
-'firstTime' will be qtrue the very first time a player connects to the server machine, but qfalse on map changes and tournament
+Return NULL if the client should be allowed, otherwise return a string with the reason for denial.
+Otherwise, the client will be sent the current gamestate and will eventually get to ClientBegin.
+'firstTime' will be qtrue the very first time a client connects to the server machine, but qfalse on map changes and tournament
 restarts.
 =======================================================================================================================================
 */
@@ -865,6 +869,7 @@ char *PlayerConnect(int playerNum, qboolean firstTime, qboolean isBot, int conne
 	// update player connection info
 	level.connections[connectionNum].numLocalPlayers++;
 	level.connections[connectionNum].localPlayerNums[localPlayerNum] = playerNum;
+
 	player->pers.connectionNum = connectionNum;
 	player->pers.localPlayerNum = localPlayerNum;
 	// check for local client
@@ -888,7 +893,7 @@ char *PlayerConnect(int playerNum, qboolean firstTime, qboolean isBot, int conne
 	}
 
 	G_ReadSessionData(player);
-	// get and distribute relevant parameters
+	// get and distribute relevent paramters
 	G_LogPrintf("PlayerConnect: %i\n", playerNum);
 	PlayerUserinfoChanged(playerNum);
 	// don't do the "xxx connected" messages if they were caried over from previous level
@@ -903,6 +908,7 @@ char *PlayerConnect(int playerNum, qboolean firstTime, qboolean isBot, int conne
 	CalculateRanks();
 	// for statistics
 //	player->areabits = areabits;
+
 //	if (!player->areabits) {
 //		player->areabits = trap_Alloc((trap_AAS_PointReachabilityAreaIndex(NULL) + 7) / 8, NULL);
 //	}
@@ -914,7 +920,7 @@ char *PlayerConnect(int playerNum, qboolean firstTime, qboolean isBot, int conne
 =======================================================================================================================================
 PlayerBegin
 
-called when a player has finished connecting, and is ready to be placed into the level.
+Called when a player has finished connecting, and is ready to be placed into the level.
 This will happen every level load, and on transition between teams, but doesn't happen on respawns.
 =======================================================================================================================================
 */
@@ -951,8 +957,9 @@ void PlayerBegin(int playerNum) {
 	PlayerSpawn(ent);
 
 	if (player->pers.initialSpawn && g_gametype.integer != GT_TOURNAMENT) {
-		// This is only sent to bots because for humans the "joining the battle" etc. make it clear that the player is now finished connecting.
-		// Bots on the other hand have "entered the game" hard coded in botfiles/match.c so continue to send it to them.
+		// This is only sent to bots because for humans the "joining the battle" etc.
+		// make it clear that the player is now finished connecting. Bots on the other hand have "entered the game" hard coded in
+		// botfiles/match.c so continue to send it to them.
 		for (i = 0; i < level.maxplayers; i++) {
 			if (level.players[i].pers.connected == CON_DISCONNECTED) {
 				continue;
@@ -971,6 +978,7 @@ void PlayerBegin(int playerNum) {
 	}
 
 	player->pers.initialSpawn = qfalse;
+
 	G_LogPrintf("PlayerBegin: %i\n", playerNum);
 	// count current players and rank for scoreboard
 	CalculateRanks();
@@ -980,8 +988,7 @@ void PlayerBegin(int playerNum) {
 =======================================================================================================================================
 PlayerSpawn
 
-Called every time a player is placed fresh in the world: After the first PlayerBegin, and after each respawn.
-
+Called every time a player is placed fresh in the world: after the first PlayerBegin, and after each respawn.
 Initializes all non-persistant parts of playerState.
 =======================================================================================================================================
 */
@@ -1026,7 +1033,7 @@ void PlayerSpawn(gentity_t *ent) {
 	// always clear the kamikaze flag
 	ent->s.eFlags &= ~EF_KAMIKAZE;
 	// toggle the teleport bit so the client knows to not lerp and never clear the voted flag
-	flags = ent->player->ps.eFlags & (EF_TELEPORT_BIT|EF_VOTED|EF_TEAMVOTED);
+	flags = ent->player->ps.eFlags &(EF_TELEPORT_BIT|EF_VOTED|EF_TEAMVOTED);
 	flags ^= EF_TELEPORT_BIT;
 	// clear everything but the persistant data
 	saved = player->pers;
@@ -1127,7 +1134,7 @@ void PlayerSpawn(gentity_t *ent) {
 			player->ps.weapon = 1;
 
 			for (i = WP_NUM_WEAPONS - 1; i > 0; i--) {
-				if (player->ps.stats[STAT_WEAPONS] & (1 << i)) {
+				if (player->ps.stats[STAT_WEAPONS] &(1 << i)) {
 					player->ps.weapon = i;
 					break;
 				}
@@ -1144,18 +1151,19 @@ void PlayerSpawn(gentity_t *ent) {
 		// move players to intermission
 		MovePlayerToIntermission(ent);
 	}
-	// run a player frame to drop exactly to the floor, initialize animations and other things
+	// run a player frame to drop exactly to the floor,
+	// initialize animations and other things
 	player->ps.commandTime = level.time - 100;
 	ent->player->pers.cmd.serverTime = level.time;
 
-	PlayerThink(ent - g_entities);
+	PlayerThink(ent-g_entities);
 	// run the presend to set anything else, follow spectators wait until all players have been reconnected after map_restart
 	if (ent->player->sess.spectatorState != SPECTATOR_FOLLOW) {
 		PlayerEndFrame(ent);
 	}
 	// clear entity state values
 	BG_PlayerStateToEntityState(&player->ps, &ent->s, qtrue);
-	// we don't want players being backward - reconciled to the place they died
+	// we don't want players being backward-reconciled to the place they died
 	G_ResetHistory(ent);
 }
 
@@ -1234,5 +1242,6 @@ void PlayerDisconnect(int playerNum) {
 	// clear player connection info
 	level.connections[ent->player->pers.connectionNum].numLocalPlayers--;
 	level.connections[ent->player->pers.connectionNum].localPlayerNums[ent->player->pers.localPlayerNum] = -1;
+
 	ent->player->pers.localPlayerNum = ent->player->pers.connectionNum = -1;
 }

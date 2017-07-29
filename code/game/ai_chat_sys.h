@@ -1,45 +1,58 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
+//
+/*****************************************************************************
+	* name:		ai_chat_sys.h
+	*
+	* desc:		char AI
+	*
+	* $Archive: /source/code/game/ai_chat_sys.h $
+	*
+	*****************************************************************************/
 
-/**************************************************************************************************************************************
- Char AI.
-**************************************************************************************************************************************/
+#define MAX_MESSAGE_SIZE		256
+#define MAX_CHATTYPE_NAME		32
+#define MAX_MATCHVARIABLES		8
 
-#define MAX_MESSAGE_SIZE 256
-#define MAX_CHATTYPE_NAME 32
-#define MAX_MATCHVARIABLES 8
+#define CHAT_GENDERLESS			0
+#define CHAT_GENDERFEMALE		1
+#define CHAT_GENDERMALE			2
 
-#define CHAT_GENDERLESS		0
-#define CHAT_GENDERFEMALE	1
-#define CHAT_GENDERMALE		2
+#define CHAT_ALL					0
+#define CHAT_TEAM					1
+#define CHAT_TELL					2
 
-#define CHAT_ALL	0
-#define CHAT_TEAM	1
-#define CHAT_TELL	2
 // console message types
-#define CMS_NORMAL	0
-#define CMS_CHAT	1
+#define CMS_NORMAL				0
+#define CMS_CHAT				1
+
 // a console message
 typedef struct bot_consolemessage_s {
 	int handle;
@@ -48,6 +61,7 @@ typedef struct bot_consolemessage_s {
 	char message[MAX_MESSAGE_SIZE];				// message
 	struct bot_consolemessage_s *prev, *next;	// prev and next in list
 } bot_consolemessage_t;
+
 // match variable
 typedef struct bot_matchvariable_s {
 	char offset;
@@ -60,6 +74,7 @@ typedef struct bot_match_s {
 	int subtype;
 	bot_matchvariable_t variables[MAX_MATCHVARIABLES];
 } bot_match_t;
+
 // setup the chat AI
 int BotSetupChatAI(void);
 // shutdown the chat AI

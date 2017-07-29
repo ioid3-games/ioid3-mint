@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -90,7 +96,6 @@ localEntity_t *CG_AllocLocalEntity(void) {
 	}
 
 	le = cg_freeLocalEntities;
-
 	cg_freeLocalEntities = cg_freeLocalEntities->next;
 
 	memset(le, 0, sizeof(*le));
@@ -204,11 +209,12 @@ void CG_ReflectVelocity(localEntity_t *le, trace_t *trace) {
 	if (!trace->allsolid) {
 		// reflect the velocity on the trace plane
 		hitTime = cg.time - cg.frametime + cg.frametime * trace->fraction;
+
 		BG_EvaluateTrajectoryDelta(&le->pos, hitTime, velocity);
 
 		dot = DotProduct(velocity, trace->plane.normal);
-		VectorMA(velocity, -2 * dot, trace->plane.normal, le->pos.trDelta);
 
+		VectorMA(velocity, -2 * dot, trace->plane.normal, le->pos.trDelta);
 		VectorScale(le->pos.trDelta, le->bounceFactor, le->pos.trDelta);
 	}
 
@@ -218,8 +224,11 @@ void CG_ReflectVelocity(localEntity_t *le, trace_t *trace) {
 	// check for stop, making sure that even on low FPS systems it doesn't bobble
 	if (trace->allsolid || (trace->plane.normal[2] > 0 && (le->pos.trDelta[2] < 40 || le->pos.trDelta[2] < -cg.frametime * le->pos.trDelta[2]))) {
 		le->pos.trType = TR_STATIONARY;
+
 		VectorCopy(trace->endpos, le->refEntity.origin);
+
 		vectoangles(le->refEntity.axis[0], le->angles.trBase);
+
 		le->groundEntityNum = trace->entityNum;
 	} else {
 
@@ -239,12 +248,11 @@ void CG_AddFragment(localEntity_t *le) {
 		// sink into the ground if near the removal time
 		int t;
 		float oldZ;
-
+		
 		CG_AdjustPositionForMover(le->refEntity.origin, le->groundEntityNum, le->pos.trTime, cg.time, le->refEntity.origin, le->angles.trBase, le->angles.trBase);
-
 		AnglesToAxis(le->angles.trBase, le->refEntity.axis);
-		le->pos.trTime = cg.time;
 
+		le->pos.trTime = cg.time;
 		t = le->endTime - cg.time;
 
 		if (t < SINK_TIME) {
@@ -288,8 +296,10 @@ void CG_AddFragment(localEntity_t *le) {
 	// fragment inside mover, find the direction/origin of impact
 	if (trace.allsolid && cg_entities[trace.entityNum].currentState.eType == ET_MOVER) {
 		vec3_t origin, angles, dir;
+
 		float dist;
 		int oldTime;
+
 		trace_t tr;
 		// get last location
 		if (cg.time == le->pos.trTime) {
@@ -307,6 +317,7 @@ void CG_AddFragment(localEntity_t *le) {
 		CG_AdjustPositionForMover(origin, trace.entityNum, oldTime, cg.time, origin, angles, angles);
 		// nudge the origin farther to avoid being co-planar
 		VectorSubtract(origin, newOrigin, dir);
+
 		dist = VectorNormalize(dir);
 		VectorMA(origin, dist, dir, origin);
 
@@ -581,7 +592,7 @@ void CG_AddKamikaze(localEntity_t *le) {
 
 	if (t > KAMI_SHOCKWAVE_STARTTIME && t < KAMI_SHOCKWAVE_ENDTIME) {
 		if (!(le->leFlags & LEF_SOUND1)) {
-			//trap_S_StartSound(re->origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.kamikazeExplodeSound);
+//			trap_S_StartSound(re->origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.kamikazeExplodeSound);
 			trap_S_StartLocalSound(cgs.media.kamikazeExplodeSound, CHAN_AUTO);
 			le->leFlags |= LEF_SOUND1;
 		}
@@ -591,12 +602,15 @@ void CG_AddKamikaze(localEntity_t *le) {
 		shockwave.hModel = cgs.media.kamikazeShockWave;
 		shockwave.reType = RT_MODEL;
 		shockwave.shaderTime = re->shaderTime;
+
 		VectorCopy(re->origin, shockwave.origin);
 
 		c = (float)(t - KAMI_SHOCKWAVE_STARTTIME) / (float)(KAMI_SHOCKWAVE_ENDTIME - KAMI_SHOCKWAVE_STARTTIME);
+
 		VectorScale(axis[0], c * KAMI_SHOCKWAVE_MAXRADIUS / KAMI_SHOCKWAVEMODEL_RADIUS, shockwave.axis[0]);
 		VectorScale(axis[1], c * KAMI_SHOCKWAVE_MAXRADIUS / KAMI_SHOCKWAVEMODEL_RADIUS, shockwave.axis[1]);
 		VectorScale(axis[2], c * KAMI_SHOCKWAVE_MAXRADIUS / KAMI_SHOCKWAVEMODEL_RADIUS, shockwave.axis[2]);
+
 		shockwave.nonNormalizedAxes = qtrue;
 
 		if (t > KAMI_SHOCKWAVEFADE_STARTTIME) {
@@ -618,6 +632,7 @@ void CG_AddKamikaze(localEntity_t *le) {
 		// explosion and implosion
 		c = (le->endTime - cg.time) * le->lifeRate;
 		c *= 0xff;
+
 		re->shaderRGBA[0] = le->color[0] * c;
 		re->shaderRGBA[1] = le->color[1] * c;
 		re->shaderRGBA[2] = le->color[2] * c;
@@ -629,6 +644,7 @@ void CG_AddKamikaze(localEntity_t *le) {
 			if (!(le->leFlags & LEF_SOUND2)) {
 //				trap_S_StartSound(re->origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.kamikazeImplodeSound);
 				trap_S_StartLocalSound(cgs.media.kamikazeImplodeSound, CHAN_AUTO);
+
 				le->leFlags |= LEF_SOUND2;
 			}
 
@@ -638,6 +654,7 @@ void CG_AddKamikaze(localEntity_t *le) {
 		VectorScale(axis[0], c * KAMI_BOOMSPHERE_MAXRADIUS / KAMI_BOOMSPHEREMODEL_RADIUS, re->axis[0]);
 		VectorScale(axis[1], c * KAMI_BOOMSPHERE_MAXRADIUS / KAMI_BOOMSPHEREMODEL_RADIUS, re->axis[1]);
 		VectorScale(axis[2], c * KAMI_BOOMSPHERE_MAXRADIUS / KAMI_BOOMSPHEREMODEL_RADIUS, re->axis[2]);
+
 		re->nonNormalizedAxes = qtrue;
 
 		CG_AddRefEntityWithMinLight(re);
@@ -658,17 +675,20 @@ void CG_AddKamikaze(localEntity_t *le) {
 		shockwave.hModel = cgs.media.kamikazeShockWave;
 		shockwave.reType = RT_MODEL;
 		shockwave.shaderTime = re->shaderTime;
+
 		VectorCopy(re->origin, shockwave.origin);
 
 		test[0] = le->angles.trBase[0];
 		test[1] = le->angles.trBase[1];
 		test[2] = le->angles.trBase[2];
+
 		AnglesToAxis(test, axis);
 
 		c = (float)(t - KAMI_SHOCKWAVE2_STARTTIME) / (float)(KAMI_SHOCKWAVE2_ENDTIME - KAMI_SHOCKWAVE2_STARTTIME);
 		VectorScale(axis[0], c * KAMI_SHOCKWAVE2_MAXRADIUS / KAMI_SHOCKWAVEMODEL_RADIUS, shockwave.axis[0]);
 		VectorScale(axis[1], c * KAMI_SHOCKWAVE2_MAXRADIUS / KAMI_SHOCKWAVEMODEL_RADIUS, shockwave.axis[1]);
 		VectorScale(axis[2], c * KAMI_SHOCKWAVE2_MAXRADIUS / KAMI_SHOCKWAVEMODEL_RADIUS, shockwave.axis[2]);
+
 		shockwave.nonNormalizedAxes = qtrue;
 
 		if (t > KAMI_SHOCKWAVE2FADE_STARTTIME) {
@@ -678,6 +698,7 @@ void CG_AddKamikaze(localEntity_t *le) {
 		}
 
 		c *= 0xff;
+
 		shockwave.shaderRGBA[0] = 0xff - c;
 		shockwave.shaderRGBA[1] = 0xff - c;
 		shockwave.shaderRGBA[2] = 0xff - c;
@@ -812,12 +833,13 @@ void CG_BubbleThink(localEntity_t *le) {
 
 	// calculate new position
 	BG_EvaluateTrajectory(&le->pos, cg.time, newOrigin);
+
 	// trace a line from previous position to new position
 	CG_Trace(&trace, le->refEntity.origin, NULL, NULL, newOrigin, -1, CONTENTS_SOLID);
 
 	contents = CG_PointContents(trace.endpos, -1);
 
-	if (!(contents & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))) {
+	if (!(contents &(CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))) {
 		// Bubble isn't in liquid anymore, remove it.
 		CG_FreeLocalEntity(le);
 		return;
@@ -838,7 +860,7 @@ void CG_AddLocalEntities(void) {
 	int forceRenderfx;
 	int oldPhysicsTime;
 
-	// have local entities interact with movers(submodels) at their render position
+	// have local entities interact with movers(submodels)at their render position
 	oldPhysicsTime = cg.physicsTime;
 	cg.physicsTime = cg.time;
 	// walk the list backwards, so any new local entities generated (trails, marks, etc.) will be present this frame
@@ -852,7 +874,7 @@ void CG_AddLocalEntities(void) {
 			CG_FreeLocalEntity(le);
 			continue;
 		}
-		// Check if local entity should be rendered for this player.
+		// check if local entity should be rendered for this player.
 		viewFlags = le->defaultViewFlags;
 
 		for (i = 0; i < le->numPlayerEffects; i++) {

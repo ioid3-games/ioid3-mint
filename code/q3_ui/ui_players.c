@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -290,6 +296,7 @@ static qboolean UI_PositionEntityOnTag(refEntity_t *entity, const refEntity_t *p
 	}
 	// cast away const because of compiler problems
 	MatrixMultiply(lerped.axis, ((refEntity_t *)parent)->axis, entity->axis);
+
 	entity->backlerp = parent->backlerp;
 
 	return returnValue;
@@ -766,9 +773,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	legs.renderfx = renderfx;
 
 	VectorCopy(legs.origin, legs.oldorigin);
-
 	Byte4Copy(pi->c1RGBA, legs.shaderRGBA);
-
 	CG_AddRefEntityWithMinLight(&legs);
 
 	if (!legs.hModel) {
@@ -784,13 +789,11 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	torso.customSkin = legs.customSkin;
 
 	VectorCopy(origin, torso.lightingOrigin);
-
 	UI_PositionRotatedEntityOnTag(&torso, &legs, pi->legsModel, "tag_torso");
 
 	torso.renderfx = renderfx;
 
 	Byte4Copy(pi->c1RGBA, torso.shaderRGBA);
-
 	CG_AddRefEntityWithMinLight(&torso);
 	// add the head
 	head.hModel = pi->headModel;
@@ -802,13 +805,11 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	head.customSkin = legs.customSkin;
 
 	VectorCopy(origin, head.lightingOrigin);
-
 	UI_PositionRotatedEntityOnTag(&head, &torso, pi->torsoModel, "tag_head");
 
 	head.renderfx = renderfx;
 
 	Byte4Copy(pi->c1RGBA, head.shaderRGBA);
-
 	CG_AddRefEntityWithMinLight(&head);
 	// add the gun
 	if (pi->currentWeapon != WP_NONE) {
@@ -817,12 +818,11 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 		gun.hModel = pi->weaponModel;
 
 		Byte4Copy(pi->c1RGBA, gun.shaderRGBA);
-
 		VectorCopy(origin, gun.lightingOrigin);
-
 		UI_PositionEntityOnTag(&gun, &torso, pi->torsoModel, "tag_weapon");
 
 		gun.renderfx = renderfx;
+
 		CG_AddRefEntityWithMinLight(&gun);
 	}
 	// add the spinning barrel
@@ -841,9 +841,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 		angles[ROLL] = UI_MachinegunSpinAngle(pi);
 
 		AnglesToAxis(angles, barrel.axis);
-
 		UI_PositionRotatedEntityOnTag(&barrel, &gun, pi->weaponModel, "tag_barrel");
-
 		CG_AddRefEntityWithMinLight(&barrel);
 	}
 	// add muzzle flash
@@ -854,9 +852,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 			flash.hModel = pi->flashModel;
 
 			Byte4Copy(pi->c1RGBA, flash.shaderRGBA);
-
 			VectorCopy(origin, flash.lightingOrigin);
-
 			UI_PositionEntityOnTag(&flash, &gun, pi->weaponModel, "tag_flash");
 
 			flash.renderfx = renderfx;
@@ -881,6 +877,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	origin[1] -= 100;
 	origin[2] -= 100;
 	trap_R_AddJuniorLightToScene(origin, 500, 1.0, 1.0, 0.0, 0.0);
+
 	trap_R_RenderScene(&refdef);
 }
 
@@ -894,7 +891,7 @@ static qboolean UI_FileExists(const char *filename) {
 
 	len = trap_FS_FOpenFile(filename, NULL, FS_READ);
 
-	if (len > 0) {
+	if (len>0) {
 		return qtrue;
 	}
 
@@ -961,7 +958,7 @@ static qboolean UI_FindPlayerHeadFile(char *filename, int length, const char *te
 UI_RegisterPlayerSkin
 =======================================================================================================================================
 */
-static qboolean UI_RegisterPlayerSkin(uiPlayerInfo_t *pi, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName, const char *teamName) {
+static qboolean UI_RegisterPlayerSkin(uiPlayerInfo_t *pi, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName , const char *teamName) {
 	char filename[MAX_QPATH];
 	qboolean legsSkin, torsoSkin, headSkin;
 
@@ -1113,7 +1110,6 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 		}
 
 		animations[i].numFrames = atoi(token);
-
 		token = COM_Parse(&text_p);
 
 		if (!token[0]) {
@@ -1121,7 +1117,6 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 		}
 
 		animations[i].loopFrames = atoi(token);
-
 		token = COM_Parse(&text_p);
 
 		if (!token[0]) {

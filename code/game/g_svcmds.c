@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, 
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -397,45 +403,40 @@ void Svcmd_EntityList_f(void) {
 PlayerForString
 =======================================================================================================================================
 */
-gplayer_t *PlayerForString(const char *s) {
-	gplayer_t *player;
-	int i;
+int PlayerForString(const char *s){
+	gplayer_t *cl;
 	int idnum;
+	char cleanName[MAX_STRING_CHARS];
 
-	// numeric values are just slot numbers
-	if (s[0] >= '0' && s[0] <= '9') {
+	// numeric values could be slot numbers
+	if (StringIsInteger(s)) {
 		idnum = atoi(s);
 
-		if (idnum < 0 || idnum >= level.maxplayers) {
-			Com_Printf("Bad player slot: %i\n", idnum);
-			return NULL;
+		if (idnum >= 0 && idnum < level.maxplayers) {
+			cl = &level.players[idnum];
+
+			if (cl->pers.connected == CON_CONNECTED) {
+				return idnum;
+			}
 		}
-
-		player = &level.players[idnum];
-
-		if (player->pers.connected == CON_DISCONNECTED) {
-			G_Printf("Player %i is not connected\n", idnum);
-			return NULL;
-		}
-
-		return player;
 	}
 	// check for a name match
-	for (i = 0; i < level.maxplayers; i++) {
-		player = &level.players[i];
-
-		if (player->pers.connected == CON_DISCONNECTED) {
+	for (idnum = 0, cl = level.players; idnum < level.maxplayers; idnum++, cl++) {
+		if (cl->pers.connected != CON_CONNECTED) {
 			continue;
 		}
 
-		if (!Q_stricmp(player->pers.netname, s)) {
-			return player;
+		Q_strncpyz(cleanName, cl->pers.netname, sizeof(cleanName));
+		Q_CleanStr(cleanName);
+
+		if (!Q_stricmp(cleanName, s)) {
+			return idnum;
 		}
 	}
 
 	G_Printf("User %s is not on the server\n", s);
 
-	return NULL;
+	return -1;
 }
 
 /*
@@ -446,7 +447,7 @@ forceTeam <player> <team>.
 =======================================================================================================================================
 */
 void Svcmd_ForceTeam_f(void) {
-	gplayer_t *player;
+	int playerNum;
 	char str[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 3) {
@@ -455,25 +456,26 @@ void Svcmd_ForceTeam_f(void) {
 	}
 	// find the player
 	trap_Argv(1, str, sizeof(str));
-	player = PlayerForString(str);
 
-	if (!player) {
+	playerNum = PlayerForString(str);
+
+	if (playerNum == -1) {
 		return;
 	}
 	// set the team
 	trap_Argv(2, str, sizeof(str));
-	SetTeam(&g_entities[player - level.players], str);
+	SetTeam(&g_entities[playerNum], str);
 }
 
 /*
 =======================================================================================================================================
 Svcmd_Teleport_f
 
-teleport <player> <x> <y> <z> [yaw]
+teleport <player> <x> <y> <z> [yaw].
 =======================================================================================================================================
 */
 void Svcmd_Teleport_f(void) {
-	gplayer_t *player;
+	int playerNum;
 	gentity_t *ent;
 	char str[MAX_TOKEN_CHARS];
 	vec3_t position, angles;
@@ -489,9 +491,9 @@ void Svcmd_Teleport_f(void) {
 	}
 	// find the player
 	trap_Argv(1, str, sizeof(str));
-	player = PlayerForString(str);
+	playerNum = PlayerForString(str);
 
-	if (!player) {
+	if (playerNum == -1) {
 		return;
 	}
 	// set the position
@@ -504,7 +506,7 @@ void Svcmd_Teleport_f(void) {
 	trap_Argv(4, str, sizeof(str));
 	position[2] = atoi(str);
 
-	ent = &g_entities[player - level.players];
+	ent = &g_entities[playerNum];
 	VectorCopy(ent->s.angles, angles);
 
 	if (trap_Argc() > 5) {
@@ -523,6 +525,7 @@ Svcmd_ListIPs_f
 void Svcmd_ListIPs_f(void) {
 	trap_Cmd_ExecuteText(EXEC_NOW, "g_banIPs\n");
 }
+
 #if 0
 /*
 =======================================================================================================================================
@@ -530,9 +533,53 @@ Svcmd_Say_f
 =======================================================================================================================================
 */
 void Svcmd_Say_f(void) {
-	trap_SendServerCommand(-1, va("print \"server: %s\n\"", ConcatArgs(1)));
+	char *p;
+
+	if (trap_Argc()< 2) {
+		return;
+	}
+
+	p = ConcatArgs(1);
+
+	G_Say(NULL, NULL, SAY_ALL, p);
+}
+
+/*
+=======================================================================================================================================
+Svcmd_Tell_f
+=======================================================================================================================================
+*/
+void Svcmd_Tell_f(void) {
+	char arg[MAX_TOKEN_CHARS];
+	int playerNum;
+	gentity_t *target;
+	char *p;
+
+	if (trap_Argc()< 3) {
+		G_Printf("Usage: tell <player id> <message>\n");
+		return;
+	}
+
+	trap_Argv(1, arg, sizeof(arg));
+
+	playerNum = PlayerForString(arg);
+
+	if (playerNum == -1) {
+		return;
+	}
+
+	target = &level.gentities[playerNum];
+
+	if (!target->inuse || !target->player) {
+		return;
+	}
+
+	p = ConcatArgs(2);
+
+	G_Say(NULL, target, SAY_TELL, p);
 }
 #endif
+
 struct svcmd {
 	char *cmd;
 	qboolean dedicated;
@@ -549,6 +596,7 @@ struct svcmd {
 	{"removeip", qfalse, Svcmd_RemoveIP_f},
 	//{"say", qtrue, Svcmd_Say_f},
 	{"teleport", qfalse, Svcmd_Teleport_f},
+	//{"tell", qtrue, Svcmd_Tell_f},
 };
 
 const size_t numSvCmds = ARRAY_LEN(svcmds);

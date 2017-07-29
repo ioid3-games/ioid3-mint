@@ -1,28 +1,34 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2010 - 2011 by Zack Middleton
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)2010-2011 by Zack Middleton
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
+//
 /*
 =======================================================================================================================================
 
@@ -35,6 +41,7 @@ If there is only one local player simply runs the function.
 
 =======================================================================================================================================
 */
+
 
 #include "ui_local.h"
 
@@ -68,7 +75,7 @@ void InSelectPlayer_Event(void *ptr, int notification) {
 		return;
 	}
 
-	if (((menucommon_s *)ptr)->id >= ID_CUSTOMIZEPLAYER && ((menucommon_s *)ptr)->id < ID_CUSTOMIZEPLAYER + MAX_SPLITVIEW) {
+	if (((menucommon_s *)ptr)->id >= ID_CUSTOMIZEPLAYER && ((menucommon_s *)ptr)->id < ID_CUSTOMIZEPLAYER+MAX_SPLITVIEW) {
 		s_setupplayers.playerfunc(((menucommon_s *)ptr)->id - ID_CUSTOMIZEPLAYER);
 		return;
 	}
@@ -106,6 +113,7 @@ void InSelectPlayer_MenuInit(const char *banner, qboolean disableMissingPlayers)
 	InSelectPlayer_Cache();
 
 	Q_strncpyz(s_setupplayers.bannerString, banner, sizeof(s_setupplayers.bannerString));
+
 	s_setupplayers.menu.draw = InSelectPlayerMenu_Draw;
 	s_setupplayers.menu.wrapAround = qtrue;
 	s_setupplayers.menu.fullscreen = qfalse;
@@ -113,15 +121,15 @@ void InSelectPlayer_MenuInit(const char *banner, qboolean disableMissingPlayers)
 	s_setupplayers.frame.generic.type = MTYPE_BITMAP;
 	s_setupplayers.frame.generic.flags = QMF_INACTIVE;
 	s_setupplayers.frame.generic.name = INGAME_FRAME;
-	s_setupplayers.frame.generic.x = 320 - 233; // 142;
-	s_setupplayers.frame.generic.y = 240 - 166; // 118;
-	s_setupplayers.frame.width = 466; // 359;
-	s_setupplayers.frame.height = 332; // 256;
+	s_setupplayers.frame.generic.x = 320-233;//142;
+	s_setupplayers.frame.generic.y = 240-166;//118;
+	s_setupplayers.frame.width = 466;//359;
+	s_setupplayers.frame.height = 332;//256;
 
-	y = (SCREEN_HEIGHT - (1 + UI_MaxSplitView()) * INGAME_MENU_VERTICAL_SPACING) / 2;
+	y = (SCREEN_HEIGHT - (1+UI_MaxSplitView()) *INGAME_MENU_VERTICAL_SPACING) / 2;
 
 	for (i = 0; i < UI_MaxSplitView(); i++) {
-		Com_sprintf(s_setupplayers.playerString[i], sizeof(s_setupplayers.playerString[i]), "Player %d", i + 1);
+		Com_sprintf(s_setupplayers.playerString[i], sizeof(s_setupplayers.playerString[i]), "Player %d", i+1);
 
 		s_setupplayers.player[i].generic.type = MTYPE_PTEXT;
 		s_setupplayers.player[i].generic.flags = QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -189,6 +197,7 @@ void InSelectPlayerMenu(void (*playerfunc)(int), const char *banner, qboolean di
 
 	if (disableMissingPlayers) {
 		int i, playerNum;
+
 		// check if there is only one local player and find local player index
 		for (i = 0, playerNum = -1; i < UI_MaxSplitView(); i++) {
 			if (cg.localPlayers[i].playerNum >= 0 && cg.localPlayers[i].playerNum < MAX_CLIENTS) {

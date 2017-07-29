@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -50,15 +56,15 @@ void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	for (i = 0; i < remapCount; i++) {
 		if (Q_stricmp(oldShader, remappedShaders[i].oldShader) == 0) {
 			// found it, just update this one
-			strcpy(remappedShaders[i].newShader, newShader);
+			strcpy(remappedShaders[i].newShader,newShader);
 			remappedShaders[i].timeOffset = timeOffset;
 			return;
 		}
 	}
 
 	if (remapCount < MAX_SHADER_REMAPS) {
-		strcpy(remappedShaders[remapCount].newShader, newShader);
-		strcpy(remappedShaders[remapCount].oldShader, oldShader);
+		strcpy(remappedShaders[remapCount].newShader,newShader);
+		strcpy(remappedShaders[remapCount].oldShader,oldShader);
 		remappedShaders[remapCount].timeOffset = timeOffset;
 		remapCount++;
 	}
@@ -153,7 +159,6 @@ int G_SoundIndex(char *name) {
 trap_SendServerCommand
 
 Broadcasts a command to only a specific plsyer.
-
 ZTM: NOTE: Function name kept to reduce source code changes.
 =======================================================================================================================================
 */
@@ -208,7 +213,6 @@ void G_TeamCommand(team_t team, char *cmd) {
 G_Find
 
 Searches all active entities for the next one that holds the matching string at fieldofs (use the FOFS() macro) in the structure.
-
 Searches beginning at the entity after from, or the beginning if NULL.
 NULL will be returned if the end of the list is reached.
 =======================================================================================================================================
@@ -241,6 +245,7 @@ gentity_t *G_Find(gentity_t *from, int fieldofs, const char *match) {
 	return NULL;
 }
 
+#define MAXCHOICES 32
 /*
 =======================================================================================================================================
 G_PickTarget
@@ -248,8 +253,6 @@ G_PickTarget
 Selects a random entity from among the targets.
 =======================================================================================================================================
 */
-#define MAXCHOICES 32
-
 gentity_t *G_PickTarget(char *targetname) {
 	gentity_t *ent = NULL;
 	int num_choices = 0;
@@ -287,8 +290,7 @@ gentity_t *G_PickTarget(char *targetname) {
 G_UseTargets
 
 "activator" should be set to the entity that initiated the firing.
-
-Search for (string)targetname in all entities that match (string)self.target and call their .use function.
+Search for (string) targetname in all entities that match (string) self.target and call their .use function.
 =======================================================================================================================================
 */
 void G_UseTargets(gentity_t *ent, gentity_t *activator) {
@@ -300,6 +302,7 @@ void G_UseTargets(gentity_t *ent, gentity_t *activator) {
 
 	if (ent->targetShaderName && ent->targetShaderNewName) {
 		float f = level.time * 0.001;
+
 		AddRemap(ent->targetShaderName, ent->targetShaderNewName, f);
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 	}
@@ -341,9 +344,11 @@ float *tv(float x, float y, float z) {
 	// use an array so that multiple tempvectors won't collide for a while
 	v = vecs[index];
 	index = (index + 1)&7;
+
 	v[0] = x;
 	v[1] = y;
 	v[2] = z;
+
 	return v;
 }
 
@@ -386,7 +391,6 @@ void G_SetBrushModel(gentity_t *ent, const char *name) {
 	ent->s.modelindex = atoi(name + 1);
 
 	trap_GetBrushBounds(ent->s.modelindex, mins, maxs);
-
 	VectorCopy(mins, ent->s.mins);
 	VectorCopy(maxs, ent->s.maxs);
 
@@ -454,6 +458,7 @@ G_InitGentity
 =======================================================================================================================================
 */
 void G_InitGentity(gentity_t *e) {
+
 	e->inuse = qtrue;
 	e->classname = "noclass";
 	e->s.number = e - g_entities;
@@ -465,9 +470,7 @@ void G_InitGentity(gentity_t *e) {
 G_Spawn
 
 Either finds a free entity, or allocates a new one.
-
-The slots from 0 to MAX_CLIENTS-1 are always reserved for players, and will never be used by anything else.
-
+The slots from 0 to MAX_CLIENTS - 1 are always reserved for players, and will never be used by anything else.
 Try to avoid reusing an entity that was recently freed, because it can cause the client to think the entity morphed into something else
 instead of being removed and recreated, which can cause interpolated angles and bad trails.
 =======================================================================================================================================
@@ -512,7 +515,6 @@ gentity_t *G_Spawn(void) {
 	level.num_entities++;
 	// let the server system know that there are more entities
 	trap_LocateGameData(level.gentities, level.num_entities, sizeof(gentity_t), &level.players[0].ps, sizeof(level.players[0]));
-
 	G_InitGentity(e);
 	return e;
 }
@@ -656,8 +658,7 @@ void G_AddEvent(gentity_t *ent, int event, int eventParm) {
 	// players need to add the event in playerState_t instead of entityState_t
 	if (ent->player) {
 		bits = ent->player->ps.externalEvent & EV_EVENT_BITS;
-		bits = (bits + EV_EVENT_BIT1) & EV_EVENT_BITS;
-
+		bits = (bits + EV_EVENT_BIT1)& EV_EVENT_BITS;
 		ent->player->ps.externalEvent = event|bits;
 		ent->player->ps.externalEventParm = eventParm;
 	} else {
@@ -719,7 +720,6 @@ int DebugLine(vec3_t start, vec3_t end, int color) {
 	VectorCopy(end, points[2]);
 	//points[2][2] -= 2;
 	VectorCopy(end, points[3]);
-
 	VectorSubtract(end, start, dir);
 	VectorNormalize(dir);
 

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -43,25 +49,24 @@ void InitTrigger(gentity_t *self) {
 
 /*
 =======================================================================================================================================
-Multi_Wait
+multi_wait
 
 The wait time has passed, so set back up for another activation.
 =======================================================================================================================================
 */
-void Multi_Wait(gentity_t *ent) {
+void multi_wait(gentity_t *ent) {
 	ent->nextthink = 0;
 }
 
 /*
 =======================================================================================================================================
-Use_Trigger_Multiple
+multi_trigger
 
 The trigger was just activated, ent->activator should be set to the activator so it can be held through a delay, so wait for the delay
 time before firing.
 =======================================================================================================================================
 */
-void Use_Trigger_Multiple(gentity_t *ent, gentity_t *activator) {
-
+void multi_trigger(gentity_t *ent, gentity_t *activator) {
 	ent->activator = activator;
 
 	if (ent->nextthink) {
@@ -81,7 +86,7 @@ void Use_Trigger_Multiple(gentity_t *ent, gentity_t *activator) {
 	G_UseTargets(ent, ent->activator);
 
 	if (ent->wait > 0) {
-		ent->think = Multi_Wait;
+		ent->think = multi_wait;
 		ent->nextthink = level.time + (ent->wait + ent->random * crandom()) * 1000;
 	} else {
 		// we can't just remove (self) here, because this is a touch function called while looping through area links...
@@ -97,21 +102,21 @@ Use_Multi
 =======================================================================================================================================
 */
 void Use_Multi(gentity_t *ent, gentity_t *other, gentity_t *activator) {
-	Use_Trigger_Multiple(ent, activator);
+	multi_trigger(ent, activator);
 }
 
 /*
 =======================================================================================================================================
-Touch_MultiTrigger
+Touch_Multi
 =======================================================================================================================================
 */
-void Touch_MultiTrigger(gentity_t *self, gentity_t *other, trace_t *trace) {
+void Touch_Multi(gentity_t *self, gentity_t *other, trace_t *trace) {
 
 	if (!other->player) {
 		return;
 	}
 
-	Use_Trigger_Multiple(self, other);
+	multi_trigger(self, other);
 }
 
 /*QUAKED trigger_multiple (.5 .5 .5) ?
@@ -131,11 +136,10 @@ void SP_trigger_multiple(gentity_t *ent) {
 		G_Printf("trigger_multiple has random >= wait\n");
 	}
 
-	ent->touch = Touch_MultiTrigger;
+	ent->touch = Touch_Multi;
 	ent->use = Use_Multi;
 
 	InitTrigger(ent);
-
 	trap_LinkEntity(ent);
 }
 
@@ -149,10 +153,11 @@ void SP_trigger_multiple(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-Trigger_Always_Think
+trigger_always_think
 =======================================================================================================================================
 */
-void Trigger_Always_Think(gentity_t *ent) {
+void trigger_always_think(gentity_t *ent) {
+
 	G_UseTargets(ent, ent);
 	G_FreeEntity(ent);
 }
@@ -164,7 +169,7 @@ void SP_trigger_always(gentity_t *ent) {
 
 	// we must have some delay to make sure our use targets are present
 	ent->nextthink = level.time + 300;
-	ent->think = Trigger_Always_Think;
+	ent->think = trigger_always_think;
 }
 
 /*
@@ -177,10 +182,10 @@ void SP_trigger_always(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-Touch_PushTrigger
+trigger_push_touch
 =======================================================================================================================================
 */
-void Touch_PushTrigger(gentity_t *self, gentity_t *other, trace_t *trace) {
+void trigger_push_touch(gentity_t *self, gentity_t *other, trace_t *trace) {
 
 	if (!other->player) {
 		return;
@@ -245,7 +250,7 @@ void SP_trigger_push(gentity_t *self) {
 	G_SoundIndex("sound/world/jumppad.wav");
 
 	self->s.eType = ET_PUSH_TRIGGER;
-	self->touch = Touch_PushTrigger;
+	self->touch = trigger_push_touch;
 	self->think = AimAtTarget;
 	self->nextthink = level.time + FRAMETIME;
 
@@ -254,10 +259,10 @@ void SP_trigger_push(gentity_t *self) {
 
 /*
 =======================================================================================================================================
-Use_Target_Push
+Use_target_push
 =======================================================================================================================================
 */
-void Use_Target_Push(gentity_t *self, gentity_t *other, gentity_t *activator) {
+void Use_target_push(gentity_t *self, gentity_t *other, gentity_t *activator) {
 
 	if (!activator->player) {
 		return;
@@ -291,7 +296,6 @@ void SP_target_push(gentity_t *self) {
 	}
 
 	G_SetMovedir(self->s.angles, self->s.origin2);
-
 	VectorScale(self->s.origin2, self->speed, self->s.origin2);
 
 	if (self->spawnflags & 1) {
@@ -307,7 +311,7 @@ void SP_target_push(gentity_t *self) {
 		self->nextthink = level.time + FRAMETIME;
 	}
 
-	self->use = Use_Target_Push;
+	self->use = Use_target_push;
 }
 
 /*
@@ -320,10 +324,10 @@ void SP_target_push(gentity_t *self) {
 
 /*
 =======================================================================================================================================
-Touch_TeleporterTrigger
+trigger_teleporter_touch
 =======================================================================================================================================
 */
-void Touch_TeleporterTrigger(gentity_t *self, gentity_t *other, trace_t *trace) {
+void trigger_teleporter_touch(gentity_t *self, gentity_t *other, trace_t *trace) {
 	gentity_t *dest;
 
 	if (!other->player) {
@@ -359,8 +363,7 @@ automatically near doors to allow spectators to move through them
 void SP_trigger_teleport(gentity_t *self) {
 
 	InitTrigger(self);
-	// unlike other triggers, we need to send this one to the client
-	// unless is a spectator trigger
+	// unlike other triggers, we need to send this one to the client unless is a spectator trigger
 	if (self->spawnflags & 1) {
 		self->r.svFlags |= SVF_NOCLIENT;
 	} else {
@@ -370,7 +373,7 @@ void SP_trigger_teleport(gentity_t *self) {
 	G_SoundIndex("sound/world/jumppad.wav");
 
 	self->s.eType = ET_TELEPORT_TRIGGER;
-	self->touch = Touch_TeleporterTrigger;
+	self->touch = trigger_teleporter_touch;
 
 	trap_LinkEntity(self);
 }
@@ -385,10 +388,10 @@ void SP_trigger_teleport(gentity_t *self) {
 
 /*
 =======================================================================================================================================
-Use_Trigger_Hurt
+hurt_use
 =======================================================================================================================================
 */
-void Use_Trigger_Hurt(gentity_t *self, gentity_t *other, gentity_t *activator) {
+void hurt_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
 
 	if (self->r.linked) {
 		trap_UnlinkEntity(self);
@@ -399,10 +402,10 @@ void Use_Trigger_Hurt(gentity_t *self, gentity_t *other, gentity_t *activator) {
 
 /*
 =======================================================================================================================================
-Touch_HurtTrigger
+hurt_touch
 =======================================================================================================================================
 */
-void Touch_HurtTrigger(gentity_t *self, gentity_t *other, trace_t *trace) {
+void hurt_touch(gentity_t *self, gentity_t *other, trace_t *trace) {
 	int dflags;
 
 	if (!other->takedamage) {
@@ -448,13 +451,13 @@ void SP_trigger_hurt(gentity_t *self) {
 	InitTrigger(self);
 
 	self->noise_index = G_SoundIndex("sound/world/electro.wav");
-	self->touch = Touch_HurtTrigger;
+	self->touch = hurt_touch;
 
 	if (!self->damage) {
 		self->damage = 5;
 	}
 
-	self->use = Use_Trigger_Hurt;
+	self->use = hurt_use;
 	// link in to the world if starting active
 	if (self->spawnflags & 1) {
 		trap_UnlinkEntity(self);
@@ -476,7 +479,7 @@ void SP_trigger_hurt(gentity_t *self) {
 Func_Timer_Think
 =======================================================================================================================================
 */
-void Func_Timer_Think(gentity_t *self) {
+void func_timer_think(gentity_t *self) {
 
 	G_UseTargets(self, self->activator);
 	// set time before next firing
@@ -485,10 +488,10 @@ void Func_Timer_Think(gentity_t *self) {
 
 /*
 =======================================================================================================================================
-Use_Func_Timer
+func_timer_use
 =======================================================================================================================================
 */
-void Use_Func_Timer(gentity_t *self, gentity_t *other, gentity_t *activator) {
+void func_timer_use(gentity_t *self, gentity_t *other, gentity_t *activator) {
 
 	self->activator = activator;
 	// if on, turn it off
@@ -497,7 +500,7 @@ void Use_Func_Timer(gentity_t *self, gentity_t *other, gentity_t *activator) {
 		return;
 	}
 	// turn it on
-	Func_Timer_Think(self);
+	func_timer_think(self);
 }
 
 /*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
@@ -516,8 +519,8 @@ void SP_func_timer(gentity_t *self) {
 	G_SpawnFloat("random", "1", &self->random);
 	G_SpawnFloat("wait", "1", &self->wait);
 
-	self->use = Use_Func_Timer;
-	self->think = Func_Timer_Think;
+	self->use = func_timer_use;
+	self->think = func_timer_think;
 
 	if (self->random >= self->wait) {
 		self->random = self->wait - FRAMETIME;

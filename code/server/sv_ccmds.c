@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -58,12 +64,13 @@ static player_t *SV_GetPlayerByHandle(void) {
 	}
 
 	s = Cmd_Argv(1);
-	// Check whether this is a numeric player handle
+	// check whether this is a numeric player handle
 	for (i = 0; s[i] >= '0' && s[i] <= '9'; i++);
 
 	if (!s[i]) {
 		int plid = atoi(s);
-		// Check for numeric playerid match
+
+		// check for numeric playerid match
 		if (plid >= 0 && plid < sv_maxclients->integer) {
 			player = &svs.players[plid];
 
@@ -241,6 +248,7 @@ static void SV_MapRestart_f(void) {
 	// generate a new serverid
 	// TTimo - don't update restartedserverId there, otherwise we won't deal correctly with multiple map_restart
 	sv.serverId = com_frameTime;
+
 	Cvar_Set("sv_serverid", va("%i", sv.serverId));
 	// if a map_restart occurs while a client is changing maps, we need to give them the correct time so that when they finish loading
 	// they don't violate the backwards time check in cl_cgame.c
@@ -259,6 +267,7 @@ static void SV_MapRestart_f(void) {
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++) {
 		VM_Call(gvm, GAME_RUN_FRAME, sv.time);
+
 		sv.time += 100;
 		svs.time += 100;
 	}
@@ -306,13 +315,15 @@ static void SV_MapRestart_f(void) {
 			if (client->state == CS_ACTIVE) {
 				SV_PlayerEnterWorld(player, &player->lastUsercmd);
 			} else {
-				// If we don't reset player->lastUsercmd and are restarting during map load, the client will hang because we'll use the last Usercmd from the previous map, // which is wrong obviously.
+				// If we don't reset client->lastUsercmd and are restarting during map load, the client will hang because we'll use the
+				// last Usercmd from the previous map, which is wrong obviously.
 				SV_PlayerEnterWorld(player, NULL);
 			}
 		}
 	}
 	// run another frame to allow things to look at all the players
 	VM_Call(gvm, GAME_RUN_FRAME, sv.time);
+
 	sv.time += 100;
 	svs.time += 100;
 }
@@ -353,6 +364,7 @@ static void SV_Kick_f(void) {
 	}
 
 	SV_DropPlayer(player, "was kicked");
+
 	client->lastPacketTime = svs.time; // in case there is a funny zombie
 }
 
@@ -383,6 +395,7 @@ static void SV_KickBots_f(void) {
 		}
 
 		SV_DropClient(cl, "was kicked");
+
 		cl->lastPacketTime = svs.time; // in case there is a funny zombie
 	}
 }
@@ -414,6 +427,7 @@ static void SV_KickAll_f(void) {
 		}
 
 		SV_DropClient(cl, "was kicked");
+
 		cl->lastPacketTime = svs.time; // in case there is a funny zombie
 	}
 }
@@ -454,6 +468,7 @@ static void SV_KickNum_f(void) {
 	}
 
 	SV_DropPlayer(player, "was kicked");
+
 	client->lastPacketTime = svs.time; // in case there is a funny zombie
 }
 
@@ -491,7 +506,6 @@ static void SV_RehashBans_f(void) {
 		}
 
 		curpos = textbuf = Z_Malloc(filelen);
-
 		filelen = FS_Read(textbuf, filelen, readfrom);
 
 		FS_FCloseFile(readfrom);
@@ -675,6 +689,7 @@ static void SV_AddBanToList(qboolean isexception) {
 		}
 	} else {
 		player_t *player;
+
 		// client num.
 		player = SV_GetPlayerByNum();
 
@@ -971,7 +986,9 @@ static void SV_Status_f(void) {
 		}
 
 		Com_Printf("%2i ", i);
+
 		ps = SV_GamePlayerNum(i);
+
 		Com_Printf("%5i ", ps->score);
 
 		if (cl->state == CS_CONNECTED) {
@@ -994,7 +1011,9 @@ static void SV_Status_f(void) {
 		} while (j < l);
 		// TTimo adding a ^7 to reset the color
 		s = NET_AdrToString(cl->netchan.remoteAddress);
+
 		Com_Printf("^7%s", s);
+
 		l = 39 - strlen(s);
 		j = 0;
 

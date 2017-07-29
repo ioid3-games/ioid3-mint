@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -125,7 +131,7 @@ field_t fields[] = {
 	{"angle", FOFS(s.angles), F_ANGLEHACK},
 	{"targetShaderName", FOFS(targetShaderName), F_STRING},
 	{"targetShaderNewName", FOFS(targetShaderNewName), F_STRING},
-	// dlight lightstyles(made all these unique variables for testing)
+	//(SA)dlight lightstyles(made all these unique variables for testing)
 	{"_color", FOFS(dl_color), F_VECTOR}, // color of the light (the underscore is inserted by the color picker in QER)
 	{"color", FOFS(dl_color), F_VECTOR}, // color of the light
 	{"stylestring", FOFS(dl_stylestring), F_STRING}, // user defined stylestring "fffndlsfaaaaaa" for example
@@ -418,9 +424,10 @@ void G_SpawnGEntityFromSpawnVars(void) {
 	spawnInfo.gametype = g_gametype.integer;
 	spawnInfo.spawnInt = G_SpawnInt;
 	spawnInfo.spawnString = G_SpawnString;
-	// check "notsingle", "notfree", "notteam", etc.
+	// check "notsingle", "notfree", "notteam", etc
 	if (!BG_CheckSpawnEntity(&spawnInfo)) {
 		ADJUST_AREAPORTAL();
+
 		G_FreeEntity(ent);
 		return;
 	}
@@ -461,7 +468,6 @@ char *G_AddSpawnVarToken(const char *string) {
 G_ParseSpawnVars
 
 Parses a brace bounded set of key/value pairs out of the level's entity strings into level.spawnVars[].
-
 This does not actually spawn an entity.
 =======================================================================================================================================
 */
@@ -542,8 +548,9 @@ void SP_worldspawn(void) {
 	trap_Cvar_Set("g_gravity", s);
 #if 0 // ZTM: Currently game doesn't need the tracemap
 	level.mapcoordsValid = qfalse;
-	// top left/bottom right
-	if (G_SpawnVector2D("mapcoordsmins", "-128 128", level.mapcoordsMins) && G_SpawnVector2D("mapcoordsmaxs", "128 -128", level.mapcoordsMaxs)) {
+
+	if (G_SpawnVector2D("mapcoordsmins", "-128 128", level.mapcoordsMins) && // top left
+		 G_SpawnVector2D("mapcoordsmaxs", "128 -128", level.mapcoordsMaxs)) { // bottom right
 		level.mapcoordsValid = qtrue;
 	}
 #endif

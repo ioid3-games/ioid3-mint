@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -99,13 +105,12 @@ static const char *gametype_items[] = {
 
 static int gametype_remap[] = {GT_FFA, GT_TEAM, GT_TOURNAMENT, GT_CTF
 #ifdef MISSIONPACK
-, GT_1FCTF, GT_OBELISK, GT_HARVESTER
+,GT_1FCTF, GT_OBELISK, GT_HARVESTER
 #endif
 };
-
 static int gametype_remap2[] = {0, 2, 0, 1, 3
 #ifdef MISSIONPACK
-, 4, 5, 6
+,4, 5, 6
 #endif
 };
 
@@ -196,8 +201,8 @@ static void StartServer_Update(void) {
 		}
 
 		info = UI_GetArenaInfoByNumber(s_startserver.maplist[top + i]);
-		Q_strncpyz(mapname, Info_ValueForKey(info, "map"), MAX_NAMELENGTH);
 
+		Q_strncpyz(mapname, Info_ValueForKey(info, "map"), MAX_NAMELENGTH);
 		Com_sprintf(picname[i], sizeof(picname[i]), "levelshots/%s_small", mapname);
 
 		if (!trap_R_RegisterShaderNoMip(picname[i])) {
@@ -416,6 +421,7 @@ static void StartServer_MenuInit(qboolean multiplayer) {
 	StartServer_Cache();
 
 	s_startserver.multiplayer = multiplayer;
+
 	s_startserver.menu.wrapAround = qtrue;
 	s_startserver.menu.fullscreen = qtrue;
 
@@ -598,7 +604,6 @@ void StartServer_Cache(void) {
 		for (i = 0; i < UI_GetNumArenas(); i++) {
 			info = UI_GetArenaInfoByNumber(i);
 			Q_strncpyz(mapname, Info_ValueForKey(info, "map"), MAX_NAMELENGTH);
-
 			Com_sprintf(picname, sizeof(picname), "levelshots/%s_small", mapname);
 
 			if (!trap_R_RegisterShaderNoMip(picname)) {
@@ -632,7 +637,7 @@ void UI_StartServerMenu(qboolean multiplayer) {
 #define ID_DEDICATED	21
 #define ID_GO			22
 #define ID_BACK			23
-#define ID_PLAYER_TYPE	24 // Goes up to ID_PLAYER_TYPE + PLAYER_SLOTS
+#define ID_PLAYER_TYPE	24 // Goes up to ID_PLAYER_TYPE+PLAYER_SLOTS
 
 #define PLAYER_SLOTS 12
 
@@ -669,10 +674,10 @@ typedef struct {
 
 static serveroptions_t s_serveroptions;
 
-#define PT_BOT		0
-#define PT_CLOSED	1
-#define PT_OPEN		2
-#define PT_HUMAN	3
+#define PT_BOT 0
+#define PT_CLOSED 1
+#define PT_OPEN 2
+#define PT_HUMAN 3
 
 static const char *playerType_list[] = {
 	"Bot",
@@ -1012,9 +1017,9 @@ static void ServerOptions_Event(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-		//if (event != QM_ACTIVATED && event != QM_LOSTFOCUS) {
-		//	return;
-		//}
+	// if(event != QM_ACTIVATED && event != QM_LOSTFOCUS) {
+	//	return;
+	//}
 
 		case ID_MAXCLIENTS:
 		case ID_DEDICATED:
@@ -1151,7 +1156,6 @@ static void ServerOptions_InitBotNames(void) {
 
 		s_serveroptions.playerType[10].curvalue = PT_CLOSED;
 		s_serveroptions.playerType[11].curvalue = PT_CLOSED;
-
 		return;
 	}
 
@@ -1191,6 +1195,7 @@ static void ServerOptions_InitBotNames(void) {
 		bot = Info_ValueForKey(botInfo, "name");
 
 		Q_strncpyz(s_serveroptions.botNameBuffers[count], bot, sizeof(s_serveroptions.botNameBuffers[count]));
+
 		count++;
 	}
 	// pad up to #8 as open slots
@@ -1259,9 +1264,9 @@ static void ServerOptions_SetMenuItems(void) {
 	s_serveroptions.pure.curvalue = Com_Clamp(0, 1, trap_Cvar_VariableValue("sv_pure"));
 	// set the map pic
 	info = UI_GetArenaInfoByNumber(s_startserver.maplist[s_startserver.currentmap]);
+
 	Q_strncpyz(mapname, Info_ValueForKey(info, "map"), MAX_NAMELENGTH);
 	Q_strupr(mapname);
-
 	Com_sprintf(picname, sizeof(picname), "levelshots/%s_small", mapname);
 
 	if (!trap_R_RegisterShaderNoMip(picname)) {
@@ -1320,13 +1325,12 @@ static void PlayerName_Draw(void *item) {
 	UI_DrawString(x + SMALLCHAR_WIDTH, y, s->string, style|UI_LEFT, color);
 }
 
+#define OPTIONS_X 456
 /*
 =======================================================================================================================================
 ServerOptions_MenuInit
 =======================================================================================================================================
 */
-#define OPTIONS_X 456
-
 static void ServerOptions_MenuInit(qboolean multiplayer) {
 	int y;
 	int n;
@@ -1438,6 +1442,7 @@ static void ServerOptions_MenuInit(qboolean multiplayer) {
 
 	if (s_serveroptions.multiplayer) {
 		y += BIGCHAR_HEIGHT + 2;
+
 		s_serveroptions.hostname.generic.type = MTYPE_FIELD;
 		s_serveroptions.hostname.generic.name = "Hostname:";
 		s_serveroptions.hostname.generic.flags = QMF_SMALLFONT;
@@ -1467,7 +1472,7 @@ static void ServerOptions_MenuInit(qboolean multiplayer) {
 	for (n = 0; n < PLAYER_SLOTS; n++) {
 		s_serveroptions.playerType[n].generic.type = MTYPE_SPINCONTROL;
 		s_serveroptions.playerType[n].generic.flags = QMF_SMALLFONT;
-		s_serveroptions.playerType[n].generic.id = ID_PLAYER_TYPE + n;
+		s_serveroptions.playerType[n].generic.id = ID_PLAYER_TYPE+n;
 		s_serveroptions.playerType[n].generic.callback = ServerOptions_Event;
 		s_serveroptions.playerType[n].generic.x = 32;
 		s_serveroptions.playerType[n].generic.y = y;
@@ -1766,6 +1771,7 @@ static void UI_BotSelectMenu_UpdateGrid(void) {
 			ServerPlayerIcon(Info_ValueForKey(info, "model"), botSelectInfo.boticons[i], MAX_QPATH);
 			Q_strncpyz(botSelectInfo.botnames[i], Info_ValueForKey(info, "name"), 16);
 			Q_CleanStr(botSelectInfo.botnames[i]);
+
 			botSelectInfo.pics[i].generic.name = botSelectInfo.boticons[i];
 
 			if (BotAlreadySelected(botSelectInfo.botnames[i])) {

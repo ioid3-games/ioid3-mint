@@ -1,30 +1,35 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
 /**************************************************************************************************************************************
- Things that happen on snapshot transition, not necessarily every single
- rendered frame.
+ Things that happen on snapshot transition, not necessarily every single rendered frame.
 **************************************************************************************************************************************/
 
 #include "cg_local.h"
@@ -107,6 +112,7 @@ void CG_SetInitialSnapshot(snapshot_t *snap) {
 		cent = &cg_entities[state->number];
 
 		memcpy(&cent->currentState, state, sizeof(entityState_t));
+
 		//cent->currentState = *state;
 		cent->interpolate = qfalse;
 		cent->currentValid = qtrue;
@@ -138,7 +144,7 @@ static void CG_TransitionSnapshot(void) {
 	}
 	// execute any server string commands before transitioning entities
 	CG_ExecuteNewServerCommands(cg.nextSnap->serverCommandSequence);
-	// if we had a map_restart, set everthing with initial
+	// if we had a map_restart, set everything with initial
 	if (cg.mapRestart) {
 
 	}
@@ -152,7 +158,7 @@ static void CG_TransitionSnapshot(void) {
 	cg.snap = cg.nextSnap;
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		// Server added or removed local player
+		// server added or removed local player
 		if (oldFrame && oldFrame->playerNums[i] != cg.snap->playerNums[i]) {
 			CG_LocalPlayerRemoved(i);
 
@@ -169,6 +175,7 @@ static void CG_TransitionSnapshot(void) {
 
 	for (i = 0; i < cg.snap->numEntities; i++) {
 		cent = &cg_entities[cg.snap->entities[i].number];
+
 		CG_TransitionEntity(cent);
 		// remember time of snapshot this entity was last updated in
 		cent->snapShotTime = cg.snap->serverTime;
@@ -227,6 +234,7 @@ static void CG_SetNextSnap(snapshot_t *snap) {
 		}
 
 		BG_PlayerStateToEntityState(&cg.snap->pss[i], &cg_entities[cg.snap->pss[i].playerNum].nextState, qfalse);
+
 		cg_entities[cg.snap->pss[i].playerNum].interpolate = qtrue;
 	}
 	// check for extrapolation errors
@@ -235,6 +243,7 @@ static void CG_SetNextSnap(snapshot_t *snap) {
 		cent = &cg_entities[es->number];
 
 		memcpy(&cent->nextState, es, sizeof(entityState_t));
+
 		//cent->nextState = *es;
 		// if this frame is a teleport, or the entity wasn't in the previous frame, don't interpolate
 		if (!cent->currentValid || ((cent->currentState.eFlags ^ es->eFlags) & EF_TELEPORT_BIT)) {
@@ -251,7 +260,7 @@ static void CG_SetNextSnap(snapshot_t *snap) {
 			continue;
 		}
 		// if the next frame is a teleport for the playerstate, we can't interpolate during demos
-		if (cg.snap && ((snap->pss[i].eFlags ^ cg.snap->pss[i].eFlags) & EF_TELEPORT_BIT)) {
+		if (cg.snap && ((snap->pss[i].eFlags ^ cg.snap->pss[i].eFlags)& EF_TELEPORT_BIT)) {
 			cg.nextFrameTeleport = qtrue;
 		}
 		// if changing follow mode, don't interpolate
@@ -308,7 +317,7 @@ static snapshot_t *CG_ReadNextSnapshot(void) {
 
 		// record as a dropped packet
 		CG_AddLagometerSnapshotInfo(NULL);
-		// If there are additional snapshots, continue trying to read them.
+		// if there are additional snapshots, continue trying to read them.
 	}
 	// nothing left to read
 	return NULL;
@@ -343,8 +352,8 @@ void CG_ProcessSnapshots(qboolean initialOnly) {
 
 		cg.latestSnapshotNum = n;
 	}
-	// If we have yet to receive a snapshot, check for it.
-	// Once we have gotten the first snapshot, cg.snap will always have valid data for the rest of the game
+	// if we have yet to receive a snapshot, check for it.
+	// once we have gotten the first snapshot, cg.snap will always have valid data for the rest of the game
 	while (!cg.snap) {
 		snap = CG_ReadNextSnapshot();
 
@@ -454,4 +463,3 @@ int CG_NumLocalPlayers(void) {
 
 	return numLocalPlayers;
 }
-

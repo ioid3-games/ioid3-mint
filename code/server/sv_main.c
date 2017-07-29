@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -234,7 +240,6 @@ void QDECL SV_SendServerCommand(client_t *cl, int localPlayerNum, const char *fm
 
 #define HEARTBEAT_MSEC 300 * 1000
 #define MASTERDNS_MSEC 24 * 60 * 60 * 1000
-static netadr_t adr[MAX_MASTER_SERVERS][2]; // [2] for v4 and v6 address for the same address string.
 
 /*
 =======================================================================================================================================
@@ -245,6 +250,7 @@ We will also have a heartbeat sent when a server changes from empty to non-empty
 or exit.
 =======================================================================================================================================
 */
+static netadr_t adr[MAX_MASTER_SERVERS][2]; // [2] for v4 and v6 address for the same address string.
 void SV_MasterHeartbeat(const char *message) {
 	int i;
 	int res;
@@ -317,7 +323,7 @@ void SV_MasterHeartbeat(const char *message) {
 		}
 
 		Com_DPrintf("Sending heartbeat to %s\n", sv_master[i]->string);
-		// this command should be changed if the server info / status format ever incompatably changes
+		// this command should be changed if the server info/status format ever incompatably changes
 		if (adr[i][0].type != NA_BAD) {
 			NET_OutOfBandPrint(NS_SERVER, adr[i][0], "heartbeat %s\n", message);
 		}
@@ -338,13 +344,13 @@ Checks for change of public status, informs all masters that this server is goin
 void SV_CheckPublicStatus(void) {
 	static int publicOld = 0;
 
-	// Check if public status changed.
+	// check if public status changed.
 	if (sv_public->modified) {
-		// Check if switched to or from public.
+		// check if switched to or from public.
 		if (sv_public->integer > 0 || publicOld > 0) {
-			// Send heartbeat
+			// send heartbeat
 			if (sv_public->integer != 1) {
-				// Send shutdown server heartbeats
+				// send shutdown server heartbeats
 				svs.nextHeartbeatTime = -9999;
 				SV_MasterHeartbeat(FLATLINE_FOR_MASTER);
 				svs.nextHeartbeatTime = -9999;
@@ -589,17 +595,17 @@ static void SVC_Status(netadr_t from) {
 	if (Com_GameIsSinglePlayer()) {
 		return;
 	}
-	// Prevent using getstatus as an amplifier
+	// prevent using getstatus as an amplifier
 	if (SVC_RateLimitAddress(from, 10, 1000)) {
 		Com_DPrintf("SVC_Status: rate limit from %s exceeded, dropping request\n", NET_AdrToString(from));
 		return;
 	}
-	// Allow getstatus to be DoSed relatively easily, but prevent excess outbound bandwidth usage when being flooded inbound
+	// allow getstatus to be DoSed relatively easily, but prevent excess outbound bandwidth usage when being flooded inbound
 	if (SVC_RateLimit(&outboundLeakyBucket, 10, 100)) {
 		Com_DPrintf("SVC_Status: rate limit exceeded, dropping request\n");
 		return;
 	}
-	// A maximum challenge length of 128 should be more than plenty.
+	// a maximum challenge length of 128 should be more than plenty.
 	if (strlen(Cmd_Argv(1)) > 128) {
 		return;
 	}
@@ -658,12 +664,12 @@ void SVC_Info(netadr_t from) {
 	if (Com_GameIsSinglePlayer()) {
 		return;
 	}
-	// Prevent using getinfo as an amplifier
+	// prevent using getinfo as an amplifier
 	if (SVC_RateLimitAddress(from, 10, 1000)) {
 		Com_DPrintf("SVC_Info: rate limit from %s exceeded, dropping request\n", NET_AdrToString(from));
 		return;
 	}
-	// Allow getinfo to be DoSed relatively easily, but prevent excess outbound bandwidth usage when being flooded inbound
+	// allow getinfo to be DoSed relatively easily, but prevent excess outbound bandwidth usage when being flooded inbound
 	if (SVC_RateLimit(&outboundLeakyBucket, 10, 100)) {
 		Com_DPrintf("SVC_Info: rate limit exceeded, dropping request\n");
 		return;
@@ -677,17 +683,19 @@ void SVC_Info(netadr_t from) {
 			}
 
 			for (count = 0; count < 2; count++) {
-				// From one of the master servers, server is not public so ignore it.
+				// from one of the master servers, server is not public so ignore it.
 				if (NET_CompareAdr(from, adr[i][count])) {
 					return;
 				}
 			}
 		}
 	}
-	// Check whether Cmd_Argv(1) has a sane length. This was not done in the original Quake3 version which led to the Infostring bug
-	// discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory.
 
-	// A maximum challenge length of 128 should be more than plenty.
+	/*
+	 * Check whether Cmd_Argv(1)has a sane length. This was not done in the original Quake3 version which led
+	 * to the Infostring bug discovered by Luigi Auriemma. See http:// aluigi.altervista.org/ for the advisory.
+	 */
+	// a maximum challenge length of 128 should be more than plenty.
 	if (strlen(Cmd_Argv(1)) > 128) {
 		return;
 	}
@@ -792,11 +800,9 @@ static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 		}
 
 		valid = qfalse;
-
 		Com_Printf("Bad rcon from %s: %s\n", NET_AdrToString(from), Cmd_ArgsFrom(2));
 	} else {
 		valid = qtrue;
-
 		Com_Printf("Rcon from %s: %s\n", NET_AdrToString(from), Cmd_ArgsFrom(2));
 	}
 	// start redirecting all print outputs to the packet
@@ -1114,7 +1120,7 @@ void SV_Frame(int msec) {
 
 	// the menu kills the server with this cvar
 	if (sv_killserver->integer) {
-		SV_Shutdown("Server was killed.");
+		SV_Shutdown("Server was killed");
 		Cvar_Set("sv_killserver", "0");
 		return;
 	}
@@ -1215,6 +1221,8 @@ void SV_Frame(int msec) {
 	SV_MasterHeartbeat(HEARTBEAT_FOR_MASTER);
 }
 
+#define UDPIP_HEADER_SIZE 28
+#define UDPIP6_HEADER_SIZE 48
 /*
 =======================================================================================================================================
 SV_RateMsec
@@ -1222,9 +1230,6 @@ SV_RateMsec
 Return the number of msec until another message can be sent to a client based on its rate settings.
 =======================================================================================================================================
 */
-#define UDPIP_HEADER_SIZE 28
-#define UDPIP6_HEADER_SIZE 48
-
 int SV_RateMsec(client_t *client) {
 	int rate, rateMsec;
 	int messageSize;

@@ -1,25 +1,31 @@
 /*
-=======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+===========================================================================
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-=======================================================================================================================================
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
+===========================================================================
 */
 
 #include "g_local.h"
@@ -211,6 +217,7 @@ static void PlayerIntroSound(const char *modelAndSkin) {
 	char *skin;
 
 	Q_strncpyz(model, modelAndSkin, sizeof(model));
+
 	skin = strrchr(model, '/');
 
 	if (skin) {
@@ -228,18 +235,17 @@ static void PlayerIntroSound(const char *modelAndSkin) {
 
 /*
 =======================================================================================================================================
-G_BotsInGame
+G_CountBotPlayersByName
 
-Returns number of bots named 'value' on team 'team' (or whole server if 'team' is -1).
+Check connected and connecting (delay join) bots. Returns number of bots with name on specified team or whole server if team is -1.
 =======================================================================================================================================
 */
-int G_BotsInGame(const char *value, int team) {
-	int i, total;
-	char userinfo[MAX_INFO_VALUE];
+int G_CountBotPlayersByName(const char *name, int team) {
+	int i, num;
 	gplayer_t *cl;
 
-	total = 0;
-	// check if bot is connecting or connected
+	num = 0;
+
 	for (i = 0; i < g_maxplayers.integer; i++) {
 		cl = level.players + i;
 
@@ -255,53 +261,36 @@ int G_BotsInGame(const char *value, int team) {
 			continue;
 		}
 
-		if (!Q_stricmp(value, cl->pers.netname)) {
-			total++;
-		}
-	}
-	// check if bot is in spawn queue
-	for (i = 0; i < BOT_SPAWN_QUEUE_DEPTH; i++) {
-		if (!botSpawnQueue[i].spawnTime) {
+		if (name && Q_stricmp(name, cl->pers.netname)) {
 			continue;
 		}
 
-		if (botSpawnQueue[i].spawnTime > level.time) {
-			continue;
-		}
-
-		cl = level.players + botSpawnQueue[i].playerNum;
-
-		if (team >= 0 && cl->sess.sessionTeam != team) {
-			continue;
-		}
-
-		trap_GetUserinfo(botSpawnQueue[i].playerNum, userinfo, sizeof(userinfo));
-
-		if (!Q_stricmp(value, Info_ValueForKey(userinfo, "name"))) {
-			total++;
-		}
+		num++;
 	}
 
-	return total;
+	return num;
 }
 
 /*
 =======================================================================================================================================
-G_SelectRandomBotForAdd
+G_SelectRandomBotInfo
+
+Get random least used bot info on team or whole server if team is -1.
 =======================================================================================================================================
 */
-int G_SelectRandomBotForAdd(int team) {
-	int botsInGame, bestSelection[MAX_BOTS], n, bestCount, bestNum;
+int G_SelectRandomBotInfo(int team) {
+	int selection[MAX_BOTS];
+	int n, num;
+	int count, bestCount;
 	char *value;
 
-	// To improve random bot selection when there are few bot types, duplicate bots are allowed on separate teams to try to keep each
-	// team from having duplicate bots. If there are enough bot types to fill the server, avoid duplicating bots on any team.
-	if (g_numBots >= level.maxplayers) {
+	// don't add duplicate bots to the server if there are less bots than bot types
+	if (team != -1 && G_CountBotPlayersByName(NULL, -1) < g_numBots) {
 		team = -1;
 	}
-	// find least used bots on team
+
+	num = 0;
 	bestCount = MAX_CLIENTS;
-	bestNum = 0;
 
 	for (n = 0; n < g_numBots; n++) {
 		value = Info_ValueForKey(g_botInfos[n], "funname");
@@ -309,27 +298,29 @@ int G_SelectRandomBotForAdd(int team) {
 		if (!value[0]) {
 			value = Info_ValueForKey(g_botInfos[n], "name");
 		}
-		// get number of bots by name/team
-		botsInGame = G_BotsInGame(value, team);
 
-		if (botsInGame < bestCount) {
-			// reset selection
-			bestCount = botsInGame;
-			bestNum = 0;
+		count = G_CountBotPlayersByName(value, team);
+
+		if (count < bestCount) {
+			bestCount = count;
+			num = 0;
 		}
 
-		if (botsInGame == bestCount) {
-			// add bot
-			bestSelection[bestNum++] = n;
+		if (count == bestCount) {
+			selection[num++] = n;
+
+			if (num == MAX_BOTS) {
+				break;
+			}
 		}
 	}
-	// choose random least used bot on team
-	if (bestNum > 0) {
-		bestNum = random() * (bestNum - 1);
-		return bestSelection[bestNum];
+
+	if (num > 0) {
+		num = random() * (num - 1);
+		return selection[num];
 	}
 
-	return 0;
+	return -1;
 }
 
 /*
@@ -338,13 +329,9 @@ G_AddRandomBot
 =======================================================================================================================================
 */
 void G_AddRandomBot(int team) {
-	int n;
-	char *value, netname[36], *teamstr;
+	char *teamstr;
 	float skill;
 
-	n = G_SelectRandomBotForAdd(team);
-	// Get name of selected bot.
-	value = Info_ValueForKey(g_botInfos[n], "name");
 	skill = trap_Cvar_VariableValue("g_spSkill");
 
 	if (team == TEAM_RED) {
@@ -355,10 +342,7 @@ void G_AddRandomBot(int team) {
 		teamstr = "free";
 	}
 
-	Q_strncpyz(netname, value, sizeof(netname));
-	Q_CleanStr(netname);
-
-	trap_Cmd_ExecuteText(EXEC_INSERT, va("addbot %s %f %s %i\n", netname, skill, teamstr, 0));
+	trap_Cmd_ExecuteText(EXEC_INSERT, va("addbot random %f %s %i\n", skill, teamstr, 0));
 }
 
 /*
@@ -427,10 +411,12 @@ int G_CountHumanPlayers(int team) {
 /*
 =======================================================================================================================================
 G_CountBotPlayers
+
+Check connected and connecting (delay join) bots.
 =======================================================================================================================================
 */
 int G_CountBotPlayers(int team) {
-	int i, n, num;
+	int i, num;
 	gplayer_t *cl;
 
 	num = 0;
@@ -438,7 +424,7 @@ int G_CountBotPlayers(int team) {
 	for (i = 0; i < g_maxplayers.integer; i++) {
 		cl = level.players + i;
 
-		if (cl->pers.connected != CON_CONNECTED) {
+		if (cl->pers.connected == CON_DISCONNECTED) {
 			continue;
 		}
 
@@ -447,18 +433,6 @@ int G_CountBotPlayers(int team) {
 		}
 
 		if (team >= 0 && cl->sess.sessionTeam != team) {
-			continue;
-		}
-
-		num++;
-	}
-
-	for (n = 0; n < BOT_SPAWN_QUEUE_DEPTH; n++) {
-		if (!botSpawnQueue[n].spawnTime) {
-			continue;
-		}
-
-		if (botSpawnQueue[n].spawnTime > level.time) {
 			continue;
 		}
 
@@ -487,7 +461,9 @@ void G_CheckMinimumPlayers(void) {
 	}
 
 	checkminimumplayers_time = level.time;
+
 	trap_Cvar_Update(&bot_minplayers);
+
 	minplayers = bot_minplayers.integer;
 
 	if (minplayers <= 0) {
@@ -570,6 +546,7 @@ void G_CheckBotSpawn(void) {
 		}
 
 		PlayerBegin(botSpawnQueue[n].playerNum);
+
 		botSpawnQueue[n].spawnTime = 0;
 
 		if (g_gametype.integer == GT_SINGLE_PLAYER) {
@@ -627,8 +604,8 @@ qboolean G_BotConnect(int playerNum, qboolean restart) {
 	char userinfo[MAX_INFO_STRING];
 
 	trap_GetUserinfo(playerNum, userinfo, sizeof(userinfo));
-
 	Q_strncpyz(settings.characterfile, Info_ValueForKey(userinfo, "characterfile"), sizeof(settings.characterfile));
+
 	settings.skill = atof(Info_ValueForKey(userinfo, "skill"));
 
 	if (!BotAISetupPlayer(playerNum, &settings, restart)) {
@@ -649,7 +626,6 @@ static int G_DefaultColorForName(const char *name) {
 	const char *p;
 
 	p = name;
-
 	val = 0;
 
 	while (*p) {
@@ -669,7 +645,8 @@ static void G_AddBot(const char *name, float skill, const char *team, int delay,
 	int value;
 	int connectionNum;
 	int playerNum;
-	int t;
+	int teamNum;
+	int botinfoNum;
 	char *botinfo;
 	char *key;
 	char *s;
@@ -704,17 +681,26 @@ static void G_AddBot(const char *name, float skill, const char *team, int delay,
 	}
 	// get the botinfo from bots.txt
 	if (Q_stricmp(name, "random") == 0) {
-		if (Q_stricmp(team, "blue") == 0) {
-			t = TEAM_BLUE;
-		} else if (Q_stricmp(team, "red") == 0) {
-			t = TEAM_RED;
+		if (Q_stricmp(team, "red") == 0 || Q_stricmp(team, "r") == 0) {
+			teamNum = TEAM_RED;
+		} else if (Q_stricmp(team, "blue") == 0 || Q_stricmp(team, "b") == 0) {
+			teamNum = TEAM_BLUE;
+		} else if (!Q_stricmp(team, "spectator") || !Q_stricmp(team, "s")) {
+			teamNum = TEAM_SPECTATOR;
 		} else {
-			t = TEAM_FREE;
+			teamNum = TEAM_FREE;
 		}
-		// get info of a randomly selected bot
-		botinfo = G_GetBotInfoByNumber(G_SelectRandomBotForAdd(t));
+
+		botinfoNum = G_SelectRandomBotInfo(teamNum);
+
+		if (botinfoNum < 0) {
+			G_Printf(S_COLOR_RED "Error: Cannot add random bot, no bot info available.\n");
+			trap_BotFreeClient(playerNum);
+			return;
+		}
+
+		botinfo = G_GetBotInfoByNumber(botinfoNum);
 	} else {
-		// get info of the bot
 		botinfo = G_GetBotInfoByName(name);
 	}
 
@@ -752,7 +738,7 @@ static void G_AddBot(const char *name, float skill, const char *team, int delay,
 	// model
 	key = "model";
 	model = Info_ValueForKey(botinfo, key);
-	modelSet = (*model);
+	modelSet =(*model);
 
 	if (!modelSet) {
 		model = DEFAULT_MODEL;
@@ -778,7 +764,7 @@ static void G_AddBot(const char *name, float skill, const char *team, int delay,
 	// team head model
 	key = "team_headmodel";
 	Info_SetValueForKey(userinfo, key, headmodel);
-	// color1
+
 	key = "color1";
 	s = Info_ValueForKey(botinfo, key);
 
@@ -792,7 +778,7 @@ static void G_AddBot(const char *name, float skill, const char *team, int delay,
 	s = Info_ValueForKey(botinfo, key);
 
 	if (!*s) {
-		s = va("%d", G_DefaultColorForName(botname + strlen(botname) / 2));
+		s = va("%d", G_DefaultColorForName(botname + strlen(botname)/ 2));
 	}
 
 	Info_SetValueForKey(userinfo, key, s);

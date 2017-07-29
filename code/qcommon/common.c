@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, 
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -60,7 +66,6 @@ fileHandle_t com_journalFile; // events are written here
 fileHandle_t com_journalDataFile; // config files are written here
 // structure containing functions exported from refresh DLL
 refexport_t re;
-
 cvar_t *com_fs_pure;
 cvar_t *com_speeds;
 cvar_t *com_developer;
@@ -107,6 +112,9 @@ cvar_t *con_autochat;
 cvar_t *com_renderer;
 static void *rendererLib = NULL;
 #endif
+#ifndef DEDICATED
+cvar_t *con_autochat;
+#endif
 #if idx64
 	int (*Q_VMftol)(void);
 #elif id386
@@ -120,15 +128,14 @@ int time_frontend; // renderer frontend time
 int time_backend; // renderer backend time
 int com_frameTime;
 int com_frameNumber;
-int com_errorEntered = 0;
 
+int com_errorEntered = 0;
 qboolean com_fullyInitialized = qfalse;
 qboolean com_gameRestarting = qfalse;
 qboolean com_gameClientRestarting = qfalse;
 
 char com_errorMessage[MAXPRINTMSG];
 int com_playVideo = 0;
-
 void Com_WriteConfig_f(void);
 void CIN_CloseAllVideos(void);
 
@@ -279,6 +286,7 @@ void QDECL Com_Error(int code, const char *fmt, ...) {
 
 	com_errorEntered++;
 	lastErrorCode = code;
+
 	// turn recursive drop into fatal
 	if (com_errorEntered == 2 && code == ERR_DROP && lastErrorCode == ERR_DROP) {
 		code = ERR_FATAL;
@@ -425,6 +433,7 @@ Break it up into multiple console lines.
 */
 void Com_ParseCommandLine(char *commandLine) {
 	int inq = 0;
+
 	com_consoleLines[0] = commandLine;
 	com_numConsoleLines = 1;
 
@@ -502,9 +511,7 @@ void Com_StartupVariable(const char *match) {
 =======================================================================================================================================
 Com_AddStartupCommands
 
-Adds command line parameters as script statements.
-Commands are separated by + signs.
-
+Adds command line parameters as script statements. Commands are separated by + signs.
 Returns qtrue if any late commands were added, which will keep the demoloop from immediately starting.
 =======================================================================================================================================
 */
@@ -838,7 +845,7 @@ typedef struct {
 memzone_t *mainzone;
 // we also have a small zone for small allocations that would only fragment the main zone (think of cvar and cmd strings)
 memzone_t *smallzone;
-// zones for Game / CGame VM "dynamic" memory allocation
+// zones for Game/CGame VM "dynamic" memory allocation
 memzone_t *vm_gamezone;
 memzone_t *vm_cgamezone;
 
@@ -1017,14 +1024,17 @@ Z_FreeTags
 =======================================================================================================================================
 */
 int Z_FreeTags(int tag) {
+	int count;
 	memzone_t *zone;
 
 	zone = Z_ZoneForTag(tag);
+	count = 0;
 	// use the rover as our pointer, because Z_Free automatically adjusts it
 	zone->rover = zone->blocklist.next;
 
 	do {
 		if (zone->rover->tag == tag) {
+			count++;
 			Z_Free((void *)(zone->rover + 1));
 			continue;
 		}
@@ -1226,8 +1236,10 @@ void Z_LogZoneHeap(memzone_t *zone, char *name) {
 			}
 
 			dump[j] = '\0';
+
 			Com_sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s) [%s]\r\n", block->d.allocSize, block->d.file, block->d.line, block->d.label, dump);
 			FS_Write(buf, strlen(buf), logfile);
+
 			allocSize += block->d.allocSize;
 #endif
 			size += block->size;
@@ -1242,6 +1254,7 @@ void Z_LogZoneHeap(memzone_t *zone, char *name) {
 #endif
 	Com_sprintf(buf, sizeof(buf), "%d %s memory in %d blocks\r\n", size, name, numBlocks);
 	FS_Write(buf, strlen(buf), logfile);
+
 	Com_sprintf(buf, sizeof(buf), "%d %s memory overhead\r\n", size - allocSize, name);
 	FS_Write(buf, strlen(buf), logfile);
 }
@@ -1280,7 +1293,7 @@ memstatic_t numberstring[] = {
 =======================================================================================================================================
 CopyString
 
-NOTE: Never write over the memory CopyString returns because memory from a memstatic_t might be returned.
+NOTE: never write over the memory CopyString returns because memory from a memstatic_t might be returned.
 =======================================================================================================================================
 */
 char *CopyString(const char *in) {
@@ -1522,6 +1535,7 @@ Com_InitSmallZoneMemory
 =======================================================================================================================================
 */
 void Com_InitSmallZoneMemory(void) {
+
 	s_smallZoneTotal = 512 * 1024;
 	smallzone = calloc(s_smallZoneTotal, 1);
 
@@ -1699,6 +1713,7 @@ void Com_InitHunkMemory(void) {
 	}
 	// cacheline align
 	s_hunkData = (byte *)(((intptr_t)s_hunkData + 31) & ~31);
+
 	Hunk_Clear();
 
 	Cmd_AddCommand("meminfo", Com_Meminfo_f);
@@ -1733,6 +1748,7 @@ The server calls this after the level and game VM have been loaded.
 =======================================================================================================================================
 */
 void Hunk_SetMark(void) {
+
 	hunk_low.mark = hunk_low.permanent;
 	hunk_high.mark = hunk_high.permanent;
 }
@@ -1745,6 +1761,7 @@ The client calls this before starting a vid_restart or snd_restart.
 =======================================================================================================================================
 */
 void Hunk_ClearToMark(void) {
+
 	hunk_low.permanent = hunk_low.temp = hunk_low.mark;
 	hunk_high.permanent = hunk_high.temp = hunk_high.mark;
 }
@@ -1764,7 +1781,6 @@ qboolean Hunk_CheckMark(void) {
 }
 
 void CL_ShutdownCGame(void);
-
 void SV_ShutdownGameProgs(void);
 
 /*
@@ -1796,6 +1812,7 @@ void Hunk_Clear(void) {
 	hunk_temp = &hunk_high;
 
 	Com_DPrintf("Hunk_Clear: reset the hunk ok\n");
+
 	VM_Clear();
 #ifdef HUNK_DEBUG
 	hunkblocks = NULL;
@@ -1999,9 +2016,9 @@ void Hunk_ClearTempMemory(void) {
 /*
 =======================================================================================================================================
 
-VM memory heap interface
+	VM memory heap interface
 
-The memory pool is allocated as a single block on the hunk for each VM and managed using zone memory functions.
+	The memory pool is allocated as a single block on the hunk for each VM and managed using zone memory functions.
 
 =======================================================================================================================================
 */
@@ -2060,7 +2077,7 @@ int Z_VM_HeapAvailable(int tag) {
 =======================================================================================================================================
 Z_VM_ShutdownHeap
 
-Clear reference to VM's zone.
+Clear reference to VM's zone
 =======================================================================================================================================
 */
 void Z_VM_ShutdownHeap(int tag) {
@@ -2248,7 +2265,7 @@ void *DA_ElementPointer(const darray_t darray, int num) {
 		return NULL;
 	}
 
-	return(byte*)darray.pointer + num * darray.elementLength;
+	return (byte*)darray.pointer + num * darray.elementLength;
 }
 
 /*
@@ -2564,6 +2581,7 @@ int Com_EventLoop(void) {
 			CL_JoystickAxisEvent(ev.evType - SE_JOYSTICK_AXIS, ev.evValue, ev.evValue2, ev.evTime);
 		} else if (ev.evType >= SE_JOYSTICK_BUTTON && ev.evType <= SE_JOYSTICK_BUTTON_LAST) {
 			CL_JoystickButtonEvent(ev.evType - SE_JOYSTICK_BUTTON, ev.evValue, ev.evValue2, ev.evTime);
+
 		} else if (ev.evType >= SE_JOYSTICK_HAT && ev.evType <= SE_JOYSTICK_HAT_LAST) {
 			CL_JoystickHatEvent(ev.evType - SE_JOYSTICK_HAT, ev.evValue, ev.evValue2, ev.evTime);
 		} else {
@@ -2580,7 +2598,7 @@ int Com_EventLoop(void) {
 					break;
 				default:
 					Com_Error(ERR_FATAL, "Com_EventLoop: bad event type %i", ev.evType);
-				break;
+					break;
 			}
 		}
 		// free any block data
@@ -2788,7 +2806,6 @@ void Com_GameRestart_f(void) {
 
 	Com_GameRestart(qtrue);
 }
-
 #if idppc_altivec
 /*
 =======================================================================================================================================
@@ -2797,7 +2814,7 @@ Com_DetectAltivec
 */
 static void Com_DetectAltivec(void) {
 
-	// Only detect if user hasn't forcibly disabled it.
+	// only detect if user hasn't forcibly disabled it.
 	if (com_altivec->integer) {
 		static qboolean altivec = qfalse;
 		static qboolean detected = qfalse;
@@ -2813,6 +2830,7 @@ static void Com_DetectAltivec(void) {
 	}
 }
 #endif
+#if id386 || idx64
 /*
 =======================================================================================================================================
 Com_DetectSSE
@@ -2820,7 +2838,6 @@ Com_DetectSSE
 Find out whether we have SSE support for Q_ftol function.
 =======================================================================================================================================
 */
-#if id386 || idx64
 static void Com_DetectSSE(void) {
 #if !idx64
 	cpuFeatures_t feat;
@@ -2890,18 +2907,15 @@ void Com_Init(char *commandLine) {
 	// do this before anything else decides to push events
 	Com_InitPushEvent();
 	Com_InitSmallZoneMemory();
-
 	Cvar_Init();
 	// prepare enough of the subsystems to handle cvar and command buffer management
 	Com_ParseCommandLine(commandLine);
 //	Swap_Init();
 	Cbuf_Init();
-
 	Com_DetectSSE();
 	// override anything from the config files with command line args
 	Com_StartupVariable(NULL);
 	Com_InitZoneMemory();
-
 	Cmd_Init();
 	// get the developer cvar set as early as possible
 	com_developer = Cvar_Get("developer", "0", CVAR_TEMP);
@@ -2913,7 +2927,6 @@ void Com_Init(char *commandLine) {
 	com_homepath = Cvar_Get("com_homepath", "", CVAR_INIT);
 
 	FS_InitFilesystem();
-
 	Com_InitJournaling();
 	// Add some commands here already so users can use them from config files
 	Cmd_AddCommand("setenv", Com_Setenv_f);
@@ -2929,7 +2942,6 @@ void Com_Init(char *commandLine) {
 	Cmd_AddCommand("writeconfig", Com_WriteConfig_f);
 	Cmd_SetCommandCompletionFunc("writeconfig", Cmd_CompleteCfgName);
 	Cmd_AddCommand("game_restart", Com_GameRestart_f);
-
 	Com_ExecuteCfg();
 	// override anything from the config files with command line args
 	Com_StartupVariable(NULL);
@@ -2972,9 +2984,7 @@ void Com_Init(char *commandLine) {
 	com_abnormalExit = Cvar_Get("com_abnormalExit", "0", CVAR_ROM);
 	com_busyWait = Cvar_Get("com_busyWait", "0", CVAR_ARCHIVE);
 	Cvar_Get("com_errorMessage", "", CVAR_ROM|CVAR_NORESTART);
-
 	com_productName = Cvar_Get("com_productName", PRODUCT_NAME, CVAR_ROM);
-
 	s = va("%s %s %s", Q3_VERSION, PLATFORM_STRING, PRODUCT_DATE);
 	com_version = Cvar_Get("version", s, CVAR_ROM|CVAR_SERVERINFO);
 	com_gamename = Cvar_Get("com_gamename", GAMENAME_FOR_MASTER, CVAR_SERVERINFO|CVAR_INIT);
@@ -2987,7 +2997,6 @@ void Com_Init(char *commandLine) {
 	} else
 #endif
 		Cvar_Get("protocol", com_protocol->string, CVAR_ROM);
-
 #ifndef DEDICATED
 	con_autochat = Cvar_Get("con_autochat", "0", CVAR_ARCHIVE);
 #endif
@@ -2995,9 +3004,7 @@ void Com_Init(char *commandLine) {
 	Sys_InitPIDFile(FS_GetCurrentGameDir());
 	// Pick a random port value
 	Com_RandomBytes((byte *)&qport, sizeof(int));
-
 	Netchan_Init(qport & 0xffff);
-
 	VM_Init();
 	SV_Init();
 
@@ -3103,20 +3110,20 @@ Com_ScaledMilliseconds
 =======================================================================================================================================
 */
 int Com_ScaledMilliseconds(void) {
-	return Sys_Milliseconds()*com_timescale->value;
+	return Sys_Milliseconds() *com_timescale->value;
 }
 
 /*
 =======================================================================================================================================
 Com_RefPrintf
 
-DLL glue.
+DLL glue
 =======================================================================================================================================
 */
-static __attribute__((format(printf, 2, 3))) void QDECL Com_RefPrintf(int print_level, const char *fmt, ...) {
+static __attribute__((format(printf, 2, 3)))void QDECL Com_RefPrintf(int print_level, const char *fmt, ...) {
 	va_list argptr;
 	char msg[MAXPRINTMSG];
-	
+
 	va_start(argptr, fmt);
 	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
 	va_end(argptr);
@@ -3162,7 +3169,7 @@ void Com_ShutdownRef(void) {
 Com_InitRef
 =======================================================================================================================================
 */
-void BotDrawDebugPolygons(void(*drawPoly)(int color, int numPoints, float *points));
+void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points));
 
 void Com_InitRef(refimport_t *ri) {
 	refexport_t *ret;
@@ -3265,7 +3272,7 @@ void Com_WriteConfigToFile(const char *filename) {
 		return;
 	}
 
-	FS_Printf(f, "// Generated by " PRODUCT_NAME ", do not modify\n");
+	FS_Printf(f, "// generated by " PRODUCT_NAME ", do not modify\n");
 	Key_WriteBindings(f);
 	Cvar_WriteVariables(f);
 	FS_FCloseFile(f);
@@ -3280,7 +3287,7 @@ Writes key bindings and archived cvars to config file if modified.
 */
 void Com_WriteConfiguration(void) {
 
-	// if we are quitting without fully initializing, make sure we don't write out anything
+	// if we are quiting without fully initializing, make sure we don't write out anything
 	if (!com_fullyInitialized) {
 		return;
 	}
@@ -3341,9 +3348,11 @@ int Com_ModifyMsec(int msec) {
 	if (msec < 1 && com_timescale->value) {
 		msec = 1;
 	}
-	// ZTM: FIXME: Running non-dedicated network server on client should use longer clamp time, but loading renderer causes running too many server frames initially.
+	// ZTM: FIXME: Running non-dedicated network server on client should use longer clamp time, but loading renderer causes
+	// running too many server frames initially.
 	if (com_sv_running->integer && !com_dedicated->integer) {
-		// for local single player gaming we may want to clamp the time to prevent players from flying off edges when something hitches.
+		// for local single player gaming
+		// we may want to clamp the time to prevent players from flying off edges when something hitches.
 		clampTime = 200;
 	} else {
 		// servers don't want to clamp for a much longer period, because it would mess up all the client's views of time.
@@ -3536,6 +3545,7 @@ void Com_Frame(void) {
 		extern int c_pointcontents;
 
 		Com_Printf("%4i traces (%ib %ip) %4i points\n", c_traces, c_brush_traces, c_patch_traces, c_pointcontents);
+
 		c_traces = 0;
 		c_brush_traces = 0;
 		c_patch_traces = 0;
@@ -3751,8 +3761,9 @@ void Field_CompleteCommand(char *cmd, qboolean doCommands, qboolean doCvars) {
 	if (*(cmd + strlen(cmd) - 1) == ' ') {
 		completionString = "";
 		completionArgument++;
-	} else
+	} else {
 		completionString = Cmd_Argv(completionArgument - 1);
+	}
 #ifndef DEDICATED
 	// add a '\' to the start of the buffer if it might be sent as chat otherwise
 	if (con_autochat->integer && completionField->buffer[0] && completionField->buffer[0] != '\\') {

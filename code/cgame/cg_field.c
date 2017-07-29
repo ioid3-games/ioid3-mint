@@ -1,27 +1,33 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
+//
 #include "cg_local.h"
 #include "../qcommon/q_unicode.h"
 
@@ -29,7 +35,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 MField_Draw
 
-Handles horizontal scrolling and cursor blinking. x, y, charWidth, charHeight, are in 640 * 480 virtual screen size.
+Handles horizontal scrolling and cursor blinking, x, y, charWidth, charHeight, are in 640*480 virtual screen size
 =======================================================================================================================================
 */
 void MField_Draw(mfield_t *edit, int x, int y, int style, vec4_t color, qboolean drawCursor) {
@@ -42,6 +48,7 @@ void MField_Draw(mfield_t *edit, int x, int y, int style, vec4_t color, qboolean
 
 	drawLen = edit->widthInChars;
 	len = edit->len + 1;
+
 	// guarantee that cursor will be visible
 	if (len <= drawLen) {
 		prestep = 0;
@@ -64,7 +71,7 @@ void MField_Draw(mfield_t *edit, int x, int y, int style, vec4_t color, qboolean
 	str[0] = 0;
 
 	for (i = 0; i < drawLen; i++) {
-		Q_strcat(str, sizeof(str), Q_UTF8_Encode(edit->buffer[prestep + i]));
+		Q_strcat(str, sizeof(str), Q_UTF8_Encode(edit->buffer[prestep+i]));
 	}
 
 	if (drawCursor) {
@@ -135,7 +142,7 @@ MField_Paste
 =======================================================================================================================================
 */
 void MField_Paste(mfield_t *edit) {
-	char pasteBuffer[MAX_EDIT_LINE * 4];
+	char pasteBuffer[MAX_EDIT_LINE*4];
 
 	trap_GetClipboardData(pasteBuffer, sizeof(pasteBuffer));
 
@@ -163,7 +170,7 @@ void MField_KeyDownEvent(mfield_t *edit, int key) {
 
 		if (edit->cursor < edit->len) {
 			for (i = edit->cursor; i < edit->len; i++) {
-				edit->buffer[i] = edit->buffer[i + 1];
+				edit->buffer[i] = edit->buffer[i+1];
 			}
 
 			edit->len--;
@@ -239,8 +246,8 @@ void MField_CharEvent(mfield_t *edit, int ch) {
 
 	if (ch == 'h' - 'a' + 1) { // ctrl-h is backspace
 		if (edit->cursor > 0) {
-			for (i = edit->cursor; i < edit->len + 1; i++) {
-				edit->buffer[i - 1] = edit->buffer[i];
+			for (i = edit->cursor; i < edit->len+1; i++) {
+				edit->buffer[i-1] = edit->buffer[i];
 			}
 
 			edit->cursor--;
@@ -286,9 +293,8 @@ void MField_CharEvent(mfield_t *edit, int ch) {
 			return;
 		}
 
-
 		for (i = edit->len + 1; i >= edit->cursor; i--) {
-			edit->buffer[i + 1] = edit->buffer[i];
+			edit->buffer[i+1] = edit->buffer[i];
 		}
 
 		edit->len++;

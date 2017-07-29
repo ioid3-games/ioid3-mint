@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -43,6 +49,7 @@ char systemChat[256];
 char teamChat1[256];
 char teamChat2[256];
 
+#ifndef MISSIONPACK_HUD
 /*
 =======================================================================================================================================
 CG_DrawField
@@ -50,7 +57,6 @@ CG_DrawField
 Draws large numbers for status bar and powerups.
 =======================================================================================================================================
 */
-#ifndef MISSIONPACK_HUD
 static void CG_DrawField(int x, int y, int style, int width, int value, float *color) {
 	char num[16];
 
@@ -106,6 +112,7 @@ void CG_Draw3DModelEx(float x, float y, float w, float h, qhandle_t model, cgSki
 
 	AnglesToAxis(angles, ent.axis);
 	VectorCopy(origin, ent.origin);
+
 	ent.hModel = model;
 	ent.customSkin = CG_AddSkinToFrame(skin);
 	ent.renderfx = RF_NOSHADOW; // no stencil shadows
@@ -290,16 +297,17 @@ static void CG_DrawStatusBarHead(float x) {
 
 	CG_DrawHead(x, 480 - size, size, size, cg.cur_ps->playerNum, angles);
 }
-
+#endif // MISSIONPACK_HUD
 /*
 =======================================================================================================================================
 CG_DrawStatusBarFlag
 =======================================================================================================================================
 */
+#ifndef MISSIONPACK_HUD
 static void CG_DrawStatusBarFlag(float x, int team) {
 	CG_DrawFlagModel(x, 480 - ICON_SIZE, ICON_SIZE, ICON_SIZE, team, qfalse);
 }
-#endif
+#endif // MISSIONPACK_HUD
 /*
 =======================================================================================================================================
 CG_DrawTeamBackground
@@ -323,11 +331,9 @@ void CG_DrawTeamBackground(int x, int y, int w, int h, float alpha, int team) {
 	}
 
 	trap_R_SetColor(hcolor);
-
 	CG_SetScreenPlacement(PLACE_STRETCH, CG_GetScreenVerticalPlacement());
 	CG_DrawPic(x, y, w, h, cgs.media.teamStatusBar);
 	CG_PopScreenPlacement();
-
 	trap_R_SetColor(NULL);
 }
 #ifndef MISSIONPACK_HUD
@@ -361,7 +367,6 @@ static void CG_DrawStatusBar(void) {
 	cent = &cg_entities[ps->playerNum];
 	// draw the team background
 	CG_DrawTeamBackground(0, 420, 640, 60, 0.33f, ps->persistant[PERS_TEAM]);
-
 	VectorClear(angles);
 	// draw any 3D icons first, so the changes back to 2D are minimized
 	if (cent->currentState.weapon && cg_weapons[cent->currentState.weapon].ammoModel) {
@@ -441,7 +446,7 @@ static void CG_DrawStatusBar(void) {
 		}
 	}
 }
-#endif
+#endif // MISSIONPACK_HUD
 /*
 =======================================================================================================================================
 
@@ -495,13 +500,12 @@ static float CG_DrawAttacker(float y) {
 	angles[PITCH] = 0;
 	angles[YAW] = 180;
 	angles[ROLL] = 0;
+
 	CG_DrawHead(640 - size, y, size, size, playerNum, angles);
 
 	info = CG_ConfigString(CS_PLAYERS + playerNum);
 	name = Info_ValueForKey(info, "n");
-
 	y += size;
-
 	color[0] = color[1] = color[2] = 1;
 	color[3] = 0.5f;
 
@@ -543,7 +547,7 @@ static float CG_DrawFPS(float y) {
 	if (cg.viewport != 0) {
 		return y;
 	}
-	// don't use serverTime, because that will be drifting to correct for internet lag changes, timescales, timedemos, etc.
+	// don't use serverTime, because that will be drifting to correct for internet lag changes, timescales, timedemos, etc
 	t = trap_Milliseconds();
 	frameTime = t - previous;
 	previous = t;
@@ -582,8 +586,8 @@ static float CG_DrawTimer(float y) {
 	int msec;
 
 	msec = cg.time - cgs.levelStartTime;
-	seconds = (msec / 1000) % 60;
-	mins = (msec / (1000 * 60)) % 60;
+	seconds = (msec / 1000)% 60;
+	mins = (msec / (1000 * 60))% 60;
 	hours = (msec / (1000 * 60 * 60));
 
 	if (hours > 0) {
@@ -625,7 +629,7 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 	team = cg.cur_ps->persistant[PERS_TEAM];
 
 	if (team != TEAM_RED && team != TEAM_BLUE) {
-		return y; // not on any team
+		return y; // Not on any team
 	}
 
 	if (cg.time - sortedTeamPlayersTime[team] > 5000) {
@@ -637,7 +641,6 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 	healthWidth = CG_DrawStrlen("000", UI_TINYFONT);
 	iconWidth = iconHeight = lineHeight;
 	armorWidth = healthWidth;
-
 	plyrs = 0;
 	// max player name width
 	pwidth = 0;
@@ -734,7 +737,9 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 				}
 
 				xx += iconWidth; // not icon related
+
 				CG_DrawStringExt(xx, y, p, UI_TINYFONT, NULL, 0, TEAM_OVERLAY_MAXLOCATION_WIDTH, 0);
+
 				xx += lwidth;
 			}
 
@@ -757,7 +762,7 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 
 			Com_sprintf(st, sizeof(st), "%3i", pi->armor);
 			CG_DrawString(xx, y, st, UI_TINYFONT, hcolor);
-			// draw powerup icons
+			// Draw powerup icons
 			if (right) {
 				xx = x;
 			} else {
@@ -785,6 +790,7 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 	}
 
 	return ret_y;
+//#endif
 }
 
 /*
@@ -851,7 +857,6 @@ static float CG_DrawScores(float y) {
 
 	s1 = cgs.scores1;
 	s2 = cgs.scores2;
-
 	scoreHeight = CG_DrawStringLineHeight(UI_BIGFONT) + 6;
 	y -= scoreHeight;
 	y1 = y;
@@ -981,6 +986,7 @@ static float CG_DrawScores(float y) {
 				color[1] = 0.0f;
 				color[2] = 0.0f;
 				color[3] = 0.33f;
+
 				CG_FillRect(x, y - 4, w, scoreHeight, color);
 				CG_DrawPic(x, y - 4, w, scoreHeight, cgs.media.selectShader);
 			} else {
@@ -988,6 +994,7 @@ static float CG_DrawScores(float y) {
 				color[1] = 0.5f;
 				color[2] = 0.5f;
 				color[3] = 0.33f;
+
 				CG_FillRect(x, y - 4, w, scoreHeight, color);
 			}
 
@@ -1004,6 +1011,7 @@ static float CG_DrawScores(float y) {
 				color[1] = 0.0f;
 				color[2] = 1.0f;
 				color[3] = 0.33f;
+
 				CG_FillRect(x, y - 4, w, scoreHeight, color);
 				CG_DrawPic(x, y - 4, w, scoreHeight, cgs.media.selectShader);
 			} else {
@@ -1011,7 +1019,8 @@ static float CG_DrawScores(float y) {
 				color[1] = 0.5f;
 				color[2] = 0.5f;
 				color[3] = 0.33f;
-				CG_FillRect(x, y - 4, w, scoreHeight, color);
+
+				CG_FillRect(x, y - 4,  w, scoreHeight, color);
 			}
 
 			CG_DrawBigString(x + 4, y, s, 1.0F);
@@ -1027,12 +1036,14 @@ static float CG_DrawScores(float y) {
 
 	return y1 - 8;
 }
+#endif // MISSIONPACK_HUD
 
 /*
 =======================================================================================================================================
 CG_DrawPowerups
 =======================================================================================================================================
 */
+#ifndef MISSIONPACK_HUD
 static float CG_DrawPowerups(float y) {
 	int sorted[MAX_POWERUPS];
 	int sortedTime[MAX_POWERUPS];
@@ -1064,8 +1075,7 @@ static float CG_DrawPowerups(float y) {
 			continue;
 		}
 #endif
-		// ZOID--don't draw if the power up has unlimited time
-		// This is true of the CTF flags
+		// don't draw if the power up has unlimited time. This is true of the CTF flags
 		if (ps->powerups[i] == INT_MAX) {
 			continue;
 		}
@@ -1113,6 +1123,7 @@ static float CG_DrawPowerups(float y) {
 				f = (float)(t - cg.time) / POWERUP_BLINK_TIME;
 				f -= (int)f;
 				modulate[0] = modulate[1] = modulate[2] = modulate[3] = f;
+
 				trap_R_SetColor(modulate);
 			}
 
@@ -1124,14 +1135,14 @@ static float CG_DrawPowerups(float y) {
 			}
 
 			CG_DrawPic(640 - size, y + ICON_SIZE / 2 - size / 2, size, size, trap_R_RegisterShader(item->icon));
-
 			trap_R_SetColor(NULL);
 		}
 	}
 
 	return y;
 }
-
+#endif // MISSIONPACK_HUD
+#ifndef MISSIONPACK_HUD
 /*
 =======================================================================================================================================
 CG_DrawLowerRight
@@ -1149,9 +1160,11 @@ static void CG_DrawLowerRight(void) {
 	}
 
 	y = CG_DrawScores(y);
+
 	CG_DrawPowerups(y);
 }
-
+#endif // MISSIONPACK_HUD
+#ifndef MISSIONPACK_HUD
 /*
 =======================================================================================================================================
 CG_DrawPickupItem
@@ -1176,13 +1189,14 @@ static int CG_DrawPickupItem(int y) {
 			trap_R_SetColor(fadeColor);
 			CG_DrawPic(8, y, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
 			trap_R_SetColor(NULL);
-			CG_DrawString(ICON_SIZE + 16, y + (ICON_SIZE / 2), BG_ItemForItemNum(value)->pickup_name, UI_VA_CENTER|UI_DROPSHADOW|UI_BIGFONT, fadeColor);
+			CG_DrawString(ICON_SIZE + 16, y + (ICON_SIZE/2), BG_ItemForItemNum(value)->pickup_name, UI_VA_CENTER|UI_DROPSHADOW|UI_BIGFONT, fadeColor);
 		}
 	}
 
 	return y;
 }
-
+#endif // MISSIONPACK_HUD
+#ifndef MISSIONPACK_HUD
 /*
 =======================================================================================================================================
 CG_DrawLowerLeft
@@ -1201,12 +1215,13 @@ static void CG_DrawLowerLeft(void) {
 
 	CG_DrawPickupItem(y);
 }
-
+#endif // MISSIONPACK_HUD
 /*
 =======================================================================================================================================
 CG_DrawTeamInfo
 =======================================================================================================================================
 */
+#ifndef MISSIONPACK_HUD
 static void CG_DrawTeamInfo(void) {
 	int h;
 	int i;
@@ -1267,12 +1282,14 @@ static void CG_DrawTeamInfo(void) {
 		}
 	}
 }
+#endif // MISSIONPACK_HUD
 
 /*
 =======================================================================================================================================
 CG_DrawHoldableItem
 =======================================================================================================================================
 */
+#ifndef MISSIONPACK_HUD
 static void CG_DrawHoldableItem(void) {
 	int value;
 
@@ -1285,6 +1302,7 @@ static void CG_DrawHoldableItem(void) {
 		CG_DrawPic(640 - ICON_SIZE, (SCREEN_HEIGHT - ICON_SIZE) / 2, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
 	}
 }
+#endif // MISSIONPACK_HUD
 #ifdef MISSIONPACK
 /*
 =======================================================================================================================================
@@ -1328,9 +1346,9 @@ static void CG_DrawReward(void) {
 	if (!color) {
 		if (cg.cur_lc->rewardStack > 0) {
 			for (i = 0; i < cg.cur_lc->rewardStack; i++) {
-				cg.cur_lc->rewardSound[i] = cg.cur_lc->rewardSound[i + 1];
-				cg.cur_lc->rewardShader[i] = cg.cur_lc->rewardShader[i + 1];
-				cg.cur_lc->rewardCount[i] = cg.cur_lc->rewardCount[i + 1];
+				cg.cur_lc->rewardSound[i] = cg.cur_lc->rewardSound[i+1];
+				cg.cur_lc->rewardShader[i] = cg.cur_lc->rewardShader[i+1];
+				cg.cur_lc->rewardCount[i] = cg.cur_lc->rewardCount[i+1];
 			}
 
 			cg.cur_lc->rewardTime = cg.time;
@@ -1364,7 +1382,8 @@ static void CG_DrawReward(void) {
 	if (cg.cur_lc->rewardCount[0] >= 10) {
 		y = 56;
 		x = 320 - ICON_SIZE / 2 + 2;
-		CG_DrawPic(x, y, ICON_SIZE - 4, ICON_SIZE - 4, cg.cur_lc->rewardShader[0]);
+
+		CG_DrawPic(x, y, ICON_SIZE - 4, ICON_SIZE- 4, cg.cur_lc->rewardShader[0]);
 		Com_sprintf(buf, sizeof(buf), "%d", cg.cur_lc->rewardCount[0]);
 		CG_DrawString(SCREEN_WIDTH / 2, y + ICON_SIZE, buf, UI_CENTER|UI_DROPSHADOW|UI_SMALLFONT, color);
 	} else {
@@ -1421,7 +1440,6 @@ void CG_AddLagometerFrameInfo(void) {
 CG_AddLagometerSnapshotInfo
 
 Each time a snapshot is received, log its ping time and the number of snapshots that were dropped before it.
-
 Pass NULL for a dropped packet.
 =======================================================================================================================================
 */
@@ -1463,6 +1481,7 @@ static void CG_DrawDisconnect(void) {
 	CG_SetScreenPlacement(PLACE_CENTER, PLACE_CENTER);
 	// also add text in center of screen
 	s = "Connection Interrupted";
+
 	CG_DrawString(SCREEN_WIDTH / 2, 100, s, UI_CENTER|UI_DROPSHADOW|UI_BIGFONT, NULL);
 	// blink the icon
 	if ((cg.time >> 9) & 1) {
@@ -1553,7 +1572,7 @@ static void CG_DrawLagometer(void) {
 			trap_R_DrawStretchPic(ax + aw - a, mid, 1, v, 0, 0, 0, 0, cgs.media.whiteShader);
 		}
 	}
-	// draw the snapshot latency / drop graph
+	// draw the snapshot latency/drop graph
 	range = ah / 2;
 	vscale = range / MAX_LAGOMETER_PING;
 
@@ -1603,7 +1622,7 @@ static void CG_DrawLagometer(void) {
 /*
 =======================================================================================================================================
 
-	VOIP METER
+VOIP METER
 
 =======================================================================================================================================
 */
@@ -1625,7 +1644,8 @@ void CG_DrawVoipMeter(void) {
 	}
 
 	voipTime = trap_GetVoipTime(cg.cur_lc->playerNum);
-	// check if voip was used in the last 1 / 4 second
+
+	// check if voip was used in the last 1/4 second
 	if (!voipTime || voipTime < cg.time - 250) {
 		return;
 	}
@@ -1706,7 +1726,6 @@ static void CG_DrawCenterString(void) {
 	}
 
 	CG_SetScreenPlacement(PLACE_CENTER, PLACE_CENTER);
-
 	CG_DrawStringAutoWrap(SCREEN_WIDTH / 2, cg.cur_lc->centerPrintY, cg.cur_lc->centerPrint, UI_CENTER|UI_VA_CENTER|UI_DROPSHADOW|UI_GIANTFONT|UI_NOSCALE, color, cg.cur_lc->centerPrintCharScale, 0, 0, cgs.screenFakeWidth - 64);
 }
 
@@ -1751,16 +1770,18 @@ static void CG_DrawGlobalCenterString(void) {
 	}
 
 	CG_SetScreenPlacement(PLACE_CENTER, PLACE_CENTER);
+
 	CG_DrawStringAutoWrap(SCREEN_WIDTH / 2, cg.centerPrintY, cg.centerPrint, UI_CENTER|UI_VA_CENTER|UI_DROPSHADOW|UI_GIANTFONT|UI_NOSCALE, color, cg.centerPrintCharScale, 0, 0, cgs.screenFakeWidth - 64);
 }
 
 /*
 =======================================================================================================================================
 
-	CROSSHAIR
+CROSSHAIR
 
 =======================================================================================================================================
 */
+
 
 /*
 =======================================================================================================================================
@@ -1882,13 +1903,13 @@ static void CG_DrawCrosshair3D(void) {
 	zProj = atof(rendererinfos);
 
 	trap_Cvar_VariableStringBuffer("r_stereoSeparation", rendererinfos, sizeof(rendererinfos));
-	stereoSep = zProj / atof(rendererinfos);
 
+	stereoSep = zProj / atof(rendererinfos);
 	xmax = zProj * tan(cg.refdef.fov_x * M_PI / 360.0f);
 	// let the trace run through until a change in stereo separation of the crosshair becomes less than one pixel.
 	maxdist = cgs.glconfig.vidWidth * stereoSep * zProj / (2 * xmax);
-	VectorMA(cg.refdef.vieworg, maxdist, cg.refdef.viewaxis[0], endpos);
 
+	VectorMA(cg.refdef.vieworg, maxdist, cg.refdef.viewaxis[0], endpos);
 	CG_Trace(&trace, cg.refdef.vieworg, NULL, NULL, endpos, 0, MASK_SHOT);
 
 	memset(&ent, 0, sizeof(ent));
@@ -1949,6 +1970,7 @@ static void CG_DrawThirdPersonCrosshair(void) {
 
 	if (f > 0 && f < ITEM_BLOB_TIME) {
 		f /= ITEM_BLOB_TIME;
+
 		w *= (1 + f);
 	}
 
@@ -1962,6 +1984,7 @@ static void CG_DrawThirdPersonCrosshair(void) {
 	xmax = tan(cg.refdef.fov_x * M_PI / 360.0f);
 	// We are going to trace to the next shootable object and place the crosshair in front of it.
 	maxdist = cgs.glconfig.vidWidth / (2 * xmax);
+
 	VectorMA(cg.firstPersonViewOrg, maxdist, cg.firstPersonViewAxis[0], endpos);
 	CG_Trace(&trace, cg.firstPersonViewOrg, NULL, NULL, endpos, 0, MASK_SHOT);
 
@@ -2059,6 +2082,7 @@ static void CG_DrawCrosshairNames(void) {
 	y = (SCREEN_HEIGHT - crosshairSize) / 2 - lineHeight * 2;
 	name = cgs.playerinfo[cg.cur_lc->crosshairPlayerNum].name;
 	color[3] *= 0.5f;
+
 	CG_DrawStringExt(SCREEN_WIDTH / 2, y, name, UI_CENTER|UI_DROPSHADOW|UI_BIGFONT, color, 0, 0, 1);
 
 	if (cg_voipShowCrosshairMeter.integer) {
@@ -2115,8 +2139,9 @@ static void CG_DrawShaderInfo(void) {
 	VectorCopy(cg.refdef.vieworg, start);
 	VectorMA(start, 131072, cg.refdef.viewaxis[0], end);
 	// Get shader behind clip volume:
-	// Do a trace that hits all surfaces(including solid and non-solid), and a trace that only hits solid. Use which ever is closer and use
-	// solid if 'any contents' trace didn't get a textured surface (such as clip)
+	// Do a trace that hits all surfaces(including solid and non-solid),
+	// and a trace that only hits solid. Use which ever is closer and use
+	// solid if 'any contents' trace didn't get a textured surface(such as clip)
 	CG_Trace(&trace, start, vec3_origin, vec3_origin, end, cg.cur_ps->playerNum, ~0);
 	CG_Trace(&trace2, start, vec3_origin, vec3_origin, end, cg.cur_ps->playerNum, CONTENTS_SOLID);
 	// trace2 is valid and closer or trace is invalid
@@ -2131,7 +2156,6 @@ static void CG_DrawShaderInfo(void) {
 	hShader = trap_R_GetSurfaceShader(trace.surfaceNum, LIGHTMAP_2D);
 
 	trap_R_GetShaderName(hShader, name, sizeof(name));
-
 	CG_SetScreenPlacement(PLACE_LEFT, PLACE_BOTTOM);
 
 	color[3] *= 0.5f;
@@ -2143,6 +2167,8 @@ static void CG_DrawShaderInfo(void) {
 	CG_AdjustFrom640(&x, &y, &width, &height);
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
+
+//==============================================================================
 
 /*
 =======================================================================================================================================
@@ -2299,6 +2325,7 @@ static qboolean CG_DrawScoreboard(void) {
 	}
 
 	if (!cg.cur_lc || cg.cur_lc->showScores || cg.cur_lc->predictedPlayerState.pm_type == PM_DEAD || cg.cur_lc->predictedPlayerState.pm_type == PM_INTERMISSION) {
+
 	} else {
 		if (!CG_FadeColor(cg.cur_lc->scoreFadeTime, FADE_TIME)) {
 			// next time scoreboard comes up, don't print killer
@@ -2391,7 +2418,7 @@ CG_DrawIntermission
 static void CG_DrawIntermission(void) {
 //	int key;
 #ifdef MISSIONPACK_HUD
-	//if (cg_singlePlayer.integer) {
+	// if(cg_singlePlayer.integer) {
 	//	CG_DrawCenterString();
 	//	return;
 	//}
@@ -2427,13 +2454,11 @@ static qboolean CG_DrawBotInfo(int y) {
 	}
 
 	lineHeight = CG_DrawStringLineHeight(UI_BIGFONT);
-
 	node = Info_ValueForKey(info, "n");
 
 	if (*node) {
 		str = va("AI Node: %s", node);
 		CG_DrawString(SCREEN_WIDTH / 2, y, str, UI_CENTER|UI_DROPSHADOW|UI_BIGFONT, NULL);
-
 		y += lineHeight;
 	}
 
@@ -2441,7 +2466,6 @@ static qboolean CG_DrawBotInfo(int y) {
 
 	if (*action) {
 		CG_DrawString(SCREEN_WIDTH / 2, y, action, UI_CENTER|UI_DROPSHADOW|UI_BIGFONT, NULL);
-
 		y += lineHeight;
 	}
 
@@ -2450,7 +2474,6 @@ static qboolean CG_DrawBotInfo(int y) {
 	if (*leader) {
 		str = "bot is leader";
 		CG_DrawString(SCREEN_WIDTH / 2, y, str, UI_CENTER|UI_DROPSHADOW|UI_BIGFONT, NULL);
-
 		y += lineHeight;
 	}
 
@@ -2490,6 +2513,7 @@ static qboolean CG_DrawFollow(void) {
 	y += CG_DrawStringLineHeight(UI_GIANTFONT);
 
 	CG_DrawBotInfo(y);
+
 	return qtrue;
 }
 
@@ -2526,7 +2550,7 @@ CG_DrawProxWarning
 =======================================================================================================================================
 */
 static void CG_DrawProxWarning(void) {
-	char s[32];
+	char s [32];
 	int proxTick;
 	int lineHeight;
 
@@ -2661,9 +2685,9 @@ void CG_DrawNotify(void) {
 	int x;
 #ifdef MISSIONPACK_HUD
 	// voice head is being shown
-	if (!cg.cur_lc->showScores && cg.cur_ps->stats[STAT_HEALTH] > 0 && cg.cur_lc->voiceTime && cg.cur_lc->voiceTime >= cg.time && cg.cur_lc->playerNum != cg.cur_lc->currentVoicePlayerNum)
+	if (!cg.cur_lc->showScores && cg.cur_ps->stats[STAT_HEALTH] > 0 && cg.cur_lc->voiceTime && cg.cur_lc->voiceTime >= cg.time && cg.cur_lc->playerNum != cg.cur_lc->currentVoicePlayerNum) {
 		x = 72;
-	else
+	} else
 #endif
 		x = 5;
 
@@ -2832,7 +2856,7 @@ void CG_DrawMiscGamemodels(void) {
 
 	ent.reType = RT_MODEL;
 	ent.nonNormalizedAxes = qtrue;
-	// static gamemodels don't project shadows
+	// ydnar: static gamemodels don't project shadows
 	ent.renderfx = RF_NOSHADOW;
 
 	for (i = 0; i < cg.numMiscGameModels; i++) {
@@ -2849,7 +2873,7 @@ void CG_DrawMiscGamemodels(void) {
 		VectorCopy(cgs.miscGameModels[i].org, ent.origin);
 		VectorCopy(cgs.miscGameModels[i].org, ent.oldorigin);
 		VectorCopy(cgs.miscGameModels[i].org, ent.lightingOrigin);
-		/*{
+/*		{
 			vec3_t v;
 			vec3_t vu = {0.f, 0.f, 1.f};
 			vec3_t vl = {0.f, 1.f, 0.f};
@@ -2878,8 +2902,8 @@ void CG_DrawMiscGamemodels(void) {
 			VectorCopy(cgs.miscGameModels[i].org, v);
 			VectorMA(v, -cgs.miscGameModels[i].radius, vl, v);
 			CG_RailTrail2(NULL, cgs.miscGameModels[i].org, v);
-		}*/
-
+		}
+*/
 		for (j = 0; j < 3; j++) {
 			VectorCopy(cgs.miscGameModels[i].axes[j], ent.axis[j]);
 		}
@@ -2951,7 +2975,9 @@ void CG_DrawDemoRecording(void) {
 	}
 #endif
 	trap_GetDemoName(demoName, sizeof(demoName));
+
 	pos = trap_GetDemoPos();
+
 	Com_sprintf(string, sizeof(string), "RECORDING %s: %ik", demoName, pos / 1024);
 
 	CG_SetScreenPlacement(PLACE_CENTER, PLACE_TOP);
@@ -2965,7 +2991,7 @@ CG_DrawMessageMode
 */
 void CG_DrawMessageMode(void) {
 
-	if (!(Key_GetCatcher() & KEYCATCH_MESSAGE)) {
+	if (!(Key_GetCatcher()& KEYCATCH_MESSAGE)) {
 		return;
 	}
 	// draw the chat line

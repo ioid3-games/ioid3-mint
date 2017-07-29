@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -471,8 +477,8 @@ Flying out of the water.
 =======================================================================================================================================
 */
 static void PM_WaterJumpMove(void) {
-	// waterjump has no control, but falls
 
+	// waterjump has no control, but falls
 	PM_StepSlideMove(qtrue);
 
 	pm->ps->velocity[2] -= pm->ps->gravity * pml.frametime;
@@ -510,7 +516,7 @@ static void PM_WaterMove(void) {
 			} else if (pm->watertype & CONTENTS_SLIME) {
 				pm->ps->velocity[2] = 80;
 			} else {
-				pm->ps->velocity[2] = 40;
+				pm->ps->velocity[2] = 50;
 			}
 		}
 	}
@@ -1017,6 +1023,7 @@ static int PM_CorrectAllSolid(trace_t *trace) {
 		for (j = -1; j <= 1; j++) {
 			for (k = -1; k <= 1; k++) {
 				VectorCopy(pm->ps->origin, point);
+
 				point[0] += (float)i;
 				point[1] += (float)j;
 				point[2] += (float)k;
@@ -1062,6 +1069,7 @@ static void PM_GroundTraceMissed(void) {
 		// if they aren't in a jumping animation and the ground is a ways away, force into it
 		// if we didn't do the trace, the player would be backflipping down staircases
 		VectorCopy(pm->ps->origin, point);
+
 		point[2] -= 64;
 
 		pm->trace(&trace, pm->ps->origin, pm->ps->mins, pm->ps->maxs, point, pm->ps->playerNum, pm->tracemask);
@@ -1175,7 +1183,7 @@ static void PM_GroundTrace(void) {
 =======================================================================================================================================
 PM_SetWaterLevel
 
-FIXME: avoid this twice? certainly if not moving.
+FIXME: avoid this twice? Certainly if not moving.
 =======================================================================================================================================
 */
 static void PM_SetWaterLevel(void) {
@@ -1360,7 +1368,7 @@ static void PM_Footsteps(void) {
 			}
 		}
 	}
-	// check for footstep / splash sounds
+	// check for footstep/splash sounds
 	old = pm->ps->bobCycle;
 	pm->ps->bobCycle = (int)(old + bobmove * pml.msec) & 255;
 	// if we just crossed a cycle boundary, play an appropriate footstep event
@@ -1374,7 +1382,7 @@ static void PM_Footsteps(void) {
 			// splashing
 			PM_AddEvent(EV_FOOTSPLASH);
 		} else if (pm->waterlevel == 2) {
-			// wading / swimming at surface
+			// wading/swimming at surface
 			PM_AddEvent(EV_SWIM);
 		} else if (pm->waterlevel == 3) {
 			// no sound when completely underwater
@@ -1918,9 +1926,9 @@ void PmoveSingle(pmove_t *pmove) {
 	PM_Weapon();
 	// torso animation
 	PM_TorsoAnimation();
-	// footstep events / legs animations
+	// footstep events/legs animations
 	PM_Footsteps();
-	// entering / leaving water splashes
+	// entering/leaving water splashes
 	PM_WaterEvents();
 	// snap some parts of playerstate to save network bandwidth
 	trap_SnapVector(pm->ps->velocity);

@@ -1,30 +1,41 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
-/**************************************************************************************************************************************
- Goal AI.
-**************************************************************************************************************************************/
+//
+/*****************************************************************************
+	* name:		ai_goal.h
+	*
+	* desc:		goal AI
+	*
+	* $Archive: /source/code/game/ai_goal.h $
+	*
+	*****************************************************************************/
 
 #define MAX_AVOIDGOALS 256
 #define MAX_GOALSTACK 8
@@ -34,6 +45,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define GFL_ROAM	2
 #define GFL_DROPPED	4
 #define GFL_AIR		8
+
 // a bot goal
 typedef struct bot_goal_s {
 	vec3_t origin;		// origin of the goal
@@ -44,6 +56,7 @@ typedef struct bot_goal_s {
 	int flags;			// goal flags
 	int iteminfo;		// item information
 } bot_goal_t;
+
 // goal state
 typedef struct bot_goalstate_s {
 	struct weightconfig_s *itemweightconfig;	// weight config
@@ -55,6 +68,7 @@ typedef struct bot_goalstate_s {
 	int avoidgoals[MAX_AVOIDGOALS];				// goals to avoid
 	float avoidgoaltimes[MAX_AVOIDGOALS];		// times to avoid the goals
 } bot_goalstate_t;
+
 // reset the whole goal state, but keep the item weights
 void BotResetGoalState(int goalstate);
 // reset avoid goals
@@ -101,7 +115,7 @@ float BotAvoidGoalTime(int goalstate, int number);
 void BotSetAvoidGoalTime(int goalstate, int number, float avoidtime);
 // initializes the items in the level
 void BotInitLevelItems(void);
-// regularly update dynamic entity items (dropped weapons, flags etc.)
+// regularly update dynamic entity items(dropped weapons, flags etc.)
 void BotUpdateEntityItems(void);
 // interbreed the goal fuzzy logic
 void BotInterbreedGoalFuzzyLogic(int parent1, int parent2, int child);

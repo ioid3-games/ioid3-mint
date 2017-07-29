@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -117,10 +123,10 @@ typedef struct netchan_buffer_s {
 typedef struct player_s {
 	qboolean inUse;
 	qboolean inWorld;
-	char userinfo[MAX_INFO_STRING];		// name, etc
+	char userinfo[MAX_INFO_STRING];	// name, etc.
 	usercmd_t lastUsercmd;
-	sharedEntity_t *gentity;			// SV_GentityNum(playerNum)
-	char name[MAX_NAME_LENGTH];			// extracted from userinfo, high bits masked
+	sharedEntity_t *gentity;		// SV_GentityNum(playerNum)
+	char name[MAX_NAME_LENGTH];		// extracted from userinfo, high bits masked
 	struct client_s *client;
 } player_t;
 
@@ -203,7 +209,7 @@ typedef struct {
 	int time;								// will be strictly increasing across level changes
 	int snapFlagServerBit;					// ^= SNAPFLAG_SERVERCOUNT every SV_SpawnServer()
 	client_t *clients;						// [sv_maxclients->integer];
-	player_t *players;						// [sv_maxclients->integer]; // a single client can have multiple players
+	player_t *players;						// [sv_maxclients->integer]; a single client can have multiple players
 	int numSnapshotEntities;				// sv_maxclients->integer * PACKET_BACKUP * MAX_SNAPSHOT_ENTITIES
 	int nextSnapshotEntities;				// next snapshotEntities to use
 	darray_t snapshotEntities;				// [numSnapshotEntities * gameEntityStateSize]
@@ -255,7 +261,6 @@ extern cvar_t *sv_floodProtect;
 extern cvar_t *sv_lanForceRate;
 extern cvar_t *sv_banFile;
 extern cvar_t *sv_public;
-
 extern serverBan_t serverBans[SERVER_MAXBANS];
 extern int serverBansCount;
 #ifdef USE_VOIP

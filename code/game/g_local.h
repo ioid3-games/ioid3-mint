@@ -1,30 +1,34 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- Local definitions for game module.
-**************************************************************************************************************************************/
+// g_local.h -- local definitions for game module
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
@@ -46,6 +50,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define FL_NO_BOTS			0x00002000 // spawn point not for bot use
 #define FL_NO_HUMANS		0x00004000 // spawn point just for bots
 #define FL_FORCE_GESTURE	0x00008000 // force gesture on player
+
 // movers are things like doors, plats, buttons, etc
 typedef enum {
 	MOVER_POS1,
@@ -60,26 +65,27 @@ typedef struct gentity_s gentity_t;
 typedef struct gplayer_s gplayer_t;
 
 struct gentity_s {
-	entityShared_t r;	// shared by both the server system and game
-	entityState_t s;	// communicated by server to clients
-	//=================================================================================================================================
+	entityShared_t r;				// shared by both the server system and game
+	entityState_t s;				// communicated by server to clients
 	// DO NOT MODIFY ANYTHING ABOVE THIS, THE SERVER EXPECTS THE FIELDS IN THAT ORDER!
-	//=================================================================================================================================
-	struct gplayer_s *player;	// NULL if not a player
+	//================================
+	struct gplayer_s *player;			// NULL if not a player
 	qboolean inuse;
 	char *classname;			// set in QuakeEd
-	int spawnflags;				// set in QuakeEd
-	qboolean neverFree;			// if true, FreeEntity will only unlink, bodyque uses this
-	int flags;					// FL_* variables
+	int spawnflags;			// set in QuakeEd
+	qboolean neverFree;		// if true, FreeEntity will only unlink, bodyque uses this
+	int flags;				// FL_* variables
 	char *model;
 	char *model2;
-	int freetime;				// level.time when the object was freed
-	int eventTime;				// events will be cleared EVENT_VALID_MSEC after set
+	int freetime;			// level.time when the object was freed
+	int eventTime;			// events will be cleared EVENT_VALID_MSEC after set
 	qboolean freeAfterEvent;
 	qboolean unlinkAfterEvent;
-	qboolean physicsObject;		// if true, it can be pushed by movers and fall off edges, all game items are physicsObjects
-	float physicsBounce;		// 1.0 = continuous bounce, 0.0 = no bounce
-	int clipmask; // brushes with this content value will be collided against when moving. items and corpses do not collide against players, for instance
+	qboolean physicsObject;	// if true, it can be pushed by movers and fall off edges, all game items are physicsObjects,
+	float physicsBounce;	// 1.0 = continuous bounce, 0.0 = no bounce
+	int clipmask;			// brushes with this content value will be collided against
+							// when moving.  items and corpses do not collide against
+							// players, for instance
 	// movers
 	moverState_t moverState;
 	int soundPos1;
@@ -92,7 +98,7 @@ struct gentity_s {
 	gentity_t *prevTrain;
 	vec3_t pos1, pos2;
 	char *message;
-	int timestamp;			// body queue sinking, etc
+	int timestamp;		// body queue sinking, etc.
 	char *target;
 	char *targetname;
 	char *team;
@@ -103,7 +109,7 @@ struct gentity_s {
 	vec3_t movedir;
 	int nextthink;
 	void (*think)(gentity_t *self);
-	void (*reached)(gentity_t *self); // movers call this when hitting endpoint
+	void (*reached)(gentity_t *self);	// movers call this when hitting endpoint
 	void (*blocked)(gentity_t *self, gentity_t *other);
 	void (*touch)(gentity_t *self, gentity_t *other, trace_t *trace);
 	void (*use)(gentity_t *self, gentity_t *other, gentity_t *activator);
@@ -111,11 +117,11 @@ struct gentity_s {
 	void (*die)(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
 	qboolean (*snapshotCallback)(gentity_t *self, gentity_t *player);
 	int pain_debounce_time;
-	int fly_sound_debounce_time; // wind tunnel
+	int fly_sound_debounce_time;	// wind tunnel
 	int health;
 	qboolean takedamage;
 	int damage;
-	int splashDamage;		// quad will increase this without increasing radius
+	int splashDamage;	// quad will increase this without increasing radius
 	int splashRadius;
 	int methodOfDeath;
 	int splashMethodOfDeath;
@@ -123,7 +129,7 @@ struct gentity_s {
 	gentity_t *chain;
 	gentity_t *enemy;
 	gentity_t *activator;
-	gentity_t *teamchain;	// next entity in team
+	gentity_t *teamchain;		// next entity in team
 	gentity_t *teammaster;	// master of the team
 #ifdef MISSIONPACK
 	int kamikazeTime;
@@ -167,8 +173,8 @@ typedef enum {
 } spectatorState_t;
 
 typedef enum {
-	TEAM_BEGIN, // Beginning a team game, spawn at base
-	TEAM_ACTIVE // Now actively playing
+	TEAM_BEGIN,	// Beginning a team game, spawn at base
+	TEAM_ACTIVE	// Now actively playing
 } playerTeamStateState_t;
 
 typedef struct {
@@ -178,9 +184,11 @@ typedef struct {
 	float lastreturnedflag;
 	float lastfraggedcarrier;
 } playerTeamState_t;
+
 // player data that stays across multiple levels or tournament restarts
-// this is achieved by writing all the data to cvar strings at game shutdown time and reading them back at connection time.
-// Anything added here MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
+// this is achieved by writing all the data to cvar strings at game shutdown
+// time and reading them back at connection time.  Anything added here
+// MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
 typedef struct {
 	team_t sessionTeam;
 	int spectatorNum;		// for determining next-in-line to play
@@ -190,26 +198,26 @@ typedef struct {
 	qboolean teamLeader;	// true when this player is a team leader
 } playerSession_t;
 
-#define MAX_NETNAME 36
-#define MAX_VOTE_COUNT 3
+#define MAX_NETNAME			36
+#define MAX_VOTE_COUNT		3
 // player data that stays across multiple respawns, but is cleared on each level change or team change at PlayerBegin()
 typedef struct {
-	int connectionNum;				// index in level.connections
-	int localPlayerNum;				// client's local player number in range of 0 to MAX_SPLITVIEW - 1
+	int connectionNum;		// index in level.connections
+	int localPlayerNum;		// client's local player number in range of 0 to MAX_SPLITVIEW-1
 	clientConnected_t connected;
-	usercmd_t cmd;					// we would lose angles if not persistant
-	qboolean localClient;			// true if "ip" info key is "localhost"
-	qboolean initialSpawn;			// the first spawn should be at a cool location
-	qboolean predictItemPickup;		// based on cg_predictItems userinfo
+	usercmd_t cmd;				// we would lose angles if not persistant
+	qboolean localClient;		// true if "ip" info key is "localhost"
+	qboolean initialSpawn;		// the first spawn should be at a cool location
+	qboolean predictItemPickup;	// based on cg_predictItems userinfo
 	qboolean pmoveFixed;
-	int antiLag;					// based on cg_antiLag userinfo
+	int antiLag;			// based on cg_antiLag userinfo
 	char netname[MAX_NETNAME];
-	int maxHealth;					// for handicapping
-	int enterTime;					// level.time the player entered the game
+	int maxHealth;			// for handicapping
+	int enterTime;			// level.time the player entered the game
 	playerTeamState_t teamState;	// status in teamplay games
-	int voteCount;					// to prevent people from constantly calling votes
-	int teamVoteCount;				// to prevent people from constantly calling votes
-	qboolean teamInfo;				// send team overlay updates?
+	int voteCount;			// to prevent people from constantly calling votes
+	int teamVoteCount;		// to prevent people from constantly calling votes
+	qboolean teamInfo;			// send team overlay updates?
 } playerPersistant_t;
 
 #define MAX_PLAYER_MARKERS 17
@@ -220,20 +228,23 @@ typedef struct {
 	vec3_t origin;
 	int time;
 } playerMarker_t;
-// this structure is cleared on each PlayerSpawn(), except for 'player->pers' and 'player->sess'
+
+// this structure is cleared on each PlayerSpawn(),
+// except for 'player->pers' and 'player->sess'
 struct gplayer_s {
 	// ps MUST be the first element, because the server expects it
-	playerState_t ps;		// communicated by server to clients
+	playerState_t ps;				// communicated by server to clients
+
 	// the rest of the structure is private to game
 	playerPersistant_t pers;
 	playerSession_t sess;
-	qboolean readyToExit;	// wishes to leave the intermission
+	qboolean readyToExit;		// wishes to leave the intermission
 	qboolean noclip;
 	// history for backward reconcile
 	int topMarker;
 	playerMarker_t playerMarkers[MAX_PLAYER_MARKERS];
 	playerMarker_t backupMarker;
-	int frameOffset;		// an approximation of the actual server time we received this command(not in 50ms increments)
+	int frameOffset;		// an approximation of the actual server time we received this command (not in 50ms increments)
 	int lastCmdServerTime;	// ucmd.serverTime from last usercmd_t
 	int lastCmdTime;		// level.time of last usercmd_t, for EF_CONNECTION we can't just use pers.lastCommand.time, because of the g_sycronousclients case
 	int buttons;
@@ -259,11 +270,10 @@ struct gplayer_s {
 	int rewardTime;			// clear the EF_AWARD_IMPRESSIVE, etc when time > this
 	int airOutTime;
 	int lastKillTime;		// for multiple kill rewards
-
-	qboolean fireHeld;		// used for hook
-	gentity_t *hook;		// grapple hook if out
+	qboolean fireHeld;			// used for hook
+	gentity_t *hook;				// grapple hook if out
 	int switchTeamTime;		// time the player switched teams
-	// timeResidual is used to handle events that happen every second like health/armor countdowns and regeneration
+	// timeResidual is used to handle events that happen every second like health / armor countdowns and regeneration
 	int timeResidual;
 #ifdef MISSIONPACK
 	gentity_t *persistantPowerup;
@@ -273,12 +283,15 @@ struct gplayer_s {
 #endif
 	char *areabits;
 };
+
 // A single client can have multiple players, for splitscreen.
 typedef struct gconnection_s {
 	int numLocalPlayers; // for quick access, the players could be any indexes in localPlayers[].
 	int localPlayerNums[MAX_SPLITVIEW];
 } gconnection_t;
+
 // this structure is cleared as each map is entered
+
 #define MAX_SPAWN_VARS 64
 #define MAX_SPAWN_VARS_CHARS 4096
 
@@ -286,70 +299,76 @@ typedef struct {
 	struct gplayer_s *players;		// [maxplayers]
 	struct gentity_s *gentities;
 	int gentitySize;
-	int num_entities;				// MAX_CLIENTS <= num_entities <= ENTITYNUM_MAX_NORMAL
+	int num_entities;		// MAX_CLIENTS <= num_entities <= ENTITYNUM_MAX_NORMAL
 	gconnection_t *connections;
-	int warmupTime;					// restart match at this time
+	int warmupTime;			// restart match at this time
 	fileHandle_t logFile;
 	// store latched cvars here that we want to get at often
 	int maxplayers;
 	int maxconnections;
 	int framenum;
-	int time;						// in msec
-	int previousTime;				// so movers can back up when blocked
-	int startTime;					// level.time the map was started
-	int frameStartTime;				// time this server frame started
+	int time;					// in msec
+	int previousTime;			// so movers can back up when blocked
+	int startTime;				// level.time the map was started
+	int frameStartTime;			// time this server frame started
 	int teamScores[TEAM_NUM_TEAMS];
 	int lastTeamLocationTime;		// last time of client team location update
-	qboolean newSession;			// don't use any old session data, because we changed gametype
+	qboolean newSession;				// don't use any old session data, because
+										// we changed gametype
 	qboolean restarted;				// waiting for a map_restart to fire
 	int numConnectedPlayers;
-	int numNonSpectatorPlayers;		// includes connecting players
-	int numPlayingPlayers;			// connected, non-spectators
-	int sortedPlayers[MAX_CLIENTS];	// sorted by score
-	int follow1, follow2;			// playerNums for auto-follow spectators
-	int snd_fry;					// sound index for standing in lava
+	int numNonSpectatorPlayers;	// includes connecting players
+	int numPlayingPlayers;		// connected, non-spectators
+	int sortedPlayers[MAX_CLIENTS];		// sorted by score
+	int follow1, follow2;		// playerNums for auto-follow spectators
+	int snd_fry;				// sound index for standing in lava
 	int warmupModificationCount;	// for detecting if g_warmup is changed
 	int botReportModificationCount;
 	// voting state
 	char voteString[MAX_STRING_CHARS];
 	char voteDisplayString[MAX_STRING_CHARS];
-	int voteTime;					// level.time vote was called
-	int voteExecuteTime;			// time the vote is executed
+	int voteTime;				// level.time vote was called
+	int voteExecuteTime;		// time the vote is executed
 	int voteYes;
 	int voteNo;
-	int numVotingPlayers;			// set by CalculateRanks
+	int numVotingPlayers;		// set by CalculateRanks
 	// team voting state
 	char teamVoteString[2][MAX_STRING_CHARS];
-	int teamVoteTime[2];			// level.time vote was called
+	int teamVoteTime[2];		// level.time vote was called
 	int teamVoteYes[2];
 	int teamVoteNo[2];
-	int numTeamVotingPlayers[2];	// set by CalculateRanks
+	int numTeamVotingPlayers[2];// set by CalculateRanks
 	// spawn variables
-	qboolean spawning;				// the G_Spawn*() functions are valid
+	qboolean spawning;				// the G_Spawn*()functions are valid
 	int numSpawnVars;
-	char *spawnVars[MAX_SPAWN_VARS][2];	// key/value pairs
+	char *spawnVars[MAX_SPAWN_VARS][2];	// key / value pairs
 	int numSpawnVarChars;
 	char spawnVarChars[MAX_SPAWN_VARS_CHARS];
 	int spawnEntityOffset;
 	// intermission state
-	int intermissionQueued;	// intermission was qualified, but wait INTERMISSION_DELAY_TIME before actually going there so the last frag can be watched. Disable future kills during this delay
-	int intermissiontime;			// time the intermission was started
+	int intermissionQueued;		// intermission was qualified, but
+										// wait INTERMISSION_DELAY_TIME before
+										// actually going there so the last
+										// frag can be watched.  Disable future
+										// kills during this delay
+	int intermissiontime;		// time the intermission was started
 	char *changemap;
 	qboolean readyToExit;			// at least one player wants to exit
 	int exitTime;
-	vec3_t intermission_origin;		// also used for spectator spawns
+	vec3_t intermission_origin;	// also used for spectator spawns
 	vec3_t intermission_angle;
-	qboolean locationLinked;		// target_locations get linked
-	gentity_t *locationHead;		// head of the location list
-	int bodyQueIndex;				// dead bodies
+	qboolean locationLinked;			// target_locations get linked
+	gentity_t *locationHead;			// head of the location list
+	int bodyQueIndex;			// dead bodies
 	gentity_t *bodyQue[BODY_QUEUE_SIZE];
 #ifdef MISSIONPACK
 	int portalSequence;
 #endif
 } level_locals_t;
+
 // g_spawn.c
 qboolean G_SpawnString(const char *key, const char *defaultString, char **out);
-// spawn string returns a temporary reference, you must CopyString() if you want to keep it
+// spawn string returns a temporary reference, you must CopyString()if you want to keep it
 qboolean G_SpawnFloat(const char *key, const char *defaultString, float *out);
 qboolean G_SpawnInt(const char *key, const char *defaultString, int *out);
 qboolean G_SpawnVector(const char *key, const char *defaultString, float *out);
@@ -361,6 +380,7 @@ void StopFollowing(gentity_t *ent);
 void BroadcastTeamChange(gplayer_t *player, int oldTeam);
 void SetTeam(gentity_t *ent, const char *s);
 void Cmd_FollowCycle_f(gentity_t *ent, int dir);
+void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatText);
 // g_items.c
 void G_CheckTeamItems(void);
 void G_RunItem(gentity_t *ent);
@@ -424,6 +444,7 @@ void TossPlayerCubes(gentity_t *self);
 #endif
 // g_missile.c
 void G_RunMissile(gentity_t *ent);
+
 gentity_t *fire_plasma(gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_grenade(gentity_t *self, vec3_t start, vec3_t aimdir);
 gentity_t *fire_rocket(gentity_t *self, vec3_t start, vec3_t dir);
@@ -487,6 +508,7 @@ void G_StartKamikaze(gentity_t *ent);
 // g_cmds.c
 void DeathmatchScoreboardMessage(gentity_t *ent);
 char *ConcatArgs(int start);
+qboolean StringIsInteger(const char *s);
 // g_main.c
 void MovePlayerToIntermission(gentity_t *ent);
 void FindIntermissionPoint(void);
@@ -494,11 +516,11 @@ void SetLeader(int team, int player);
 void CheckTeamLeader(int team);
 void G_RunThink(gentity_t *ent);
 void AddTournamentQueue(gplayer_t *player);
-void QDECL G_LogPrintf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
+void QDECL G_LogPrintf(const char *fmt, ...)__attribute__((format(printf, 1, 2)));
 void SendScoreboardMessageToAllClients(void);
-void QDECL G_DPrintf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
-void QDECL G_Printf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
-void QDECL G_Error(const char *fmt, ...) __attribute__((noreturn, format(printf, 1, 2)));
+void QDECL G_DPrintf(const char *fmt, ...)__attribute__((format(printf, 1, 2)));
+void QDECL G_Printf(const char *fmt, ...)__attribute__((format(printf, 1, 2)));
+void QDECL G_Error(const char *fmt, ...)__attribute__((noreturn, format(printf, 1, 2)));
 // g_client.c
 char *PlayerConnect(int playerNum, qboolean firstTime, qboolean isBot, int connectionNum, int localPlayerNum);
 void PlayerUserinfoChanged(int playerNum);
@@ -561,8 +583,8 @@ extern gentity_t g_entities[MAX_GENTITIES];
 extern vmCvar_t g_gametype;
 extern vmCvar_t g_dedicated;
 extern vmCvar_t g_cheats;
-extern vmCvar_t g_maxplayers;			// allow this many total, including spectators
-extern vmCvar_t g_maxGamePlayers;		// allow this many active
+extern vmCvar_t g_maxplayers;		// allow this many total, including spectators
+extern vmCvar_t g_maxGamePlayers;	// allow this many active
 extern vmCvar_t g_restarted;
 extern vmCvar_t g_dmflags;
 extern vmCvar_t g_fraglimit;
@@ -605,4 +627,3 @@ extern vmCvar_t g_rankings;
 extern vmCvar_t g_singlePlayer;
 extern vmCvar_t g_proxMineTimeout;
 extern vmCvar_t g_playerCapsule;
-

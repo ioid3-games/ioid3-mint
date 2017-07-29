@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -62,19 +68,19 @@ Keybinding command.
 */
 static void CG_SizeUp_f(void) {
 	// manually clamp here so cvar range warning isn't show
-	trap_Cvar_SetValue("cg_viewsize", Com_Clamp(30, 100, (int)(cg_viewsize.integer + 10)));
+	trap_Cvar_SetValue("cg_viewsize", Com_Clamp(30, 100, (int)(cg_viewsize.integer+10)));
 }
 
 /*
 =======================================================================================================================================
 CG_SizeDown_f
 
-Keybinding command.
+Keybinding command
 =======================================================================================================================================
 */
 static void CG_SizeDown_f(void) {
 	// manually clamp here so cvar range warning isn't show
-	trap_Cvar_SetValue("cg_viewsize", Com_Clamp(30, 100, (int)(cg_viewsize.integer - 10)));
+	trap_Cvar_SetValue("cg_viewsize", Com_Clamp(30, 100, (int)(cg_viewsize.integer-10)));
 }
 
 /*
@@ -83,10 +89,14 @@ CG_MessageMode_f
 =======================================================================================================================================
 */
 void CG_MessageMode_f(void) {
+
 	Q_strncpyz(cg.messageCommand, "say", sizeof(cg.messageCommand));
 	Q_strncpyz(cg.messagePrompt, "Say:", sizeof(cg.messagePrompt));
+
 	MField_Clear(&cg.messageField);
+
 	cg.messageField.widthInChars = 30;
+
 	Key_SetCatcher(Key_GetCatcher() ^ KEYCATCH_MESSAGE);
 }
 
@@ -98,8 +108,11 @@ CG_MessageMode2_f
 void CG_MessageMode2_f(void) {
 	Q_strncpyz(cg.messageCommand, "say_team", sizeof(cg.messageCommand));
 	Q_strncpyz(cg.messagePrompt, "Team Say:", sizeof(cg.messagePrompt));
+
 	MField_Clear(&cg.messageField);
+
 	cg.messageField.widthInChars = 25;
+
 	Key_SetCatcher(Key_GetCatcher() ^ KEYCATCH_MESSAGE);
 }
 
@@ -117,8 +130,11 @@ void CG_MessageMode3_f(void) {
 
 	Com_sprintf(cg.messageCommand, sizeof(cg.messageCommand), "tell %d", playerNum);
 	Com_sprintf(cg.messagePrompt, sizeof(cg.messagePrompt), "Tell %s:", cgs.playerinfo[playerNum].name);
+
 	MField_Clear(&cg.messageField);
+
 	cg.messageField.widthInChars = 30;
+
 	Key_SetCatcher(Key_GetCatcher() ^ KEYCATCH_MESSAGE);
 }
 
@@ -136,8 +152,11 @@ void CG_MessageMode4_f(void) {
 
 	Com_sprintf(cg.messageCommand, sizeof(cg.messageCommand), "tell %d", playerNum);
 	Com_sprintf(cg.messagePrompt, sizeof(cg.messagePrompt), "Tell %s:", cgs.playerinfo[playerNum].name);
+
 	MField_Clear(&cg.messageField);
+
 	cg.messageField.widthInChars = 30;
+
 	Key_SetCatcher(Key_GetCatcher() ^ KEYCATCH_MESSAGE);
 }
 
@@ -152,6 +171,7 @@ void CG_CenterEcho_f(int localPlayerNum) {
 	trap_Args(text, sizeof(text));
 
 	CG_ReplaceCharacter(text, '\\', '\n');
+
 	CG_CenterPrint(localPlayerNum, text, SCREEN_HEIGHT * 0.30, 0.5);
 }
 
@@ -168,7 +188,7 @@ static void CG_Viewpos_f(int localPlayerNum) {
 
 /*
 =======================================================================================================================================
-CG_ScoresDown_f
+CG_ScoresDown
 =======================================================================================================================================
 */
 static void CG_ScoresDown_f(int localPlayerNum) {
@@ -179,6 +199,7 @@ static void CG_ScoresDown_f(int localPlayerNum) {
 	if (cg.scoresRequestTime + 2000 < cg.time) {
 		// the scores are more than two seconds out of data, so request new ones
 		cg.scoresRequestTime = cg.time;
+
 		trap_SendClientCommand("score");
 		// leave the current scores up if they were already displayed, but if this is the first hit, clear them out
 		if (!CG_AnyScoreboardShowing()) {
@@ -283,7 +304,6 @@ static int CG_ScrollScores(int scoreIndex, int dir) {
 
 	if (cg.numScores == 0) {
 		return 0;
-	}
 
 	if (cgs.gametype < GT_TEAM) {
 		scoreIndex += dir;
@@ -308,7 +328,7 @@ static int CG_ScrollScores(int scoreIndex, int dir) {
 			return i;
 		}
 	}
-	// didn't find any more players on this team in this direction, // wrap around and switch teams
+	// didn't find any more players on this team in this direction, wrap around and switch teams
 	if (cgs.gametype >= GT_TEAM) {
 		if (team == TEAM_RED) {
 			team = TEAM_BLUE;
@@ -334,7 +354,7 @@ static int CG_ScrollScores(int scoreIndex, int dir) {
 
 /*
 =======================================================================================================================================
-CG_scrollScoresDown_f
+CG_ScrollScoresDown_f
 =======================================================================================================================================
 */
 static void CG_ScrollScoresDown_f(int localPlayerNum) {
@@ -350,7 +370,7 @@ static void CG_ScrollScoresDown_f(int localPlayerNum) {
 
 /*
 =======================================================================================================================================
-CG_scrollScoresUp_f
+CG_ScrollScoresUp_f
 =======================================================================================================================================
 */
 static void CG_ScrollScoresUp_f(int localPlayerNum) {
@@ -388,10 +408,9 @@ static void CG_spWin_f(void) {
 
 	CG_CameraOrbit(0, 30);
 	CG_AddBufferedSound(cgs.media.winnerSound);
-	//trap_S_StartLocalSound(cgs.media.winnerSound, CHAN_ANNOUNCER);
-	CG_GlobalCenterPrint("YOU WIN!", SCREEN_HEIGHT / 2, 2.0);
+	// trap_S_StartLocalSound(cgs.media.winnerSound, CHAN_ANNOUNCER);
+	CG_GlobalCenterPrint("YOU WIN!", SCREEN_HEIGHT/2, 2.0);
 }
-
 /*
 =======================================================================================================================================
 CG_spLose_f
@@ -401,8 +420,8 @@ static void CG_spLose_f(void) {
 
 	CG_CameraOrbit(0, 30);
 	CG_AddBufferedSound(cgs.media.loserSound);
-	//trap_S_StartLocalSound(cgs.media.loserSound, CHAN_ANNOUNCER);
-	CG_GlobalCenterPrint("YOU LOSE...", SCREEN_HEIGHT / 2, 2.0);
+	// trap_S_StartLocalSound(cgs.media.loserSound, CHAN_ANNOUNCER);
+	CG_GlobalCenterPrint("YOU LOSE...", SCREEN_HEIGHT/2, 2.0);
 }
 #endif
 /*
@@ -510,9 +529,10 @@ static void CG_PrevTeamMember_f(int localPlayerNum) {
 /*
 =======================================================================================================================================
 CG_NextOrder_f
+
+ASS U ME's enumeration order as far as task specific orders, OFFENSE is zero, CAMP is last.
 =======================================================================================================================================
 */
-// ASS U ME's enumeration order as far as task specific orders, OFFENSE is zero, PATROL is last
 static void CG_NextOrder_f(int localPlayerNum) {
 	localPlayer_t *player;
 	playerInfo_t *pi;
@@ -527,7 +547,6 @@ static void CG_NextOrder_f(int localPlayerNum) {
 
 	playerNum = cg.snap->pss[localPlayerNum].playerNum;
 	team = cg.snap->pss[localPlayerNum].persistant[PERS_TEAM];
-
 	pi = cgs.playerinfo + playerNum;
 
 	if (pi) {
@@ -550,6 +569,7 @@ static void CG_NextOrder_f(int localPlayerNum) {
 				player->currentOrder++;
 			}
 		}
+
 	} else {
 		player->currentOrder = TEAMTASK_OFFENSE;
 	}
@@ -760,12 +780,12 @@ CG_TeamMenu_f
 /*
 static void CG_TeamMenu_f(void) {
 
-	if (Key_GetCatcher() & KEYCATCH_CGAME) {
+	if (Key_GetCatcher()& KEYCATCH_CGAME) {
 		CG_EventHandling(CGAME_EVENT_NONE);
 		Key_SetCatcher(0);
 	} else {
 		CG_EventHandling(CGAME_EVENT_TEAMMENU);
-		//Key_SetCatcher(KEYCATCH_CGAME);
+	//Key_SetCatcher(KEYCATCH_CGAME);
 	}
 }
 */
@@ -866,7 +886,6 @@ static void CG_RemapShader_f(void) {
 	}
 
 	Q_strncpyz(timeoffset, CG_Argv(3), sizeof(timeoffset));
-
 	trap_R_RemapShader(shader1, shader2, timeoffset);
 }
 
@@ -952,6 +971,7 @@ void CG_StopCinematic_f(void) {
 	}
 
 	trap_CIN_StopCinematic(cg.cinematicHandle);
+
 	cg.cinematicHandle = -1;
 	//trap_S_StopAllSounds();
 }
@@ -973,19 +993,21 @@ void CG_Cinematic_f(void) {
 	trap_Argv(1, arg, sizeof(arg));
 	trap_Argv(2, s, sizeof(s));
 
-	if (s[0] == '1' || Q_stricmp(arg, "demoend.roq") == 0 || Q_stricmp(arg, "end.roq") == 0) {
+	if (s[0] == '1' || Q_stricmp(arg,"demoend.roq") ==0 || Q_stricmp(arg,"end.roq") ==0) {
 		bits |= CIN_hold;
 	}
 
 	if (s[0] == '2') {
 		bits |= CIN_loop;
 	}
+
 	//trap_S_StopAllSounds();
 
 	x = 0;
 	y = 0;
 	width = SCREEN_WIDTH;
 	height = SCREEN_HEIGHT;
+
 	CG_SetScreenPlacement(PLACE_CENTER, PLACE_CENTER);
 	CG_AdjustFrom640(&x, &y, &width, &height);
 
@@ -998,6 +1020,7 @@ CG_ToggleMenu_f
 =======================================================================================================================================
 */
 void CG_ToggleMenu_f(void) {
+
 	CG_DistributeKeyEvent(K_ESCAPE, qtrue, trap_Milliseconds(), cg.connState, -1, 0);
 	CG_DistributeKeyEvent(K_ESCAPE, qfalse, trap_Milliseconds(), cg.connState, -1, 0);
 }
@@ -1018,7 +1041,8 @@ static consoleCommand_t cg_commands[] = {
 	{"loadhud", CG_LoadHud_f, CMD_INGAME},
 #endif
 #endif
-	{"startOrbit", CG_StartOrbit_f, CMD_INGAME}, // {"camera", CG_Camera_f, CMD_INGAME},
+	{"startOrbit", CG_StartOrbit_f, CMD_INGAME},
+	//{"camera", CG_Camera_f, CMD_INGAME},
 	{"loaddeferred", CG_LoadDeferredPlayers, CMD_INGAME},
 	{"generateTracemap", CG_GenerateTracemap, CMD_INGAME},
 	{"remapShader", CG_RemapShader_f, 0},
@@ -1047,8 +1071,8 @@ typedef struct {
 static playerConsoleCommand_t playerCommands[] = {
 	{"+attack", IN_Button0Down, 0},
 	{"-attack", IN_Button0Up, 0},
-	{"+back", IN_BackDown, 0},
-	{"-back", IN_BackUp, 0},
+	{"+back",IN_BackDown, 0},
+	{"-back",IN_BackUp, 0},
 	{"+button0", IN_Button0Down, 0},
 	{"-button0", IN_Button0Up, 0},
 	{"+button10", IN_Button10Down, 0},
@@ -1079,26 +1103,26 @@ static playerConsoleCommand_t playerCommands[] = {
 	{"-button8", IN_Button8Up, 0},
 	{"+button9", IN_Button9Down, 0},
 	{"-button9", IN_Button9Up, 0},
-	{"+forward", IN_ForwardDown, 0},
-	{"-forward", IN_ForwardUp, 0},
-	{"+left", IN_LeftDown, 0},
-	{"-left", IN_LeftUp, 0},
+	{"+forward",IN_ForwardDown, 0},
+	{"-forward",IN_ForwardUp, 0},
+	{"+left",IN_LeftDown, 0},
+	{"-left",IN_LeftUp, 0},
 	{"+lookdown", IN_LookdownDown, 0},
 	{"-lookdown", IN_LookdownUp, 0},
 	{"+lookup", IN_LookupDown, 0},
 	{"-lookup", IN_LookupUp, 0},
 	{"+mlook", IN_MLookDown, 0},
 	{"-mlook", IN_MLookUp, 0},
-	{"+movedown", IN_DownDown, 0},
-	{"-movedown", IN_DownUp, 0},
+	{"+movedown",IN_DownDown, 0},
+	{"-movedown",IN_DownUp, 0},
 	{"+moveleft", IN_MoveleftDown, 0},
 	{"-moveleft", IN_MoveleftUp, 0},
 	{"+moveright", IN_MoverightDown, 0},
 	{"-moveright", IN_MoverightUp, 0},
-	{"+moveup", IN_UpDown, 0},
-	{"-moveup", IN_UpUp, 0},
-	{"+right", IN_RightDown, 0},
-	{"-right", IN_RightUp, 0},
+	{"+moveup",IN_UpDown, 0},
+	{"-moveup",IN_UpUp, 0},
+	{"+right",IN_RightDown, 0},
+	{"-right",IN_RightUp, 0},
 	{"+scores", CG_ScoresDown_f, CMD_INGAME},
 	{"-scores", CG_ScoresUp_f, CMD_INGAME},
 	{"+speed", IN_SpeedDown, 0},
@@ -1210,7 +1234,6 @@ qboolean CG_ConsoleCommand(connstate_t state, int realTime) {
 	UI_ConsoleCommand(realTime);
 
 	cmd = CG_Argv(0);
-
 	localPlayerNum = Com_LocalPlayerForCvarName(cmd);
 	baseCmd = Com_LocalPlayerBaseCvarName(cmd);
 

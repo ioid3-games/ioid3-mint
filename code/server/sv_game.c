@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -67,7 +73,6 @@ sharedEntityState_t *SV_GameEntityStateNum(int num) {
 	sharedEntity_t *ent;
 
 	ent = SV_GentityNum(num);
-
 	return &ent->s;
 }
 
@@ -149,7 +154,7 @@ void SV_GameDropPlayer(int playerNum, const char *reason) {
 =======================================================================================================================================
 SV_GetBrushBounds
 
-Gets mins and maxs for inline bmodels.
+gets mins and maxs for inline bmodels.
 =======================================================================================================================================
 */
 void SV_GetBrushBounds(int modelindex, vec3_t mins, vec3_t maxs) {
@@ -160,6 +165,7 @@ void SV_GetBrushBounds(int modelindex, vec3_t mins, vec3_t maxs) {
 	}
 
 	h = CM_InlineModel(modelindex);
+
 	CM_ModelBounds(h, mins, maxs);
 }
 
@@ -179,9 +185,7 @@ qboolean SV_inPVS(const vec3_t p1, const vec3_t p2) {
 	leafnum = CM_PointLeafnum(p1);
 	cluster = CM_LeafCluster(leafnum);
 	area1 = CM_LeafArea(leafnum);
-
 	mask = CM_ClusterPVS(cluster);
-
 	leafnum = CM_PointLeafnum(p2);
 	cluster = CM_LeafCluster(leafnum);
 	area2 = CM_LeafArea(leafnum);
@@ -211,9 +215,7 @@ qboolean SV_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2) {
 
 	leafnum = CM_PointLeafnum(p1);
 	cluster = CM_LeafCluster(leafnum);
-
 	mask = CM_ClusterPVS(cluster);
-
 	leafnum = CM_PointLeafnum(p2);
 	cluster = CM_LeafCluster(leafnum);
 
@@ -676,7 +678,6 @@ Call SV_ShutdownGameProgs or SV_RestartGameProgs instead of this directly.
 void SV_GameInternalShutdown(qboolean restart) {
 
 	VM_Call(gvm, GAME_SHUTDOWN, restart);
-
 	Cmd_RemoveCommandsByFunc(SV_GameCommand);
 }
 
@@ -712,7 +713,6 @@ static void SV_InitGameVM(qboolean restart) {
 	int i;
 
 	VM_GetVersion(gvm, GAME_GETAPINAME, GAME_GETAPIVERSION, apiName, sizeof(apiName), &major, &minor);
-
 	Com_DPrintf("Loading Game VM with API %s %d.%d\n", apiName, major, minor);
 	// sanity check
 	if (!strcmp(apiName, GAME_API_NAME) && major == GAME_API_MAJOR_VERSION && ((major > 0 && minor <= GAME_API_MINOR_VERSION) || (major == 0 && minor == GAME_API_MINOR_VERSION))) {
@@ -721,7 +721,6 @@ static void SV_InitGameVM(qboolean restart) {
 		// Free gvm now, so GAME_SHUTDOWN doesn't get called later.
 		VM_Free(gvm);
 		gvm = NULL;
-
 		Com_Error(ERR_DROP, "Game VM uses unsupported API %s %d.%d, %s %d.%d", apiName, major, minor, GAME_API_NAME, GAME_API_MAJOR_VERSION, GAME_API_MINOR_VERSION);
 	}
 	// start the entity parsing at the beginning

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -48,10 +54,10 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define MSG_WHOISTEAMLAEDER				10		// who is the team leader
 #define MSG_WAIT						11		// wait for someone
 #define MSG_WHATAREYOUDOING				12		// what are you doing?
-#define MSG_JOINSUBTEAM					13		// join a sub - team
-#define MSG_LEAVESUBTEAM				14		// leave a sub - team
+#define MSG_JOINSUBTEAM					13		// join a sub-team
+#define MSG_LEAVESUBTEAM				14		// leave a sub-team
 #define MSG_CREATENEWFORMATION			15		// create a new formation
-#define MSG_FORMATIONPOSITION			16		// tell someone his / her position in a formation
+#define MSG_FORMATIONPOSITION			16		// tell someone his/her position in a formation
 #define MSG_FORMATIONSPACE				17		// set the formation intervening space
 #define MSG_DOFORMATION					18		// form a known formation
 #define MSG_DISMISS						19		// dismiss commanded team mates
@@ -69,7 +75,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define MSG_ATTACKENEMYBASE				31		// attack the enemy base
 #define MSG_HARVEST						32		// go harvest
 #define MSG_SUICIDE						33		// order to suicide
-
+//
 #define MSG_ME							100
 #define MSG_EVERYONE					101
 #define MSG_MULTIPLENAMES				102
@@ -80,11 +86,11 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define MSG_FOREVER						107
 #define MSG_FORALONGTIME				108
 #define MSG_FORAWHILE					109
-
+//
 #define MSG_CHATALL						200
 #define MSG_CHATTEAM					201
 #define MSG_CHATTELL					202
-
+//
 #define MSG_CTF							300		// ctf message
 
 // command sub types

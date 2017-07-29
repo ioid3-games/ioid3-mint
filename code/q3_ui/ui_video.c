@@ -1,25 +1,31 @@
 /*
-=======================================================================================================================================
+===========================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-=======================================================================================================================================
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
+===========================================================================
 */
 
 #include "ui_local.h"
@@ -94,10 +100,11 @@ static void DriverInfo_MenuDraw(void) {
 	UI_DrawString(320, 80, "VENDOR", UI_CENTER|UI_SMALLFONT, text_small_title_color);
 	UI_DrawString(320, 152, "PIXELFORMAT", UI_CENTER|UI_SMALLFONT, text_small_title_color);
 	UI_DrawString(320, 192, "EXTENSIONS", UI_CENTER|UI_SMALLFONT, text_small_title_color);
+
 	UI_DrawString(320, 80 + 16, cgs.glconfig.vendor_string, UI_CENTER|UI_SMALLFONT, text_color_normal);
 	UI_DrawString(320, 96 + 16, cgs.glconfig.version_string, UI_CENTER|UI_SMALLFONT, text_color_normal);
 	UI_DrawString(320, 112 + 16, cgs.glconfig.renderer_string, UI_CENTER|UI_SMALLFONT, text_color_normal);
-	UI_DrawString(320, 152 + 16, va("color(%d-bits) Z(%d-bits) stencil(%d-bits)", cgs.glconfig.colorBits, cgs.glconfig.depthBits, cgs.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, text_color_normal);
+	UI_DrawString(320, 152 + 16, va ("color(%d-bits) Z(%d-bits) stencil(%d-bits)", cgs.glconfig.colorBits, cgs.glconfig.depthBits, cgs.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, text_color_normal);
 	// double column
 	y = 192 + 16;
 
@@ -183,8 +190,7 @@ static void UI_DriverInfo_Menu(void) {
 	s_driverinfo.back.focuspic = DRIVERINFO_BACK1;
 	// TTimo: overflow with particularly long GL extensions (such as the gf3)
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=399
-	// NOTE: could have pushed the size of stringbuff, but the list is already out of the screen
-	// (no matter what your resolution)
+	// NOTE: could have pushed the size of stringbuff, but the list is already out of the screen (no matter what your resolution)
 	Q_strncpyz(s_driverinfo.stringbuff, cgs.glconfig.extensions_string, 1024);
 	// build null terminated extension strings
 	eptr = s_driverinfo.stringbuff;
@@ -247,7 +253,7 @@ static void UI_DriverInfo_Menu(void) {
 #define ID_RATIO		110
 
 typedef struct {
-	menuframework_s menu;
+	menuframework_smenu;
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
@@ -289,17 +295,29 @@ static graphicsoptions_t s_graphicsoptions;
 
 static InitialVideoOptions_s s_ivo_templates[] = {
 	// very high
-	{6, qtrue, 3, 0, 2, 4, 5, 2, qtrue}, // Note: If r_availableModes is found, mode is changed to -2.
+	{
+		6, qtrue, 3, 0, 2, 4, 5, 2, qtrue // Note: If r_availableModes is found, mode is changed to -2.
+	},
 	// high
-	{6, qtrue, 3, 0, 2, 3, 2, 1, qtrue},
+	{
+		6, qtrue, 3, 0, 2, 3, 2, 1, qtrue
+	},
 	// normal
-	{6, qtrue, 3, 0, 2, 2, 1, 0, qtrue},
+	{
+		6, qtrue, 3, 0, 2, 2, 1, 0, qtrue
+	},
 	// fast
-	{4, qtrue, 2, 0, 0, 1, 0, 0, qfalse},
+	{
+		4, qtrue, 2, 0, 0, 1, 0, 0, qfalse
+	},
 	// fastest
-	{3, qtrue, 1, 1, 0, 0, 0, 0, qfalse},
+	{
+		3, qtrue, 1, 1, 0, 0, 0, 0, qfalse
+	},
 	// custom
-	{3, qtrue, 1, 0, 0, 1, 0, 0, qfalse}
+	{
+		3, qtrue, 1, 0, 0, 1, 0, 0, qfalse
+	}
 };
 
 #define NUM_IVO_TEMPLATES (ARRAY_LEN(s_ivo_templates))
@@ -379,7 +397,7 @@ GraphicsOptions_FindDetectedResolution
 static int GraphicsOptions_FindDetectedResolution(int mode) {
 	int i;
 
-	if (!resolutionsDetected) {
+	if (!resolutionsDetected)
 		return mode;
 	}
 	// display resolution
@@ -442,7 +460,7 @@ static void GraphicsOptions_GetAspectRatios(void) {
 			Com_sprintf(str, sizeof(str), "Auto (%s)", GraphicsOptions_AspectString(w, h));
 		} else {
 			x = strchr(resolutions[r], 'x') + 1;
-			Q_strncpyz(str, resolutions[r], x - resolutions[r]);
+			Q_strncpyz(str, resolutions[r], x-resolutions[r]);
 			w = atoi(str);
 			h = atoi(x);
 			Q_strncpyz(str, GraphicsOptions_AspectString(w, h), sizeof(str));
@@ -484,7 +502,7 @@ static void GraphicsOptions_GetInitialVideo(void) {
 	s_ivo.multisample = s_graphicsoptions.multisample.curvalue;
 	s_ivo.texturebits = s_graphicsoptions.texturebits.curvalue;
 #if 0
-	Com_Printf("DEBUG: s_ivo = {%d, %d, %d, %d, %d, %d, %d, %d, %s}\n", s_ivo.mode, s_ivo.fullscreen, s_ivo.tq, s_ivo.lighting, s_ivo.texturebits, s_ivo.geometry, s_ivo.filter, s_ivo.multisample, s_ivo.flares ? "qtrue" : "qfalse");
+	Com_Printf("DEBUG: s_ivo = { %d, %d, %d, %d, %d, %d, %d, %d, %s }\n", s_ivo.mode, s_ivo.fullscreen, s_ivo.tq, s_ivo.lighting, s_ivo.texturebits, s_ivo.geometry, s_ivo.filter, s_ivo.multisample, s_ivo.flares ? "qtrue" : "qfalse");
 #endif
 }
 
@@ -539,8 +557,7 @@ static void GraphicsOptions_CheckConfig(void) {
 		if (GraphicsOptions_FindDetectedResolution(s_ivo_templates[i].mode) != s_graphicsoptions.mode.curvalue) {
 			continue;
 		}
-
-//		if (s_ivo_templates[i].fullscreen != s_graphicsoptions.fs.curvalue) {
+//		if (s_ivo_templates[i].fullscreen != s_graphicsoptions.fs.curvalue)
 //			continue;
 //		}
 
@@ -564,13 +581,13 @@ static void GraphicsOptions_CheckConfig(void) {
 			continue;
 		}
 
-//		if (s_ivo_templates[i].texturebits != s_graphicsoptions.texturebits.curvalue) {
-//			continue;
-//		}
-
 		if (s_ivo_templates[i].multisample != s_graphicsoptions.multisample.curvalue) {
 			continue;
 		}
+
+//		if (s_ivo_templates[i].texturebits != s_graphicsoptions.texturebits.curvalue)
+//			continue;
+//		}
 
 		s_graphicsoptions.list.curvalue = i;
 		return;
@@ -638,7 +655,7 @@ static void GraphicsOptions_ApplyChanges(void *unused, int notification) {
 		return;
 	}
 
-	switch (s_graphicsoptions.texturebits.curvalue) {
+	switch (s_graphicsoptions.texturebits.curvalue ) {
 		case 0:
 			trap_Cvar_SetValue("r_texturebits", 0);
 			break;
@@ -735,7 +752,7 @@ static void GraphicsOptions_ApplyChanges(void *unused, int notification) {
 	}
 
 	trap_Cvar_SetValue("r_ext_multisample", s_graphicsoptions.multisample.curvalue * 2);
-
+	trap_Cvar_SetValue("r_ext_framebuffer_multisample", s_graphicsoptions.multisample.curvalue * 2);
 	trap_Cmd_ExecuteText(EXEC_APPEND, "vid_restart\n");
 }
 
@@ -804,7 +821,6 @@ void GraphicsOptions_MenuDraw(void) {
 
 	// APSFIX - rework this
 	GraphicsOptions_UpdateMenuItems();
-
 	Menu_Draw(&s_graphicsoptions.menu);
 }
 
@@ -814,6 +830,7 @@ GraphicsOptions_SetMenuItems
 =======================================================================================================================================
 */
 static void GraphicsOptions_SetMenuItems(void) {
+	int multisample;
 
 	s_graphicsoptions.mode.curvalue = GraphicsOptions_FindDetectedResolution(trap_Cvar_VariableValue("r_mode"));
 
@@ -844,7 +861,7 @@ static void GraphicsOptions_SetMenuItems(void) {
 
 	s_graphicsoptions.ratio.curvalue = resToRatio[s_graphicsoptions.mode.curvalue];
 	s_graphicsoptions.fs.curvalue = trap_Cvar_VariableValue("r_fullscreen");
-	s_graphicsoptions.tq.curvalue = 3 - trap_Cvar_VariableValue("r_picmip");
+	s_graphicsoptions.tq.curvalue = 3-trap_Cvar_VariableValue("r_picmip");
 
 	if (s_graphicsoptions.tq.curvalue < 0) {
 		s_graphicsoptions.tq.curvalue = 0;
@@ -869,7 +886,7 @@ static void GraphicsOptions_SetMenuItems(void) {
 	}
 
 	if (trap_Cvar_VariableIntegerValue("r_ext_texture_filter_anisotropic") != 0) {
-		switch ((int)trap_Cvar_VariableValue("r_ext_max_anisotropy")) {
+		switch ((int) trap_Cvar_VariableValue("r_ext_max_anisotropy")) {
 			default:
 			case 2:
 				s_graphicsoptions.filter.curvalue = 2;
@@ -883,40 +900,41 @@ static void GraphicsOptions_SetMenuItems(void) {
 			case 16:
 				s_graphicsoptions.filter.curvalue = 5;
 				break;
-		}
-	} else if (!Q_stricmp(CG_Cvar_VariableString("r_textureMode"), "GL_LINEAR_MIPMAP_NEAREST")) {
-		s_graphicsoptions.filter.curvalue = 0;
-	} else {
-		s_graphicsoptions.filter.curvalue = 1;
-	}
-
-	if (trap_Cvar_VariableValue("r_lodBias") > 0) {
-		if (trap_Cvar_VariableValue("r_subdivisions") >= 20) {
-			s_graphicsoptions.geometry.curvalue = 0;
+			}
+		} else if (!Q_stricmp(CG_Cvar_VariableString("r_textureMode"), "GL_LINEAR_MIPMAP_NEAREST")) {
+			s_graphicsoptions.filter.curvalue = 0;
 		} else {
-			s_graphicsoptions.geometry.curvalue = 1;
+			s_graphicsoptions.filter.curvalue = 1;
 		}
-	} else if (trap_Cvar_VariableValue("r_lodBias") == 0) {
-		s_graphicsoptions.geometry.curvalue = 2;
-	} else {
-		if (trap_Cvar_VariableValue("r_subdivisions") == 1) {
-			s_graphicsoptions.geometry.curvalue = 4;
-		} else {
-			s_graphicsoptions.geometry.curvalue = 3;
-		}
-	}
 
-	switch (trap_Cvar_VariableIntegerValue("r_ext_multisample")) {
-		case 0:
-		default:
-			s_graphicsoptions.multisample.curvalue = 0;
-			break;
-		case 2:
-			s_graphicsoptions.multisample.curvalue = 1;
-			break;
-		case 4:
-			s_graphicsoptions.multisample.curvalue = 2;
-			break;
+		if (trap_Cvar_VariableValue("r_lodBias") > 0) {
+			if (trap_Cvar_VariableValue("r_subdivisions") >= 20) {
+				s_graphicsoptions.geometry.curvalue = 0;
+			} else {
+				s_graphicsoptions.geometry.curvalue = 1;
+			}
+		} else if (trap_Cvar_VariableValue("r_lodBias") == 0) {
+			s_graphicsoptions.geometry.curvalue = 2;
+		} else {
+			if (trap_Cvar_VariableValue("r_subdivisions") == 1) {
+				s_graphicsoptions.geometry.curvalue = 4;
+			} else {
+				s_graphicsoptions.geometry.curvalue = 3;
+			}
+	}
+	// use higher multisample value
+	// r_ext_framebuffer_multisample is currently only used by the OpenGL2 renderer
+	multisample = MAX(trap_Cvar_VariableIntegerValue("r_ext_multisample"), trap_Cvar_VariableIntegerValue("r_ext_framebuffer_multisample"));
+
+	if (multisample < 2) {
+		// Off
+		s_graphicsoptions.multisample.curvalue = 0;
+	} else if (multisample < 4) {
+		// 2 x MSAA
+		s_graphicsoptions.multisample.curvalue = 1;
+	} else {
+		// 4 x MSAA
+		s_graphicsoptions.multisample.curvalue = 2;
 	}
 }
 
@@ -926,7 +944,6 @@ GraphicsOptions_MenuInit
 =======================================================================================================================================
 */
 void GraphicsOptions_MenuInit(void) {
-
 	static const char *tq_names[] = {
 		"Default",
 		"16 bit",
@@ -991,6 +1008,7 @@ void GraphicsOptions_MenuInit(void) {
 	};
 
 	int y;
+
 	// zero set all our globals
 	memset(&s_graphicsoptions, 0, sizeof(graphicsoptions_t));
 

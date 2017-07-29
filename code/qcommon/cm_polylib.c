@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -412,6 +418,7 @@ void ClipWindingEpsilon(winding_t *in, vec3_t normal, vec_t dist, vec_t epsilon,
 
 		VectorCopy(mid, f->p[f->numpoints]);
 		f->numpoints++;
+
 		VectorCopy(mid, b->p[b->numpoints]);
 		b->numpoints++;
 	}
@@ -475,6 +482,7 @@ void ChopWindingInPlace(winding_t **inout, vec3_t normal, vec_t dist, vec_t epsi
 	}
 
 	maxpts = in->numpoints + 4; // cant use counts[0] + 2 because of fp grouping errors
+
 	f = AllocWinding(maxpts);
 
 	for (i = 0; i < in->numpoints; i++) {
@@ -509,6 +517,7 @@ void ChopWindingInPlace(winding_t **inout, vec3_t normal, vec_t dist, vec_t epsi
 		}
 
 		VectorCopy(mid, f->p[f->numpoints]);
+
 		f->numpoints++;
 	}
 
@@ -528,8 +537,7 @@ void ChopWindingInPlace(winding_t **inout, vec3_t normal, vec_t dist, vec_t epsi
 =======================================================================================================================================
 ChopWinding
 
-Returns the fragment of in that is on the front side of the cliping plane.
-The original is freed.
+Returns the fragment of in that is on the front side of the cliping plane. The original is freed.
 =======================================================================================================================================
 */
 winding_t *ChopWinding(winding_t *in, vec3_t normal, vec_t dist) {
@@ -588,6 +596,7 @@ void CheckWinding(winding_t *w) {
 		}
 		// check the edge isnt degenerate
 		p2 = w->p[j];
+
 		VectorSubtract(p2, p1, dir);
 
 		if (VectorLength(dir) < ON_EPSILON) {
@@ -596,6 +605,7 @@ void CheckWinding(winding_t *w) {
 
 		CrossProduct(facenormal, dir, edgenormal);
 		VectorNormalize2(edgenormal, edgenormal);
+
 		edgedist = DotProduct(p1, edgenormal);
 		edgedist += ON_EPSILON;
 		// all other points must be on front side
@@ -659,6 +669,7 @@ int WindingOnPlaneSide(winding_t *w, vec3_t normal, vec_t dist) {
 	return SIDE_ON;
 }
 
+#define MAX_HULL_POINTS 128
 /*
 =======================================================================================================================================
 AddWindingToConvexHull
@@ -666,7 +677,6 @@ AddWindingToConvexHull
 Both w and *hull are on the same plane.
 =======================================================================================================================================
 */
-#define MAX_HULL_POINTS 128
 void AddWindingToConvexHull(winding_t *w, winding_t **hull, vec3_t normal) {
 	int i, j, k;
 	float *p, *copy;

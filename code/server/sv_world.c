@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -513,7 +519,7 @@ static void SV_ClipMoveToEntities(moveclip_t *clip) {
 			angles = vec3_origin; // boxes don't rotate
 		}
 
-		CM_TransformedBoxTrace(&trace, (float *)clip->start, (float *)clip->end, (float *)clip->mins, (float *)clip->maxs, clipHandle, clip->contentmask, origin, angles, clip->traceType);
+		CM_TransformedBoxTrace(&trace, (float *)clip->start, (float *)clip->end, (float *)clip->mins, (float *)clip->maxs, clipHandle,  clip->contentmask, origin, angles, clip->traceType);
 
 		if (trace.allsolid) {
 			clip->trace.allsolid = qtrue;
@@ -568,10 +574,8 @@ void SV_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec
 
 	clip.contentmask = contentmask;
 	clip.start = start;
-
 //	VectorCopy(clip.trace.endpos, clip.end);
 	VectorCopy(end, clip.end);
-
 	clip.mins = mins;
 	clip.maxs = maxs;
 	clip.passEntityNum = passEntityNum;
@@ -598,7 +602,7 @@ void SV_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec
 =======================================================================================================================================
 SV_ClipToEntities
 
-SV_Trace that doesn't clip to world
+SV_Trace that doesn't clip to world.
 =======================================================================================================================================
 */
 void SV_ClipToEntities(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, traceType_t type) {
@@ -622,7 +626,6 @@ void SV_ClipToEntities(trace_t *results, const vec3_t start, const vec3_t mins, 
 	clip.trace.entityNum = ENTITYNUM_NONE;
 	clip.contentmask = contentmask;
 	clip.start = start;
-
 //	VectorCopy(clip.trace.endpos, clip.end);
 	VectorCopy(end, clip.end);
 

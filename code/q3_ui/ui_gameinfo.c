@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -476,8 +482,8 @@ void UI_GetBestScore(int level, int *score, int *skill) {
 
 	for (n = 1; n <= 5; n++) {
 		trap_Cvar_VariableStringBuffer(va("g_spScores%i", n), scores, MAX_INFO_VALUE);
-
 		Com_sprintf(arenaKey, sizeof(arenaKey), "l%i", level);
+
 		skillScore = atoi(Info_ValueForKey(scores, arenaKey));
 
 		if (skillScore < 1 || skillScore > 8) {
@@ -521,6 +527,7 @@ void UI_SetBestScore(int level, int score) {
 	trap_Cvar_VariableStringBuffer(va("g_spScores%i", skill), scores, MAX_INFO_VALUE);
 	// see if this is better
 	Com_sprintf(arenaKey, sizeof(arenaKey), "l%i", level);
+
 	oldScore = atoi(Info_ValueForKey(scores, arenaKey));
 
 	if (oldScore && oldScore <= score) {
@@ -551,8 +558,8 @@ void UI_LogAwardData(int award, int data) {
 	}
 
 	trap_Cvar_VariableStringBuffer("g_spAwards", awardData, sizeof(awardData));
-
 	Com_sprintf(key, sizeof(key), "a%i", award);
+
 	oldValue = atoi(Info_ValueForKey(awardData, key));
 
 	Info_SetValueForKey(awardData, key, va("%i", oldValue + data));
@@ -569,7 +576,6 @@ int UI_GetAwardLevel(int award) {
 	char awardData[MAX_INFO_VALUE];
 
 	trap_Cvar_VariableStringBuffer("g_spAwards", awardData, sizeof(awardData));
-
 	Com_sprintf(key, sizeof(key), "a%i", award);
 	return atoi(Info_ValueForKey(awardData, key));
 }
@@ -631,7 +637,6 @@ qboolean UI_ShowTierVideo(int tier) {
 	}
 
 	trap_Cvar_VariableStringBuffer("g_spVideos", videos, sizeof(videos));
-
 	Com_sprintf(key, sizeof(key), "tier%i", tier);
 
 	if (atoi(Info_ValueForKey(videos, key))) {
@@ -662,7 +667,6 @@ qboolean UI_CanShowTierVideo(int tier) {
 	}
 
 	trap_Cvar_VariableStringBuffer("g_spVideos", videos, sizeof(videos));
-
 	Com_sprintf(key, sizeof(key), "tier%i", tier);
 
 	if (atoi(Info_ValueForKey(videos, key))) {
@@ -721,6 +725,7 @@ Clears the scores and sets the difficutly level.
 =======================================================================================================================================
 */
 void UI_NewGame(void) {
+
 	trap_Cvar_Set("g_spScores1", "");
 	trap_Cvar_Set("g_spScores2", "");
 	trap_Cvar_Set("g_spScores3", "");
@@ -792,7 +797,6 @@ void UI_SPUnlock_f(void) {
 	}
 
 	trap_Print("All levels unlocked at skill level 1\n");
-
 	UI_SPLevelMenu_ReInit();
 }
 

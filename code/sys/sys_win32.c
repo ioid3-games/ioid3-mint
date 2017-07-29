@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -41,19 +47,25 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include <float.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
 #ifndef KEY_WOW64_32KEY
 #define KEY_WOW64_32KEY 0x0200
 #endif
-// Used to determine where to store user-specific files
+// used to determine where to store user-specific files
 static char homePath[MAX_OSPATH] = {0};
-// Used to store the Steam Quake 3 installation path
+// used to store the Steam Quake 3 installation path
 static char steamPath[MAX_OSPATH] = {0};
-// Used to store the GOG Quake 3 installation path
+// used to store the GOG Quake 3 installation path
 static char gogPath[MAX_OSPATH] = {0};
 #ifndef DEDICATED
 static UINT timerResolution = 0;
 #endif
+/*
+=======================================================================================================================================
+Sys_SetFPUCW
+
+Set FPU control word to default value
+=======================================================================================================================================
+*/
 #ifndef _RC_CHOP
 // mingw doesn't seem to have these defined :(
 #define _MCW_EM 0x0008001fU
@@ -73,8 +85,6 @@ unsigned int _controlfp(unsigned int new, unsigned int mask);
 /*
 =======================================================================================================================================
 Sys_SetFloatEnv
-
-Set FPU control word to default value.
 =======================================================================================================================================
 */
 void Sys_SetFloatEnv(void) {
@@ -391,9 +401,9 @@ FILE *Sys_Mkfifo(const char *ospath) {
 Sys_StatFile
 
 Test a file given OS path:
-	returns -1 if not found.
-	returns 1 if directory.
-	returns 0 otherwise.
+returns -1 if not found
+returns 1 if directory
+returns 0 otherwise
 =======================================================================================================================================
 */
 int Sys_StatFile(char *ospath) {
@@ -537,6 +547,7 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	if (filter) {
 		nfiles = 0;
 		Sys_ListFilteredFiles(directory, "", filter, list, &nfiles);
+
 		list[nfiles] = 0;
 		*numfiles = nfiles;
 
@@ -619,6 +630,7 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 		for (i = 1; i < nfiles; i++) {
 			if (strgtr(listCopy[i - 1], listCopy[i])) {
 				char *temp = listCopy[i];
+
 				listCopy[i] = listCopy[i - 1];
 				listCopy[i - 1] = temp;
 				flag = 1;

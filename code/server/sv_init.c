@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -36,7 +42,7 @@ static void SV_SendConfigstring(client_t *client, int index) {
 	int len;
 
 	if (sv.configstrings[index].restricted && Com_ClientListContains(&sv.configstrings[index].clientList, client - svs.clients)) {
-		// send a blank config string for this client if it's listed
+		// Send a blank config string for this client if it's listed
 		SV_SendServerCommand(client, -1, "cs %i \"\"\n", index);
 		return;
 	}
@@ -59,7 +65,6 @@ static void SV_SendConfigstring(client_t *client, int index) {
 			}
 
 			Q_strncpyz(buf, &sv.configstrings[index].s[sent], maxChunkSize);
-
 			SV_SendServerCommand(client, -1, "%s %i \"%s\"\n", cmd, index, buf);
 
 			sent += (maxChunkSize - 1);
@@ -172,7 +177,8 @@ void SV_SetConfigstringRestrictions(int index, const clientList_t *clientList) {
 
 	for (i = 0; i < sv_maxclients->integer; i++) {
 		if (svs.clients[i].state >= CS_CONNECTED) {
-			if (Com_ClientListContains(&oldClientList, i) != Com_ClientListContains(clientList, i)) {
+			if (Com_ClientListContains(&oldClientList, i) !=
+				Com_ClientListContains(clientList, i)) {
 				// A client has left or joined the restricted list, so update
 				SV_SendConfigstring(&svs.clients[i], index);
 			}
@@ -344,9 +350,7 @@ void SV_ChangeMaxClients(void) {
 			for (j = 0; j < MAX_SPLITVIEW; j++) {
 				if (svs.clients[i].localPlayers[j]) {
 					playerNum = (int)(svs.clients[i].localPlayers[j] - svs.players);
-
 					oldClients[i].localPlayers[j] = &oldPlayers[playerNum];
-
 					oldPlayers[playerNum] = svs.players[playerNum];
 					oldPlayers[playerNum].client = NULL;
 				}
@@ -366,7 +370,6 @@ void SV_ChangeMaxClients(void) {
 	svs.players = Z_Malloc(sv_maxclients->integer * sizeof(player_t));
 
 	Com_Memset(svs.players, 0, sv_maxclients->integer * sizeof(player_t));
-
 	// copy the clients and players over
 	for (i = 0; i < count; i++) {
 		if (oldClients[i].state >= CS_CONNECTED) {
@@ -375,9 +378,7 @@ void SV_ChangeMaxClients(void) {
 			for (j = 0; j < MAX_SPLITVIEW; j++) {
 				if (oldClients[i].localPlayers[j]) {
 					playerNum = (int)(oldClients[i].localPlayers[j] - oldPlayers);
-
 					svs.clients[i].localPlayers[j] = &svs.players[playerNum];
-
 					svs.players[playerNum] = oldPlayers[playerNum];
 					svs.players[playerNum].client = &svs.clients[i];
 				}
@@ -444,9 +445,7 @@ static void SV_InitDedicatedRef(void) {
 	refimport_t ri;
 
 	Com_ShutdownRef();
-
 	Com_Memset(&ri, 0, sizeof(refimport_t));
-
 	Com_InitRef(&ri);
 
 	re.BeginRegistration(NULL);
@@ -483,7 +482,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	// Restart renderer
 	SV_InitDedicatedRef();
 #else
-	// ZTM: FIXME: renderer is restarted here for game VM to use, // but client restarts it again after connecting to server.
+	// ZTM: FIXME: renderer is restarted here for game VM to use, but client restarts it again after connecting to server.
 	// Restart renderer
 	CL_StartHunkUsers(qtrue);
 #endif
@@ -516,18 +515,16 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	for (i = 0; i < MAX_CONFIGSTRINGS; i++) {
 		sv.configstrings[i].s = CopyString("");
 		sv.configstrings[i].restricted = qfalse;
-
 		Com_Memset(&sv.configstrings[i].clientList, 0, sizeof(clientList_t));
 	}
 	// make sure we are not paused
 	Cvar_Set("cl_paused", "0");
 	// restart the file system
 	FS_Restart(qfalse);
-
 	CM_LoadMap(va("maps/%s.bsp", server), qfalse, &checksum);
 	// set serverinfo visible name
 	Cvar_Set("mapname", server);
-	Cvar_Set("sv_mapChecksum", va("%i", checksum));
+	Cvar_Set("sv_mapChecksum", va("%i",checksum));
 	// serverid should be different each time
 	sv.serverId = com_frameTime;
 	sv.restartedServerId = sv.serverId; // I suppose the init here is just to be safe
@@ -541,6 +538,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	SV_InitGameProgs();
 	// allocate the snapshot entities on the hunk
 	DA_Init(&svs.snapshotEntities, svs.numSnapshotEntities, sv.gameEntityStateSize, qfalse);
+
 	svs.nextSnapshotEntities = 0;
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++) {
@@ -598,7 +596,6 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 				svs.clients[i].state = CS_CONNECTED;
 			} else {
 				client_t *client;
-
 				client = &svs.clients[i];
 				client->state = CS_ACTIVE;
 				client->deltaMessage = -1;
@@ -630,14 +627,13 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 
 		p = FS_LoadedPakNames();
 		Cvar_Set("sv_pakNames", p);
-		// if a dedicated pure server we need to touch the cgame because it could be in a separate pk3 file and the client will
-		// need to load the latest cgame.qvm
-		if (com_dedicated->integer) {
-			SV_TouchCGame();
-		}
 	} else {
 		Cvar_Set("sv_paks", "");
 		Cvar_Set("sv_pakNames", "");
+	}
+	// if a dedicated pure server we need to touch the cgame because it could be in a seperate pk3 file and the client will need to load the latest cgame.qvm
+	if (com_dedicated->integer) {
+		SV_TouchCGame();
 	}
 	// the server sends these to the clients so they can figure out which pk3s should be auto-downloaded
 	p = FS_ReferencedPakChecksums();
@@ -653,6 +649,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	}
 	// save systeminfo and serverinfo strings
 	Q_strncpyz(systemInfo, Cvar_InfoString_Big(CVAR_SYSTEMINFO), sizeof(systemInfo));
+
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 
 	SV_SetConfigstring(CS_SYSTEMINFO, systemInfo);
@@ -743,6 +740,7 @@ void SV_Init(void) {
 	sv_lanForceRate = Cvar_Get("sv_lanForceRate", "1", CVAR_ARCHIVE);
 	sv_banFile = Cvar_Get("sv_banFile", "serverbans.dat", CVAR_ARCHIVE);
 	sv_public = Cvar_Get("sv_public", "0", 0);
+
 	Cvar_CheckRange(sv_public, -2, 1, qtrue);
 	// initialize bot cvars so they are listed and can be set before loading the botlib
 	SV_BotInitCvars();
@@ -824,7 +822,7 @@ void SV_Shutdown(char *finalmsg) {
 
 	if (svs.clients) {
 		int index;
-
+		
 		for (index = 0; index < sv_maxclients->integer; index++) {
 			SV_FreeClient(&svs.clients[index]);
 		}
@@ -842,6 +840,7 @@ void SV_Shutdown(char *finalmsg) {
 	// when starting a demo while running a server, do not disconnect any local clients and free netfields
 	if (sv_killserver->integer != 2) {
 		CL_Disconnect(qfalse);
+
 		MSG_ShutdownNetFields();
 	}
 }

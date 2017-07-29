@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -74,8 +80,8 @@ typedef struct {
 	vec3_t points[MAX_GRID_SIZE][MAX_GRID_SIZE]; // [width][height]
 } cGrid_t;
 
-#define PLANE_TRI_EPSILON	0.1
-#define WRAP_POINT_EPSILON	0.1
+#define PLANE_TRI_EPSILON 0.1
+#define WRAP_POINT_EPSILON 0.1
 */
 
 int c_totalPatchBlocks;
@@ -93,6 +99,7 @@ CM_ClearLevelPatches
 =======================================================================================================================================
 */
 void CM_ClearLevelPatches(void) {
+
 	debugPatchCollide = NULL;
 	debugFacet = NULL;
 }
@@ -170,6 +177,7 @@ static qboolean CM_NeedsSubdivision(vec3_t a, vec3_t b, vec3_t c, float subdivid
 	}
 	// see if the curve is far enough away from the linear mid
 	VectorSubtract(cmid, lmid, delta);
+
 	dist = VectorLength(delta);
 
 	return dist >= subdivideDistance;
@@ -335,12 +343,12 @@ static void CM_SubdivideGridColumns(cGrid_t *grid) {
 	}
 }
 
+#define POINT_EPSILON 0.1
 /*
 =======================================================================================================================================
 CM_ComparePoints
 =======================================================================================================================================
 */
-#define POINT_EPSILON 0.1
 static qboolean CM_ComparePoints(float *a, float *b) {
 	float d;
 
@@ -482,11 +490,12 @@ int CM_FindPlane2(float plane[4], int *flipped) {
 	}
 
 	Vector4Copy(plane, planes[numPlanes].plane);
-	planes[numPlanes].signbits = CM_SignbitsForNormal(plane);
 
+	planes[numPlanes].signbits = CM_SignbitsForNormal(plane);
 	numPlanes++;
 
 	*flipped = qfalse;
+
 	return numPlanes - 1;
 }
 
@@ -535,9 +544,10 @@ static int CM_FindPlane(float *p1, float *p2, float *p3) {
 	}
 
 	Vector4Copy(plane, planes[numPlanes].plane);
-	planes[numPlanes].signbits = CM_SignbitsForNormal(plane);
 
+	planes[numPlanes].signbits = CM_SignbitsForNormal(plane);
 	numPlanes++;
+
 	return numPlanes - 1;
 }
 
@@ -745,6 +755,7 @@ static void CM_SetBorderInward(facet_t *facet, cGrid_t *grid, int gridPlanes[MAX
 
 			if (!debugBlock) {
 				debugBlock = qtrue;
+
 				VectorCopy(grid->points[i][j], debugBlockPoints[0]);
 				VectorCopy(grid->points[i + 1][j], debugBlockPoints[1]);
 				VectorCopy(grid->points[i + 1][j + 1], debugBlockPoints[2]);
@@ -900,7 +911,7 @@ void CM_AddFacetBevels(facet_t *facet) {
 		CM_SnapVector(vec);
 
 		for (k = 0; k < 3; k++) {
-			if (vec[k] == -1.0f || vec[k] == 1.0f || (vec[k] == 0.0f && vec[(k + 1) % 3] == 0.0f)) {
+			if (vec[k] == -1.0f || vec[k] == 1.0f || (vec[k] == 0.0f && vec[(k + 1)% 3] == 0.0f)) {
 				break; // axial
 			}
 		}
@@ -913,7 +924,9 @@ void CM_AddFacetBevels(facet_t *facet) {
 			for (dir = -1; dir <= 1; dir += 2) {
 				// construct a plane
 				VectorClear(vec2);
+
 				vec2[axis] = dir;
+
 				CrossProduct(vec, vec2, plane);
 
 				if (VectorNormalize(plane) < 0.5) {
@@ -1281,7 +1294,7 @@ struct patchCollide_s *CM_GeneratePatchCollide(int width, int height, vec3_t *po
 /*
 =======================================================================================================================================
 
-	TRACE TESTING
+Triangle Soup to patchCollide_s
 
 =======================================================================================================================================
 */
@@ -1343,7 +1356,6 @@ static int CM_GenerateBoundaryForPoints(int surfacePlane, float *p1, float *p2) 
 	vec3_t up;
 
 	VectorMA(p1, 4, planes[surfacePlane].plane, up);
-
 	return CM_FindPlane(p1, p2, up);
 }
 
@@ -1365,7 +1377,6 @@ static void CM_PatchCollideFromTriangleSoup(cTriangleSoup_t *triSoup, patchColli
 		p1 = triSoup->points[i][0];
 		p2 = triSoup->points[i][1];
 		p3 = triSoup->points[i][2];
-
 		trianglePlanes[i] = CM_FindPlane(p1, p2, p3);
 	}
 	// create the borders for each triangle
@@ -1389,11 +1400,9 @@ static void CM_PatchCollideFromTriangleSoup(cTriangleSoup_t *triSoup, patchColli
 		}
 
 		facet->numBorders = 3;
-
 		facet->borderNoAdjust[0] = qfalse;
 		facet->borderNoAdjust[1] = qfalse;
 		facet->borderNoAdjust[2] = qfalse;
-
 		facet->borderPlanes[0] = CM_GenerateBoundaryForPoints(facet->surfacePlane, p1, p2);
 		facet->borderPlanes[1] = CM_GenerateBoundaryForPoints(facet->surfacePlane, p2, p3);
 		facet->borderPlanes[2] = CM_GenerateBoundaryForPoints(facet->surfacePlane, p3, p1);
@@ -1446,6 +1455,7 @@ struct patchCollide_s *CM_GenerateTriangleSoupCollide(int numVertexes, vec3_t *v
 	}
 
 	pf = Hunk_Alloc(sizeof(*pf), h_high);
+
 	ClearBounds(pf->bounds[0], pf->bounds[1]);
 
 	for (i = 0; i < triSoup.numTriangles; i++) {
@@ -1661,7 +1671,9 @@ void CM_TraceThroughPatchCollide(traceWork_t *tw, const struct patchCollide_s *p
 		leaveFrac = 1.0;
 		hitnum = -1;
 		planes = &pc->planes[facet->surfacePlane];
+
 		VectorCopy(planes->plane, plane);
+
 		plane[3] = planes->plane[3];
 
 		if (tw->type == TT_CAPSULE) {
@@ -1720,6 +1732,7 @@ void CM_TraceThroughPatchCollide(traceWork_t *tw, const struct patchCollide_s *p
 				// NOTE: this works even though the plane might be flipped because the bbox is centered
 				offset = DotProduct(tw->offsets[planes->signbits], plane);
 				plane[3] += fabs(offset);
+
 				VectorCopy(tw->start, startp);
 				VectorCopy(tw->end, endp);
 			}
@@ -1730,6 +1743,7 @@ void CM_TraceThroughPatchCollide(traceWork_t *tw, const struct patchCollide_s *p
 
 			if (hit) {
 				hitnum = j;
+
 				Vector4Copy(plane, bestplane);
 			}
 		}
@@ -1758,7 +1772,9 @@ void CM_TraceThroughPatchCollide(traceWork_t *tw, const struct patchCollide_s *p
 				}
 #endif // BSPC
 				tw->trace.fraction = enterFrac;
+
 				VectorCopy(bestplane, tw->trace.plane.normal);
+
 				tw->trace.plane.dist = bestplane[3];
 			}
 		}
@@ -1907,7 +1923,6 @@ void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *point
 			} else {
 				planenum = facet->surfacePlane;
 				inward = qfalse;
-				//continue;
 			}
 
 			Vector4Copy(pc->planes[planenum].plane, plane);
@@ -1954,9 +1969,7 @@ void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *point
 					plane[3] = -plane[3];
 				}
 
-		//		if (!facet->borderNoAdjust[j]) {
 				plane[3] -= cv->value;
-		//		}
 
 				for (n = 0; n < 3; n++) {
 					if (plane[n] > 0) {
@@ -1994,11 +2007,13 @@ void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *point
 		VectorCopy(debugBlockPoints[0], v[0]);
 		VectorCopy(debugBlockPoints[1], v[1]);
 		VectorCopy(debugBlockPoints[2], v[2]);
+
 		drawPoly(2, 3, v[0]);
 
 		VectorCopy(debugBlockPoints[2], v[0]);
 		VectorCopy(debugBlockPoints[3], v[1]);
 		VectorCopy(debugBlockPoints[0], v[2]);
+
 		drawPoly(2, 3, v[0]);
 	}
 #if 0

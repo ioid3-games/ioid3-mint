@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, 
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -64,7 +70,7 @@ void P_DamageFeedback(gentity_t *ent) {
 		player->ps.damagePitch = angles[PITCH] / 360.0 * 256;
 		player->ps.damageYaw = angles[YAW] / 360.0 * 256;
 	}
-	// play an appropriate pain sound
+	// play an apropriate pain sound
 	if ((level.time > ent->pain_debounce_time) && !(ent->flags & FL_GODMODE)) {
 		ent->pain_debounce_time = level.time + 700;
 		G_AddEvent(ent, EV_PAIN, ent->health);
@@ -125,7 +131,7 @@ void P_WorldEffects(gentity_t *ent) {
 		ent->damage = 2;
 	}
 	// check for sizzle damage (move to pmove?)
-	if (waterlevel && (ent->watertype &(CONTENTS_LAVA|CONTENTS_SLIME))) {
+	if (waterlevel && (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME))) {
 		if (ent->health > 0 && ent->pain_debounce_time <= level.time) {
 			if (envirosuit) {
 				G_AddEvent(ent, EV_POWERUP_BATTLESUIT, 0);
@@ -153,7 +159,7 @@ void G_SetPlayerSound(gentity_t *ent) {
 		ent->player->ps.loopSound = G_SoundIndex("sound/weapons/proxmine/wstbtick.wav");
 	} else
 #endif
-	if (ent->waterlevel && (ent->watertype &(CONTENTS_LAVA|CONTENTS_SLIME))) {
+	if (ent->waterlevel && (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME))) {
 		ent->player->ps.loopSound = level.snd_fry;
 	} else {
 		ent->player->ps.loopSound = 0;
@@ -240,7 +246,7 @@ void G_TouchTriggers(gentity_t *ent) {
 		}
 		// ignore most entities if a spectator
 		if (ent->player->sess.sessionTeam == TEAM_SPECTATOR) {
-			if (hit->s.eType != ET_TELEPORT_TRIGGER && hit->touch != Touch_DoorTrigger) { // this is ugly but adding a new ET_? type will most likely cause network incompatibilities
+			if (hit->s.eType != ET_TELEPORT_TRIGGER && hit->touch != Touch_DoorTrigger) { // this is ugly but adding a new ET_? type will  most likely cause network incompatibilities
 				continue;
 			}
 		}
@@ -309,7 +315,6 @@ void SpectatorThink(gentity_t *ent, usercmd_t *ucmd) {
 		Pmove(&pm);
 		// save results of pmove
 		VectorCopy(player->ps.origin, ent->s.origin);
-
 		G_TouchTriggers(ent);
 		trap_UnlinkEntity(ent);
 	}
@@ -519,7 +524,7 @@ void PlayerIntermissionThink(gplayer_t *player) {
 	player->oldbuttons = player->buttons;
 	player->buttons = player->pers.cmd.buttons;
 
-	if (player->buttons & (BUTTON_ATTACK|BUTTON_USE_HOLDABLE) & (player->oldbuttons ^ player->buttons)) {
+	if (player->buttons &(BUTTON_ATTACK|BUTTON_USE_HOLDABLE)&(player->oldbuttons ^ player->buttons)) {
 		// this used to be an ^1 but once a player says ready, it should stick
 		player->readyToExit = 1;
 	}
@@ -724,7 +729,9 @@ void SendPendingPredictableEvents(playerState_t *ps) {
 		t->s.contents = 0;
 		// send to everyone except the client who generated the event
 		t->r.svFlags |= SVF_PLAYERMASK;
+
 		Com_ClientListAll(&t->r.sendPlayers);
+
 		connection = &level.connections[level.players[ps->playerNum].pers.connectionNum];
 
 		for (i = 0; i < connection->numLocalPlayers; i++) {
@@ -737,7 +744,7 @@ void SendPendingPredictableEvents(playerState_t *ps) {
 
 /*
 =======================================================================================================================================
-PlayerThink_real
+PlayerThink
 
 This will be called once for each client frame, which will usually be a couple times for each server frame on fast clients.
 If "g_synchronousClients 1" is set, this will be called exactly once for each server frame, which makes for smooth demo recording.
@@ -755,8 +762,8 @@ void PlayerThink_real(gentity_t *ent) {
 	if (player->pers.connected != CON_CONNECTED) {
 		return;
 	}
-	// frameOffset should be about the number of milliseconds into a frame this command packet was received, depending on how fast the
-	// server does a G_RunFrame()
+	// frameOffset should be about the number of milliseconds into a frame this command packet was received, depending on how fast the server
+	// does a G_RunFrame()
 	player->frameOffset = trap_Milliseconds() - level.frameStartTime;
 	// mark the time, so the connection sprite can be removed
 	ucmd = &ent->player->pers.cmd;
@@ -772,7 +779,6 @@ void PlayerThink_real(gentity_t *ent) {
 	}
 
 	player->lastCmdServerTime = ucmd->serverTime;
-
 	msec = ucmd->serverTime - player->ps.commandTime;
 	// following others may result in bad times, but we still want to check for follow toggles
 	if (msec < 1 && player->sess.spectatorState != SPECTATOR_FOLLOW) {
@@ -837,7 +843,8 @@ void PlayerThink_real(gentity_t *ent) {
 		player->ps.speed *= 1.3;
 	}
 	// Let go of the hook if we aren't firing
-	if (player->ps.weapon == WP_GRAPPLING_HOOK && player->hook && !(ucmd->buttons & BUTTON_ATTACK)) {
+	if (player->ps.weapon == WP_GRAPPLING_HOOK &&
+		player->hook && !(ucmd->buttons & BUTTON_ATTACK)) {
 		Weapon_HookFree(player->hook);
 	}
 	// set up for pmove
@@ -1017,6 +1024,7 @@ void G_RunPlayer(gentity_t *ent) {
 	}
 
 	ent->player->pers.cmd.serverTime = level.time;
+
 	PlayerThink_real(ent);
 }
 
@@ -1070,7 +1078,7 @@ void SpectatorPlayerEndFrame(gentity_t *ent) {
 =======================================================================================================================================
 PlayerEndFrame
 
-Called at the end of each server frame for each connected player. A fast client will have multiple PlayerThink for each PlayerEndFrame,
+Called at the end of each server frame for each connected player. A fast client will have multiple PlayerThink for each PlayerEndFrame, 
 while a slow client may have multiple PlayerEndFrame between PlayerThink.
 =======================================================================================================================================
 */

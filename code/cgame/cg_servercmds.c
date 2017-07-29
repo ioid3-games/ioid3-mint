@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -108,7 +114,7 @@ static void CG_ParseScores(int start) {
 		cg.scores[i].accuracy = atoi(CG_Argv(i * 14 + 10 + start));
 		cg.scores[i].impressiveCount = atoi(CG_Argv(i * 14 + 11 + start));
 		cg.scores[i].excellentCount = atoi(CG_Argv(i * 14 + 12 + start));
-		cg.scores[i].gauntletCount = atoi(CG_Argv(i * 14 + 13 + start));
+		cg.scores[i].guantletCount = atoi(CG_Argv(i * 14 + 13 + start));
 		cg.scores[i].defendCount = atoi(CG_Argv(i * 14 + 14 + start));
 		cg.scores[i].assistCount = atoi(CG_Argv(i * 14 + 15 + start));
 		cg.scores[i].perfect = atoi(CG_Argv(i * 14 + 16 + start));
@@ -120,7 +126,6 @@ static void CG_ParseScores(int start) {
 
 		cgs.playerinfo[cg.scores[i].playerNum].score = cg.scores[i].score;
 		cgs.playerinfo[cg.scores[i].playerNum].powerups = powerups;
-
 		cg.scores[i].team = cgs.playerinfo[cg.scores[i].playerNum].team;
 #ifdef MISSIONPACK_HUD
 		// restore score select, select own score if previous score player not present
@@ -141,7 +146,6 @@ static void CG_ParseScores(int start) {
 CG_ParseTeamInfo
 
 Format: "tinfo" team numstrings string (there are numstrings strings).
-
 Each string is "playerNum location health armor weapon powerups".
 =======================================================================================================================================
 */
@@ -153,16 +157,15 @@ static void CG_ParseTeamInfo(int start) {
 	team = atoi(CG_Argv(1 + start));
 
 	if (team < 0 || team >= TEAM_NUM_TEAMS) {
-		CG_Error("CG_ParseTeamInfo: team out of range (%d)", team);
+		CG_Error("CG_ParseTeamInfo: team out of range(%d)", team);
 		return;
 	}
 
 	sortedTeamPlayersTime[team] = cg.time;
-
 	numSortedTeamPlayers[team] = atoi(CG_Argv(2 + start));
 
 	if (numSortedTeamPlayers[team] < 0 || numSortedTeamPlayers[team] > TEAM_MAXOVERLAY) {
-		CG_Error("CG_ParseTeamInfo: numSortedTeamPlayers out of range (%d)", numSortedTeamPlayers[team]);
+		CG_Error("CG_ParseTeamInfo: numSortedTeamPlayers out of range(%d)", numSortedTeamPlayers[team]);
 		return;
 	}
 
@@ -198,7 +201,9 @@ void CG_ParseServerinfo(void) {
 	info = CG_ConfigString(CS_SERVERINFO);
 
 	Q_strncpyz(cgs.gametypeName, Info_ValueForKey(info, "sv_gametypeName"), sizeof(cgs.gametypeName));
+
 	cgs.gametype = atoi(Info_ValueForKey(info, "g_gametype"));
+
 	trap_Cvar_SetValue("g_gametype", cgs.gametype);
 
 	cgs.dmflags = atoi(Info_ValueForKey(info, "dmflags"));
@@ -208,6 +213,7 @@ void CG_ParseServerinfo(void) {
 	cgs.maxplayers = atoi(Info_ValueForKey(info, "sv_maxclients"));
 
 	mapname = Info_ValueForKey(info, "mapname");
+
 	Com_sprintf(cgs.mapname, sizeof(cgs.mapname), "maps/%s.bsp", mapname);
 }
 
@@ -356,30 +362,30 @@ static void CG_ConfigStringModified(void) {
 		Q_strncpyz(cgs.voteString, str, sizeof(cgs.voteString));
 #ifdef MISSIONPACK
 		trap_S_StartLocalSound(cgs.media.voteNow, CHAN_ANNOUNCER);
-#endif // MISSIONPACK
+#endif //MISSIONPACK
 	} else if (num >= CS_TEAMVOTE_TIME && num <= CS_TEAMVOTE_TIME + 1) {
-		cgs.teamVoteTime[num - CS_TEAMVOTE_TIME] = atoi(str);
-		cgs.teamVoteModified[num - CS_TEAMVOTE_TIME] = qtrue;
+		cgs.teamVoteTime[num-CS_TEAMVOTE_TIME] = atoi(str);
+		cgs.teamVoteModified[num-CS_TEAMVOTE_TIME] = qtrue;
 	} else if (num >= CS_TEAMVOTE_YES && num <= CS_TEAMVOTE_YES + 1) {
-		cgs.teamVoteYes[num - CS_TEAMVOTE_YES] = atoi(str);
-		cgs.teamVoteModified[num - CS_TEAMVOTE_YES] = qtrue;
+		cgs.teamVoteYes[num-CS_TEAMVOTE_YES] = atoi(str);
+		cgs.teamVoteModified[num-CS_TEAMVOTE_YES] = qtrue;
 	} else if (num >= CS_TEAMVOTE_NO && num <= CS_TEAMVOTE_NO + 1) {
-		cgs.teamVoteNo[num - CS_TEAMVOTE_NO] = atoi(str);
-		cgs.teamVoteModified[num - CS_TEAMVOTE_NO] = qtrue;
+		cgs.teamVoteNo[num-CS_TEAMVOTE_NO] = atoi(str);
+		cgs.teamVoteModified[num-CS_TEAMVOTE_NO] = qtrue;
 	} else if (num >= CS_TEAMVOTE_STRING && num <= CS_TEAMVOTE_STRING + 1) {
-		Q_strncpyz(cgs.teamVoteString[num - CS_TEAMVOTE_STRING], str, sizeof(cgs.teamVoteString[0]));
+		Q_strncpyz(cgs.teamVoteString[num-CS_TEAMVOTE_STRING], str, sizeof(cgs.teamVoteString[0]));
 #ifdef MISSIONPACK
 		trap_S_StartLocalSound(cgs.media.voteNow, CHAN_ANNOUNCER);
 #endif
 	} else if (num == CS_INTERMISSION) {
 		cg.intermissionStarted = atoi(str);
-	} else if (num >= CS_MODELS && num < CS_MODELS + MAX_MODELS) {
-		cgs.gameModels[num - CS_MODELS] = trap_R_RegisterModel(str);
-	} else if (num >= CS_SOUNDS && num < CS_SOUNDS + MAX_SOUNDS) {
+	} else if (num >= CS_MODELS && num < CS_MODELS+MAX_MODELS) {
+		cgs.gameModels[num-CS_MODELS] = trap_R_RegisterModel(str);
+	} else if (num >= CS_SOUNDS && num < CS_SOUNDS+MAX_SOUNDS) {
 		if (str[0] != '*') { // player specific sounds don't register here
-			cgs.gameSounds[num - CS_SOUNDS] = trap_S_RegisterSound(str, qfalse);
+			cgs.gameSounds[num-CS_SOUNDS] = trap_S_RegisterSound(str, qfalse);
 		}
-	} else if (num >= CS_PLAYERS && num < CS_PLAYERS + MAX_CLIENTS) {
+	} else if (num >= CS_PLAYERS && num < CS_PLAYERS+MAX_CLIENTS) {
 		CG_NewPlayerInfo(num - CS_PLAYERS);
 #ifdef MISSIONPACK
 		CG_BuildSpectatorString();
@@ -502,20 +508,17 @@ static void CG_MapRestart(void) {
 	cg.timelimitWarnings = 0;
 	cg.intermissionStarted = qfalse;
 	cg.levelShot = qfalse;
-
 	cgs.voteTime = 0;
-
 	cg.lightstylesInited = qfalse;
 	cg.mapRestart = qtrue;
 
 	CG_StartMusic();
-
 	trap_S_ClearLoopingSounds(qtrue);
 	// we really should clear more parts of cg here and stop sounds
 	// play the "fight" sound if this is a restart without warmup
 	if (cg.warmup == 0 /* && cgs.gametype == GT_TOURNAMENT */) {
 		trap_S_StartLocalSound(cgs.media.countFightSound, CHAN_ANNOUNCER);
-		CG_GlobalCenterPrint("FIGHT!", SCREEN_HEIGHT / 2, 2.0);
+		CG_GlobalCenterPrint("FIGHT!", SCREEN_HEIGHT/2, 2.0);
 	}
 #ifdef MISSIONPACK
 	if (cg_singlePlayer.integer) {
@@ -597,13 +600,16 @@ int CG_ParseVoiceChats(const char *filename, voiceChatList_t *voiceChatList, int
 	}
 
 	trap_FS_Read(buf, len, f);
+
 	buf[len] = 0;
+
 	trap_FS_FCloseFile(f);
 
 	ptr = buf;
 	p = &ptr;
 
 	Com_sprintf(voiceChatList->name, sizeof(voiceChatList->name), "%s", filename);
+
 	voiceChats = voiceChatList->voiceChats;
 
 	for (i = 0; i < maxVoiceChats; i++) {
@@ -637,6 +643,7 @@ int CG_ParseVoiceChats(const char *filename, voiceChatList_t *voiceChatList, int
 		}
 
 		Com_sprintf(voiceChats[voiceChatList->numVoiceChats].id, sizeof(voiceChats[voiceChatList->numVoiceChats].id), "%s", token);
+
 		token = COM_ParseExt(p, qtrue);
 
 		if (Q_stricmp(token, "{")) {
@@ -734,7 +741,9 @@ int CG_HeadModelVoiceChats(char *filename) {
 	}
 
 	trap_FS_Read(buf, len, f);
+
 	buf[len] = 0;
+
 	trap_FS_FCloseFile(f);
 
 	ptr = buf;
@@ -793,13 +802,13 @@ voiceChatList_t *CG_VoiceChatListForPlayer(int playerNum) {
 	for (k = 0; k < 2; k++) {
 		if (k == 0) {
 			if (pi->headModelName[0] == '*') {
-				Com_sprintf(headModelName, sizeof(headModelName), "%s/%s", pi->headModelName + 1, pi->headSkinName);
+				Com_sprintf(headModelName, sizeof(headModelName), "%s/%s", pi->headModelName+1, pi->headSkinName);
 			} else {
 				Com_sprintf(headModelName, sizeof(headModelName), "%s/%s", pi->headModelName, pi->headSkinName);
 			}
 		} else {
 			if (pi->headModelName[0] == '*') {
-				Com_sprintf(headModelName, sizeof(headModelName), "%s", pi->headModelName + 1);
+				Com_sprintf(headModelName, sizeof(headModelName), "%s", pi->headModelName+1);
 			} else {
 				Com_sprintf(headModelName, sizeof(headModelName), "%s", pi->headModelName);
 			}
@@ -818,6 +827,7 @@ voiceChatList_t *CG_VoiceChatListForPlayer(int playerNum) {
 		for (i = 0; i < MAX_HEADMODELS; i++) {
 			if (!strlen(headModelVoiceChat[i].headmodel)) {
 				Com_sprintf(filename, sizeof(filename), "scripts/%s.vc", headModelName);
+
 				voiceChatNum = CG_HeadModelVoiceChats(filename);
 
 				if (voiceChatNum == -1) {
@@ -825,7 +835,9 @@ voiceChatList_t *CG_VoiceChatListForPlayer(int playerNum) {
 				}
 
 				Com_sprintf(headModelVoiceChat[i].headmodel, sizeof(headModelVoiceChat[i].headmodel), "%s", headModelName);
+
 				headModelVoiceChat[i].voiceChatNum = voiceChatNum;
+
 				return &voiceChatLists[headModelVoiceChat[i].voiceChatNum];
 			}
 		}
@@ -902,7 +914,7 @@ void CG_PlayVoiceChat(bufferedVoiceChat_t *vchat) {
 		trap_S_StartLocalSound(vchat->snd, CHAN_VOICE);
 
 		for (i = 0; i < CG_MaxSplitView(); i++) {
-			if (!(vchat->localPlayerBits & (1 << i))) {
+			if (!(vchat->localPlayerBits &(1 << i))) {
 				continue;
 			}
 
@@ -932,7 +944,7 @@ void CG_PlayVoiceChat(bufferedVoiceChat_t *vchat) {
 
 /*
 =======================================================================================================================================
-CG_PlayBufferedVoiceChats
+CG_PlayBufferedVoieChats
 =======================================================================================================================================
 */
 void CG_PlayBufferedVoiceChats(void) {
@@ -1002,6 +1014,7 @@ void CG_VoiceChatLocal(int localPlayerBits, int mode, qboolean voiceOnly, int pl
 		vchat.playerNum = playerNum;
 		vchat.snd = snd;
 		vchat.voiceOnly = voiceOnly;
+
 		Q_strncpyz(vchat.cmd, cmd, sizeof(vchat.cmd));
 
 		if (mode == SAY_TELL) {
@@ -1080,13 +1093,13 @@ int CG_LocalPlayerBitsForTeam(team_t team) {
 		if (playerNum == -1) {
 			continue;
 		}
-
+		
 		pi = &cgs.playerinfo[playerNum];
 
 		if (!pi->infoValid) {
 			continue;
 		}
-
+		
 		if (team == -1 || pi->team == team) {
 			bits |= (1 << i);
 		}
@@ -1145,8 +1158,8 @@ static void CG_ServerCommand(void) {
 		// Get command
 		start++;
 		cmd = CG_Argv(start);
-	// Commands for specific player begin "lc#"
-	} else if (cmd[0] == 'l' && cmd[1] == 'c' && isdigit(cmd[2])) {
+	// Commands for specific player begin "lc# "
+	} else if (cmd[0] == 'l' && cmd[1] =='c' && isdigit(cmd[2])) {
 		int num = atoi(&cmd[2]);
 
 		if (num > CG_MaxSplitView()) {
@@ -1161,7 +1174,7 @@ static void CG_ServerCommand(void) {
 
 	if (!strcmp(cmd, "cp")) {
 		// print to console as a single line
-		Q_strncpyz(text, CG_Argv(start + 1), sizeof(text));
+		Q_strncpyz(text, CG_Argv(start+1), sizeof(text));
 
 		if (strlen(text) > 1 && text[strlen(text) - 1] == '\n') {
 			text[strlen(text) - 1] = '\0';
@@ -1212,9 +1225,7 @@ static void CG_ServerCommand(void) {
 		}
 
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
-
 		Q_strncpyz(text, CG_Argv(start + 1), MAX_SAY_TEXT);
-
 		CG_RemoveChatEscapeChar(text);
 		CG_Printf("%s\n", text);
 		return;
@@ -1222,9 +1233,7 @@ static void CG_ServerCommand(void) {
 
 	if (!strcmp(cmd, "tell")) {
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
-
 		Q_strncpyz(text, CG_Argv(start + 1), MAX_SAY_TEXT);
-
 		CG_RemoveChatEscapeChar(text);
 		CG_NotifyBitsPrintf(localPlayerBits, "%s\n", text);
 		return;
@@ -1232,9 +1241,7 @@ static void CG_ServerCommand(void) {
 
 	if (!strcmp(cmd, "tchat")) {
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
-
-		Q_strncpyz(text, CG_Argv(start + 1), MAX_SAY_TEXT);
-
+		Q_strncpyz(text, CG_Argv(start+1), MAX_SAY_TEXT);
 		CG_RemoveChatEscapeChar(text);
 		CG_AddToTeamChat(text);
 		CG_NotifyBitsPrintf(localPlayerBits, "%s\n", text);

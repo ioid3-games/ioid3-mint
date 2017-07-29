@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -82,11 +88,8 @@ qboolean CheckGauntletAttack(gentity_t *ent) {
 
 	// set aiming directions
 	AngleVectors(ent->player->ps.viewangles, forward, right, up);
-
 	CalcMuzzlePoint(ent, forward, right, up, muzzle);
-
 	VectorMA(muzzle, 32, forward, end);
-
 	trap_Trace(&tr, muzzle, NULL, NULL, end, ent->s.number, MASK_SHOT);
 
 	if (tr.surfaceFlags & SURF_NOIMPACT) {
@@ -166,7 +169,7 @@ void Bullet_Fire(gentity_t *ent, float spread, int damage, int mod) {
 	u = sin(r) * crandom() * spread * 16;
 	r = cos(r) * crandom() * spread * 16;
 
-	VectorMA(muzzle, 131072, forward, end);
+	VectorMA(muzzle, 8192 * 16, forward, end);
 	VectorMA(end, r, right, end);
 	VectorMA(end, u, up, end);
 
@@ -237,7 +240,7 @@ void Bullet_Fire(gentity_t *ent, float spread, int damage, int mod) {
 
 /*
 =======================================================================================================================================
-Weapon_BFG_Fire
+BFG_Fire
 =======================================================================================================================================
 */
 void BFG_Fire(gentity_t *ent) {
@@ -282,6 +285,7 @@ qboolean ShotgunPellet(vec3_t start, vec3_t end, gentity_t *ent) {
 
 	for (i = 0; i < 10; i++) {
 		trap_Trace(&tr, tr_start, NULL, NULL, tr_end, passent, MASK_SHOT);
+
 		traceEnt = &g_entities[tr.entityNum];
 		// send bullet impact
 		if (tr.surfaceFlags & SURF_NOIMPACT) {
@@ -350,7 +354,7 @@ void ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, gentity_t *ent) {
 		r = Q_crandom(&seed) * DEFAULT_SHOTGUN_SPREAD * 16;
 		u = Q_crandom(&seed) * DEFAULT_SHOTGUN_SPREAD * 16;
 
-		VectorMA(origin, 131072, forward, end);
+		VectorMA(origin, 8192 * 16, forward, end);
 		VectorMA(end, r, right, end);
 		VectorMA(end, u, up, end);
 
@@ -365,10 +369,10 @@ void ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-Weapon_Shotgun_Fire
+weapon_supershotgun_fire
 =======================================================================================================================================
 */
-void Weapon_Shotgun_Fire(gentity_t *ent) {
+void weapon_supershotgun_fire(gentity_t *ent) {
 	gentity_t *tent;
 
 	// send shotgun blast
@@ -393,7 +397,7 @@ void Weapon_Shotgun_Fire(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-Weapon_Grenadelauncher_Fire
+weapon_grenadelauncher_fire
 =======================================================================================================================================
 */
 void weapon_grenadelauncher_fire(gentity_t *ent) {
@@ -467,7 +471,7 @@ void Weapon_Plasmagun_Fire(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-Weapon_Railgun_Fire
+weapon_railgun_fire
 =======================================================================================================================================
 */
 #define MAX_RAIL_HITS 4
@@ -488,7 +492,7 @@ void weapon_railgun_fire(gentity_t *ent) {
 
 	damage = 100 * s_quadFactor;
 
-	VectorMA(muzzle, 100000, forward, end);
+	VectorMA(muzzle, 8192, forward, end);
 	// backward-reconcile the other clients
 	G_DoTimeShiftFor(ent);
 	// trace only against the solids, so the railgun will go through people
@@ -642,7 +646,6 @@ Weapon_HookThink
 =======================================================================================================================================
 */
 void Weapon_HookThink(gentity_t *ent) {
-
 	ent->nextthink = level.time + FRAMETIME;
 
 	if (ent->enemy && ent->enemy->player) {
@@ -654,6 +657,7 @@ void Weapon_HookThink(gentity_t *ent) {
 		}
 
 		VectorCopy(ent->r.currentOrigin, oldorigin);
+
 		v[0] = ent->enemy->r.currentOrigin[0] + (ent->enemy->s.mins[0] + ent->enemy->s.maxs[0]) * 0.5;
 		v[1] = ent->enemy->r.currentOrigin[1] + (ent->enemy->s.mins[1] + ent->enemy->s.maxs[1]) * 0.5;
 		v[2] = ent->enemy->r.currentOrigin[2] + (ent->enemy->s.mins[2] + ent->enemy->s.maxs[2]) * 0.5;
@@ -675,7 +679,7 @@ void Weapon_HookThink(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-Weapon_Lightning_Fire
+Weapon_LightningFire
 =======================================================================================================================================
 */
 void Weapon_LightningFire(gentity_t *ent) {
@@ -694,7 +698,6 @@ void Weapon_LightningFire(gentity_t *ent) {
 		VectorMA(muzzle, LIGHTNING_RANGE, forward, end);
 		// backward-reconcile the other clients
 		G_DoTimeShiftFor(ent);
-
 		trap_Trace(&tr, muzzle, NULL, NULL, end, passent, MASK_SHOT);
 		// put them back
 		G_UndoTimeShiftFor(ent);
@@ -794,7 +797,7 @@ void Weapon_Nailgun_Fire(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-Weapon_Proxlauncher_Fire
+weapon_proxlauncher_fire
 =======================================================================================================================================
 */
 void weapon_proxlauncher_fire(gentity_t *ent) {
@@ -802,7 +805,6 @@ void weapon_proxlauncher_fire(gentity_t *ent) {
 
 	// extra vertical velocity
 	forward[2] += 0.2f;
-
 	VectorNormalize(forward);
 
 	m = fire_prox(ent, muzzle, forward);
@@ -909,7 +911,6 @@ void FireWeapon(gentity_t *ent) {
 	}
 	// set aiming directions
 	AngleVectors(ent->player->ps.viewangles, forward, right, up);
-
 	CalcMuzzlePointOrigin(ent, ent->player->oldOrigin, forward, right, up, muzzle);
 	// fire the specific weapon
 	switch (ent->s.weapon) {
@@ -960,7 +961,7 @@ void FireWeapon(gentity_t *ent) {
 			break;
 #endif
 		default:
-			// FIXME: G_Error("Bad ent->s.weapon");
+			// FIXME G_Error("Bad ent->s.weapon");
 			break;
 	}
 }
@@ -1080,9 +1081,11 @@ static void KamikazeShockWave(vec3_t origin, gentity_t *attacker, float damage, 
 //		if (CanDamage(ent, origin)) {
 			VectorSubtract(ent->r.currentOrigin, origin, dir);
 			dir[2] += 24;
+
 			G_Damage(ent, NULL, attacker, dir, origin, damage, DAMAGE_RADIUS|DAMAGE_NO_TEAM_PROTECTION, MOD_KAMIKAZE);
 
 			dir[2] = 0;
+
 			VectorNormalize(dir);
 
 			if (ent->player) {

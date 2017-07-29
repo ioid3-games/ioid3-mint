@@ -1,41 +1,49 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
-/**************************************************************************************************************************************
- Map tracemap view generation.
-**************************************************************************************************************************************/
 
 #ifdef CGAME
 #include "../cgame/cg_local.h"
 #else
 #include "g_local.h"
 #endif
-#define myftol(x) ((int)(x))
-#define MAX_WORLD_HEIGHT MAX_MAP_SIZE // maximum world height
-#define MIN_WORLD_HEIGHT -MAX_MAP_SIZE // minimum world height
-//#define TRACEMAP_SIZE 1024
-#define TRACEMAP_SIZE 256
+/*
+**  Map tracemap view generation
+*/
+
+#define myftol(x)((int)(x))
+
+#define MAX_WORLD_HEIGHT            MAX_MAP_SIZE    // maximum world height
+#define MIN_WORLD_HEIGHT -MAX_MAP_SIZE   // minimum world height
+
+//#define TRACEMAP_SIZE				1024
+#define TRACEMAP_SIZE               256
 
 typedef struct tracemap_s {
 	qboolean loaded;
@@ -47,16 +55,12 @@ typedef struct tracemap_s {
 } tracemap_t;
 
 static tracemap_t tracemap;
+
 static vec2_t one_over_mapgrid_factor;
-void FinalizeTracemapClamp(int *x, int *y);
 
-/*
-=======================================================================================================================================
-BG_GenerateTracemap
+void etpro_FinalizeTracemapClamp(int *x, int *y);
 
-Currently only used by CGAME.
-=======================================================================================================================================
-*/
+// Currently only used by CGAME
 void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapcoordsMaxs, bgGenTracemap_t *gen) {
 	trace_t tr;
 	vec3_t start, end;
@@ -87,6 +91,7 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 	}
 
 	COM_StripExtension(mapname, rawmapname, sizeof(rawmapname));
+
 	// Topdown tracing
 	Com_Printf("Generating level heightmap and level mask...\n");
 
@@ -94,6 +99,7 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 
 	topdownmax = MIN_WORLD_HEIGHT;
 	topdownmin = MAX_WORLD_HEIGHT;
+
 	// calculate the size of the level
 	// ok, i'm lazy. Hijack commandmap extends for now and default to a TRACEMAP_SIZE by TRACEMAP_SIZE datablock
 	x_step = (mapcoordsMaxs[0] - mapcoordsMins[0]) / (float)TRACEMAP_SIZE;
@@ -112,7 +118,9 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 			tracecount++;
 			// Find ground
 			while (1) {
-				// Perform traces up to the sky, repeating at a higher start height if we start inside a solid.
+				// Perform traces up to the sky, repeating at a higher start height if we start
+				// inside a solid.
+
 				if (start[2] <= MIN_WORLD_HEIGHT) {
 					tracemap.ground[j][i] = MIN_WORLD_HEIGHT;
 					break;
@@ -123,21 +131,20 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 				}
 
 				gen->trace(&tr, start, NULL, NULL, end, ENTITYNUM_NONE, (MASK_SOLID|MASK_WATER));
+
 				tracecount++;
 
-				if (tr.startsolid) { // Stuck in something, skip over it.
+				if (tr.startsolid) {          // Stuck in something, skip over it.
 					start[2] -= 64;
-				} else if (tr.fraction == 1) { // Didn't hit anything, we're (probably) outside the world
+				} else if (tr.fraction == 1) {    // Didn't hit anything, we're(probably)outside the world
 					tracemap.ground[j][i] = MIN_WORLD_HEIGHT;
 					break;
 				} else {
 					tracemap.ground[j][i] = tr.endpos[2];
-
 					if (!(tr.surfaceFlags & SURF_NODRAW)) {
 						if (tracemap.ground[j][i] > topdownmax) {
 							topdownmax = tracemap.ground[j][i];
 						}
-
 						if (tracemap.ground[j][i] < topdownmin) {
 							topdownmin = tracemap.ground[j][i];
 						}
@@ -151,14 +158,16 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 
 			if (!((lastDraw <= ms) && (lastDraw > ms - 500))) {
 				lastDraw = ms;
-				Com_Printf("%i of %i gridpoints calculated (%.2f%%), %i total traces\n", i * TRACEMAP_SIZE + j, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE + j) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
-				//trap_UpdateScreen();
+
+				Com_Printf("%i of %i gridpoints calculated(%.2f%%), %i total traces\n", i * TRACEMAP_SIZE + j, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE + j) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
+				// trap_UpdateScreen();
 			}
 		}
 	}
 
-	Com_Printf("%i of %i gridpoints calculated (%.2f%%), %i total traces\n", i * TRACEMAP_SIZE, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
-	//trap_UpdateScreen();
+	Com_Printf("%i of %i gridpoints calculated(%.2f%%), %i total traces\n", i * TRACEMAP_SIZE, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
+	// trap_UpdateScreen();
+
 	// Sky tracing
 	Com_Printf("Generating sky heightmap and sky mask...\n");
 
@@ -170,7 +179,7 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 
 		for (j = 0; j < TRACEMAP_SIZE; j++) {
 			start[1] = end[1] = mapcoordsMins[1] + j * y_step;
-			//start[2] = MIN_WORLD_HEIGHT;
+			// start[2] = MIN_WORLD_HEIGHT;
 			start[2] = tracemap.ground[j][i];
 			end[2] = MAX_WORLD_HEIGHT;
 
@@ -180,7 +189,9 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 			} else {
 				// Find sky
 				while (1) {
-					// Perform traces up to the sky, repeating at a higher start height if we start inside a solid.
+					// Perform traces up to the sky, repeating at a higher start height if we start
+					// inside a solid.
+
 					if (start[2] >= MAX_WORLD_HEIGHT) {
 						tracemap.sky[j][i] = MAX_WORLD_HEIGHT;
 						break;
@@ -192,22 +203,18 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 
 					gen->trace(&tr, start, NULL, NULL, end, ENTITYNUM_NONE, MASK_SOLID);
 					tracecount++;
-
-					if (tr.startsolid) { // Stuck in something, skip over it.
+					if (tr.startsolid) {          // Stuck in something, skip over it.
 						// can happen, tr.endpos still is valid even if we're starting in a solid but trace out of it hitting the next surface
 						if (tr.surfaceFlags & SURF_SKY) {
 							// are we in a solid?
-							if (!(gen->pointcontents(tr.endpos, ENTITYNUM_NONE) & (MASK_SOLID|MASK_WATER))) {
+							if (!(gen->pointcontents(tr.endpos, ENTITYNUM_NONE)&(MASK_SOLID|MASK_WATER))) {
 								tracemap.sky[j][i] = tr.endpos[2];
-
 								if (tracemap.sky[j][i] > max) {
 									max = tracemap.sky[j][i];
 								}
-
 								if (tracemap.sky[j][i] < min) {
 									min = tracemap.sky[j][i];
 								}
-
 								break;
 							} else {
 								// skip over it
@@ -216,20 +223,17 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 						} else {
 							start[2] = tr.endpos[2] + 1;
 						}
-					} else if (tr.fraction == 1) { // Didn't hit anything, we're (probably) outside the world
+					} else if (tr.fraction == 1) {    // Didn't hit anything, we're(probably)outside the world
 						tracemap.sky[j][i] = MAX_WORLD_HEIGHT;
 						break;
-					} else if (tr.surfaceFlags & SURF_SKY) { // Hit sky, this is where we start.
+					} else if (tr.surfaceFlags & SURF_SKY) {  // Hit sky, this is where we start.
 						tracemap.sky[j][i] = tr.endpos[2];
-
 						if (tracemap.sky[j][i] > max) {
 							max = tracemap.sky[j][i];
 						}
-
 						if (tracemap.sky[j][i] < min) {
 							min = tracemap.sky[j][i];
 						}
-
 						break;
 					} else {
 						// hit something else, skip over it
@@ -242,14 +246,16 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 
 			if (!((lastDraw <= ms) && (lastDraw > ms - 500))) {
 				lastDraw = ms;
-				Com_Printf("%i of %i gridpoints calculated (%.2f%%), %i total traces\n", i * TRACEMAP_SIZE + j, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE + j) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
-				//trap_UpdateScreen();
+
+				Com_Printf("%i of %i gridpoints calculated(%.2f%%), %i total traces\n", i * TRACEMAP_SIZE + j, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE + j) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
+				// trap_UpdateScreen();
 			}
 		}
 	}
 
-	Com_Printf("%i of %i gridpoints calculated (%.2f%%), %i total traces\n", i * TRACEMAP_SIZE, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
-	//trap_UpdateScreen();
+	Com_Printf("%i of %i gridpoints calculated(%.2f%%), %i total traces\n", i * TRACEMAP_SIZE, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
+	// trap_UpdateScreen();
+
 	// More groundtrace, find ceilings for areas where we don't have ground
 	Com_Printf("Generating sky groundmap...\n");
 
@@ -267,9 +273,10 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 			if (tracemap.sky[j][i] == MAX_WORLD_HEIGHT && tracemap.ground[j][i] != MIN_WORLD_HEIGHT) {
 				// Find the ceiling
 				gen->trace(&tr, start, NULL, NULL, end, ENTITYNUM_NONE, MASK_SOLID|MASK_WATER);
+
 				tracecount++;
 
-				if (tr.fraction == 1) { // Didn't hit anything, we're (probably) outside the world
+				if (tr.fraction == 1) {       // Didn't hit anything, we're(probably)outside the world
 					tracemap.skyground[j][i] = MIN_WORLD_HEIGHT;
 				} else {
 					tracemap.skyground[j][i] = tr.endpos[2];
@@ -292,14 +299,15 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 
 			if (!((lastDraw <= ms) && (lastDraw > ms - 500))) {
 				lastDraw = ms;
-				Com_Printf("%i of %i gridpoints calculated (%.2f%%), %i total traces\n", i * TRACEMAP_SIZE + j, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE + j) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
-				//trap_UpdateScreen();
+
+				Com_Printf("%i of %i gridpoints calculated(%.2f%%), %i total traces\n", i * TRACEMAP_SIZE + j, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE + j) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
+				// trap_UpdateScreen();
 			}
 		}
 	}
 
-	Com_Printf("%i of %i gridpoints calculated (%.2f%%), %i total traces\n", i * TRACEMAP_SIZE, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
-	//trap_UpdateScreen();
+	Com_Printf("%i of %i gridpoints calculated(%.2f%%), %i total traces\n", i * TRACEMAP_SIZE, TRACEMAP_SIZE * TRACEMAP_SIZE, ((i * TRACEMAP_SIZE) / (float)(TRACEMAP_SIZE * TRACEMAP_SIZE)) * 100.f, tracecount);
+	// trap_UpdateScreen();
 
 	// R: topdown mask
 	// G: there is sky here yes/no mask
@@ -310,7 +318,9 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 
 	// min is 0
 	// max is 255
-	// etmain REALLY expects 1 to 255, so I'm changing this to generate that instead, so that etpro tracemaps can be used with etmain
+	// rain - etmain REALLY expects 1 to 255, so I'm changing this to
+	// generate that instead, so that etpro tracemaps can be used with
+	// etmain
 	scalefactor = 254.f / (topdownmax - topdownmin);
 
 	if (scalefactor == 0.f) {
@@ -322,7 +332,7 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 			if (tracemap.ground[i][j] >= topdownmin) {
 				tracemap.ground[i][j] = 1.0 + (tracemap.ground[i][j] - topdownmin) * scalefactor;
 			}
-			// hard clamp because *min and *max are rounded :(
+			// rain - hard clamp because *min and *max are rounded :(
 			if (tracemap.ground[i][j] < 1.0) {
 				tracemap.ground[i][j] = 1.0;
 			} else if (tracemap.ground[i][j] > 255.0) {
@@ -332,7 +342,7 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 	}
 	// min is 0
 	// max is 255
-	// this is d&l, min = 1, max = 255
+	// rain - this is d&l, min=1 max=255
 	scalefactor = 254.f / (skygroundmax - skygroundmin);
 
 	if (scalefactor == 0.f) {
@@ -344,7 +354,7 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 			if (tracemap.skyground[i][j] >= skygroundmin) {
 				tracemap.skyground[i][j] = 1.0 + (tracemap.skyground[i][j] - skygroundmin) * scalefactor;
 			}
-			// hard clamp because *min and *max are rounded :(
+			// rain - hard clamp because *min and *max are rounded :(
 			if (tracemap.skyground[i][j] < 1.0) {
 				tracemap.skyground[i][j] = 1.0;
 			} else if (tracemap.skyground[i][j] > 255.0) {
@@ -368,7 +378,7 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 			} else {
 				tracemap.sky[i][j] = 1.f + (tracemap.sky[i][j] - min) * scalefactor;
 			}
-			// hard clamp because *min and *max are rounded :(
+			// rain - hard clamp because *min and *max are rounded :(
 			if (tracemap.sky[i][j] < 0.0) {
 				tracemap.sky[i][j] = 0.0;
 			} else if (tracemap.sky[i][j] > 255.0) {
@@ -378,60 +388,27 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 	}
 	// write tga
 	trap_FS_FOpenFile(va("%s_tracemap.tga", Q_strlwr(rawmapname)), &f, FS_WRITE);
+
 	// header
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 0
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 0
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 1
+	data = 2; trap_FS_Write(&data, sizeof(data), f);  // 2 : uncompressed type
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 3
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 4
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 5
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 6
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 7
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 8
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 9
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 10
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 11
+	data = TRACEMAP_SIZE & 255; trap_FS_Write(&data, sizeof(data), f);    // 12 : width
+	data = TRACEMAP_SIZE >> 8; trap_FS_Write(&data, sizeof(data), f); // 13 : width
+	data = TRACEMAP_SIZE & 255; trap_FS_Write(&data, sizeof(data), f);    // 14 : height
+	data = TRACEMAP_SIZE >> 8; trap_FS_Write(&data, sizeof(data), f); // 15 : height
+	data = 32; trap_FS_Write(&data, sizeof(data), f); // 16 : pixel size
+	data = 0; trap_FS_Write(&data, sizeof(data), f);  // 17
 
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 1
-
-	data = 2;
-	trap_FS_Write(&data, sizeof(data), f); // 2 : uncompressed type
-
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 3
-
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 4
-
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 5
-
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 6
-
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 7
-
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 8
-
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 9
-
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 10
-
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 11
-
-	data = TRACEMAP_SIZE & 255;
-	trap_FS_Write(&data, sizeof(data), f); // 12: width
-
-	data = TRACEMAP_SIZE >> 8;
-	trap_FS_Write(&data, sizeof(data), f); // 13: width
-
-	data = TRACEMAP_SIZE & 255;
-	trap_FS_Write(&data, sizeof(data), f); // 14: height
-
-	data = TRACEMAP_SIZE >> 8;
-	trap_FS_Write(&data, sizeof(data), f); // 15: height
-
-	data = 32;
-	trap_FS_Write(&data, sizeof(data), f); // 16: pixel size
-
-	data = 0;
-	trap_FS_Write(&data, sizeof(data), f); // 17
 	// R: topdown mask
 	// G: there is sky here yes/no mask
 	// B: sky mask
@@ -441,71 +418,46 @@ void BG_GenerateTracemap(const char *mapname, vec3_t mapcoordsMins, vec3_t mapco
 			if (i == 0 && j < 6) {
 				// abuse first six pixels for our extended data
 				switch (j) {
-					case 0:
-						trap_FS_Write(&topdownmin, sizeof(topdownmin), f);
-						break;
-					case 1:
-						trap_FS_Write(&topdownmax, sizeof(topdownmax), f);
-						break;
-					case 2:
-						trap_FS_Write(&skygroundmin, sizeof(skygroundmin), f);
-						break;
-					case 3:
-						trap_FS_Write(&skygroundmax, sizeof(skygroundmax), f);
-						break;
-					case 4:
-						trap_FS_Write(&min, sizeof(min), f);
-						break;
-					case 5:
-						trap_FS_Write(&max, sizeof(max), f);
-						break;
+				case 0: trap_FS_Write(&topdownmin, sizeof(topdownmin), f); break;
+
+				case 1: trap_FS_Write(&topdownmax, sizeof(topdownmax), f); break;
+
+				case 2: trap_FS_Write(&skygroundmin, sizeof(skygroundmin), f); break;
+
+				case 3: trap_FS_Write(&skygroundmax, sizeof(skygroundmax), f); break;
+
+				case 4: trap_FS_Write(&min, sizeof(min), f); break;
+
+				case 5: trap_FS_Write(&max, sizeof(max), f); break;
 				}
 
 				continue;
 			}
 
-			data = tracemap.sky[TRACEMAP_SIZE - 1 - i][j];
-			trap_FS_Write(&data, sizeof(data), f); // b
-
+			data = tracemap.sky[TRACEMAP_SIZE - 1 - i][j]; trap_FS_Write(&data, sizeof(data), f); // b
 			if (tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] == MIN_WORLD_HEIGHT) {
-				data = 0;
-				trap_FS_Write(&data, sizeof(data), f); // g
+				data = 0; trap_FS_Write(&data, sizeof(data), f);  // g
 			} else {
-				data = tracemap.skyground[TRACEMAP_SIZE - 1 - i][j];
-				trap_FS_Write(&data, sizeof(data), f); // g
+				data = tracemap.skyground[TRACEMAP_SIZE - 1 - i][j]; trap_FS_Write(&data, sizeof(data), f);   // g
 			}
 
 			if (tracemap.ground[TRACEMAP_SIZE - 1 - i][j] == MIN_WORLD_HEIGHT) {
-				data = 0;
-				trap_FS_Write(&data, sizeof(data), f); // r
-
-				data = 0;
-				trap_FS_Write(&data, sizeof(data), f); // a
+				data = 0; trap_FS_Write(&data, sizeof(data), f);  // r
+				data = 0; trap_FS_Write(&data, sizeof(data), f);  // a
 			} else {
-				data = tracemap.ground[TRACEMAP_SIZE - 1 - i][j];
-				trap_FS_Write(&data, sizeof(data), f); // r
-
-				data = 255;
-				trap_FS_Write(&data, sizeof(data), f); // a
+				data = tracemap.ground[TRACEMAP_SIZE - 1 - i][j]; trap_FS_Write(&data, sizeof(data), f);  // r
+				data = 255; trap_FS_Write(&data, sizeof(data), f);    // a
 			}
 		}
 	}
 	// footer
-	i = 0;
-	trap_FS_Write(&i, sizeof(i), f); // extension area offset, 4 bytes
-
-	i = 0;
-	trap_FS_Write(&i, sizeof(i), f); // developer directory offset, 4 bytes
-
+	i = 0; trap_FS_Write(&i, sizeof(i), f);   // extension area offset, 4 bytes
+	i = 0; trap_FS_Write(&i, sizeof(i), f);   // developer directory offset, 4 bytes
 	trap_FS_Write("TRUEVISION-XFILE.\0", 18, f);
+
 	trap_FS_FCloseFile(f);
 }
 
-/*
-=======================================================================================================================================
-BG_LoadTraceMap
-=======================================================================================================================================
-*/
 qboolean BG_LoadTraceMap(char *mapname, vec2_t world_mins, vec2_t world_maxs) {
 	int i, j;
 	fileHandle_t f;
@@ -515,7 +467,7 @@ qboolean BG_LoadTraceMap(char *mapname, vec2_t world_mins, vec2_t world_maxs) {
 	int skyground_min, skyground_max;
 	float scalefactor;
 	char rawmapname[MAX_QPATH];
-	//int startTime = trap_Milliseconds();
+	// int startTime = trap_Milliseconds();
 
 	ground_min = ground_max = MIN_WORLD_HEIGHT;
 	skyground_min = skyground_max = MAX_WORLD_HEIGHT;
@@ -530,30 +482,18 @@ qboolean BG_LoadTraceMap(char *mapname, vec2_t world_mins, vec2_t world_maxs) {
 		}
 
 		for (i = 0; i < TRACEMAP_SIZE; i++) {
-			trap_FS_Read(&datablock, sizeof(datablock), f); // TRACEMAP_SIZE * {b g r a}
+			trap_FS_Read(&datablock, sizeof(datablock), f);   // TRACEMAP_SIZE * {b g r a}
 
 			for (j = 0; j < TRACEMAP_SIZE; j++) {
 				if (i == 0 && j < 6) {
 					// abuse first six pixels for our extended data
 					switch (j) {
-						case 0:
-							ground_min = datablock[j][0]|(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24);
-							break;
-						case 1:
-							ground_max = datablock[j][0]|(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24);
-							break;
-						case 2:
-							skyground_min = datablock[j][0]|(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24);
-							break;
-						case 3:
-							skyground_max = datablock[j][0]|(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24);
-							break;
-						case 4:
-							sky_min = datablock[j][0]|(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24);
-							break;
-						case 5:
-							sky_max = datablock[j][0]|(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24);
-							break;
+					case 0: ground_min = datablock[j][0] |(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24); break;
+					case 1: ground_max = datablock[j][0] |(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24); break;
+					case 2: skyground_min = datablock[j][0] |(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24); break;
+					case 3: skyground_max = datablock[j][0] |(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24); break;
+					case 4: sky_min = datablock[j][0] |(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24); break;
+					case 5: sky_max = datablock[j][0] |(datablock[j][1] << 8)|(datablock[j][2] << 16)|(datablock[j][3] << 24); break;
 					}
 
 					tracemap.sky[TRACEMAP_SIZE - 1 - i][j] = MAX_WORLD_HEIGHT;
@@ -562,20 +502,17 @@ qboolean BG_LoadTraceMap(char *mapname, vec2_t world_mins, vec2_t world_maxs) {
 					continue;
 				}
 
-				tracemap.sky[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[j][0]; // FIXME: swap
-
+				tracemap.sky[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[j][0];    // FIXME: swap
 				if (tracemap.sky[TRACEMAP_SIZE - 1 - i][j] == 0) {
 					tracemap.sky[TRACEMAP_SIZE - 1 - i][j] = MAX_WORLD_HEIGHT;
 				}
 
-				tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[j][1]; // FIXME: swap
-
+				tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[j][1];  // FIXME: swap
 				if (tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] == 0) {
 					tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] = MAX_WORLD_HEIGHT;
 				}
 
 				tracemap.ground[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[j][2]; // FIXME: swap
-
 				if (tracemap.ground[TRACEMAP_SIZE - 1 - i][j] == 0) {
 					tracemap.ground[TRACEMAP_SIZE - 1 - i][j] = MIN_WORLD_HEIGHT;
 				}
@@ -586,29 +523,17 @@ qboolean BG_LoadTraceMap(char *mapname, vec2_t world_mins, vec2_t world_maxs) {
 					tracemap.ground[TRACEMAP_SIZE - 1 - i][j] = MIN_WORLD_HEIGHT;
 				}
 			}
-			/*
-			for (j = 0; j < TRACEMAP_SIZE; j++) {
+
+			/*for(j = 0; j < TRACEMAP_SIZE; j++) {
 				if (i == 0 && j < 6) {
 					// abuse first six pixels for our extended data
 					switch (j) {
-						case 0:
-							trap_FS_Read(&ground_min, sizeof(ground_min), f);
-							break;
-						case 1:
-							trap_FS_Read(&ground_max, sizeof(ground_max), f);
-							break;
-						case 2:
-							trap_FS_Read(&skyground_min, sizeof(skyground_min), f);
-							break;
-						case 3:
-							trap_FS_Read(&skyground_max, sizeof(skyground_max), f);
-							break;
-						case 4:
-							trap_FS_Read(&sky_min, sizeof(sky_min), f);
-							break;
-						case 5:
-							trap_FS_Read(&sky_max, sizeof(sky_max), f);
-							break;
+						case 0:	trap_FS_Read(&ground_min, sizeof(ground_min), f); break;
+						case 1: trap_FS_Read(&ground_max, sizeof(ground_max), f); break;
+						case 2:	trap_FS_Read(&skyground_min, sizeof(skyground_min), f); break;
+						case 3: trap_FS_Read(&skyground_max, sizeof(skyground_max), f); break;
+						case 4: trap_FS_Read(&sky_min, sizeof(sky_min), f); break;
+						case 5: trap_FS_Read(&sky_max, sizeof(sky_max), f); break;
 					}
 
 					tracemap.sky[TRACEMAP_SIZE - 1 - i][j] = MAX_WORLD_HEIGHT;
@@ -617,43 +542,37 @@ qboolean BG_LoadTraceMap(char *mapname, vec2_t world_mins, vec2_t world_maxs) {
 					continue;
 				}
 
-				trap_FS_Read(&datablock, sizeof(datablock), f); // b g r a
-				tracemap.sky[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[0]; // FIXME: swap
-
-				if (tracemap.sky[TRACEMAP_SIZE - 1 - i][j] == 0) {
+				trap_FS_Read(&datablock, sizeof(datablock), f);	// b g r a
+				tracemap.sky[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[0];	// FIXME: swap
+				if (tracemap.sky[TRACEMAP_SIZE - 1 - i][j] == 0)
 					tracemap.sky[TRACEMAP_SIZE - 1 - i][j] = MAX_WORLD_HEIGHT;
-				}
 
-				//trap_FS_Read(&data, 1, f); // g
-				tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[1]; // FIXME: swap
-
-				if (tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] == 0) {
+				// trap_FS_Read(&data, 1, f); // g
+				tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[1];	// FIXME: swap
+				if (tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] == 0)
 					tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] = MAX_WORLD_HEIGHT;
-				}
 
-				//trap_FS_Read(&data, sizeof(data), f); // r
-				tracemap.ground[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[2]; // FIXME: swap
-
-				if (tracemap.ground[TRACEMAP_SIZE - 1 - i][j] == 0) {
+				// trap_FS_Read(&data, sizeof(data), f);	// r
+				tracemap.ground[TRACEMAP_SIZE - 1 - i][j] = (float)datablock[2];	// FIXME: swap
+				if (tracemap.ground[TRACEMAP_SIZE - 1 - i][j] == 0)
 					tracemap.ground[TRACEMAP_SIZE - 1 - i][j] = MIN_WORLD_HEIGHT;
-				}
 
-				//trap_FS_Read(&data, sizeof(data), f); // a
+				// trap_FS_Read(&data, sizeof(data), f); // a
 				if (datablock[3] == 0) {
 					// just in case
 					tracemap.skyground[TRACEMAP_SIZE - 1 - i][j] = MAX_WORLD_HEIGHT;
 					tracemap.ground[TRACEMAP_SIZE - 1 - i][j] = MIN_WORLD_HEIGHT;
 				}
-			}
-			*/
+			}*/
 		}
 
 		trap_FS_FCloseFile(f);
-		// Ground: calculate scalefactor
+		// Ground
+		// calculate scalefactor
 		if (ground_max - ground_min == 0) {
 			scalefactor = 1.f;
 		} else {
-			// scalefactor 254 to compensate for broken etmain behavior
+			// rain - scalefactor 254 to compensate for broken etmain behavior
 			scalefactor = 254.f / (ground_max - ground_min);
 		}
 		// scale properly
@@ -664,11 +583,12 @@ qboolean BG_LoadTraceMap(char *mapname, vec2_t world_mins, vec2_t world_maxs) {
 				}
 			}
 		}
-		// SkyGround: calculate scalefactor
+		// SkyGround
+		// calculate scalefactor
 		if (skyground_max - skyground_min == 0) {
 			scalefactor = 1.f;
 		} else {
-			// scalefactor 254 to compensate for broken etmain behavior
+			// rain - scalefactor 254 to compensate for broken etmain behavior
 			scalefactor = 254.f / (skyground_max - skyground_min);
 		}
 		// scale properly
@@ -679,11 +599,12 @@ qboolean BG_LoadTraceMap(char *mapname, vec2_t world_mins, vec2_t world_maxs) {
 				}
 			}
 		}
-		// Sky: calculate scalefactor
+		// Sky
+		// calculate scalefactor
 		if (sky_max - sky_min == 0) {
 			scalefactor = 1.f;
 		} else {
-			// scalefactor 254 to compensate for broken etmain behavior
+			// rain - scalefactor 254 to compensate for broken etmain behavior
 			scalefactor = 254.f / (sky_max - sky_min);
 		}
 		// scale properly
@@ -715,11 +636,6 @@ qboolean BG_LoadTraceMap(char *mapname, vec2_t world_mins, vec2_t world_maxs) {
 	return (tracemap.loaded = qtrue);
 }
 
-/*
-=======================================================================================================================================
-BG_ClampPointToTracemapExtends
-=======================================================================================================================================
-*/
 static void BG_ClampPointToTracemapExtends(vec3_t point, vec2_t out) {
 
 	if (point[0] < tracemap.world_mins[0]) {
@@ -739,11 +655,6 @@ static void BG_ClampPointToTracemapExtends(vec3_t point, vec2_t out) {
 	}
 }
 
-/*
-=======================================================================================================================================
-BG_GetSkyHeightAtPoint
-=======================================================================================================================================
-*/
 float BG_GetSkyHeightAtPoint(vec3_t pos) {
 	int i, j;
 	vec2_t point;
@@ -760,18 +671,15 @@ float BG_GetSkyHeightAtPoint(vec3_t pos) {
 
 	i = myftol((point[0] - tracemap.world_mins[0]) * one_over_mapgrid_factor[0]);
 	j = myftol((point[1] - tracemap.world_mins[1]) * one_over_mapgrid_factor[1]);
-	// re-clamp the points, because a rounding error can cause them to go outside the array
-	FinalizeTracemapClamp(&i, &j);
+
+	// rain - re-clamp the points, because a rounding error can cause
+	// them to go outside the array
+	etpro_FinalizeTracemapClamp(&i, &j);
 
 //	getskytime += trap_Milliseconds() - msec;
 	return (tracemap.sky[j][i]);
 }
 
-/*
-=======================================================================================================================================
-BG_GetSkyGroundHeightAtPoint
-=======================================================================================================================================
-*/
 float BG_GetSkyGroundHeightAtPoint(vec3_t pos) {
 	int i, j;
 	vec2_t point;
@@ -788,18 +696,15 @@ float BG_GetSkyGroundHeightAtPoint(vec3_t pos) {
 
 	i = myftol((point[0] - tracemap.world_mins[0]) * one_over_mapgrid_factor[0]);
 	j = myftol((point[1] - tracemap.world_mins[1]) * one_over_mapgrid_factor[1]);
-	// re-clamp the points, because a rounding error can cause them to go outside the array
-	FinalizeTracemapClamp(&i, &j);
+
+	// rain - re-clamp the points, because a rounding error can cause
+	// them to go outside the array
+	etpro_FinalizeTracemapClamp(&i, &j);
 
 //	getgroundtime += trap_Milliseconds() - msec;
 	return (tracemap.skyground[j][i]);
 }
 
-/*
-=======================================================================================================================================
-BG_GetGroundHeightAtPoint
-=======================================================================================================================================
-*/
 float BG_GetGroundHeightAtPoint(vec3_t pos) {
 	int i, j;
 	vec2_t point;
@@ -816,20 +721,16 @@ float BG_GetGroundHeightAtPoint(vec3_t pos) {
 
 	i = myftol((point[0] - tracemap.world_mins[0]) * one_over_mapgrid_factor[0]);
 	j = myftol((point[1] - tracemap.world_mins[1]) * one_over_mapgrid_factor[1]);
-	// re-clamp the points, because a rounding error can cause them to go outside the array
-	FinalizeTracemapClamp(&i, &j);
+
+	// rain - re-clamp the points, because a rounding error can cause
+	// them to go outside the array
+	etpro_FinalizeTracemapClamp(&i, &j);
 
 //	getgroundtime += trap_Milliseconds() - msec;
 	return (tracemap.ground[j][i]);
 }
 
-/*
-=======================================================================================================================================
-BG_GetTracemapGroundFloor
-=======================================================================================================================================
-*/
 int BG_GetTracemapGroundFloor(void) {
-
 	if (!tracemap.loaded) {
 		return MIN_WORLD_HEIGHT;
 	}
@@ -837,13 +738,7 @@ int BG_GetTracemapGroundFloor(void) {
 	return tracemap.groundfloor;
 }
 
-/*
-=======================================================================================================================================
-BG_GetTracemapGroundCeil
-=======================================================================================================================================
-*/
 int BG_GetTracemapGroundCeil(void) {
-
 	if (!tracemap.loaded) {
 		return MAX_WORLD_HEIGHT;
 	}
@@ -851,15 +746,9 @@ int BG_GetTracemapGroundCeil(void) {
 	return tracemap.groundceil;
 }
 
-/*
-=======================================================================================================================================
-FinalizeTracemapClamp
-
-Re-clamp the points, because a rounding error can cause them to go outside the array.
-=======================================================================================================================================
-*/
-void FinalizeTracemapClamp(int *x, int *y) {
-
+// rain - re-clamp the points, because a rounding error can cause
+// them to go outside the array
+void etpro_FinalizeTracemapClamp(int *x, int *y) {
 	if (*x < 0) {
 		*x = 0;
 	} else if (*x > TRACEMAP_SIZE - 1) {

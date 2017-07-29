@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -81,6 +87,7 @@ MSG_Clear
 =======================================================================================================================================
 */
 void MSG_Clear(msg_t *buf) {
+
 	buf->cursize = 0;
 	buf->overflowed = qfalse;
 	buf->bit = 0; // <- in bits
@@ -101,6 +108,7 @@ MSG_BeginReading
 =======================================================================================================================================
 */
 void MSG_BeginReading(msg_t *msg) {
+
 	msg->readcount = 0;
 	msg->bit = 0;
 	msg->oob = qfalse;
@@ -112,6 +120,7 @@ MSG_BeginReadingOOB
 =======================================================================================================================================
 */
 void MSG_BeginReadingOOB(msg_t *msg) {
+
 	msg->readcount = 0;
 	msg->bit = 0;
 	msg->oob = qtrue;
@@ -190,6 +199,7 @@ void MSG_WriteBits(msg_t *msg, int value, int bits) {
 
 		if (bits&7) {
 			int nbits;
+
 			nbits = bits&7;
 
 			for (i = 0; i < nbits; i++) {
@@ -369,6 +379,7 @@ void MSG_WriteFloat(msg_t *sb, float f) {
 	floatint_t dat;
 
 	dat.f = f;
+
 	MSG_WriteBits(sb, dat.i, 32);
 }
 
@@ -382,7 +393,7 @@ void MSG_WriteString(msg_t *sb, const char *s) {
 	if (!s) {
 		MSG_WriteData(sb, "", 1);
 	} else {
-		int l, i;
+		int l;
 		char string[MAX_STRING_CHARS];
 
 		l = strlen(s);
@@ -394,12 +405,6 @@ void MSG_WriteString(msg_t *sb, const char *s) {
 		}
 
 		Q_strncpyz(string, s, sizeof(string));
-		// get rid of '%' chars, because old clients don't like them
-		for (i = 0; i < l; i++) {
-			if (string[i] == '%') {
-				string[i] = '.';
-			}
-		}
 
 		MSG_WriteData(sb, string, l + 1);
 	}
@@ -415,7 +420,7 @@ void MSG_WriteBigString(msg_t *sb, const char *s) {
 	if (!s) {
 		MSG_WriteData(sb, "", 1);
 	} else {
-		int l, i;
+		int l;
 		char string[BIG_INFO_STRING];
 
 		l = strlen(s);
@@ -427,14 +432,8 @@ void MSG_WriteBigString(msg_t *sb, const char *s) {
 		}
 
 		Q_strncpyz(string, s, sizeof(string));
-		// get rid of '%' chars, because old clients don't like them
-		for (i = 0; i < l; i++) {
-			if (string[i] == '%') {
-				string[i] = '.';
-			}
-		}
 
-		MSG_WriteData(sb, string, l + 1);
+		MSG_WriteData(sb, string, l+1);
 	}
 }
 
@@ -467,8 +466,6 @@ void MSG_WriteAngle16(msg_t *sb, float f) {
 /*
 =======================================================================================================================================
 MSG_ReadChar
-
-Returns -1 if no more characters are available.
 =======================================================================================================================================
 */
 int MSG_ReadChar(msg_t *msg) {
@@ -576,7 +573,7 @@ MSG_ReadString
 */
 char *MSG_ReadString(msg_t *msg) {
 	static char string[MAX_STRING_CHARS];
-	int l, c;
+	int l,c;
 
 	l = 0;
 
@@ -585,10 +582,6 @@ char *MSG_ReadString(msg_t *msg) {
 
 		if (c == -1 || c == 0) {
 			break;
-		}
-		// translate all fmt spec to avoid crash bugs
-		if (c == '%') {
-			c = '.';
 		}
 
 		string[l] = c;
@@ -607,7 +600,7 @@ MSG_ReadBigString
 */
 char *MSG_ReadBigString(msg_t *msg) {
 	static char string[BIG_INFO_STRING];
-	int l, c;
+	int l,c;
 
 	l = 0;
 
@@ -616,10 +609,6 @@ char *MSG_ReadBigString(msg_t *msg) {
 
 		if (c == -1 || c == 0) {
 			break;
-		}
-		// translate all fmt spec to avoid crash bugs
-		if (c == '%') {
-			c = '.';
 		}
 
 		string[l] = c;
@@ -647,10 +636,6 @@ char *MSG_ReadStringLine(msg_t *msg) {
 
 		if (c == -1 || c == 0 || c == '\n') {
 			break;
-		}
-		// translate all fmt spec to avoid crash bugs
-		if (c == '%') {
-			c = '.';
 		}
 
 		string[l] = c;
@@ -927,6 +912,7 @@ void MSG_ReadDeltaUsercmdKey(msg_t *msg, int key, usercmd_t *from, usercmd_t *to
 
 	if (MSG_ReadBits(msg, 1)) {
 		key ^= to->serverTime;
+
 		to->angles[0] = MSG_ReadDeltaKey(msg, key, from->angles[0], 16);
 		to->angles[1] = MSG_ReadDeltaKey(msg, key, from->angles[1], 16);
 		to->angles[2] = MSG_ReadDeltaKey(msg, key, from->angles[2], 16);
@@ -970,15 +956,15 @@ void MSG_ReadDeltaUsercmdKey(msg_t *msg, int key, usercmd_t *from, usercmd_t *to
 =======================================================================================================================================
 */
 
-// These can't be blindly increased.
+// these can't be blindly increased.
 #define MAX_NETF_ARRAY_BITS 32
-#define MAX_NETF_ELEMENTS (32 * MAX_NETF_ARRAY_BITS)
+#define MAX_NETF_ELEMENTS(32 * MAX_NETF_ARRAY_BITS)
 
 typedef struct {
 	int offset;
-	int numElements;// 1 to 1024(MAX_NETF_ELEMENTS)
+	int numElements; // 1 to 1024(MAX_NETF_ELEMENTS)
 	int numElementArrays;
-	int bits;		// 0 = float
+	int bits; // 0 = float
 	int pcount;
 } netField_t;
 
@@ -1003,7 +989,7 @@ static void MSG_ReportChangeVectors(netFields_t *stateFields) {
 	netField_t *field;
 	int i;
 
- 	Com_Printf("%s(number of fields: %i, object size: %i)\n", stateFields->objectName, stateFields->numFields, stateFields->objectSize);
+	Com_Printf("%s(number of fields: %i, object size: %i)\n", stateFields->objectName, stateFields->numFields, stateFields->objectSize);
 
 	for (i = 0, field = stateFields->fields; i < msg_entityStateFields.numFields; i++, field++) {
 		if (field->pcount) {
@@ -1020,6 +1006,7 @@ Prints out a table from the current statistics for copying to code.
 =======================================================================================================================================
 */
 void MSG_ReportChangeVectors_f(void) {
+
 	MSG_ReportChangeVectors(&msg_playerStateFields);
 	MSG_ReportChangeVectors(&msg_entityStateFields);
 }
@@ -1111,10 +1098,8 @@ static const char *MSG_InitNetFields(netFields_t *stateFields, const vmNetField_
 		return "fields send more data than size of state";
 	}
 	// For entityState_t:
-	// all fields should be 32 bits to avoid any compiler packing issues
-	// the "number" field is not part of the field list
-	// if this fails, someone added a field to the entityState_t
-	// struct without updating the message fields
+	// all fields should be 32 bits to avoid any compiler packing issues the "number" field is not part of the field list
+	// if this fails, someone added a field to the entityState_t struct without updating the message fields
 	if (expectedNetworkSize > 0) {
 		if (networkSize < expectedNetworkSize) {
 			return "networks less data than expected";
@@ -1153,6 +1138,7 @@ MSG_ShutdownNetFields
 =======================================================================================================================================
 */
 void MSG_ShutdownNetFields(void) {
+
 	MSG_FreeNetFields(&msg_entityStateFields);
 	MSG_FreeNetFields(&msg_playerStateFields);
 }
@@ -1199,10 +1185,10 @@ static int MSG_LastChangedField(void *from, void *to, netFields_t *stateFields) 
 	return lc;
 }
 
-// if (int)f == f and(int)f + (1 << (FLOAT_INT_BITS - 1)) < (1 << FLOAT_INT_BITS)
+// if (int)f == f and(int)f + (1<< (FLOAT_INT_BITS - 1)) < (1 << FLOAT_INT_BITS)
 // the float will be sent with FLOAT_INT_BITS, otherwise all 32 bits will be sent
-#define FLOAT_INT_BITS	13
-#define FLOAT_INT_BIAS	(1 << (FLOAT_INT_BITS - 1))
+#define FLOAT_INT_BITS 13
+#define FLOAT_INT_BIAS (1 << (FLOAT_INT_BITS - 1))
 
 /*
 =======================================================================================================================================
@@ -1222,7 +1208,6 @@ static void MSG_WriteDeltaNetFields(msg_t *msg, void *from, void *to, netFields_
 	for (i = 0, field = stateFields->fields; i < numSendFields; i++, field++) {
 		fromF = (int *)((byte *)from + field->offset);
 		toF = (int *)((byte *)to + field->offset);
-
 		arraysChanged = 0;
 
 		Com_Memset(bitsArray, 0, sizeof(bitsArray));
@@ -1230,7 +1215,7 @@ static void MSG_WriteDeltaNetFields(msg_t *msg, void *from, void *to, netFields_
 		for (n = 0; n < field->numElements; n++) {
 			if ((from && toF[n] != fromF[n]) || (!from && toF[n] != 0)) {
 				arraysChanged |= 1 << (n / MAX_NETF_ARRAY_BITS);
-				bitsArray[n / MAX_NETF_ARRAY_BITS] |= 1 << (n & (MAX_NETF_ARRAY_BITS - 1));
+				bitsArray[n / MAX_NETF_ARRAY_BITS] |= 1 << (n &(MAX_NETF_ARRAY_BITS - 1));
 			}
 		}
 
@@ -1254,7 +1239,7 @@ static void MSG_WriteDeltaNetFields(msg_t *msg, void *from, void *to, netFields_
 		}
 
 		for (n = 0; n < field->numElements; n++, toF++) {
-			if (!(bitsArray[n / MAX_NETF_ARRAY_BITS] & (1 << (n & (MAX_NETF_ARRAY_BITS - 1))))) {
+			if (!(bitsArray[n / MAX_NETF_ARRAY_BITS] &(1 << (n &(MAX_NETF_ARRAY_BITS - 1))))) {
 				continue;
 			}
 
@@ -1308,7 +1293,6 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to, netFields_t
 
 	for (i = 0, field = stateFields->fields; i < numReadFields; i++, field++) {
 		toF = (int *)((byte *)to + field->offset);
-
 		arraysChanged = MSG_ReadBits(msg, field->numElementArrays);
 
 		if (arraysChanged == 0) {
@@ -1332,7 +1316,7 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to, netFields_t
 			elementsLeft = field->numElements;
 			// read bits for changed arrays
 			for (n = 0; n < field->numElementArrays; n++, elementsLeft -= MAX_NETF_ARRAY_BITS) {
-				if (arraysChanged & (1 << n)) {
+				if (arraysChanged &(1 << n)) {
 					bitsArray[n] = MSG_ReadBits(msg, MIN(elementsLeft, MAX_NETF_ARRAY_BITS));
 				} else {
 					bitsArray[n] = 0;
@@ -1351,11 +1335,10 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to, netFields_t
 		}
 
 		for (n = 0; n < field->numElements; n++, toF++) {
-			if (!(bitsArray[n / MAX_NETF_ARRAY_BITS] & (1 << (n & (MAX_NETF_ARRAY_BITS - 1))))) {
+			if (!(bitsArray[n / MAX_NETF_ARRAY_BITS] &(1 << (n &(MAX_NETF_ARRAY_BITS - 1))))) {
 				// no change
 				if (from) {
 					fromF = (int *)((byte *)from + field->offset);
-
 					*toF = fromF[n];
 				} else {
 					*toF = 0;
@@ -1456,7 +1439,7 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to, netFields_t
 =======================================================================================================================================
 MSG_WriteDeltaEntity
 
-Writes part of a packetentities message, including the entity number. Can delta from either a baseline or a previous packet_entity.
+Writes part of a packetentities message, including the entity number. Can delta from either a baseline or a previous packet_entity
 If to is NULL, a remove entity update will be sent. If force is not set, then nothing at all will be generated if the entity is
 identical, under the assumption that the in-order delta code will catch it.
 =======================================================================================================================================
@@ -1487,19 +1470,19 @@ void MSG_WriteDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntitySta
 	if (lc == 0) {
 		// nothing at all changed
 		if (!force) {
-			return;		// nothing at all
+			return; // nothing at all
 		}
 		// write two bits for no change
 		MSG_WriteBits(msg, to->number, GENTITYNUM_BITS);
-		MSG_WriteBits(msg, 0, 1);		// not removed
-		MSG_WriteBits(msg, 0, 1);		// no delta
+		MSG_WriteBits(msg, 0, 1); // not removed
+		MSG_WriteBits(msg, 0, 1); // no delta
 		return;
 	}
 
 	MSG_WriteBits(msg, to->number, GENTITYNUM_BITS);
-	MSG_WriteBits(msg, 0, 1);			// not removed
-	MSG_WriteBits(msg, 1, 1);			// we have a delta
-	MSG_WriteByte(msg, lc);				// # of changes
+	MSG_WriteBits(msg, 0, 1); // not removed
+	MSG_WriteBits(msg, 1, 1); // we have a delta
+	MSG_WriteByte(msg, lc); // # of changes
 	MSG_WriteDeltaNetFields(msg, from, to, &msg_entityStateFields, lc);
 }
 
@@ -1508,9 +1491,7 @@ void MSG_WriteDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntitySta
 MSG_ReadDeltaEntity
 
 The entity number has already been read from the message, which is how the from state is identified.
-
 If the delta removes the entity, entityState_t->number will be set to MAX_GENTITIES - 1.
-
 Can go from either a baseline or a previous packet_entity.
 =======================================================================================================================================
 */
@@ -1560,7 +1541,7 @@ void MSG_ReadDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntityStat
 	if (lc > msg_entityStateFields.numFields || lc < 0) {
 		Com_Error(ERR_DROP, "invalid entityState field count");
 	}
-	// shownet 2/3 will interleave with other printed info, -1 will just print the delta records
+	// shownet 2/3 will interleave with other printed info, -1 will just print the delta records`
 	if (cl_shownet && (cl_shownet->integer >= 2 || cl_shownet->integer == -1)) {
 		print = 1;
 		Com_Printf("%3i: #%-3i ", msg->readcount, to->number);
@@ -1576,7 +1557,7 @@ void MSG_ReadDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntityStat
 /*
 =======================================================================================================================================
 
-	plyer_state_t communication.
+plyer_state_t communication
 
 =======================================================================================================================================
 */
@@ -1595,7 +1576,7 @@ void MSG_WriteDeltaPlayerstate(msg_t *msg, sharedPlayerState_t *from, sharedPlay
 
 	lc = MSG_LastChangedField(from, to, &msg_playerStateFields);
 
-	MSG_WriteByte(msg, lc);	// # of changes
+	MSG_WriteByte(msg, lc); // # of changes
 	MSG_WriteDeltaNetFields(msg, from, to, &msg_playerStateFields, lc);
 }
 
@@ -1937,8 +1918,9 @@ void MSG_NUinitHuffman() {
 
 	for (i = 0; i < size; i++) {
 		ch = data[i];
-		Huff_addRef(&msgHuff.compressor, ch); // Do update
-		Huff_addRef(&msgHuff.decompressor, ch); // Do update
+
+		Huff_addRef(&msgHuff.compressor, ch); // do update
+		Huff_addRef(&msgHuff.decompressor, ch); // do update
 		array[ch]++;
 	}
 
@@ -1946,8 +1928,8 @@ void MSG_NUinitHuffman() {
 
 	for (i = 0; i < 256; i++) {
 		if (array[i] == 0) {
-			Huff_addRef(&msgHuff.compressor, i); // Do update
-			Huff_addRef(&msgHuff.decompressor, i); // Do update
+			Huff_addRef(&msgHuff.compressor, i); // do update
+			Huff_addRef(&msgHuff.decompressor, i); // do update
 		}
 
 		Com_Printf("%d, // %d\n", array[i], i);

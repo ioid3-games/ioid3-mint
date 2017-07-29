@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -148,7 +154,7 @@ int BotSortTeamMatesByBaseTravelTime(bot_state_t *bs, int *teammates, int maxtea
 	}
 #ifdef MISSIONPACK
 	else if (gametype == GT_OBELISK || gametype == GT_HARVESTER) {
-		if (BotTeam(bs) == TEAM_RED) {
+		if (BotTeam(bs) == TEAM_RED)
 			goal = &redobelisk;
 		} else {
 			goal = &blueobelisk;
@@ -509,7 +515,6 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-
 				PlayerName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
@@ -528,7 +533,6 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-
 				PlayerName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
@@ -579,7 +583,6 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_GETFLAG);
-
 				PlayerName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
@@ -593,12 +596,10 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_GETFLAG);
-
 				PlayerName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-
 				PlayerName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
@@ -1078,6 +1079,7 @@ void Bot1FCTFOrders_FlagAtCenter(bot_state_t *bs) {
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
 				break;
 			}
+
 			case 3:
 			{
 				// the one closest to the base will defend the base
@@ -2075,6 +2077,7 @@ void BotHarvesterOrders(bot_state_t *bs) {
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
 				break;
 			}
+
 			case 3:
 			{
 				// the one closest to the base will defend the base
@@ -2270,8 +2273,8 @@ void BotTeamAI(bot_state_t *bs) {
 #ifdef MISSIONPACK
 		case GT_1FCTF:
 		{
-			// if the enemy team leads and time limit has expired to 75%, choose aggressive strategy
-			if (bs->ownteamscore < bs->enemyteamscore && level.time - level.startTime > (g_timelimit.integer * 60000) * 0.75f) {
+			// if the enemy team leads and time limit has expired to 70%, choose aggressive strategy
+			if (bs->ownteamscore < bs->enemyteamscore && level.time - level.startTime > (g_timelimit.integer * 60000) * 0.7f) {
 				bs->ctfstrategy = CTFS_AGRESSIVE;
 				// give orders again after 30 seconds
 				bs->teamgiveorders_time = FloatTime() + 30;

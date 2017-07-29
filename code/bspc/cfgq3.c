@@ -1,58 +1,60 @@
 /*
-=======================================================================================================================================
+===========================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-=======================================================================================================================================
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
+===========================================================================
 */
-
-// ===========================================================================
+//===========================================================================
 // BSPC configuration file
 // Quake3
-// ===========================================================================
+//===========================================================================
 
 #define PRESENCE_NONE				1
 #define PRESENCE_NORMAL				2
 #define PRESENCE_CROUCH				4
 
-bbox	// 30x30x56
+bbox	//30x30x56
 {
 	presencetype	PRESENCE_NORMAL
 	flags			0x0000
 	mins			{-15, -15, -24}
-
 	maxs			{15, 15, 32}
-} // end bbox
+} //end bbox
 
-bbox	// 30x30x40
+bbox	//30x30x40
 {
 	presencetype	PRESENCE_CROUCH
 	flags			0x0001
 	mins			{-15, -15, -24}
-
 	maxs			{15, 15, 16}
-} // end bbox
+} //end bbox
 
 settings
 {
 	phys_gravitydirection		{0, 0, -1}
-
 	phys_friction				6
 	phys_stopspeed				100
 	phys_gravity				800
@@ -91,4 +93,4 @@ settings
 	rs_maxfallheight			0 // 0 means no limit
 	rs_maxjumpfallheight		450
 	rs_allowladders				0
-} // end settings
+} //end settings

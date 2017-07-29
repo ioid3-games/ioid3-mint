@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -71,8 +77,8 @@ qboolean CG_PositionEntityOnTag(refEntity_t *entity, const refEntity_t *parent, 
 	}
 	// had to cast away the const to avoid compiler problems...
 	MatrixMultiply(lerped.axis, ((refEntity_t *)parent)->axis, entity->axis);
-	entity->backlerp = parent->backlerp;
 
+	entity->backlerp = parent->backlerp;
 	return returnValue;
 }
 
@@ -127,6 +133,7 @@ void CG_SetEntitySoundPosition(centity_t *cent) {
 		float *v;
 
 		v = cgs.inlineModelMidpoints[cent->currentState.modelindex];
+
 		VectorAdd(cent->lerpOrigin, v, origin);
 		trap_S_UpdateEntityPosition(cent->currentState.number, origin);
 	} else {
@@ -134,7 +141,8 @@ void CG_SetEntitySoundPosition(centity_t *cent) {
 	}
 }
 
-#define LS_FRAMETIME 100 // (ms) cycle through lightstyle characters at 10fps
+#define LS_FRAMETIME 100 //(ms) cycle through lightstyle characters at 10fps
+
 /*
 =======================================================================================================================================
 CG_AddLightstyle
@@ -146,7 +154,7 @@ void CG_AddLightstyle(centity_t *cent) {
 	int r, g, b;
 	int stringlength;
 	float offset;
-	//int offsetwhole;
+	// int offsetwhole;
 	int otime;
 	int lastch, nextch;
 
@@ -164,18 +172,16 @@ void CG_AddLightstyle(centity_t *cent) {
 	}
 
 	cent->dl_time = cg.time;
-
 	offset = ((float)otime) / LS_FRAMETIME;
-	//offsetwhole = (int)offset;
-
+	// offsetwhole = (int)offset;
 	cent->dl_backlerp += offset;
 
-	if (cent->dl_backlerp > 1) { // we're moving on to the next frame
+	if (cent->dl_backlerp > 1) {  // we're moving on to the next frame
 		cent->dl_oldframe = cent->dl_oldframe + (int)cent->dl_backlerp;
 		cent->dl_frame = cent->dl_oldframe + 1;
 
 		if (cent->dl_oldframe >= stringlength) {
-			cent->dl_oldframe = (cent->dl_oldframe) % stringlength;
+			cent->dl_oldframe = (cent->dl_oldframe)% stringlength;
 
 			if (cent->dl_oldframe < 3 && cent->dl_sound) { // < 3 so if an alarm comes back into the pvs it will only start a sound if it's going to be closely synced with the light, otherwise wait till the next cycle
 				trap_S_StartSound(NULL, cent->currentState.number, CHAN_AUTO, cgs.gameSounds[cent->dl_sound]);
@@ -183,7 +189,7 @@ void CG_AddLightstyle(centity_t *cent) {
 		}
 
 		if (cent->dl_frame >= stringlength) {
-			cent->dl_frame = (cent->dl_frame) % stringlength;
+			cent->dl_frame = (cent->dl_frame)% stringlength;
 		}
 
 		cent->dl_backlerp = cent->dl_backlerp - (int)cent->dl_backlerp;
@@ -191,9 +197,8 @@ void CG_AddLightstyle(centity_t *cent) {
 
 	lastch = cent->dl_stylestring[cent->dl_oldframe] - 'a';
 	nextch = cent->dl_stylestring[cent->dl_frame] - 'a';
-
 	lightval = (lastch * (1.0 - cent->dl_backlerp)) + (nextch * cent->dl_backlerp);
-	// dlight values go from 0 - 1.5ish
+	// ydnar: dlight values go from 0-1.5ish
 #if 0
 	lightval = (lightval * (1000.0f / 24.0f)) - 200.0f; // they want 'm' as the "middle" value as 300
 	lightval = MAX(0.0f, lightval);
@@ -205,16 +210,13 @@ void CG_AddLightstyle(centity_t *cent) {
 #endif
 	cl = cent->currentState.constantLight;
 	r = cl & 255;
-	g = (cl >> 8) & 255;
-	b = (cl >> 16) & 255;
-	// if the dlight has angles, then it is a directional global dlight
+	g = (cl >> 8)& 255;
+	b = (cl >> 16)& 255;
+	// ydnar: if the dlight has angles, then it is a directional global dlight
 	if (cent->currentState.angles[0] || cent->currentState.angles[1] || cent->currentState.angles[2]) {
 		vec3_t normal;
-		// ZTM: NOTE: Lightning on ET's Radar map is too bright with multiple light passes
-		//           (enabled with r_dynamiclight 2 in vanilla ET, currently always done in Spearmint)
-		//            so scale the light values down.
+		// ZTM: NOTE: Lightning on ET's Radar map is too bright with multiple light passes (enabled with r_dynamiclight 2 in vanilla ET, currently always done in Spearmint) so scale the light values down.
 		lightval *= 0.25f;
-
 		AngleVectors(cent->currentState.angles, normal, NULL, NULL);
 		trap_R_AddDirectedLightToScene(normal, lightval, (float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f);
 	// normal global dlight
@@ -252,9 +254,9 @@ static void CG_EntityEffects(centity_t *cent) {
 		} else {
 			cl = cent->currentState.constantLight;
 			r = (float)(cl & 0xFF) / 255.0;
-			g = (float)((cl >> 8) & 0xFF) / 255.0;
-			b = (float)((cl >> 16) & 0xFF) / 255.0;
-			i = (float)((cl >> 24) & 0xFF) * 4.0;
+			g = (float)((cl >> 8)& 0xFF) / 255.0;
+			b = (float)((cl >> 16)& 0xFF) / 255.0;
+			i = (float)((cl >> 24)& 0xFF) * 4.0;
 			trap_R_AddLightToScene(cent->lerpOrigin, i, 1.0f, r, g, b, 0);
 		}
 	}
@@ -347,14 +349,18 @@ static void CG_Item(centity_t *cent) {
 
 	if (cg_simpleItems.integer && item->giType != IT_TEAM) {
 		memset(&ent, 0, sizeof(ent));
+
 		ent.reType = RT_SPRITE;
+
 		VectorCopy(cent->lerpOrigin, ent.origin);
+
 		ent.radius = 14;
 		ent.customShader = cg_items[es->modelindex].icon;
 		ent.shaderRGBA[0] = 255;
 		ent.shaderRGBA[1] = 255;
 		ent.shaderRGBA[2] = 255;
 		ent.shaderRGBA[3] = 255;
+
 		CG_AddRefEntityWithMinLight(&ent);
 		return;
 	}
@@ -384,6 +390,7 @@ static void CG_Item(centity_t *cent) {
 
 	if (item->giType == IT_WEAPON) {
 		playerInfo_t *pi = &cgs.playerinfo[cg.cur_ps->playerNum];
+
 		Byte4Copy(pi->c1RGBA, ent.shaderRGBA);
 	}
 
@@ -435,21 +442,22 @@ static void CG_Item(centity_t *cent) {
 		barrel.hModel = wi->barrelModel;
 
 		VectorCopy(ent.lightingOrigin, barrel.lightingOrigin);
+
 		barrel.shadowPlane = ent.shadowPlane;
 		barrel.renderfx = ent.renderfx;
 
 		angles[YAW] = 0;
 		angles[PITCH] = 0;
 		angles[ROLL] = 0;
-		AnglesToAxis(angles, barrel.axis);
 
+		AnglesToAxis(angles, barrel.axis);
 		CG_PositionRotatedEntityOnTag(&barrel, &ent, wi->weaponModel, "tag_barrel");
 
 		barrel.nonNormalizedAxes = ent.nonNormalizedAxes;
 
 		CG_AddRefEntityWithMinLight(&barrel);
 	}
-	// accompanying rings / spheres for powerups
+	// accompanying rings/spheres for powerups
 	if (!cg_simpleItems.integer) {
 		vec3_t spinAngles;
 
@@ -486,7 +494,7 @@ static void CG_Missile(centity_t *cent) {
 	refEntity_t ent;
 	entityState_t *s1;
 	const weaponInfo_t *weapon;
-//	int col;
+	//int col;
 
 	s1 = &cent->currentState;
 
@@ -523,7 +531,6 @@ static void CG_Missile(centity_t *cent) {
 		vec3_t velocity;
 
 		BG_EvaluateTrajectoryDelta(&cent->currentState.pos, cg.time, velocity);
-
 		trap_S_AddLoopingSound(cent->currentState.number, cent->lerpOrigin, velocity, weapon->missileSound);
 	}
 
@@ -625,7 +632,6 @@ static void CG_Grapple(centity_t *cent) {
 	ent.renderfx = RF_NOSHADOW;
 
 	AnglesToAxis(cent->lerpAngles, ent.axis);
-
 	CG_AddRefEntityWithMinLight(&ent);
 }
 
@@ -709,7 +715,8 @@ static void CG_Portal(centity_t *cent) {
 
 	ByteToDir(s1->eventParm, ent.axis[0]);
 	PerpendicularVector(ent.axis[1], ent.axis[0]);
-	// negating this tends to get the directions like they want we really should have a camera roll value
+	// negating this tends to get the directions like they want
+	// we really should have a camera roll value
 	VectorSubtract(vec3_origin, ent.axis[1], ent.axis[1]);
 	CrossProduct(ent.axis[0], ent.axis[1], ent.axis[2]);
 
@@ -829,7 +836,8 @@ static void CG_CalcEntityLerpPositions(centity_t *cent) {
 	}
 
 	if (i == CG_MaxSplitView()) {
-		CG_AdjustPositionForMover(cent->lerpOrigin, cent->currentState.groundEntityNum, cg.snap->serverTime, cg.time, cent->lerpOrigin, cent->lerpAngles, cent->lerpAngles);
+		CG_AdjustPositionForMover(cent->lerpOrigin, cent->currentState.groundEntityNum, 
+		cg.snap->serverTime, cg.time, cent->lerpOrigin, cent->lerpAngles, cent->lerpAngles);
 	}
 }
 
@@ -853,8 +861,10 @@ static void CG_TeamBase(centity_t *cent) {
 		memset(&model, 0, sizeof(model));
 
 		model.reType = RT_MODEL;
+
 		VectorCopy(cent->lerpOrigin, model.lightingOrigin);
 		VectorCopy(cent->lerpOrigin, model.origin);
+
 		AnglesToAxis(cent->currentState.angles, model.axis);
 
 		if (cent->currentState.modelindex == TEAM_RED) {
@@ -873,11 +883,14 @@ static void CG_TeamBase(centity_t *cent) {
 		memset(&model, 0, sizeof(model));
 
 		model.reType = RT_MODEL;
+
 		VectorCopy(cent->lerpOrigin, model.lightingOrigin);
 		VectorCopy(cent->lerpOrigin, model.origin);
+
 		AnglesToAxis(cent->currentState.angles, model.axis);
 
 		model.hModel = cgs.media.overloadBaseModel;
+
 		CG_AddRefEntityWithMinLight(&model);
 		// if hit
 		if (cent->currentState.frame == 1) {
@@ -889,6 +902,7 @@ static void CG_TeamBase(centity_t *cent) {
 			model.shaderRGBA[2] = c;
 			model.shaderRGBA[3] = 0xff;
 			model.hModel = cgs.media.overloadEnergyModel;
+
 			CG_AddRefEntityWithMinLight(&model);
 		}
 		// if respawning
@@ -917,6 +931,7 @@ static void CG_TeamBase(centity_t *cent) {
 			model.shaderRGBA[2] = c * 0xff;
 			model.shaderRGBA[3] = c * 0xff;
 			model.hModel = cgs.media.overloadLightsModel;
+
 			CG_AddRefEntityWithMinLight(&model);
 			// show the target
 			if (t > h) {
@@ -926,7 +941,9 @@ static void CG_TeamBase(centity_t *cent) {
 				}
 
 				VectorCopy(cent->currentState.angles, angles);
+
 				angles[YAW] += (float)16 * Q_acos(1 - c) * 180 / M_PI;
+
 				AnglesToAxis(angles, model.axis);
 
 				VectorScale(model.axis[0], c, model.axis[0]);
@@ -939,6 +956,7 @@ static void CG_TeamBase(centity_t *cent) {
 				model.shaderRGBA[3] = 0xff;
 				model.origin[2] += OBELISK_TARGET_HEIGHT;
 				model.hModel = cgs.media.overloadTargetModel;
+
 				CG_AddRefEntityWithMinLight(&model);
 			} else {
 				// FIXME: show animated smoke
@@ -948,16 +966,19 @@ static void CG_TeamBase(centity_t *cent) {
 			cent->muzzleFlashTime = 0;
 			// modelindex2 is the health value of the obelisk
 			c = cent->currentState.modelindex2;
+
 			model.shaderRGBA[0] = 0xff;
 			model.shaderRGBA[1] = c;
 			model.shaderRGBA[2] = c;
 			model.shaderRGBA[3] = 0xff;
 			// show the lights
 			model.hModel = cgs.media.overloadLightsModel;
+
 			CG_AddRefEntityWithMinLight(&model);
 			// show the target
 			model.origin[2] += 56;
 			model.hModel = cgs.media.overloadTargetModel;
+
 			CG_AddRefEntityWithMinLight(&model);
 		}
 	} else if (cgs.gametype == GT_HARVESTER) {
@@ -965,8 +986,10 @@ static void CG_TeamBase(centity_t *cent) {
 		memset(&model, 0, sizeof(model));
 
 		model.reType = RT_MODEL;
+
 		VectorCopy(cent->lerpOrigin, model.lightingOrigin);
 		VectorCopy(cent->lerpOrigin, model.origin);
+
 		AnglesToAxis(cent->currentState.angles, model.axis);
 
 		if (cent->currentState.modelindex == TEAM_RED) {
@@ -989,7 +1012,7 @@ static void CG_TeamBase(centity_t *cent) {
 =======================================================================================================================================
 CG_Corona
 
-Only coronas that are in your PVS are being added.
+only coronas that are in your PVS are being added.
 =======================================================================================================================================
 */
 static void CG_Corona(centity_t *cent) {
@@ -1006,8 +1029,8 @@ static void CG_Corona(centity_t *cent) {
 
 	dli = cent->currentState.dl_intensity;
 	r = dli & 255;
-	g = (dli >> 8) & 255;
-	b = (dli >> 16) & 255;
+	g = (dli >> 8)& 255;
+	b = (dli >> 16)& 255;
 
 	visible = qfalse;
 	behind = qfalse;
@@ -1023,18 +1046,17 @@ static void CG_Corona(centity_t *cent) {
 
 		dist = VectorNormalize2(dir, dir);
 
-		if (dist > cg_coronafardist.integer) { // performance variable cg_coronafardist will keep down super long traces
+		if (dist > cg_coronafardist.integer) {  // performance variable cg_coronafardist will keep down super long traces
 			toofar = qtrue;
 		}
 
 		dot = DotProduct(dir, cg.refdef.viewaxis[0]);
 
-		if (dot >= -0.6) { // assumes ~90 deg fov, changed value to 0.6 (screen corner at 90 fov)
+		if (dot >= -0.6) { // assumes ~90 deg fov (SA) changed value to 0.6 (screen corner at 90 fov)
 			behind = qtrue; // use the dot to at least do trivial removal of those behind you.
 		}
-		// yeah, I could calc side planes to clip against, but would that be worth it? (much better than dumb dot >= thing?)
-
-		//CG_Printf("dot: %f\n", dot);
+		// yeah, I could calc side planes to clip against, but would that be worth it? (much better than dumb dot>= thing?)
+		//	CG_Printf("dot: %f\n", dot);
 	}
 
 	if (!visible && !behind && !toofar) {
@@ -1150,7 +1172,9 @@ void CG_AddPacketEntities(void) {
 		}
 
 		ps = &cg.localPlayers[num].predictedPlayerState;
+
 		BG_PlayerStateToEntityState(ps, &cg.localPlayers[num].predictedPlayerEntity.currentState, qfalse);
+
 		CG_AddCEntity(&cg.localPlayers[num].predictedPlayerEntity);
 		// lerp the non-predicted value for lightning gun origins
 		CG_CalcEntityLerpPositions(&cg_entities[cg.snap->pss[num].playerNum]);

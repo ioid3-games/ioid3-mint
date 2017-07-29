@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, 
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -424,10 +430,8 @@ cvar_t *Cvar_Get(const char *var_name, const char *var_value, int flags) {
 				var->overriddenResetString = CopyString(var_value);
 			}
 		}
-		// ZOID--needs to be set so that cvars the game sets as
-		// SERVERINFO get sent to clients
+		// ZOID--needs to be set so that cvars the game sets as SERVERINFO get sent to clients
 		cvar_modifiedFlags |= flags;
-
 		return var;
 	}
 	// allocate a new cvar
@@ -493,8 +497,10 @@ cvar_t *Cvar_Get(const char *var_name, const char *var_value, int flags) {
 =======================================================================================================================================
 Cvar_SetDefault
 
-Change default value of a cvar, or create if it doesn't exist. This is treated as an 'untrusted' setting controlled by the user(cannot
-change current value of ROM cvars). If the VM registers the cvar later it claims ownership but the user specified default will be used.
+Change default value of a cvar, or create if it doesn't exist.
+
+This is treated as an 'untrusted' setting controlled by the user(cannot change current value of ROM cvars).
+If the VM registers the cvar later it claims ownership but the user specified default will be used.
 =======================================================================================================================================
 */
 cvar_t *Cvar_SetDefault(const char *var_name, const char *var_value) {
@@ -533,7 +539,7 @@ cvar_t *Cvar_SetDefault(const char *var_name, const char *var_value) {
 =======================================================================================================================================
 Cvar_ResetDefaultOverrides
 
-Undo the default overrides
+Undo the default overrides.
 =======================================================================================================================================
 */
 void Cvar_ResetDefaultOverrides(void) {
@@ -545,6 +551,7 @@ void Cvar_ResetDefaultOverrides(void) {
 		if (var->flags & CVAR_CUSTOM_RESET) {
 			if (var->overriddenResetString) {
 				Z_Free(var->resetString);
+
 				var->resetString = var->overriddenResetString;
 				var->overriddenResetString = NULL;
 				var->flags &= ~CVAR_CUSTOM_RESET;
@@ -656,7 +663,7 @@ cvar_t *Cvar_Set2(const char *var_name, const char *value, int defaultFlags, qbo
 	cvar_modifiedFlags |= var->flags;
 
 	if (!force) {
-		if ((var->flags & (CVAR_SYSTEMINFO|CVAR_SERVER_CREATED)) && CL_ConnectedToRemoteServer()) {
+		if ((var->flags &(CVAR_SYSTEMINFO|CVAR_SERVER_CREATED)) && CL_ConnectedToRemoteServer()) {
 			Com_Printf("%s can only be set by server.\n", var_name);
 			return var;
 		}
@@ -763,7 +770,7 @@ void Cvar_Server_Set(const char *var_name, const char *value) {
 
 	if (flags != CVAR_NONEXISTENT) {
 		// If this cvar may not be modified by a server discard the value.
-		if (!(flags & (CVAR_SYSTEMINFO|CVAR_SERVER_CREATED|CVAR_USER_CREATED))) {
+		if (!(flags &(CVAR_SYSTEMINFO|CVAR_SERVER_CREATED|CVAR_USER_CREATED))) {
 			Com_Printf(S_COLOR_YELLOW "WARNING: server is not allowed to set %s=%s\n", var_name, value);
 			return;
 		}
@@ -1405,7 +1412,9 @@ void Cvar_Restart(qboolean unsetVM) {
 	curvar = cvar_vars;
 
 	while (curvar) {
-		if ((curvar->flags & CVAR_USER_CREATED) || (unsetVM && (curvar->flags & CVAR_VM_CREATED))) {
+		// Custom reset (default value) are reloaded in FS_Restart before this function is run in Com_GameRestart.
+		// Any user cvars with custom reset are for the new fs_game, so don't remove them.
+		if (((curvar->flags & CVAR_USER_CREATED) && !(curvar->flags & CVAR_CUSTOM_RESET)) || (unsetVM && (curvar->flags & CVAR_VM_CREATED))) {
 			// throw out any variables the user/vm created
 			curvar = Cvar_Unset(curvar);
 			continue;
@@ -1444,8 +1453,8 @@ char *Cvar_InfoString(int bit) {
 
 	for (var = cvar_vars; var; var = var->next) {
 		if (var->name && (var->flags & bit)) {
-			// if extra local client userinfo, remove "#"(2, 3, or 4) from the beginning of each var.
-			if ((bit & (CVAR_USERINFO2|CVAR_USERINFO3|CVAR_USERINFO4)) && isdigit(var->name[0])) {
+			// If extra local client userinfo, remove "#"(2, 3, or 4)from the beginning of each var.
+			if ((bit &(CVAR_USERINFO2|CVAR_USERINFO3|CVAR_USERINFO4)) && isdigit(var->name[0])) {
 				Info_SetValueForKey(info, &var->name[1], var->string);
 			} else {
 				Info_SetValueForKey(info, var->name, var->string);
@@ -1471,8 +1480,8 @@ char *Cvar_InfoString_Big(int bit) {
 
 	for (var = cvar_vars; var; var = var->next) {
 		if (var->name && (var->flags & bit)) {
-			// if extra local client userinfo, remove "#"(2, 3, or 4) from the beginning of each var.
-			if ((bit & (CVAR_USERINFO2|CVAR_USERINFO3|CVAR_USERINFO4)) && isdigit(var->name[0])) {
+			// If extra local client userinfo, remove "#"(2, 3, or 4)from the beginning of each var.
+			if ((bit &(CVAR_USERINFO2|CVAR_USERINFO3|CVAR_USERINFO4)) && isdigit(var->name[0])) {
 				Info_SetValueForKey_Big(info, &var->name[1], var->string);
 			} else {
 				Info_SetValueForKey_Big(info, var->name, var->string);
@@ -1501,7 +1510,6 @@ void Cvar_CheckRange(cvar_t *var, float min, float max, qboolean integral) {
 	qboolean explicitSet;
 
 	explicitSet = var->explicitSet;
-
 	var->validate = qtrue;
 	var->min = min;
 	var->max = max;
@@ -1520,7 +1528,7 @@ void Cvar_CheckRange(cvar_t *var, float min, float max, qboolean integral) {
 =======================================================================================================================================
 Cvar_CheckRangeSafe
 
-basically a slightly modified Cvar_CheckRange for the interpreted modules
+basically a slightly modified Cvar_CheckRange for the interpreted modules.
 =======================================================================================================================================
 */
 void Cvar_CheckRangeSafe(const char *varName, float min, float max, qboolean integral) {
@@ -1533,7 +1541,7 @@ void Cvar_CheckRangeSafe(const char *varName, float min, float max, qboolean int
 		return;
 	}
 
-	if (!(var->flags & (CVAR_VM_CREATED|CVAR_USER_CREATED))) {
+	if (!(var->flags &(CVAR_VM_CREATED|CVAR_USER_CREATED))) {
 		Com_Printf("A VM tried to add range check to engine cvar %s\n", varName);
 		return;
 	}

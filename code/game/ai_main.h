@@ -1,28 +1,35 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
 #define BOTFILESBASEFOLDER "botfiles"
+
 #define MAX_ITEMS 256
 // bot flags
 #define BFL_STRAFERIGHT		 1 // strafe to the right
@@ -88,6 +95,7 @@ typedef struct bot_waypoint_s {
 #define MAX_ACTIVATEAREAS 32
 
 struct bot_state_s;
+
 typedef void (*bot_aienter_t)(struct bot_state_s *bs, char *s);
 
 typedef struct bot_activategoal_s {
@@ -106,9 +114,10 @@ typedef struct bot_activategoal_s {
 	bot_aienter_t aienter;				// function to call to return to AI node from before going to activate entity
 	struct bot_activategoal_s *next;	// next activate goal on stack
 } bot_activategoal_t;
+
 // bot state
 typedef struct bot_state_s {
-	int inuse;								// true if this state is used by a bot client
+	int inuse;						// true if this state is used by a bot client
 	int botthink_residual;					// residual for the bot thinks
 	int playernum;							// player number of the bot
 	int entitynum;							// entity number of the bot
@@ -289,6 +298,7 @@ void BotEntityInfo(int entnum, aas_entityinfo_t *info);
 int BotNextEntity(int entnum);
 // returns float valud of a libvar
 float BotLibVarGetValue(const char *name);
+
 extern float floattime;
 #define FloatTime() floattime
 // from the game source

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -85,6 +91,7 @@ G_CreateRotationMatrix
 =======================================================================================================================================
 */
 void G_CreateRotationMatrix(vec3_t angles, vec3_t matrix[3]) {
+
 	AngleVectors(angles, matrix[0], matrix[1], matrix[2]);
 	VectorInverse(matrix[1]);
 }
@@ -113,6 +120,7 @@ void G_RotatePoint(vec3_t point, vec3_t matrix[3]) {
 	vec3_t tvec;
 
 	VectorCopy(point, tvec);
+
 	point[0] = DotProduct(matrix[0], tvec);
 	point[1] = DotProduct(matrix[1], tvec);
 	point[2] = DotProduct(matrix[2], tvec);
@@ -194,14 +202,14 @@ qboolean G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, ve
 	}
 	// if it is ok to leave in the old position, do it
 	// this is only relevant for riding entities, not pushed
-	// Sliding trapdoors can cause this.
-	VectorCopy((pushed_p - 1)->origin, check->s.pos.trBase);
+	// sliding trapdoors can cause this.
+	VectorCopy((pushed_p-1)->origin, check->s.pos.trBase);
 
 	if (check->player) {
-		VectorCopy((pushed_p - 1)->origin, check->player->ps.origin);
+		VectorCopy((pushed_p-1)->origin, check->player->ps.origin);
 	}
 
-	VectorCopy((pushed_p - 1)->angles, check->s.apos.trBase);
+	VectorCopy((pushed_p-1)->angles, check->s.apos.trBase);
 
 	block = G_TestEntityPosition(check);
 
@@ -289,7 +297,7 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 
 	*obstacle = NULL;
 	// mins/maxs are the bounds at the destination
-	// totalMins / totalMaxs are the bounds for the entire move
+	// totalMins/totalMaxs are the bounds for the entire move
 	if (pusher->r.currentAngles[0] || pusher->r.currentAngles[1] || pusher->r.currentAngles[2] || amove[0] || amove[1] || amove[2]) {
 		float radius;
 
@@ -325,7 +333,6 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 	// move the pusher to its final position
 	VectorAdd(pusher->r.currentOrigin, move, pusher->r.currentOrigin);
 	VectorAdd(pusher->r.currentAngles, amove, pusher->r.currentAngles);
-
 	trap_LinkEntity(pusher);
 	// see if any solid entities are inside the final position
 	for (e = 0; e < listedEntities; e++) {
@@ -469,7 +476,6 @@ void G_MoverTeam(gentity_t *ent) {
 
 			BG_EvaluateTrajectory(&part->s.pos, level.time, part->r.currentOrigin);
 			BG_EvaluateTrajectory(&part->s.apos, level.time, part->r.currentAngles);
-
 			trap_LinkEntity(part);
 		}
 		// if the pusher has a "blocked" function, call it
@@ -774,13 +780,14 @@ void InitMover(gentity_t *ent) {
 	ent->s.eType = ET_MOVER;
 
 	VectorCopy(ent->pos1, ent->r.currentOrigin);
-
 	trap_LinkEntity(ent);
 
 	ent->s.pos.trType = TR_STATIONARY;
+
 	VectorCopy(ent->pos1, ent->s.pos.trBase);
 	// calculate time to reach second position from speed
 	VectorSubtract(ent->pos2, ent->pos1, move);
+
 	distance = VectorLength(move);
 
 	if (!ent->speed) {
@@ -788,6 +795,7 @@ void InitMover(gentity_t *ent) {
 	}
 
 	VectorScale(move, ent->speed, ent->s.pos.trDelta);
+
 	ent->s.pos.trDuration = distance * 1000 / ent->speed;
 
 	if (ent->s.pos.trDuration <= 0) {
@@ -935,7 +943,6 @@ void Think_SpawnNewDoorTrigger(gentity_t *ent) {
 	other->count = best;
 
 	trap_LinkEntity(other);
-
 	MatchTeam(ent, ent->moverState, level.time);
 }
 
@@ -991,7 +998,6 @@ void SP_func_door(gentity_t *ent) {
 	VectorCopy(ent->s.origin, ent->pos1);
 	// calculate second position
 	G_SetBrushModel(ent, ent->model);
-
 	G_SetMovedir(ent->s.angles, ent->movedir);
 
 	abs_movedir[0] = fabs(ent->movedir[0]);
@@ -999,7 +1005,9 @@ void SP_func_door(gentity_t *ent) {
 	abs_movedir[2] = fabs(ent->movedir[2]);
 
 	VectorSubtract(ent->s.maxs, ent->s.mins, size);
+
 	distance = DotProduct(abs_movedir, size) - lip;
+
 	VectorMA(ent->pos1, distance, ent->movedir, ent->pos2);
 	// if "start_open", reverse position 1 and 2
 	if (ent->spawnflags & 1) {
@@ -1225,7 +1233,6 @@ void SP_func_button(gentity_t *ent) {
 	VectorCopy(ent->s.origin, ent->pos1);
 	// calculate second position
 	G_SetBrushModel(ent, ent->model);
-
 	G_SpawnFloat("lip", "4", &lip);
 	G_SetMovedir(ent->s.angles, ent->movedir);
 
@@ -1234,7 +1241,9 @@ void SP_func_button(gentity_t *ent) {
 	abs_movedir[2] = fabs(ent->movedir[2]);
 
 	VectorSubtract(ent->s.maxs, ent->s.mins, size);
+
 	distance = abs_movedir[0] * size[0] + abs_movedir[1] * size[1] + abs_movedir[2] * size[2] - lip;
+
 	VectorMA(ent->pos1, distance, ent->movedir, ent->pos2);
 
 	if (ent->health) {
@@ -1268,6 +1277,7 @@ The wait time at a corner has completed, so start moving again.
 =======================================================================================================================================
 */
 void Think_BeginMoving(gentity_t *ent) {
+
 	ent->s.pos.trTime = level.time;
 	ent->s.pos.trType = TR_LINEAR_STOP;
 }
@@ -1311,19 +1321,18 @@ void Reached_Train(gentity_t *ent) {
 	VectorSubtract(ent->pos2, ent->pos1, move);
 
 	length = VectorLength(move);
-
 	ent->s.pos.trDuration = length * 1000 / speed;
-	// Be sure to send to clients after any fast move case
+	// be sure to send to clients after any fast move case
 	ent->r.svFlags &= ~SVF_NOCLIENT;
-	// Fast move case
+	// fast move case
 	if (ent->s.pos.trDuration < 1) {
-		// As trDuration is used later in a division, we need to avoid that case now
-		// With null trDuration, the calculated rocks bounding box becomes infinite and the engine think for a short time
+		// as trDuration is used later in a division, we need to avoid that case now
+		// with null trDuration, the calculated rocks bounding box becomes infinite and the engine think for a short time
 		// any entity is riding that mover but not the world entity... In rare case, I found it can also stuck every map entities
 		// after func_door are used. The desired effect with very very big speed is to have instant move, so any not null duration
 		// lower than a frame duration should be sufficient. Afaik, the negative case don't have to be supported.
 		ent->s.pos.trDuration = 1;
-		// Don't send entity to clients so it becomes really invisible
+		// don't send entity to clients so it becomes really invisible
 		ent->r.svFlags |= SVF_NOCLIENT;
 	}
 	// looping sound
@@ -1366,8 +1375,7 @@ void Think_SetupTrainTargets(gentity_t *ent) {
 			G_Printf("Train corner at %s without a target\n", vtos(path->s.origin));
 			return;
 		}
-		// find a path_corner among the targets
-		// there may also be other targets that get fired when the corner is reached
+		// find a path_corner among the targets. There may also be other targets that get fired when the corner is reached
 		next = NULL;
 
 		do {
@@ -1545,7 +1553,6 @@ void SP_func_bobbing(gentity_t *ent) {
 	G_SpawnFloat("height", "32", &height);
 	G_SpawnInt("dmg", "2", &ent->damage);
 	G_SpawnFloat("phase", "0", &phase);
-
 	G_SetBrushModel(ent, ent->model);
 
 	InitMover(ent);
@@ -1576,7 +1583,7 @@ void SP_func_bobbing(gentity_t *ent) {
 
 /*QUAKED func_pendulum (0 .5 .8) ?
 You need to have an origin brush as part of this entity.
-Pendulums always swing north / south on unrotated models. Add an angles field to the model to allow rotation in other directions.
+Pendulums always swing north/south on unrotated models. Add an angles field to the model to allow rotation in other directions.
 Pendulum frequency is a physical constant based on the length of the beam and gravity.
 "model2"	.md3 model to also draw
 "speed"		the number of degrees each way the pendulum swings, (30 default)
@@ -1594,7 +1601,6 @@ void SP_func_pendulum(gentity_t *ent) {
 	G_SpawnFloat("speed", "30", &speed);
 	G_SpawnInt("dmg", "2", &ent->damage);
 	G_SpawnFloat("phase", "0", &phase);
-
 	G_SetBrushModel(ent, ent->model);
 	// find pendulum length
 	length = fabs(ent->s.mins[2]);
@@ -1604,7 +1610,6 @@ void SP_func_pendulum(gentity_t *ent) {
 	}
 
 	freq = 1 / (M_PI * 2) * sqrt(g_gravity.value / (3 * length));
-
 	ent->s.pos.trDuration = (1000 / freq);
 
 	InitMover(ent);

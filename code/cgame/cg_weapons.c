@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -262,7 +268,9 @@ void CG_RailTrail(playerInfo_t *pi, vec3_t start, vec3_t end) {
 
 	VectorCopy(start, move);
 	VectorSubtract(end, start, vec);
+
 	len = VectorNormalize(vec);
+
 	PerpendicularVector(temp, vec);
 
 	for (i = 0; i < 36; i++) {
@@ -278,7 +286,9 @@ void CG_RailTrail(playerInfo_t *pi, vec3_t start, vec3_t end) {
 	for (i = 0; i < len; i += SPACING) {
 		if (i != skip) {
 			skip = i + SPACING;
+
 			le = CG_AllocLocalEntity();
+
 			re = &le->refEntity;
 
 			le->leFlags = LEF_PUFF_DONT_SCALE;
@@ -291,6 +301,7 @@ void CG_RailTrail(playerInfo_t *pi, vec3_t start, vec3_t end) {
 			re->reType = RT_SPRITE;
 			re->radius = 1.1f;
 			re->customShader = cgs.media.railRingsShader;
+
 			re->shaderRGBA[0] = pi->color2[0] * 255;
 			re->shaderRGBA[1] = pi->color2[1] * 255;
 			re->shaderRGBA[2] = pi->color2[2] * 255;
@@ -347,6 +358,7 @@ static void CG_RocketTrail(centity_t *ent, const weaponInfo_t *wi) {
 	t = step * ((startTime + step) / step);
 
 	BG_EvaluateTrajectory(&es->pos, cg.time, origin);
+
 	contents = CG_PointContents(origin, -1);
 	// if object (e.g. grenade) is stationary, don't toss up smoke
 	if (es->pos.trType == TR_STATIONARY) {
@@ -535,6 +547,7 @@ void CG_GrappleTrail(centity_t *ent, const weaponInfo_t *wi) {
 	refEntity_t beam;
 
 	VectorCopy(ent->lerpOrigin, origin);
+
 	ent->trailTime = cg.time;
 
 	memset(&beam, 0, sizeof(beam));
@@ -596,7 +609,6 @@ void CG_RegisterWeapon(int weaponNum) {
 	memset(weaponInfo, 0, sizeof(*weaponInfo));
 
 	weaponInfo->registered = qtrue;
-
 	weaponInfo->item = item = BG_FindItemForWeapon(weaponNum);
 
 	if (!item) {
@@ -667,8 +679,8 @@ void CG_RegisterWeapon(int weaponNum) {
 			break;
 #ifdef MISSIONPACK
 		case WP_CHAINGUN:
-			MAKERGB(weaponInfo->flashDlightColor, 1, 1, 0);
 			weaponInfo->firingSound = trap_S_RegisterSound("sound/weapons/vulcan/wvulfire.wav", qfalse);
+			MAKERGB(weaponInfo->flashDlightColor, 1, 1, 0);
 			weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/vulcan/vulcanf1b.wav", qfalse);
 			weaponInfo->flashSound[1] = trap_S_RegisterSound("sound/weapons/vulcan/vulcanf2b.wav", qfalse);
 			weaponInfo->flashSound[2] = trap_S_RegisterSound("sound/weapons/vulcan/vulcanf3b.wav", qfalse);
@@ -692,7 +704,6 @@ void CG_RegisterWeapon(int weaponNum) {
 			weaponInfo->ejectBrassFunc = CG_ShotgunEjectBrass;
 			break;
 		case WP_ROCKET_LAUNCHER:
-			MAKERGB(weaponInfo->flashDlightColor, 1, 0.75f, 0);
 			weaponInfo->missileModel = trap_R_RegisterModel("models/ammo/rocket/rocket.md3");
 			weaponInfo->missileSound = trap_S_RegisterSound("sound/weapons/rocket/rockfly.wav", qfalse);
 			weaponInfo->missileTrailFunc = CG_RocketTrail;
@@ -700,53 +711,54 @@ void CG_RegisterWeapon(int weaponNum) {
 			weaponInfo->wiTrailTime = 2000;
 			weaponInfo->trailRadius = 64;
 			MAKERGB(weaponInfo->missileDlightColor, 1, 0.75f, 0);
+			MAKERGB(weaponInfo->flashDlightColor, 1, 0.75f, 0);
 			weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/rocket/rocklf1a.wav", qfalse);
 			cgs.media.rocketExplosionShader = trap_R_RegisterShader("rocketExplosion");
 			break;
 #ifdef MISSIONPACK
 		case WP_PROX_LAUNCHER:
-			MAKERGB(weaponInfo->flashDlightColor, 1, 0.70f, 0);
 			weaponInfo->missileModel = trap_R_RegisterModel("models/weaphits/proxmine.md3");
 			weaponInfo->missileTrailFunc = CG_GrenadeTrail;
 			weaponInfo->wiTrailTime = 700;
 			weaponInfo->trailRadius = 32;
+			MAKERGB(weaponInfo->flashDlightColor, 1, 0.70f, 0);
 			weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/proxmine/wstbfire.wav", qfalse);
 			cgs.media.grenadeExplosionShader = trap_R_RegisterShader("grenadeExplosion");
 			break;
 #endif
 		case WP_GRENADE_LAUNCHER:
-			MAKERGB(weaponInfo->flashDlightColor, 1, 0.70f, 0);
 			weaponInfo->missileModel = trap_R_RegisterModel("models/ammo/grenade1.md3");
 			weaponInfo->missileTrailFunc = CG_GrenadeTrail;
 			weaponInfo->wiTrailTime = 700;
 			weaponInfo->trailRadius = 32;
+			MAKERGB(weaponInfo->flashDlightColor, 1, 0.70f, 0);
 			weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/grenade/grenlf1a.wav", qfalse);
 			cgs.media.grenadeExplosionShader = trap_R_RegisterShader("grenadeExplosion");
 			break;
 #ifdef MISSIONPACK
 		case WP_NAILGUN:
-			MAKERGB(weaponInfo->flashDlightColor, 1, 0.75f, 0);
 			weaponInfo->ejectBrassFunc = CG_NailgunEjectBrass;
 			weaponInfo->missileTrailFunc = CG_NailTrail;
 //			weaponInfo->missileSound = trap_S_RegisterSound("sound/weapons/nailgun/wnalflit.wav", qfalse);
 			weaponInfo->trailRadius = 16;
 			weaponInfo->wiTrailTime = 250;
 			weaponInfo->missileModel = trap_R_RegisterModel("models/weaphits/nail.md3");
+			MAKERGB(weaponInfo->flashDlightColor, 1, 0.75f, 0);
 			weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/nailgun/wnalfire.wav", qfalse);
 			break;
 #endif
 		case WP_PLASMAGUN:
 //			weaponInfo->missileModel = cgs.media.invulnerabilityPowerupModel;
-			MAKERGB(weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f);
 			weaponInfo->missileTrailFunc = CG_PlasmaTrail;
 			weaponInfo->missileSound = trap_S_RegisterSound("sound/weapons/plasma/lasfly.wav", qfalse);
+			MAKERGB(weaponInfo->flashDlightColor, 0.6f, 0.6f, 1.0f);
 			weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/plasma/hyprbf1a.wav", qfalse);
 			cgs.media.plasmaExplosionShader = trap_R_RegisterShader("plasmaExplosion");
 			cgs.media.railRingsShader = trap_R_RegisterShader("railDisc");
 			break;
 		case WP_RAILGUN:
-			MAKERGB(weaponInfo->flashDlightColor, 1, 0.5f, 0);
 			weaponInfo->readySound = trap_S_RegisterSound("sound/weapons/railgun/rg_hum.wav", qfalse);
+			MAKERGB(weaponInfo->flashDlightColor, 1, 0.5f, 0);
 			weaponInfo->flashSound[0] = trap_S_RegisterSound("sound/weapons/railgun/railgf1a.wav", qfalse);
 			cgs.media.railExplosionShader = trap_R_RegisterShader("railExplosion");
 			cgs.media.railRingsShader = trap_R_RegisterShader("railDisc");
@@ -779,7 +791,7 @@ void CG_RegisterItemVisuals(int itemNum) {
 	gitem_t *item;
 
 	if (itemNum < 0 || itemNum >= BG_NumItems()) {
-		CG_Error("CG_RegisterItemVisuals: itemNum %d out of range [0-%d]", itemNum, BG_NumItems() - 1);
+		CG_Error("CG_RegisterItemVisuals: itemNum %d out of range [0-%d]", itemNum, BG_NumItems() -1);
 	}
 
 	itemInfo = &cg_items[itemNum];
@@ -967,6 +979,7 @@ static void CG_LightningBolt(centity_t *cent, vec3_t origin) {
 
 	beam.reType = RT_LIGHTNING;
 	beam.customShader = cgs.media.lightningShader;
+
 	CG_AddRefEntityWithMinLight(&beam);
 	// add the impact flare if it hit something
 	if (trace.fraction < 1.0) {
@@ -985,70 +998,19 @@ static void CG_LightningBolt(centity_t *cent, vec3_t origin) {
 		angles[0] = rand() % 360;
 		angles[1] = rand() % 360;
 		angles[2] = rand() % 360;
+
 		AnglesToAxis(angles, beam.axis);
 		CG_AddRefEntityWithMinLight(&beam);
 	}
 }
-/*
-static void CG_LightningBolt(centity_t *cent, vec3_t origin) {
-	trace_t trace;
-	refEntity_t beam;
-	vec3_t forward;
-	vec3_t muzzlePoint, endPoint;
 
-	if (cent->currentState.weapon != WP_LIGHTNING) {
-		return;
-	}
-
-	memset(&beam, 0, sizeof(beam));
-	// find muzzle point for this frame
-	VectorCopy(cent->lerpOrigin, muzzlePoint);
-	AngleVectors(cent->lerpAngles, forward, NULL, NULL);
-	// FIXME: crouch
-	muzzlePoint[2] += DEFAULT_VIEWHEIGHT;
-
-	VectorMA(muzzlePoint, 14, forward, muzzlePoint);
-	// project forward by the lightning range
-	VectorMA(muzzlePoint, LIGHTNING_RANGE, forward, endPoint);
-	// see if it hit a wall
-	CG_Trace(&trace, muzzlePoint, vec3_origin, vec3_origin, endPoint, cent->currentState.number, MASK_SHOT);
-	// this is the endpoint
-	VectorCopy(trace.endpos, beam.oldorigin);
-	// use the provided origin, even though it may be slightly different than the muzzle origin
-	VectorCopy(origin, beam.origin);
-
-	beam.reType = RT_LIGHTNING;
-	beam.customShader = cgs.media.lightningShader;
-	CG_AddRefEntityWithMinLight(&beam);
-	// add the impact flare if it hit something
-	if (trace.fraction < 1.0) {
-		vec3_t angles;
-		vec3_t dir;
-
-		VectorSubtract(beam.oldorigin, beam.origin, dir);
-		VectorNormalize(dir);
-
-		memset(&beam, 0, sizeof(beam));
-
-		beam.hModel = cgs.media.lightningExplosionModel;
-
-		VectorMA(trace.endpos, -16, dir, beam.origin);
-		// make a random orientation
-		angles[0] = rand() % 360;
-		angles[1] = rand() % 360;
-		angles[2] = rand() % 360;
-		AnglesToAxis(angles, beam.axis);
-		CG_AddRefEntityWithMinLight(&beam);
-	}
-}
-*/
+#define SPIN_SPEED 0.9
+#define COAST_TIME 1000
 /*
 =======================================================================================================================================
 CG_MachinegunSpinAngle
 =======================================================================================================================================
 */
-#define SPIN_SPEED 0.9
-#define COAST_TIME 1000
 static float CG_MachinegunSpinAngle(centity_t *cent) {
 	int delta;
 	float angle;
@@ -1142,6 +1104,7 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent,
 	// set custom shading for railgun refire rate
 	if (weaponNum == WP_RAILGUN && cent->pe.railFireTime + 1500 > cg.time) {
 		int scale = 255 * (cg.time - cent->pe.railFireTime) / 1500;
+
 		gun.shaderRGBA[0] = (pi->c1RGBA[0] * scale) >> 8;
 		gun.shaderRGBA[1] = (pi->c1RGBA[1] * scale) >> 8;
 		gun.shaderRGBA[2] = (pi->c1RGBA[2] * scale) >> 8;
@@ -1178,7 +1141,6 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent,
 	}
 
 	trap_R_LerpTag(&lerped, parent->hModel, parent->oldframe, parent->frame, 1.0 - parent->backlerp, "tag_weapon");
-
 	VectorCopy(parent->origin, gun.origin);
 	VectorMA(gun.origin, lerped.origin[0], parent->axis[0], gun.origin);
 	// Make weapon appear left-handed for 2 and centered for 3
@@ -1208,8 +1170,8 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent,
 		angles[YAW] = 0;
 		angles[PITCH] = 0;
 		angles[ROLL] = CG_MachinegunSpinAngle(cent);
-		AnglesToAxis(angles, barrel.axis);
 
+		AnglesToAxis(angles, barrel.axis);
 		CG_PositionRotatedEntityOnTag(&barrel, &gun, weapon->weaponModel, "tag_barrel");
 		CG_AddWeaponWithPowerups(&barrel, cent->currentState.powerups);
 	}
@@ -1234,10 +1196,10 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent,
 	angles[YAW] = 0;
 	angles[PITCH] = 0;
 	angles[ROLL] = crandom() * 10;
+
 	AnglesToAxis(angles, flash.axis);
 	// colorize the railgun blast
 	Byte4Copy(pi->c1RGBA, flash.shaderRGBA);
-
 	CG_PositionRotatedEntityOnTag(&flash, &gun, weapon->weaponModel, "tag_flash");
 	// update muzzle origin
 	if (ps) {
@@ -1257,7 +1219,8 @@ void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent,
 
 	CG_AddRefEntityWithMinLight(&flash);
 
-	if (ps || cg.cur_lc->renderingThirdPerson || cent->currentState.number != cg.cur_lc->predictedPlayerState.playerNum) {
+	if (ps || cg.cur_lc->renderingThirdPerson ||
+		cent->currentState.number != cg.cur_lc->predictedPlayerState.playerNum) {
 		// add lightning bolt
 		CG_LightningBolt(nonPredictedCent, flash.origin);
 
@@ -1290,7 +1253,7 @@ void CG_AddViewWeapon(playerState_t *ps) {
 		return;
 	}
 	// no gun if in third person view or a camera is active
-	// if (cg.cur_lc->renderingThirdPerson || cg.cur_lc->cameraMode) {
+	// if(cg.cur_lc->renderingThirdPerson || cg.cur_lc->cameraMode) {
 	if (cg.cur_lc->renderingThirdPerson) {
 		return;
 	}
@@ -1317,12 +1280,12 @@ void CG_AddViewWeapon(playerState_t *ps) {
 	if (cg.viewWeaponFov > 90) {
 		// drop gun lower at higher fov
 		fovOffset[2] = -0.2 * (cg.viewWeaponFov - 90) * cg.refdef.weapon_fov_x / cg.viewWeaponFov;
-	} else if ( cg.viewWeaponFov < 90 ) {
+	} else if (cg.viewWeaponFov < 90) {
 		// move gun forward at lowerer fov
 		fovOffset[0] = -0.2 * (cg.viewWeaponFov - 90) * cg.refdef.weapon_fov_x / cg.viewWeaponFov;
 	}
 
-	cent = &cg.cur_lc->predictedPlayerEntity; // &cg_entities[cg.snap->ps.playerNum];
+	cent = &cg.cur_lc->predictedPlayerEntity; //&cg_entities[cg.snap->ps.playerNum];
 
 	CG_RegisterWeapon(ps->weapon);
 
@@ -1586,7 +1549,7 @@ void CG_Weapon_f(int localPlayerNum) {
 =======================================================================================================================================
 CG_WeaponToggle_f
 
-Select weapon and store old weapon or if already selecting the weapon switch back to old weapon.
+select weapon and store old weapon or if already selecting the weapon switch back to old weapon.
 =======================================================================================================================================
 */
 void CG_WeaponToggle_f(int localPlayerNum) {
@@ -1608,7 +1571,7 @@ void CG_WeaponToggle_f(int localPlayerNum) {
 
 	num = atoi(CG_Argv(1));
 
-	if (num < 1 || num > MAX_WEAPONS - 1) {
+	if (num < 1 || num > MAX_WEAPONS-1) {
 		return;
 	}
 
@@ -1622,8 +1585,8 @@ void CG_WeaponToggle_f(int localPlayerNum) {
 		oldweapon = WP_NONE;
 	}
 
-	if (!(ps->stats[STAT_WEAPONS] & (1 << weapon))) {
-		return; // don't have the weapon
+	if (!(ps->stats[STAT_WEAPONS] &(1 << weapon))) {
+		return;	 // don't have the weapon
 	}
 
 	player->weaponSelect = weapon;
@@ -1648,10 +1611,9 @@ void CG_OutOfAmmoChange(int localPlayerNum) {
 
 	player = &cg.localPlayers[localPlayerNum];
 	ps = &cg.snap->pss[localPlayerNum];
-
 	player->weaponSelectTime = cg.time;
 
-	for (i = MAX_WEAPONS - 1; i > 0; i--) {
+	for (i = MAX_WEAPONS-1; i > 0; i--) {
 		if (CG_WeaponSelectable(ps, i)) {
 			player->weaponSelect = i;
 			break;
@@ -1828,7 +1790,6 @@ void CG_MissileHitWall(int weapon, int playerNum, vec3_t origin, vec3_t dir, imp
 				// explosion sprite animation
 				VectorMA(origin, 24, dir, sprOrg);
 				VectorScale(dir, 64, sprVel);
-
 				CG_ParticleExplosion("explode1", sprOrg, sprVel, 1400, 20, 30);
 			}
 
@@ -1908,6 +1869,7 @@ void CG_MissileHitWall(int weapon, int playerNum, vec3_t origin, vec3_t dir, imp
 		VectorCopy(lightColor, le->lightColor);
 		// colorize with player color
 		VectorCopy(cgs.playerinfo[playerNum].color1, le->color);
+
 		le->refEntity.shaderRGBA[0] = le->color[0] * 0xff;
 		le->refEntity.shaderRGBA[1] = le->color[1] * 0xff;
 		le->refEntity.shaderRGBA[2] = le->color[2] * 0xff;
@@ -1918,12 +1880,12 @@ void CG_MissileHitWall(int weapon, int playerNum, vec3_t origin, vec3_t dir, imp
 
 	if (weapon == WP_RAILGUN) {
 		float *color;
-
 		// colorize with player color
 		color = cgs.playerinfo[playerNum].color1;
-		CG_ImpactMark(mark, origin, dir, random() * 360, color[0], color[1], color[2], 1, alphaFade, radius, qfalse);
+
+		CG_ImpactMark(mark, origin, dir, random() *360, color[0], color[1], color[2],1, alphaFade, radius, qfalse);
 	} else {
-		CG_ImpactMark(mark, origin, dir, random() * 360, 1, 1, 1, 1, alphaFade, radius, qfalse);
+		CG_ImpactMark(mark, origin, dir, random() *360, 1, 1, 1, 1, alphaFade, radius, qfalse);
 	}
 }
 
@@ -2032,6 +1994,7 @@ void CG_ShotgunPattern(vec3_t origin, vec3_t origin2, int seed, int otherEntNum)
 	for (i = 0; i < DEFAULT_SHOTGUN_COUNT; i++) {
 		r = Q_crandom(&seed) * DEFAULT_SHOTGUN_SPREAD * 16;
 		u = Q_crandom(&seed) * DEFAULT_SHOTGUN_SPREAD * 16;
+
 		VectorMA(origin, 8192 * 16, forward, end);
 		VectorMA(end, r, right, end);
 		VectorMA(end, u, up, end);
@@ -2166,7 +2129,9 @@ static qboolean CG_CalcMuzzlePoint(int entityNum, vec3_t muzzle) {
 
 	if (ps) {
 		VectorCopy(ps->origin, muzzle);
+
 		muzzle[2] += ps->viewheight;
+
 		AngleVectors(ps->viewangles, forward, NULL, NULL);
 		VectorMA(muzzle, 14, forward, muzzle);
 		return qtrue;

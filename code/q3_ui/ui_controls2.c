@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, 
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -77,90 +83,90 @@ typedef struct {
 
 enum {
 	// bindable actions
-	ID_SHOWSCORES,
-	ID_USEITEM,
-	ID_SPEED,
-	ID_FORWARD,
-	ID_BACKPEDAL,
-	ID_MOVELEFT,
-	ID_MOVERIGHT,
-	ID_MOVEUP,
-	ID_MOVEDOWN,
-	ID_LEFT,
-	ID_RIGHT,
-	ID_STRAFE,
-	ID_LOOKUP,
-	ID_LOOKDOWN,
-	ID_MOUSELOOK,
-	ID_CENTERVIEW,
-	ID_ZOOMVIEW,
-	ID_WEAPON1,
-	ID_WEAPON2,
-	ID_WEAPON3,
-	ID_WEAPON4,
-	ID_WEAPON5,
-	ID_WEAPON6,
-	ID_WEAPON7,
-	ID_WEAPON8,
-	ID_WEAPON9,
+	ID_SHOWSCORES, 
+	ID_USEITEM, 
+	ID_SPEED, 
+	ID_FORWARD, 
+	ID_BACKPEDAL, 
+	ID_MOVELEFT, 
+	ID_MOVERIGHT, 
+	ID_MOVEUP, 
+	ID_MOVEDOWN, 
+	ID_LEFT, 
+	ID_RIGHT, 
+	ID_STRAFE, 
+	ID_LOOKUP, 
+	ID_LOOKDOWN, 
+	ID_MOUSELOOK, 
+	ID_CENTERVIEW, 
+	ID_ZOOMVIEW, 
+	ID_WEAPON1, 
+	ID_WEAPON2, 
+	ID_WEAPON3, 
+	ID_WEAPON4, 
+	ID_WEAPON5, 
+	ID_WEAPON6, 
+	ID_WEAPON7, 
+	ID_WEAPON8, 
+	ID_WEAPON9, 
 #ifdef MISSIONPACK
-	ID_WEAPON11,
-	ID_WEAPON12,
-	ID_WEAPON13,
+	ID_WEAPON11, 
+	ID_WEAPON12, 
+	ID_WEAPON13, 
 #endif
-	ID_ATTACK,
-	ID_WEAPPREV,
-	ID_WEAPNEXT,
-	ID_GESTURE,
-	ID_CHAT,
-	ID_CHAT2,
-	ID_CHAT3,
-	ID_CHAT4,
-	ID_TOGGLEMENU,
+	ID_ATTACK, 
+	ID_WEAPPREV, 
+	ID_WEAPNEXT, 
+	ID_GESTURE, 
+	ID_CHAT, 
+	ID_CHAT2, 
+	ID_CHAT3, 
+	ID_CHAT4, 
+	ID_TOGGLEMENU, 
 	// all others
-	ID_FREELOOK,
-	ID_INVERTMOUSE,
-	ID_ALWAYSRUN,
-	ID_CYCLEPASTGAUNTLET,
-	ID_AUTOSWITCH,
-	ID_MOUSESPEED,
-	ID_SELECTJOY,
-	ID_JOYANALOG,
-	ID_JOYTHRESHOLD,
+	ID_FREELOOK, 
+	ID_INVERTMOUSE, 
+	ID_ALWAYSRUN, 
+	ID_CYCLEPASTGAUNTLET, 
+	ID_AUTOSWITCH, 
+	ID_MOUSESPEED, 
+	ID_SELECTJOY, 
+	ID_JOYANALOG, 
+	ID_JOYTHRESHOLD, 
 	ID_SMOOTHMOUSE
 };
 
 enum {
-	ANIM_IDLE,
-	ANIM_RUN,
-	ANIM_WALK,
-	ANIM_BACK,
-	ANIM_JUMP,
-	ANIM_CROUCH,
-	ANIM_STEPLEFT,
-	ANIM_STEPRIGHT,
-	ANIM_TURNLEFT,
-	ANIM_TURNRIGHT,
-	ANIM_LOOKUP,
-	ANIM_LOOKDOWN,
-	ANIM_WEAPON1,
-	ANIM_WEAPON2,
-	ANIM_WEAPON3,
-	ANIM_WEAPON4,
-	ANIM_WEAPON5,
-	ANIM_WEAPON6,
-	ANIM_WEAPON7,
-	ANIM_WEAPON8,
-	ANIM_WEAPON9,
-	ANIM_WEAPON10,
+	ANIM_IDLE, 
+	ANIM_RUN, 
+	ANIM_WALK, 
+	ANIM_BACK, 
+	ANIM_JUMP, 
+	ANIM_CROUCH, 
+	ANIM_STEPLEFT, 
+	ANIM_STEPRIGHT, 
+	ANIM_TURNLEFT, 
+	ANIM_TURNRIGHT, 
+	ANIM_LOOKUP, 
+	ANIM_LOOKDOWN, 
+	ANIM_WEAPON1, 
+	ANIM_WEAPON2, 
+	ANIM_WEAPON3, 
+	ANIM_WEAPON4, 
+	ANIM_WEAPON5, 
+	ANIM_WEAPON6, 
+	ANIM_WEAPON7, 
+	ANIM_WEAPON8, 
+	ANIM_WEAPON9, 
+	ANIM_WEAPON10, 
 #ifdef MISSIONPACK
-	ANIM_WEAPON11,
-	ANIM_WEAPON12,
-	ANIM_WEAPON13,
+	ANIM_WEAPON11, 
+	ANIM_WEAPON12, 
+	ANIM_WEAPON13, 
 #endif
-	ANIM_ATTACK,
-	ANIM_GESTURE,
-	ANIM_DIE,
+	ANIM_ATTACK, 
+	ANIM_GESTURE, 
+	ANIM_DIE, 
 	ANIM_CHAT
 };
 
@@ -244,7 +250,6 @@ typedef struct {
 } controls_t;
 
 static controls_t s_controls;
-
 static qboolean waitingforkey = qfalse;
 
 static bind_t g_bindings[] = {
@@ -280,7 +285,7 @@ static bind_t g_bindings[] = {
 	{"weapon 13",		"chain gun",		ID_WEAPON13,	ANIM_WEAPON13,	-1,				-1, -1, -1},
 #endif
 	{"+attack",			"attack",			ID_ATTACK,		ANIM_ATTACK,	K_CTRL,			-1, -1, -1},
-	{"weapprev",		"previous weapon",		ID_WEAPPREV,	ANIM_IDLE,		'[',			-1, -1, -1},
+	{"weapprev",		"previous weapon",	ID_WEAPPREV,	ANIM_IDLE,		'[',			-1, -1, -1},
 	{"weapnext",		"next weapon",		ID_WEAPNEXT,	ANIM_IDLE,		']',			-1, -1, -1},
 	{"+button3",		"gesture",			ID_GESTURE,		ANIM_GESTURE,	K_MOUSE3,		-1, -1, -1},
 	{"messagemode",		"chat",				ID_CHAT,		ANIM_CHAT,		't',			-1, -1, -1},
@@ -288,10 +293,10 @@ static bind_t g_bindings[] = {
 	{"messagemode3",	"chat-target",		ID_CHAT3,		ANIM_CHAT,		-1,				-1, -1, -1},
 	{"messagemode4",	"chat-attacker",	ID_CHAT4,		ANIM_CHAT,		-1,				-1, -1, -1},
 	{"togglemenu",		"toggle menu",		ID_TOGGLEMENU,	ANIM_IDLE,		K_ESCAPE,		-1, -1, -1},
-	{(char *)NULL,		(char *)NULL,		0,				0, 				-1,				-1, -1, -1},
+	{(char *)NULL,		(char *)NULL,		0,				0,				-1,				-1, -1, -1},
 };
 
-#define MINIBIND(id, d1, d2) {(char *)NULL, (char *)NULL, (id), 0, (d1), (d2), -1, -1}
+#define MINIBIND (id, d1, d2) {(char *)NULL, (char *)NULL, (id), 0, (d1), (d2), -1, -1}
 
 static bind_t g_bindings2[] = {
 	MINIBIND(ID_SHOWSCORES, -1, -1),
@@ -430,31 +435,31 @@ bind_t *g_bindings_list[MAX_SPLITVIEW] = {
 };
 
 static configcvar_t g_configcvars[] = {
-	{"cl_run", 0, 0},
-	{"2cl_run", 0, 0},
-	{"3cl_run", 0, 0},
-	{"4cl_run", 0, 0},
-	{"m_pitch", 0, 0},
-	{"cg_cyclePastGauntlet",0, 0},
-	{"2cg_cyclePastGauntlet",0, 0},
-	{"3cg_cyclePastGauntlet",0, 0},
-	{"4cg_cyclePastGauntlet",0, 0},
-	{"cg_autoswitch", 0, 0},
-	{"2cg_autoswitch", 0, 0},
-	{"3cg_autoswitch", 0, 0},
-	{"4cg_autoswitch", 0, 0},
-	{"sensitivity", 0, 0},
-	{"in_joystickUseAnalog", 0, 0},
-	{"2in_joystickUseAnalog", 0, 0},
-	{"3in_joystickUseAnalog", 0, 0},
-	{"4in_joystickUseAnalog", 0, 0},
-	{"in_joystickThreshold", 0, 0},
-	{"2in_joystickThreshold", 0, 0},
-	{"3in_joystickThreshold", 0, 0},
-	{"4in_joystickThreshold", 0, 0},
-	{"m_filter", 0, 0},
-	{"cl_freelook", 0, 0},
-	{NULL, 0, 0}
+	{"cl_run",			0, 0},
+	{"2cl_run",			0, 0},
+	{"3cl_run",			0, 0},
+	{"4cl_run",			0, 0},
+	{"m_pitch",			0, 0},
+	{"cg_cyclePastGauntlet", 0, 0},
+	{"2cg_cyclePastGauntlet", 0, 0},
+	{"3cg_cyclePastGauntlet", 0, 0},
+	{"4cg_cyclePastGauntlet", 0, 0},
+	{"cg_autoswitch",	0, 0},
+	{"2cg_autoswitch",	0, 0},
+	{"3cg_autoswitch",	0, 0},
+	{"4cg_autoswitch",	0, 0},
+	{"sensitivity",		0, 0},
+	{"in_joystickUseAnalog",	0, 0},
+	{"2in_joystickUseAnalog",	0, 0},
+	{"3in_joystickUseAnalog",	0, 0},
+	{"4in_joystickUseAnalog",	0, 0},
+	{"in_joystickThreshold",	0, 0},
+	{"2in_joystickThreshold",	0, 0},
+	{"3in_joystickThreshold",	0, 0},
+	{"4in_joystickThreshold",	0, 0},
+	{"m_filter",		0, 0},
+	{"cl_freelook",		0, 0},
+	{NULL,				0, 0}
 };
 
 static menucommon_s *g_movement_controls[] = {
@@ -595,6 +600,7 @@ static void Controls_InitCvars(void) {
 		cvarptr->value = trap_Cvar_VariableValue(cvarptr->name);
 		// get default value
 		trap_Cvar_Reset(cvarptr->name);
+
 		cvarptr->defaultvalue = trap_Cvar_VariableValue(cvarptr->name);
 		// restore current value
 		trap_Cvar_SetValue(cvarptr->name, cvarptr->value);
@@ -822,6 +828,7 @@ static void Controls_Update(void) {
 	s_controls.movement.generic.flags &= ~(QMF_GRAYED|QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 	s_controls.weapons.generic.flags &= ~(QMF_GRAYED|QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
 	s_controls.misc.generic.flags &= ~(QMF_GRAYED|QMF_HIGHLIGHT|QMF_HIGHLIGHT_IF_FOCUS);
+
 	s_controls.looking.generic.flags |= QMF_PULSEIFFOCUS;
 	s_controls.movement.generic.flags |= QMF_PULSEIFFOCUS;
 	s_controls.weapons.generic.flags |= QMF_PULSEIFFOCUS;
@@ -867,7 +874,6 @@ static void Controls_DrawKeyBinding(void *self) {
 	x = a->generic.x;
 	y = a->generic.y;
 	c = (Menu_ItemAtCursor(a->generic.parent) == a);
-
 	bindptr = &s_controls.bindings[a->generic.id];
 	b1 = bindptr->bind1;
 
@@ -890,7 +896,6 @@ static void Controls_DrawKeyBinding(void *self) {
 
 	if (c) {
 		CG_FillRect(a->generic.left, a->generic.top, a->generic.right - a->generic.left + 1, a->generic.bottom - a->generic.top + 1, listbar_color);
-
 		UI_DrawString(x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_highlight);
 		UI_DrawString(x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, text_color_highlight);
 
@@ -930,9 +935,7 @@ static void Controls_DrawSmallText(void *self) {
 
 	if (c) {
 		CG_FillRect(text->generic.left, text->generic.top, text->generic.right - text->generic.left + 1, text->generic.bottom - text->generic.top + 1, listbar_color);
-
 		UI_DrawString(x - SMALLCHAR_WIDTH, y, text->string, UI_RIGHT|UI_SMALLFONT, text_color_highlight);
-
 		UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite);
 	} else {
 		if (text->generic.flags & QMF_GRAYED) {
@@ -1021,7 +1024,6 @@ static void Controls_GetConfig(void) {
 
 		for (j = 0; j < UI_MaxSplitView(); j++) {
 			Controls_GetKeyAssignment(Com_LocalPlayerCvarName(j, bindptr->command), twokeys);
-
 			g_bindings_list[j][i].bind1 = twokeys[0];
 			g_bindings_list[j][i].bind2 = twokeys[1];
 		}
@@ -1120,8 +1122,10 @@ static void Controls_SetDefaults(void) {
 		s_controls.alwaysrun.curvalue = Controls_GetCvarDefault(Com_LocalPlayerCvarName(s_controls.localPlayerNum, "cl_run"));
 		s_controls.cyclepastgauntlet.curvalue = Controls_GetCvarDefault(Com_LocalPlayerCvarName(s_controls.localPlayerNum, "cg_cyclePastGauntlet"));
 		s_controls.autoswitch.curvalue = Controls_GetCvarDefault(Com_LocalPlayerCvarName(s_controls.localPlayerNum, "cg_autoswitch"));
+
 		trap_Cvar_SetValue(Com_LocalPlayerCvarName(s_controls.localPlayerNum, "in_joystick"), 0);
 		trap_Cvar_SetValue(Com_LocalPlayerCvarName(s_controls.localPlayerNum, "in_joystickNo"), 0);
+
 		s_controls.joyanalog.curvalue = Controls_GetCvarDefault(Com_LocalPlayerCvarName(s_controls.localPlayerNum, "in_joystickUseAnalog"));
 		s_controls.joythreshold.curvalue = Controls_GetCvarDefault(Com_LocalPlayerCvarName(s_controls.localPlayerNum, "in_joystickThreshold"));
 		return;
@@ -1171,10 +1175,8 @@ static sfxHandle_t Controls_MenuKey(int key) {
 				goto ignorekey;
 		}
 	} else {
-		if (key & K_CHAR_FLAG) {
+		if (key & K_CHAR_FLAG)
 			goto ignorekey;
-		}
-
 		switch (key) {
 			case K_ESCAPE:
 				waitingforkey = qfalse;
@@ -1268,6 +1270,7 @@ static sfxHandle_t Controls_MenuKey(int key) {
 			} else {
 				trap_Key_SetBinding(bindptr->bind1, "");
 				trap_Key_SetBinding(bindptr->bind2, "");
+
 				bindptr->bind1 = key;
 				bindptr->bind2 = -1;
 			}
@@ -1524,6 +1527,7 @@ static void Controls_MenuInit(int localPlayerNum) {
 	s_controls.framer.height = 334;
 
 	y = 240 - 2 * PROP_HEIGHT;
+
 	s_controls.looking.generic.type = MTYPE_PTEXT;
 	s_controls.looking.generic.flags = QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	s_controls.looking.generic.id = ID_LOOKING;

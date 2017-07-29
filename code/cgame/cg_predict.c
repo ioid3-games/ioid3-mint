@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -75,7 +81,7 @@ void CG_BuildSolidList(void) {
 			continue;
 		}
 	}
-	// Add local players to solid entity list
+	// add local players to solid entity list
 	for (i = 0; i < CG_MaxSplitView(); i++) {
 		if (snap->playerNums[i] == -1) {
 			continue;
@@ -133,9 +139,9 @@ static void CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const v
 		if (traceType == TT_BISPHERE) {
 			trap_CM_TransformedBiSphereTrace(&trace, start, end, mins[0], maxs[0], cmodel, mask, origin);
 		} else if (traceType == TT_CAPSULE) {
-			trap_CM_TransformedCapsuleTrace(&trace, start, end, mins, maxs, cmodel, mask, origin, angles);
+			trap_CM_TransformedCapsuleTrace(&trace, start, end, mins, maxs, cmodel,  mask, origin, angles);
 		} else /* if (traceType == TT_AABB) */ {
-			trap_CM_TransformedBoxTrace(&trace, start, end, mins, maxs, cmodel, mask, origin, angles);
+			trap_CM_TransformedBoxTrace(&trace, start, end, mins, maxs, cmodel,  mask, origin, angles);
 		}
 
 		if (trace.allsolid || trace.fraction < tr->fraction) {
@@ -144,6 +150,7 @@ static void CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const v
 			if (tr->lateralFraction < trace.lateralFraction) {
 				float oldLateralFraction = tr->lateralFraction;
 				*tr = trace;
+
 				tr->lateralFraction = oldLateralFraction;
 			} else {
 				*tr = trace;
@@ -273,8 +280,8 @@ static void CG_InterpolatePlayerState(qboolean grabAngles) {
 		int cmdNum;
 
 		cmdNum = trap_GetCurrentCmdNumber();
-		trap_GetUserCmd(cmdNum, &cmd, cg.cur_localPlayerNum);
 
+		trap_GetUserCmd(cmdNum, &cmd, cg.cur_localPlayerNum);
 		PM_UpdateViewAngles(out, &cmd);
 	}
 	// if the next frame is a teleport, we can't lerp to it
@@ -338,7 +345,7 @@ static void CG_TouchItem(centity_t *cent) {
 	}
 
 	item = BG_ItemForItemNum(cent->currentState.modelindex);
-	// Special case for flags. We don't predict touching our own flag
+	// special case for flags. we don't predict touching our own flag
 #ifdef MISSIONPACK
 	if (cgs.gametype == GT_1FCTF) {
 		if (item->giType == IT_TEAM && item->giTag != PW_NEUTRALFLAG) {
@@ -356,7 +363,7 @@ static void CG_TouchItem(centity_t *cent) {
 		}
 	}
 	// grab it
-	BG_AddPredictableEventToPlayerstate(EV_ITEM_PICKUP, cent->currentState.modelindex, &cg.cur_lc->predictedPlayerState);
+	BG_AddPredictableEventToPlayerstate(EV_ITEM_PICKUP, cent->currentState.modelindex , &cg.cur_lc->predictedPlayerState);
 	// remove it from the frame so it won't be drawn
 	cent->currentState.eFlags |= EF_NODRAW;
 	// don't touch it again this prediction
@@ -443,9 +450,8 @@ static void CG_TouchTriggerPrediction(void) {
 =======================================================================================================================================
 CG_PredictPlayerState
 
-Generates cg.cur_lc->predictedPlayerState for the current cg.time
-cg.cur_lc->predictedPlayerState is guaranteed to be valid after exiting.
-
+Generates cg.cur_lc->predictedPlayerState for the current cg.time, cg.cur_lc->predictedPlayerState is guaranteed to be valid after
+exiting.
 For demo playback, this will be an interpolation between two valid playerState_t.
 For normal gameplay, it will be the result of predicted usercmd_t on top of the most recent playerState_t received from the server.
 
@@ -537,7 +543,7 @@ void CG_PredictPlayerState(void) {
 		trap_Cvar_SetValue("pmove_msec", 33);
 	}
 
-	cg_pmove.pmove_fixed = pmove_fixed.integer; // |cg_pmove_fixed.integer;
+	cg_pmove.pmove_fixed = pmove_fixed.integer; //|cg_pmove_fixed.integer;
 	cg_pmove.pmove_msec = pmove_msec.integer;
 	cg_pmove.pmove_overbounce = pmove_overbounce.integer;
 	// run cmds
@@ -576,7 +582,10 @@ void CG_PredictPlayerState(void) {
 				cg.thisFrameTeleport = qfalse;
 			} else {
 				vec3_t adjusted, new_angles;
-				CG_AdjustPositionForMover(cg.cur_lc->predictedPlayerState.origin, cg.cur_lc->predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted, cg.cur_lc->predictedPlayerState.viewangles, new_angles);
+
+				CG_AdjustPositionForMover(cg.cur_lc->predictedPlayerState.origin, 
+
+				cg.cur_lc->predictedPlayerState.groundEntityNum, cg.physicsTime, cg.oldTime, adjusted, cg.cur_lc->predictedPlayerState.viewangles, new_angles);
 
 				if (cg_showmiss.integer) {
 					if (!VectorCompare(oldPlayerState.origin, adjusted)) {
@@ -585,6 +594,7 @@ void CG_PredictPlayerState(void) {
 				}
 
 				VectorSubtract(oldPlayerState.origin, adjusted, delta);
+
 				len = VectorLength(delta);
 
 				if (len > 0.1) {
@@ -645,7 +655,7 @@ void CG_PredictPlayerState(void) {
 		return;
 	}
 	// adjust for the movement of the groundentity
-	CG_AdjustPositionForMover(cg.cur_lc->predictedPlayerState.origin, cg.cur_lc->predictedPlayerState.groundEntityNum, cg.physicsTime, cg.time, cg.cur_lc->predictedPlayerState.origin, cg.cur_lc->predictedPlayerState.viewangles, cg.cur_lc->predictedPlayerState.viewangles);
+	CG_AdjustPositionForMover(cg.cur_lc->predictedPlayerState.origin, cg.cur_lc->predictedPlayerState.groundEntityNum, cg.physicsTime, cg.time, cg.cur_lc->predictedPlayerState.origin, cg.cur_lc->predictedPlayerState.viewangles,cg.cur_lc->predictedPlayerState.viewangles);
 
 	if (cg_showmiss.integer) {
 		if (cg.cur_lc->predictedPlayerState.eventSequence > oldPlayerState.eventSequence + MAX_PS_EVENTS) {

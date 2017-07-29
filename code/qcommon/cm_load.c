@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -31,10 +37,11 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 // to allow boxes to be treated as brush models, we allocate some extra indexes along with those needed by the map
 #define BOX_LEAF_BRUSHES 1
-#define BOX_BRUSHES 1
-#define BOX_SIDES 6
-#define BOX_LEAFS 2
-#define BOX_PLANES 12
+
+#define BOX_BRUSHES	1
+#define BOX_SIDES	6
+#define BOX_LEAFS	2
+#define BOX_PLANES	12
 #if 1 // ZTM: FIXME: BSP is already swapped by BSP_Load, but removing these probably makes merging ioq3 changes harder...
 #undef LittleShort
 #define LittleShort
@@ -46,6 +53,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #else
 #define LL(x) x = LittleLong(x)
 #endif
+
 clipMap_t cm;
 bspFile_t *cm_bsp = NULL;
 int c_pointcontents;
@@ -400,8 +408,8 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 	drawVert_t *vert[3];
 	winding_t *polygon;
 	cplane_t *buildPlane = &cm.planes[buildSide->planeNum];
-	//dshader_t *shaderInfo = &cm.shaders[buildSide->shaderNum];
-	//int matches = 0;
+	// dshader_t *shaderInfo = &cm.shaders[buildSide->shaderNum];
+	// int matches = 0;
 	int bestSurfaceNum = -1;
 	int surfnum;
 	dsurface_t *bspDrawSurfaces = cm_bsp->surfaces;
@@ -413,7 +421,7 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 			// ok, looks good
 			return buildSide->surfaceNum;
 		} else {
-			//Com_Printf("DEBUG: brushside surfacenum(%d) mismatch has shader %s, expected %s\n", buildSide->surfaceNum, shaderInfo->shader, cm.shaders[bspDrawSurfaces[buildSide->surfaceNum].shaderNum].shader);
+			//Com_Printf("DEBUG: brushside surfacenum(%d)mismatch has shader %s, expected %s\n", buildSide->surfaceNum, shaderInfo->shader, cm.shaders[bspDrawSurfaces[buildSide->surfaceNum].shaderNum].shader);
 		}
 	}
 	// ZTM: NOTE: Unfortunately this takes longer than is acceptable on a lot of maps, and it's only needed for trap_R_SetSurfaceShader/trap_R_GetSurfaceShader.
@@ -436,21 +444,15 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 			vert[2] = &bspDrawVerts[s->firstVert + bspDrawIndexes[s->firstIndex + t + 2]];
 
 			if (s->surfaceType == MST_PLANAR && VectorCompare(vert[0]->normal, vert[1]->normal) && VectorCompare(vert[1]->normal, vert[2]->normal)) {
-				VectorSubtract(vert[0]->normal, buildPlane->normal, normdiff);
-
-				if (VectorLength(normdiff) >= normalEpsilon) {
+				VectorSubtract(vert[0]->normal, buildPlane->normal, normdiff); if (VectorLength(normdiff) >= normalEpsilon) {
 					continue;
 				}
 
-				VectorSubtract(vert[1]->normal, buildPlane->normal, normdiff);
-
-				if (VectorLength(normdiff) >= normalEpsilon) {
+				VectorSubtract(vert[1]->normal, buildPlane->normal, normdiff); if (VectorLength(normdiff) >= normalEpsilon) {
 					continue;
 				}
 
-				VectorSubtract(vert[2]->normal, buildPlane->normal, normdiff);
-
-				if (VectorLength(normdiff) >= normalEpsilon) {
+				VectorSubtract(vert[2]->normal, buildPlane->normal, normdiff); if (VectorLength(normdiff) >= normalEpsilon) {
 					continue;
 				}
 			} else {
@@ -484,8 +486,8 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 				// 0: 1, 2
 				// 1: 2, 0
 				// 2; 0, 1
-				vec3_t *v1 = &vert[(i + 1) % 3]->xyz;
-				vec3_t *v2 = &vert[(i + 2) % 3]->xyz;
+				vec3_t *v1 = &vert[(i + 1)% 3]->xyz;
+				vec3_t *v2 = &vert[(i + 2)% 3]->xyz;
 				vec3_t triNormal;
 				vec_t triDist;
 				vec3_t sideDirection;
@@ -493,7 +495,9 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 				// we now need to generate triNormal and triDist so that they represent the plane spanned by normal and(v2 - v1).
 				VectorSubtract(*v2, *v1, sideDirection);
 				CrossProduct(sideDirection, buildPlane->normal, triNormal);
+
 				triDist = DotProduct(*v1, triNormal);
+
 				ChopWindingInPlace(&polygon, triNormal, triDist, distanceEpsilon);
 
 				if (!polygon) {
@@ -502,8 +506,8 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 			}
 
 			thisarea = WindingArea(polygon);
-			//if (thisarea > 0) {
-			// ++matches;
+			// if(thisarea > 0) {
+			//	++matches;
 			//}
 
 			if (thisarea > best) {
@@ -516,7 +520,7 @@ exwinding:
 			;
 		}
 	}
-	//if (Q_stricmpn(shaderInfo->shader, "textures/common/", 16) && Q_stricmp(shaderInfo->shader, "noshader"))
+	// if(Q_stricmpn(shaderInfo->shader, "textures/common/", 16) && Q_stricmp(shaderInfo->shader, "noshader"))
 	//	Com_Printf("brushside with %s: %d matches(%f area)\n", shaderInfo->shader, matches, best);
 
 	return bestSurfaceNum;
@@ -563,7 +567,7 @@ static qboolean CMod_AddEdgeToBrush(const vec3_t p0, const vec3_t p1, cbrushedge
 
 	VectorCopy(p0, edges[*numEdges].p0);
 	VectorCopy(p1, edges[*numEdges].p1);
-	(*numEdges)++;
+	(*numEdges) ++;
 
 	return qtrue;
 }
@@ -603,10 +607,11 @@ static void CMod_CreateBrushSideWindings(void) {
 				}
 
 				if (chopSide->planeNum == (side->planeNum ^ 1)) {
-					continue;		// back side clipaway
+					continue; // back side clipaway
 				}
 
 				plane = &cm.planes[chopSide->planeNum ^ 1];
+
 				ChopWindingInPlace(&w, plane->normal, plane->dist, 0);
 			}
 
@@ -637,6 +642,7 @@ static void CMod_CreateBrushSideWindings(void) {
 				}
 
 				FreeWinding(side->winding);
+
 				side->winding = NULL;
 			}
 		}
@@ -661,6 +667,7 @@ CMod_LoadEntityString
 =======================================================================================================================================
 */
 void CMod_LoadEntityString(void) {
+
 	cm.entityString = cm_bsp->entityString;
 	cm.numEntityChars = cm_bsp->entityStringLength;
 }
@@ -673,7 +680,7 @@ CMod_LoadVisibility
 void CMod_LoadVisibility(void) {
 
 	if (!cm_bsp->visibilityLength) {
-		cm.clusterBytes = (cm.numClusters + 31) & ~31;
+		cm.clusterBytes = (cm.numClusters + 31)& ~31;
 		cm.visibility = Hunk_Alloc(cm.clusterBytes, h_high);
 		Com_Memset(cm.visibility, 255, cm.clusterBytes);
 		return;
@@ -843,7 +850,6 @@ void CM_LoadMap(const char *name, qboolean clientload, int *checksum) {
 	CMod_LoadVisibility();
 	CMod_LoadPatches();
 	CMod_CreateBrushSideWindings();
-
 	CM_InitBoxHull();
 	CM_FloodAreaConnections();
 	// allow this to be cached if it is loaded by the server
@@ -864,7 +870,6 @@ void CM_ClearMap(void) {
 	cm_bsp = NULL;
 
 	Com_Memset(&cm, 0, sizeof(cm));
-
 	CM_ClearLevelPatches();
 }
 
@@ -946,8 +951,8 @@ qboolean CM_GetEntityToken(int *parseOffset, char *token, int size) {
 	}
 
 	parsePoint = cm.entityString + *parseOffset;
-
 	s = COM_Parse(&parsePoint);
+
 	Q_strncpyz(token, s, size);
 
 	if (!parsePoint && !s[0]) {
@@ -1004,7 +1009,7 @@ void CM_InitBoxHull(void) {
 	box_brush = &cm.brushes[cm.numBrushes];
 	box_brush->numsides = 6;
 	box_brush->sides = cm.brushsides + cm.numBrushSides;
-	box_brush->contents = 0; // Will be set to CONTENTS_SOLID, CONTENTS_BODY, etc
+	box_brush->contents = 0; // Will be set to CONTENTS_SOLID, CONTENTS_BODY, etc.
 	box_brush->edges = (cbrushedge_t *)Hunk_Alloc(sizeof(cbrushedge_t) * 12, h_low);
 	box_brush->numEdges = 12;
 	box_model.leaf.numLeafBrushes = 1;
@@ -1071,28 +1076,28 @@ clipHandle_t CM_TempBoxModel(const vec3_t mins, const vec3_t maxs, collisionType
 	box_planes[10].dist = mins[2];
 	box_planes[11].dist = -mins[2];
 	// First side
-	VectorSet(box_brush->edges[0].p0, mins[0], mins[1], mins[2]);
-	VectorSet(box_brush->edges[0].p1, mins[0], maxs[1], mins[2]);
-	VectorSet(box_brush->edges[1].p0, mins[0], maxs[1], mins[2]);
-	VectorSet(box_brush->edges[1].p1, mins[0], maxs[1], maxs[2]);
-	VectorSet(box_brush->edges[2].p0, mins[0], maxs[1], maxs[2]);
-	VectorSet(box_brush->edges[2].p1, mins[0], mins[1], maxs[2]);
-	VectorSet(box_brush->edges[3].p0, mins[0], mins[1], maxs[2]);
-	VectorSet(box_brush->edges[3].p1, mins[0], mins[1], mins[2]);
+	VectorSet(box_brush->edges[0].p0,  mins[0], mins[1], mins[2]);
+	VectorSet(box_brush->edges[0].p1,  mins[0], maxs[1], mins[2]);
+	VectorSet(box_brush->edges[1].p0,  mins[0], maxs[1], mins[2]);
+	VectorSet(box_brush->edges[1].p1,  mins[0], maxs[1], maxs[2]);
+	VectorSet(box_brush->edges[2].p0,  mins[0], maxs[1], maxs[2]);
+	VectorSet(box_brush->edges[2].p1,  mins[0], mins[1], maxs[2]);
+	VectorSet(box_brush->edges[3].p0,  mins[0], mins[1], maxs[2]);
+	VectorSet(box_brush->edges[3].p1,  mins[0], mins[1], mins[2]);
 	// Opposite side
-	VectorSet(box_brush->edges[4].p0, maxs[0], mins[1], mins[2]);
-	VectorSet(box_brush->edges[4].p1, maxs[0], maxs[1], mins[2]);
-	VectorSet(box_brush->edges[5].p0, maxs[0], maxs[1], mins[2]);
-	VectorSet(box_brush->edges[5].p1, maxs[0], maxs[1], maxs[2]);
-	VectorSet(box_brush->edges[6].p0, maxs[0], maxs[1], maxs[2]);
-	VectorSet(box_brush->edges[6].p1, maxs[0], mins[1], maxs[2]);
-	VectorSet(box_brush->edges[7].p0, maxs[0], mins[1], maxs[2]);
-	VectorSet(box_brush->edges[7].p1, maxs[0], mins[1], mins[2]);
+	VectorSet(box_brush->edges[4].p0,  maxs[0], mins[1], mins[2]);
+	VectorSet(box_brush->edges[4].p1,  maxs[0], maxs[1], mins[2]);
+	VectorSet(box_brush->edges[5].p0,  maxs[0], maxs[1], mins[2]);
+	VectorSet(box_brush->edges[5].p1,  maxs[0], maxs[1], maxs[2]);
+	VectorSet(box_brush->edges[6].p0,  maxs[0], maxs[1], maxs[2]);
+	VectorSet(box_brush->edges[6].p1,  maxs[0], mins[1], maxs[2]);
+	VectorSet(box_brush->edges[7].p0,  maxs[0], mins[1], maxs[2]);
+	VectorSet(box_brush->edges[7].p1,  maxs[0], mins[1], mins[2]);
 	// Connecting edges
-	VectorSet(box_brush->edges[8].p0, mins[0], mins[1], mins[2]);
-	VectorSet(box_brush->edges[8].p1, maxs[0], mins[1], mins[2]);
-	VectorSet(box_brush->edges[9].p0, mins[0], maxs[1], mins[2]);
-	VectorSet(box_brush->edges[9].p1, maxs[0], maxs[1], mins[2]);
+	VectorSet(box_brush->edges[8].p0,  mins[0], mins[1], mins[2]);
+	VectorSet(box_brush->edges[8].p1,  maxs[0], mins[1], mins[2]);
+	VectorSet(box_brush->edges[9].p0,  mins[0], maxs[1], mins[2]);
+	VectorSet(box_brush->edges[9].p1,  maxs[0], maxs[1], mins[2]);
 	VectorSet(box_brush->edges[10].p0, mins[0], maxs[1], maxs[2]);
 	VectorSet(box_brush->edges[10].p1, maxs[0], maxs[1], maxs[2]);
 	VectorSet(box_brush->edges[11].p0, mins[0], mins[1], maxs[2]);

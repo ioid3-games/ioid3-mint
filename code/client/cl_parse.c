@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -281,7 +287,7 @@ void CL_ParseSnapshot(msg_t *msg) {
 	}
 
 	newSnap.snapFlags = MSG_ReadByte(msg);
-	// If the frame is delta compressed from data that we no longer have available, we must suck up the rest of the frame, but not use
+	// if the frame is delta compressed from data that we no longer have available, we must suck up the rest of the frame, but not use
 	// it, then ask for a non-compressed message
 	if (newSnap.deltaNum <= 0) {
 		newSnap.valid = qtrue; // uncompressed frame
@@ -294,7 +300,7 @@ void CL_ParseSnapshot(msg_t *msg) {
 			// should never happen
 			Com_Printf("Delta from invalid frame (not supposed to happen!).\n");
 		} else if (old->messageNum != newSnap.deltaNum) {
-			// The frame that the server did the delta from is too old, so we can't reconstruct it properly.
+			// the frame that the server did the delta from is too old, so we can't reconstruct it properly.
 			Com_Printf("Delta frame too old.\n");
 		} else if (cl.parseEntitiesNum - old->parseEntitiesNum > cl.parseEntities.maxElements - MAX_SNAPSHOT_ENTITIES * CL_MAX_SPLITVIEW) {
 			Com_Printf("Delta parseEntitiesNum too old.\n");
@@ -310,14 +316,14 @@ void CL_ParseSnapshot(msg_t *msg) {
 	newSnap.numPSs = MSG_ReadByte(msg);
 
 	if (newSnap.numPSs > MAX_SPLITVIEW) {
-		Com_DPrintf(S_COLOR_YELLOW "Warning: Got numPSs as %d (max = %d)\n", newSnap.numPSs, MAX_SPLITVIEW);
+		Com_DPrintf(S_COLOR_YELLOW "Warning: Got numPSs as %d(max=%d)\n", newSnap.numPSs, MAX_SPLITVIEW);
 		newSnap.numPSs = MAX_SPLITVIEW;
 	}
 
 	for (i = 0; i < MAX_SPLITVIEW; i++) {
 		newSnap.localPlayerIndex[i] = MSG_ReadByte(msg);
 		newSnap.playerNums[i] = MSG_ReadByte(msg);
-		// -1 gets converted to 255 should be set to -1 (and so should all invalid values)
+		// -1 gets converted to 255 should be set to -1(and so should all invalid values)
 		if (newSnap.localPlayerIndex[i] >= newSnap.numPSs || newSnap.playerNums[i] >= MAX_CLIENTS) {
 			newSnap.localPlayerIndex[i] = -1;
 			newSnap.playerNums[i] = -1;
@@ -326,7 +332,7 @@ void CL_ParseSnapshot(msg_t *msg) {
 		len = MSG_ReadByte(msg);
 
 		if (len > sizeof(newSnap.areamask[0])) {
-			Com_Error(ERR_DROP, "CL_ParseSnapshot: Invalid size %d for areamask.", len);
+			Com_Error(ERR_DROP,"CL_ParseSnapshot: Invalid size %d for areamask", len);
 			return;
 		}
 
@@ -340,7 +346,6 @@ void CL_ParseSnapshot(msg_t *msg) {
 
 			if (old && old->valid && old->localPlayerIndex[i] != -1) {
 				oldPS = (sharedPlayerState_t *)DA_ElementPointer(old->playerStates, old->localPlayerIndex[i]);
-
 				MSG_ReadDeltaPlayerstate(msg, oldPS, newPS, newSnap.playerNums[i]);
 			} else {
 				MSG_ReadDeltaPlayerstate(msg, NULL, newPS, newSnap.playerNums[i]);
@@ -375,6 +380,7 @@ void CL_ParseSnapshot(msg_t *msg) {
 	}
 	// copy player states from temp to snapshot
 	DA_Copy(cl.tempSnapshotPS, &cl.snapshots[newSnap.messageNum & PACKET_MASK].playerStates);
+
 	newSnap.playerStates = cl.snapshots[newSnap.messageNum & PACKET_MASK].playerStates;
 	// copy to the current good spot
 	cl.snap = newSnap;
@@ -471,10 +477,12 @@ void CL_SystemInfoChanged(void) {
 			}
 			// create game title file if does not exist
 			title = Info_ValueForKey(systemInfo, "sv_gameTitle");
+
 			Com_sprintf(filename, sizeof(filename), "%s/description.txt", value);
 
 			if ((cl_allowDownload->integer & DLF_ENABLE) && *title && !FS_SV_RW_FileExists(filename)) {
 				fileHandle_t f = FS_SV_FOpenFileWrite(filename);
+
 				FS_Write(s, strlen(title), f);
 				FS_FCloseFile(f);
 			}
@@ -499,8 +507,8 @@ static void CL_ParseServerInfo(void) {
 	const char *serverInfo;
 
 	serverInfo = cl.gameState.stringData + cl.gameState.stringOffsets[CS_SERVERINFO];
-
 	clc.sv_allowDownload = atoi(Info_ValueForKey(serverInfo, "sv_allowDownload"));
+
 	Q_strncpyz(clc.sv_dlURL, Info_ValueForKey(serverInfo, "sv_dlURL"), sizeof(clc.sv_dlURL));
 }
 
@@ -587,7 +595,7 @@ void CL_ParseGamestate(msg_t *msg) {
 	if (FS_ConditionalRestart(qfalse)) {
 		clc.fsRestarted = qtrue;
 	}
-	// This used to call CL_StartHunkUsers, but now we enter the download state before loading the cgame
+	// this used to call CL_StartHunkUsers, but now we enter the download state before loading the cgame
 	CL_InitDownloads();
 	// make sure the game starts
 	Cvar_Set("cl_paused", "0");
@@ -617,6 +625,7 @@ void CL_ParseBaseline(msg_t *msg) {
 	}
 
 	es = DA_ElementPointer(cl.entityBaselines, newnum);
+
 	MSG_ReadDeltaEntity(msg, NULL, es, newnum);
 }
 
@@ -816,13 +825,13 @@ static void CL_ParseVoip(msg_t *msg, qboolean ignoreData) {
 	} else if (sender >= MAX_CLIENTS) {
 		return; // bogus sender.
 	} else if (CL_ShouldIgnoreVoipSender(sender)) {
-		return; // Channel is muted, bail.
+		return; // channel is muted, bail.
 	}
 	// !!! FIXME: make sure data is narrowband? Does decoder handle this?
 	Com_DPrintf("VoIP: packet accepted!\n");
 
 	seqdiff = sequence - clc.voipIncomingSequence[sender];
-	// This is a new "generation" ... a new recording started, reset the bits.
+	// this is a new "generation" ... a new recording started, reset the bits.
 	if (generation != clc.voipIncomingGeneration[sender]) {
 		Com_DPrintf("VoIP: new generation %d!\n", generation);
 		opus_decoder_ctl(clc.opusDecoder[sender], OPUS_RESET_STATE);
@@ -887,10 +896,12 @@ static void CL_ParseVoip(msg_t *msg, qboolean ignoreData) {
 	}
 #endif
 	sampbuffer = (const int16_t *)decoded + written;
+
 	// calculate the "power" of this packet...
 	for (j = 0; j < numSamples; j++) {
 		const float flsamp = (float)sampbuffer[j];
 		const float s = fabs(flsamp);
+
 		voipPower += s * s;
 	}
 
@@ -928,6 +939,7 @@ void CL_ParseCommandString(msg_t *msg) {
 
 	clc.serverCommandSequence = seq;
 	index = seq & (MAX_RELIABLE_COMMANDS - 1);
+
 	Q_strncpyz(clc.serverCommands[index], s, sizeof(clc.serverCommands[index]));
 }
 

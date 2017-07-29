@@ -1,30 +1,41 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- Bot library variables.
-**************************************************************************************************************************************/
+/*****************************************************************************
+	* name:		l_libvar.c
+	*
+	* desc:		bot library variables
+	*
+	* $Archive: /MissionPack/code/botlib/l_libvar.c $
+	*
+	*****************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "l_memory.h"
@@ -33,11 +44,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 // list with library variables
 libvar_t *libvarlist = NULL;
 
-/*
-=======================================================================================================================================
-LibVarStringValue
-=======================================================================================================================================
-*/
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 float LibVarStringValue(const char *string) {
 	int dotfound = 0;
 	float value = 0;
@@ -48,6 +60,7 @@ float LibVarStringValue(const char *string) {
 				return 0;
 			} else {
 				dotfound = 10;
+
 				string++;
 			}
 		}
@@ -63,64 +76,59 @@ float LibVarStringValue(const char *string) {
 	}
 
 	return value;
-}
-
-/*
-=======================================================================================================================================
-LibVarAlloc
-=======================================================================================================================================
-*/
+} // end of the function LibVarStringValue
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 libvar_t *LibVarAlloc(const char *var_name) {
 	libvar_t *v;
 
 	v = (libvar_t *)GetMemory(sizeof(libvar_t));
-
 	Com_Memset(v, 0, sizeof(libvar_t));
-
-	v->name = (char *)GetMemory(strlen(var_name) + 1);
+	v->name = (char *)GetMemory(strlen(var_name) +1);
 	strcpy(v->name, var_name);
 	// add the variable in the list
 	v->next = libvarlist;
 	libvarlist = v;
 	return v;
-}
-
-/*
-=======================================================================================================================================
-LibVarDeAlloc
-=======================================================================================================================================
-*/
+} // end of the function LibVarAlloc
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 void LibVarDeAlloc(libvar_t *v) {
-
-	if (v->string) {
-		FreeMemory(v->string);
-	}
-
+	if (v->string)FreeMemory(v->string);
 	FreeMemory(v->name);
 	FreeMemory(v);
-}
-
-/*
-=======================================================================================================================================
-LibVarDeAllocAll
-=======================================================================================================================================
-*/
+} // end of the function LibVarDeAlloc
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 void LibVarDeAllocAll(void) {
 	libvar_t *v;
 
 	for (v = libvarlist; v; v = libvarlist) {
 		libvarlist = libvarlist->next;
+
 		LibVarDeAlloc(v);
 	}
 
 	libvarlist = NULL;
-}
-
-/*
-=======================================================================================================================================
-LibVarGet
-=======================================================================================================================================
-*/
+} // end of the function LibVarDeAllocAll
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 libvar_t *LibVarGet(const char *var_name) {
 	libvar_t *v;
 
@@ -131,13 +139,13 @@ libvar_t *LibVarGet(const char *var_name) {
 	}
 
 	return NULL;
-}
-
-/*
-=======================================================================================================================================
-LibVarGetString
-=======================================================================================================================================
-*/
+} // end of the function LibVarGet
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 char *LibVarGetString(const char *var_name) {
 	libvar_t *v;
 
@@ -148,13 +156,13 @@ char *LibVarGetString(const char *var_name) {
 	} else {
 		return "";
 	}
-}
-
-/*
-=======================================================================================================================================
-LibVarGetValue
-=======================================================================================================================================
-*/
+} // end of the function LibVarGetString
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 float LibVarGetValue(const char *var_name) {
 	libvar_t *v;
 
@@ -165,21 +173,18 @@ float LibVarGetValue(const char *var_name) {
 	} else {
 		return 0;
 	}
-}
-
-/*
-=======================================================================================================================================
-LibVar
-=======================================================================================================================================
-*/
+} // end of the function LibVarGetValue
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 libvar_t *LibVar(const char *var_name, const char *value) {
 	libvar_t *v;
-
 	v = LibVarGet(var_name);
 
-	if (v) {
-		return v;
-	}
+	if (v) return v;
 	// create new variable
 	v = LibVarAlloc(var_name);
 	// variable string
@@ -189,38 +194,39 @@ libvar_t *LibVar(const char *var_name, const char *value) {
 	v->value = LibVarStringValue(v->string);
 	// variable is modified
 	v->modified = qtrue;
-	return v;
-}
 
-/*
-=======================================================================================================================================
-LibVarString
-=======================================================================================================================================
-*/
+	return v;
+} // end of the function LibVar
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 char *LibVarString(const char *var_name, const char *value) {
 	libvar_t *v;
 
 	v = LibVar(var_name, value);
 	return v->string;
-}
-
-/*
-=======================================================================================================================================
-LibVarValue
-=======================================================================================================================================
-*/
+} // end of the function LibVarString
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 float LibVarValue(const char *var_name, const char *value) {
 	libvar_t *v;
 
 	v = LibVar(var_name, value);
 	return v->value;
-}
-
-/*
-=======================================================================================================================================
-LibVarSet
-=======================================================================================================================================
-*/
+} // end of the function LibVarValue
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 void LibVarSet(const char *var_name, const char *value) {
 	libvar_t *v;
 
@@ -238,13 +244,13 @@ void LibVarSet(const char *var_name, const char *value) {
 	v->value = LibVarStringValue(v->string);
 	// variable is modified
 	v->modified = qtrue;
-}
-
-/*
-=======================================================================================================================================
-LibVarChanged
-=======================================================================================================================================
-*/
+} // end of the function LibVarSet
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 qboolean LibVarChanged(const char *var_name) {
 	libvar_t *v;
 
@@ -255,13 +261,13 @@ qboolean LibVarChanged(const char *var_name) {
 	} else {
 		return qfalse;
 	}
-}
-
-/*
-=======================================================================================================================================
-LibVarSetNotModified
-=======================================================================================================================================
-*/
+} // end of the function LibVarChanged
+//===========================================================================
+//
+// Parameter:				-
+// Returns:					-
+// Changes Globals:		-
+//===========================================================================
 void LibVarSetNotModified(const char *var_name) {
 	libvar_t *v;
 
@@ -270,4 +276,4 @@ void LibVarSetNotModified(const char *var_name) {
 	if (v) {
 		v->modified = qfalse;
 	}
-}
+} // end of the function LibVarSetNotModified

@@ -1,30 +1,41 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- Fuzzy logic.
-**************************************************************************************************************************************/
+/*****************************************************************************
+	* name:		ai_weight.c
+	*
+	* desc:		fuzzy logic
+	*
+	* $Archive: /MissionPack/code/game/ai_weight.c $
+	*
+	*****************************************************************************/
 
 #include "g_local.h"
 #include "../botlib/botlib.h"
@@ -213,6 +224,7 @@ fuzzyseperator_t *ReadFuzzySeperators_r(int source) {
 		return NULL;
 	}
 
+
 	if (!PC_ExpectTokenType(source, TT_NUMBER, TT_INTEGER, &token)) {
 		return NULL;
 	}
@@ -223,9 +235,11 @@ fuzzyseperator_t *ReadFuzzySeperators_r(int source) {
 		return NULL;
 	}
 
+
 	if (!PC_ExpectTokenString(source, "{")) {
 		return NULL;
 	}
+
 
 	if (!PC_ExpectAnyToken(source, &token)) {
 		return NULL;
@@ -254,6 +268,7 @@ fuzzyseperator_t *ReadFuzzySeperators_r(int source) {
 				}
 
 				fs->value = MAX_INVENTORYVALUE;
+
 				founddefault = qtrue;
 			} else {
 				if (!PC_ExpectTokenType(source, TT_NUMBER, TT_INTEGER, &token)) {
@@ -317,6 +332,7 @@ fuzzyseperator_t *ReadFuzzySeperators_r(int source) {
 
 	if (!founddefault) {
 		PC_SourceWarning(source, "switch without default");
+
 		fs = (fuzzyseperator_t *)trap_HeapMalloc(sizeof(fuzzyseperator_t));
 		fs->index = index;
 		fs->value = MAX_INVENTORYVALUE;
@@ -384,6 +400,7 @@ weightconfig_t *ReadWeightConfig(char *filename) {
 
 	config = (weightconfig_t *)trap_HeapMalloc(sizeof(weightconfig_t));
 	config->numweights = 0;
+
 	Q_strncpyz(config->filename, filename, sizeof(config->filename));
 	// parse the item config file
 	while (trap_PC_ReadToken(source, &token)) {
@@ -544,7 +561,7 @@ qboolean WriteFuzzySeperators_r(FILE *fp, fuzzyseperator_t *fs, int indent) {
 		return qfalse;
 	}
 
-	if (fprintf(fp, "switch (%d)\n", fs->index) < 0) {
+	if (fprintf(fp, "switch(%d)\n", fs->index) < 0) {
 		return qfalse;
 	}
 
@@ -595,11 +612,11 @@ qboolean WriteFuzzySeperators_r(FILE *fp, fuzzyseperator_t *fs, int indent) {
 			}
 
 			if (fs->next) {
-				if (fprintf(fp, "} //end case\n") < 0) {
+				if (fprintf(fp, "}\n") < 0) {
 					return qfalse;
 				}
 			} else {
-				if (fprintf(fp, "} //end default\n") < 0) {
+				if (fprintf(fp, "} // end default\n") < 0) {
 					return qfalse;
 				}
 			}
@@ -618,7 +635,7 @@ qboolean WriteFuzzySeperators_r(FILE *fp, fuzzyseperator_t *fs, int indent) {
 		return qfalse;
 	}
 
-	if (fprintf(fp, "} //end switch\n") < 0) {
+	if (fprintf(fp, "}\n") < 0) {
 		return qfalse;
 	}
 
@@ -666,7 +683,7 @@ qboolean WriteWeightConfig(char *filename, weightconfig_t *config) {
 			}
 		}
 
-		if (fprintf(fp, "} //end weight\n") < 0) {
+		if (fprintf(fp, "} // end weight\n") < 0) {
 			return qfalse;
 		}
 	}
@@ -870,7 +887,7 @@ void EvolveFuzzySeperator_r(fuzzyseperator_t *fs) {
 		} else {
 			fs->weight += crandom() * (fs->maxweight - fs->minweight) * 0.5;
 		}
-		// modify bounds if necessary because of mutation
+		// modify bounds if necesary because of mutation
 		if (fs->weight < fs->minweight) {
 			fs->minweight = fs->weight;
 		} else if (fs->weight > fs->maxweight) {
@@ -953,6 +970,7 @@ void ScaleFuzzySeperatorBalanceRange_r(fuzzyseperator_t *fs, float scale) {
 		ScaleFuzzySeperatorBalanceRange_r(fs->child, scale);
 	} else if (fs->type == WT_BALANCE) {
 		float mid = (fs->minweight + fs->maxweight) * 0.5;
+
 		// get the weight between bounds
 		fs->maxweight = mid + (fs->maxweight - mid) * scale;
 		fs->minweight = mid + (fs->minweight - mid) * scale;
@@ -1043,7 +1061,8 @@ config1 and config2 are interbreeded and stored in configout.
 void InterbreedWeightConfigs(weightconfig_t *config1, weightconfig_t *config2, weightconfig_t *configout) {
 	int i;
 
-	if (config1->numweights != config2->numweights || config1->numweights != configout->numweights) {
+	if (config1->numweights != config2->numweights ||
+		config1->numweights != configout->numweights) {
 		BotAI_Print(PRT_ERROR, "cannot interbreed weight configs, unequal numweights\n");
 		return;
 	}

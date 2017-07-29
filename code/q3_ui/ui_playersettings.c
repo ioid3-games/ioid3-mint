@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -125,7 +131,6 @@ static void PlayerSettings_DrawName(void *self) {
 	x = f->generic.x;
 	y = f->generic.y;
 	focus = (f->generic.parent->cursor == f->generic.menuPosition);
-
 	style = UI_LEFT|UI_SMALLFONT;
 	color = text_color_normal;
 
@@ -220,12 +225,13 @@ static void PlayerSettings_DrawEffects(void *self) {
 		}
 
 		CG_PlayerColorFromIndex(uitogamecode[item->curvalue], picColor);
+
 		picColor[3] = 1;
+
 		trap_R_SetColor(picColor);
 	}
 
 	CG_DrawPic(item->generic.x + 64 + item->curvalue * xOffset + xOffset * 0.5f, item->generic.y + PROP_HEIGHT + 6, 16, 12, colorShader);
-
 	trap_R_SetColor(NULL);
 
 	if (focus) {
@@ -259,12 +265,14 @@ static void PlayerSettings_DrawPlayer(void *self) {
 
 	if (strcmp(model, s_playersettings.playerModel) != 0 || strcmp(headmodel, s_playersettings.playerHead) != 0) {
 		UI_PlayerInfo_SetModel(&s_playersettings.playerinfo, model, headmodel, NULL);
+
 		strcpy(s_playersettings.playerModel, model);
 		strcpy(s_playersettings.playerHead, headmodel);
 
 		viewangles[YAW] = 180 - 30;
 		viewangles[PITCH] = 0;
 		viewangles[ROLL] = 0;
+
 		UI_PlayerInfo_SetInfo(&s_playersettings.playerinfo, LEGS_IDLE, TORSO_STAND, viewangles, vec3_origin, WP_MACHINEGUN, qfalse);
 	}
 
@@ -324,7 +332,6 @@ static void PlayerSettings_SetMenuItems(void) {
 	}
 
 	s_playersettings.effects.curvalue = gamecodetoui[c];
-
 	c = trap_Cvar_VariableValue(Com_LocalPlayerCvarName(s_playersettings.localPlayerNum, "color2")) - 1;
 
 	if (c < 0 || c > NUM_COLOR_EFFECTS - 1) {
@@ -410,14 +417,14 @@ PlayerSettings_MenuInit
 static void PlayerSettings_MenuInit(int localPlayerNum) {
 	int y;
 
-	memset(&s_playersettings, 0, sizeof(playersettings_t));
+	memset(&s_playersettings,0,sizeof(playersettings_t));
 
 	s_playersettings.localPlayerNum = localPlayerNum;
 
 	if (UI_MaxSplitView() == 1) {
 		Com_sprintf(s_playersettings.bannerString, sizeof(s_playersettings.bannerString), "PLAYER SETTINGS");
 	} else {
-		Com_sprintf(s_playersettings.bannerString, sizeof(s_playersettings.bannerString), "PLAYER %d SETTINGS", s_playersettings.localPlayerNum + 1);
+		Com_sprintf(s_playersettings.bannerString, sizeof(s_playersettings.bannerString), "PLAYER %d SETTINGS", s_playersettings.localPlayerNum+1);
 	}
 
 	PlayerSettings_Cache();
@@ -425,6 +432,7 @@ static void PlayerSettings_MenuInit(int localPlayerNum) {
 	s_playersettings.menu.key = PlayerSettings_MenuKey;
 	s_playersettings.menu.wrapAround = qtrue;
 	s_playersettings.menu.fullscreen = qtrue;
+
 	// Q3 bitmap banner font is missing numbers, fall back to PTEXT
 	if (uis.bannerNumbers || UI_MaxSplitView() == 1) {
 		s_playersettings.banner.generic.type = MTYPE_BTEXT;
@@ -497,7 +505,7 @@ static void PlayerSettings_MenuInit(int localPlayerNum) {
 	s_playersettings.effects.generic.bottom = y + 2 * PROP_HEIGHT;
 	s_playersettings.effects.numitems = NUM_COLOR_EFFECTS;
 
-	y += PROP_HEIGHT;
+	y += 1 * PROP_HEIGHT;
 	s_playersettings.effects2.generic.type = MTYPE_SPINCONTROL;
 	s_playersettings.effects2.generic.flags = QMF_NODEFAULTINIT;
 	s_playersettings.effects2.generic.id = ID_EFFECTS2;

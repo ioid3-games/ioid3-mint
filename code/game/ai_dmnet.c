@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -160,7 +166,7 @@ int BotGoForAir(bot_state_t *bs, int tfl, bot_goal_t *ltg, float range) {
 			while (BotChooseNBGItem(bs->gs, bs->origin, bs->inventory, tfl, ltg, range)) {
 				BotGetTopGoal(bs->gs, &goal);
 				// if the goal is not in water
-				if (!(trap_AAS_PointContents(goal.origin) & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))) {
+				if (!(trap_AAS_PointContents(goal.origin)&(CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))) {
 					return qtrue;
 				}
 
@@ -299,6 +305,7 @@ int BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal) {
 		//BotAI_Print(PRT_MESSAGE, "%s: choosing new ltg\n", PlayerName(bs->playernum, netname, sizeof(netname)));
 		// choose a new goal
 		//BotAI_Print(PRT_MESSAGE, "%6.1f player %d: BotChooseLTGItem\n", FloatTime(), bs->playernum);
+
 		if (BotChooseLTGItem(bs->gs, bs->origin, bs->inventory, tfl)) {
 			/*
 			char buf[128];
@@ -314,7 +321,7 @@ int BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal) {
 
 			PlayerName(bs->playernum, netname, sizeof(netname));
 
-			BotAI_Print(PRT_DEVELOPER, "%s: no valid ltg (probably stuck)\n", netname);
+			BotAI_Print(PRT_DEVELOPER, "%s: no valid ltg(probably stuck)\n", netname);
 			//BotDumpAvoidGoals(bs->gs);
 			// reset the avoid goals and the avoid reach
 			BotResetAvoidGoals(bs->gs);
@@ -387,6 +394,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 				// update team goal
 				bs->teamgoal.entitynum = bs->teammate;
 				bs->teamgoal.areanum = areanum;
+
 				VectorCopy(entinfo.origin, bs->teamgoal.origin);
 				VectorSet(bs->teamgoal.mins, -8, -8, -8);
 				VectorSet(bs->teamgoal.maxs, 8, 8, 8);
@@ -415,6 +423,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 		// get entity information of the companion
 		BotEntityInfo(bs->teammate, &entinfo);
 		VectorSubtract(entinfo.origin, bs->origin, dir);
+
 		teammates = BotCountTeamMates(bs, 256);
 
 		if (VectorLengthSquared(dir) < Square(bs->formation_dist + (teammates * bs->formation_dist))) {
@@ -462,6 +471,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 			if (random() < bs->thinktime * 0.8) {
 				BotRoamGoal(bs, target);
 				VectorSubtract(target, bs->origin, dir);
+
 				vectoangles(dir, bs->ideal_viewangles);
 				bs->ideal_viewangles[2] *= 0.5;
 			}
@@ -491,6 +501,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 				// update team goal
 				bs->teamgoal.entitynum = bs->teammate;
 				bs->teamgoal.areanum = areanum;
+
 				VectorCopy(entinfo.origin, bs->teamgoal.origin);
 				VectorSet(bs->teamgoal.mins, -8, -8, -8);
 				VectorSet(bs->teamgoal.maxs, 8, 8, 8);
@@ -638,6 +649,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 		}
 		// if really near the camp spot
 		VectorSubtract(goal->origin, bs->origin, dir);
+
 		teammates = BotCountTeamMates(bs, 256);
 
 		if (VectorLengthSquared(dir) < Square(60 + (teammates * 60))) {
@@ -671,11 +683,9 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 				EA_Crouch(bs->playernum);
 			}
 			// don't crouch when swimming
-			if (trap_AAS_Swimming(bs->origin)) {
-				bs->attackcrouch_time = FloatTime() - 1;
-			}
+			if (trap_AAS_Swimming(bs->origin))bs->attackcrouch_time = FloatTime() - 1;
 			// make sure the bot is not gonna drown
-			if (trap_PointContents(bs->eye, bs->entitynum) & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
+			if (trap_PointContents(bs->eye,bs->entitynum)&(CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
 				if (bs->ltgtype == LTG_CAMPORDER) {
 					BotAI_BotInitialChat(bs, "camp_stop", NULL);
 					BotEnterChat(bs->cs, bs->decisionmaker, CHAT_TELL);
@@ -687,7 +697,7 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 
 				bs->ltgtype = 0;
 			}
-			// FIXME: move around a bit
+			//FIXME: move around a bit
 			BotResetAvoidReach(bs->ms);
 			// check blocked teammates
 			BotCheckBlockedTeammates(bs);
@@ -1144,6 +1154,7 @@ int BotLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) {
 				// update team goal
 				bs->lead_teamgoal.entitynum = bs->lead_teammate;
 				bs->lead_teamgoal.areanum = areanum;
+
 				VectorCopy(entinfo.origin, bs->lead_teamgoal.origin);
 				VectorSet(bs->lead_teamgoal.mins, -8, -8, -8);
 				VectorSet(bs->lead_teamgoal.maxs, 8, 8, 8);
@@ -1159,6 +1170,7 @@ int BotLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) {
 		}
 		// distance towards the team mate
 		VectorSubtract(bs->origin, bs->lead_teamgoal.origin, dir);
+
 		squaredist = VectorLengthSquared(dir);
 		// if backing up towards the team mate
 		if (bs->leadbackup_time > FloatTime()) {
@@ -1424,7 +1436,9 @@ void BotClearPath(bot_state_t *bs, bot_moveresult_t *moveresult) {
 		if (!(moveresult->flags & (MOVERESULT_MOVEMENTVIEW|MOVERESULT_MOVEMENTWEAPON))) {
 			BotAI_GetEntityState(bs->kamikazebody, &state);
 			VectorCopy(state.pos.trBase, target);
+
 			target[2] += 8;
+
 			VectorSubtract(target, bs->eye, dir);
 			vectoangles(dir, moveresult->ideal_viewangles);
 
@@ -1475,11 +1489,12 @@ void BotClearPath(bot_state_t *bs, bot_moveresult_t *moveresult) {
 		if (bestmine != -1) {
 			// state->team == TEAM_RED || state->team == TEAM_BLUE
 
-			// deactivate prox mines in the bot's path by shooting
-			// rockets or plasma cells etc. at them
+			// deactivate prox mines in the bot's path by shooting rockets or plasma cells etc. at them
 			BotAI_GetEntityState(bs->proxmines[bestmine], &state);
 			VectorCopy(state.pos.trBase, target);
+
 			target[2] += 2;
+
 			VectorSubtract(target, bs->eye, dir);
 			vectoangles(dir, moveresult->ideal_viewangles);
 			// if the bot has a weapon that does splash damage
@@ -2620,6 +2635,7 @@ int AINode_Battle_Retreat(bot_state_t *bs) {
 	}
 	// attack the enemy if possible
 	BotCheckAttack(bs);
+
 	return qtrue;
 }
 
@@ -2751,7 +2767,7 @@ int AINode_Battle_NBG(bot_state_t *bs) {
 	// choose the best weapon to fight with
 	BotChooseWeapon(bs);
 	// if the view is fixed for the movement
-	if (moveresult.flags & (MOVERESULT_MOVEMENTVIEW|MOVERESULT_SWIMVIEW)) {
+	if (moveresult.flags &(MOVERESULT_MOVEMENTVIEW|MOVERESULT_SWIMVIEW)) {
 		VectorCopy(moveresult.ideal_viewangles, bs->ideal_viewangles);
 	} else if (!(moveresult.flags & MOVERESULT_MOVEMENTVIEWSET) && !(bs->flags & BFL_IDEALVIEWSET)) {
 		attack_skill = Characteristic_BFloat(bs->character, CHARACTERISTIC_ATTACK_SKILL, 0, 1);

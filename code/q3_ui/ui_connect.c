@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -139,14 +145,15 @@ static void UI_DisplayDownloadInfo(const char *downloadName) {
 		}
 
 		UI_ReadableSize(xferRateBuf, sizeof xferRateBuf, xferRate);
-		// Extrapolate estimated completion time
+		// extrapolate estimated completion time
 		if (downloadSize && xferRate) {
 			int n = downloadSize / xferRate; // estimated time for entire d/l in secs
-			// We do it in K (/1024) because we'd overflow around 4MB
+
+			// we do it in K (/1024) because we'd overflow around 4MB
 			n = (n - (((downloadCount / 1024) * n) / (downloadSize / 1024))) * 1000;
 
 			UI_PrintTime(dlTimeBuf, sizeof dlTimeBuf, n);
-			// (n - (((downloadCount / 1024) * n) / (downloadSize / 1024))) * 1000);
+			//(n - (((downloadCount / 1024) * n) / (downloadSize / 1024))) * 1000);
 			UI_DrawProportionalString(leftWidth, 160, dlTimeBuf, style, color_white);
 			UI_DrawProportionalString(leftWidth, 192, va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), style, color_white);
 		} else {
@@ -211,13 +218,14 @@ void UI_DrawConnectScreen(qboolean overlay) {
 		passwordField.generic.callback = 0;
 		passwordField.generic.x = 10;
 		passwordField.generic.y = 180;
+
 		Field_Clear(&passwordField.field);
+
 		passwordField.width = 256;
 		passwordField.field.widthInChars = 16;
+
 		MField_SetText(&passwordField.field, Cvar_VariableString("password"));
-
 		Menu_AddItem(&s_ingame_menu, (void *)&s_customize_player_action);
-
 		UI_Field_Draw(&passwordField);
 	}
 #endif

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -166,8 +172,8 @@ static int CL_GetConfigString(int index, char *buf, int size) {
 		return qfalse;
 	}
 
-	Q_strncpyz(buf, cl.gameState.stringData + offset, size);
- 
+	Q_strncpyz(buf, cl.gameState.stringData+offset, size);
+
 	return qtrue;
 }
 
@@ -228,6 +234,7 @@ CL_GetCurrentSnapshotNumber
 =======================================================================================================================================
 */
 void CL_GetCurrentSnapshotNumber(int *snapshotNumber, int *serverTime) {
+
 	*snapshotNumber = cl.snap.messageNum;
 	*serverTime = cl.snap.serverTime;
 }
@@ -268,7 +275,6 @@ qboolean CL_GetSnapshot(int snapshotNumber, vmSnapshot_t *vmSnapshot, int vmSize
 
 	for (i = 0; i < MAX_SPLITVIEW; i++) {
 		snapshot.playerNums[i] = clSnap->playerNums[i];
-
 		ps = (sharedPlayerState_t *)((byte *)playerStates + i * cl.cgamePlayerStateSize);
 
 		if (clSnap->localPlayerIndex[i] == -1) {
@@ -507,7 +513,7 @@ void CL_CM_LoadMap(const char *mapname) {
 =======================================================================================================================================
 CL_Cmd_AutoComplete
 
-auto-complete cvar names, cmd names, and cmd arguments
+auto-complete cvar names, cmd names, and cmd arguments.
 =======================================================================================================================================
 */
 void CL_Cmd_AutoComplete(const char *in, char *out, int outSize) {
@@ -519,9 +525,7 @@ void CL_Cmd_AutoComplete(const char *in, char *out, int outSize) {
 
 	Com_Memset(&field, 0, sizeof(field));
 	Q_strncpyz(field.buffer, in, sizeof(field.buffer));
-
 	Field_AutoComplete(&field);
-
 	Q_strncpyz(out, field.buffer, outSize);
 }
 
@@ -533,7 +537,6 @@ LAN_LoadCachedServers
 void LAN_LoadCachedServers(void) {
 	int size;
 	fileHandle_t fileIn;
-
 	cls.numglobalservers = cls.numfavoriteservers = 0;
 	cls.numGlobalServerAddresses = 0;
 
@@ -561,7 +564,6 @@ LAN_SaveServersToCache
 */
 void LAN_SaveServersToCache(void) {
 	int size;
-
 	fileHandle_t fileOut = FS_SV_FOpenFileWrite("servercache.dat");
 
 	FS_Write(&cls.numglobalservers, sizeof(int), fileOut);
@@ -581,8 +583,9 @@ LAN_ResetPings
 =======================================================================================================================================
 */
 static void LAN_ResetPings(int source) {
-	int count, i;
+	int count,i;
 	serverInfo_t *servers = NULL;
+
 	count = 0;
 
 	switch (source) {
@@ -616,6 +619,7 @@ static int LAN_AddServer(int source, const char *name, const char *address) {
 	int max, *count, i;
 	netadr_t adr;
 	serverInfo_t *servers = NULL;
+
 	max = MAX_OTHER_SERVERS;
 	count = NULL;
 
@@ -648,7 +652,7 @@ static int LAN_AddServer(int source, const char *name, const char *address) {
 			servers[*count].adr = adr;
 			Q_strncpyz(servers[*count].hostName, name, sizeof(servers[*count].hostName));
 			servers[*count].visible = qtrue;
-			(*count)++;
+			(*count) ++;
 			return 1;
 		}
 
@@ -686,7 +690,6 @@ static void LAN_RemoveServer(int source, const char *addr) {
 
 	if (servers) {
 		netadr_t comp;
-
 		NET_StringToAdr(addr, &comp, NA_UNSPEC);
 
 		for (i = 0; i < *count; i++) {
@@ -694,11 +697,11 @@ static void LAN_RemoveServer(int source, const char *addr) {
 				int j = i;
 
 				while (j < *count - 1) {
-					Com_Memcpy(&servers[j], &servers[j + 1], sizeof(servers[j]));
+					Com_Memcpy(&servers[j], &servers[j+1], sizeof(servers[j]));
 					j++;
 				}
 
-				(*count)--;
+				(*count) --;
 				break;
 			}
 		}
@@ -729,7 +732,7 @@ static int LAN_GetServerCount(int source) {
 
 /*
 =======================================================================================================================================
-LAN_GetServerAddressString
+LAN_GetLocalServerAddressString
 =======================================================================================================================================
 */
 static void LAN_GetServerAddressString(int source, int n, char *buf, int buflen) {
@@ -769,7 +772,6 @@ LAN_GetServerInfo
 static void LAN_GetServerInfo(int source, int n, char *buf, int buflen) {
 	char info[MAX_STRING_CHARS];
 	serverInfo_t *server = NULL;
-
 	info[0] = '\0';
 
 	switch (source) {
@@ -795,16 +797,17 @@ static void LAN_GetServerInfo(int source, int n, char *buf, int buflen) {
 
 	if (server && buf) {
 		buf[0] = '\0';
+
 		Info_SetValueForKey(info, "hostname", server->hostName);
 		Info_SetValueForKey(info, "mapname", server->mapName);
-		Info_SetValueForKey(info, "clients", va("%i", server->clients));
-		Info_SetValueForKey(info, "sv_maxclients", va("%i", server->maxClients));
-		Info_SetValueForKey(info, "ping", va("%i", server->ping));
-		Info_SetValueForKey(info, "minping", va("%i", server->minPing));
-		Info_SetValueForKey(info, "maxping", va("%i", server->maxPing));
+		Info_SetValueForKey(info, "clients", va("%i",server->clients));
+		Info_SetValueForKey(info, "sv_maxclients", va("%i",server->maxClients));
+		Info_SetValueForKey(info, "ping", va("%i",server->ping));
+		Info_SetValueForKey(info, "minping", va("%i",server->minPing));
+		Info_SetValueForKey(info, "maxping", va("%i",server->maxPing));
 		Info_SetValueForKey(info, "game", server->game);
 		Info_SetValueForKey(info, "gametype", server->gameType);
-		Info_SetValueForKey(info, "nettype", va("%i", server->netType));
+		Info_SetValueForKey(info, "nettype", va("%i",server->netType));
 		Info_SetValueForKey(info, "addr", NET_AdrToStringwPort(server->adr));
 		Info_SetValueForKey(info, "g_needpass", va("%i", server->g_needpass));
 		Info_SetValueForKey(info, "g_humanplayers", va("%i", server->g_humanplayers));
@@ -1022,6 +1025,7 @@ static void LAN_MarkServerVisible(int source, int n, qboolean visible) {
 
 	if (n == -1) {
 		int count = MAX_OTHER_SERVERS;
+
 		serverInfo_t *server = NULL;
 
 		switch (source) {
@@ -1042,6 +1046,7 @@ static void LAN_MarkServerVisible(int source, int n, qboolean visible) {
 				server[n].visible = visible;
 			}
 		}
+
 	} else {
 		switch (source) {
 			case AS_LOCAL:
@@ -1178,7 +1183,7 @@ void CL_LoadWorldMap(const char *name) {
 
 /*
 =======================================================================================================================================
-CL_ShutdownCGame
+CL_ShutdonwCGame
 =======================================================================================================================================
 */
 void CL_ShutdownCGame(void) {
@@ -1196,11 +1201,12 @@ void CL_ShutdownCGame(void) {
 
 	VM_Call(cgvm, CG_SHUTDOWN);
 	VM_Free(cgvm);
+
 	cgvm = NULL;
 
 	Cmd_RemoveCommandsByFunc(CL_GameCommand);
-
 	BSP_Free(cls.cgameBsp);
+
 	cls.cgameBsp = NULL;
 }
 
@@ -1304,8 +1310,7 @@ intptr_t CL_CgameSystemCalls(intptr_t *args) {
 		case CG_UPDATESCREEN:
 			// this is used during lengthy level loading, so pump message loop
 			// Com_EventLoop(); // FIXME: if a server restarts here, BAD THINGS HAPPEN!
-			// We can't call Com_EventLoop here, a restart will crash and this _does_ happen
-			// if there is a map change while we are downloading at pk3.
+			// we can't call Com_EventLoop here, a restart will crash and this _does_ happen if there is a map change while we are downloading at pk3.
 			SCR_UpdateScreen();
 			return 0;
 		case CG_CM_LOADMAP:
@@ -1760,7 +1765,6 @@ void CL_InitCGame(void) {
 		// Free cgvm now, so CG_SHUTDOWN doesn't get called later.
 		VM_Free(cgvm);
 		cgvm = NULL;
-
 		Com_Error(ERR_DROP, "CGame VM uses unsupported API(%s %d.%d), expected %s %d.%d", apiName, major, minor, CG_API_NAME, CG_API_MAJOR_VERSION, CG_API_MINOR_VERSION);
 	}
 
@@ -1773,9 +1777,8 @@ void CL_InitCGame(void) {
 	Cmd_SaveCmdContext();
 	CON_LogSaveReadPos();
 
-	while ((size = CON_LogRead(consoleBuffer, sizeof(consoleBuffer) - 1)) > 0) {
+	while ((size = CON_LogRead(consoleBuffer, sizeof(consoleBuffer) -1)) > 0) {
 		consoleBuffer[size] = '\0';
-
 		Cmd_TokenizeString(consoleBuffer);
 		CL_GameConsoleText(qtrue);
 	}
@@ -1792,6 +1795,7 @@ void CL_InitCGame(void) {
 	// find the current mapname
 	info = cl.gameState.stringData + cl.gameState.stringOffsets[CS_SERVERINFO];
 	mapname = Info_ValueForKey(info, "mapname");
+
 	Com_sprintf(cl.mapname, sizeof(cl.mapname), "maps/%s.bsp", mapname);
 
 	clc.state = CA_LOADING;
@@ -1902,7 +1906,7 @@ void CL_ShowMainMenu(void) {
 =======================================================================================================================================
 CL_UpdateGlconfig
 
-cls.glconfig has been modified and doesn't require a full vid_restart
+cls.glconfig has been modified and doesn't require a full vid_restart.
 =======================================================================================================================================
 */
 void CL_UpdateGlconfig(void) {
@@ -1914,6 +1918,7 @@ void CL_UpdateGlconfig(void) {
 	VM_Call(cgvm, CG_UPDATE_GLCONFIG);
 }
 
+#define RESET_TIME 500
 /*
 =======================================================================================================================================
 CL_AdjustTimeDelta
@@ -1929,8 +1934,6 @@ Adjustments are only made when a new snapshot arrives with a rational latency, w
 and prevents massive overadjustment during times of significant packet loss or bursted delayed packets.
 =======================================================================================================================================
 */
-#define RESET_TIME 500
-
 void CL_AdjustTimeDelta(void) {
 	int newDelta;
 	int deltaDelta;
@@ -2102,7 +2105,6 @@ void CL_SetCGameTime(void) {
 		int tn;
 
 		tn = cl_timeNudge->integer;
-
 		cl.serverTime = cls.realtime + cl.serverTimeDelta - tn;
 		// guarantee that time will never flow backwards, even if serverTimeDelta made an adjustment or cl_timeNudge was changed
 		if (cl.serverTime < cl.oldServerTime) {
@@ -2141,7 +2143,7 @@ void CL_SetCGameTime(void) {
 
 		frameDuration = now - clc.timeDemoLastFrame;
 		clc.timeDemoLastFrame = now;
-		// Ignore the first measurement as it'll always be 0
+		// ignore the first measurement as it'll always be 0
 		if (clc.timeDemoFrames > 0) {
 			if (frameDuration > clc.timeDemoMaxDuration) {
 				clc.timeDemoMaxDuration = frameDuration;

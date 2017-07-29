@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -33,6 +39,7 @@ CL_Shutdown
 =======================================================================================================================================
 */
 void CL_Shutdown(char *finalmsg, qboolean disconnect, qboolean quit) {
+
 }
 
 /*
@@ -50,6 +57,7 @@ CL_MouseEvent
 =======================================================================================================================================
 */
 void CL_MouseEvent(int localPlayerNum, int dx, int dy, int time) {
+
 }
 
 /*
@@ -58,6 +66,7 @@ Key_WriteBindings
 =======================================================================================================================================
 */
 void Key_WriteBindings(fileHandle_t f) {
+
 }
 
 /*
@@ -66,6 +75,7 @@ CL_Frame
 =======================================================================================================================================
 */
 void CL_Frame(int msec) {
+
 }
 
 /*
@@ -74,6 +84,7 @@ CL_PacketEvent
 =======================================================================================================================================
 */
 void CL_PacketEvent(netadr_t from, msg_t *msg) {
+
 }
 
 /*
@@ -82,6 +93,7 @@ CL_CharEvent
 =======================================================================================================================================
 */
 void CL_CharEvent(int character) {
+
 }
 
 /*
@@ -90,6 +102,7 @@ CL_Disconnect
 =======================================================================================================================================
 */
 void CL_Disconnect(qboolean showMainMenu) {
+
 }
 
 /*
@@ -98,6 +111,7 @@ CL_MapLoading
 =======================================================================================================================================
 */
 void CL_MapLoading(void) {
+
 }
 
 /*
@@ -106,6 +120,7 @@ CL_KeyEvent
 =======================================================================================================================================
 */
 void CL_KeyEvent(int key, qboolean down, unsigned time) {
+
 }
 
 /*
@@ -114,6 +129,7 @@ CL_ConsolePrint
 =======================================================================================================================================
 */
 void CL_ConsolePrint(char *txt) {
+
 }
 
 /*
@@ -149,6 +165,7 @@ Key_Dummy_f
 =======================================================================================================================================
 */
 void Key_Dummy_f(void) {
+
 }
 
 /*
@@ -157,6 +174,7 @@ CL_InitKeyCommands
 =======================================================================================================================================
 */
 void CL_InitKeyCommands(void) {
+
 	// stop server from printing unknown command bind when executing default.cfg
 	Cmd_AddCommand("bind", Key_Dummy_f);
 	Cmd_AddCommand("unbindall", Key_Dummy_f);
@@ -209,6 +227,6 @@ qboolean CL_ConnectedToRemoteServer(void) {
 CL_MissingDefaultCfg
 =======================================================================================================================================
 */
-void CL_MissingDefaultCfg(void) {
+void CL_MissingDefaultCfg(const char *gamedir) {
 
 }

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, 
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -77,6 +83,7 @@ Cbuf_Init
 =======================================================================================================================================
 */
 void Cbuf_Init(void) {
+
 	cmd_text.data = cmd_text_buf;
 	cmd_text.maxsize = MAX_CMD_BUFFER;
 	cmd_text.cursize = 0;
@@ -351,7 +358,7 @@ typedef struct cmdContext_s {
 	int argc;
 	char *argv[MAX_STRING_TOKENS]; // points into cmd.tokenized
 	char tokenized[BIG_INFO_STRING + MAX_STRING_TOKENS]; // will have 0 bytes inserted
-	char cmd[BIG_INFO_STRING]; // the original command we received (no token processing)
+	char cmd[BIG_INFO_STRING]; // the original command we received(no token processing)
 } cmdContext_t;
 
 static cmdContext_t cmd;
@@ -529,7 +536,7 @@ void Cmd_Args_Sanitize(void) {
 Cmd_TokenizeString2
 
 Parses the given string into command line tokens. The text is copied to a separate buffer and 0 characters are inserted in the
-appropriate place, The argv array will point into this temporary buffer.
+appropriate place. The argv array will point into this temporary buffer.
 =======================================================================================================================================
 */
 // NOTE TTimo define that to track tokenization issues
@@ -701,7 +708,7 @@ Only add command if there isn't a system cvar with the same name.
 */
 void Cmd_AddCommandSafe(const char *cmd_name, xcommand_t function) {
 
-	if (!(Cvar_Flags(cmd_name) & (CVAR_NONEXISTENT|CVAR_VM_CREATED|CVAR_USER_CREATED))) {
+	if (!(Cvar_Flags(cmd_name)&(CVAR_NONEXISTENT|CVAR_VM_CREATED|CVAR_USER_CREATED))) {
 		Com_Error(ERR_DROP, "Restricted source tried to override system cvar \"%s\" with a command", cmd_name);
 		return;
 	}

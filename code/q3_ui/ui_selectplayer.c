@@ -1,25 +1,31 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2010 - 2011 by Zack Middleton.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)2010-2011 by Zack Middleton
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -60,6 +66,7 @@ typedef struct {
 
 static selectPlayerMenu_t selectPlayerMenu;
 
+
 /*
 =======================================================================================================================================
 UI_SelectPlayerMenu_Event
@@ -71,7 +78,7 @@ static void UI_SelectPlayerMenu_Event(void *ptr, int event) {
 		return;
 	}
 
-	if (((menucommon_s *)ptr)->id >= ID_CUSTOMIZECONTROLS && ((menucommon_s *)ptr)->id < ID_CUSTOMIZECONTROLS + MAX_SPLITVIEW) {
+	if (((menucommon_s *)ptr)->id >= ID_CUSTOMIZECONTROLS && ((menucommon_s *)ptr)->id < ID_CUSTOMIZECONTROLS+MAX_SPLITVIEW) {
 		selectPlayerMenu.playerfunc(((menucommon_s *)ptr)->id - ID_CUSTOMIZECONTROLS);
 		return;
 	}
@@ -123,10 +130,10 @@ static void UI_SelectPlayer_MenuInit(const char *banner) {
 	selectPlayerMenu.framer.width = 256;
 	selectPlayerMenu.framer.height = 334;
 
-	y = (SCREEN_HEIGHT - UI_MaxSplitView() * SETUP_MENU_VERTICAL_SPACING) / 2;
+	y = (SCREEN_HEIGHT - UI_MaxSplitView() *SETUP_MENU_VERTICAL_SPACING) / 2;
 
 	for (i = 0; i < UI_MaxSplitView(); i++) {
-		Com_sprintf(selectPlayerMenu.playerString[i], sizeof(selectPlayerMenu.playerString[i]), "Player %d", i + 1);
+		Com_sprintf(selectPlayerMenu.playerString[i], sizeof(selectPlayerMenu.playerString[i]), "Player %d", i+1);
 
 		selectPlayerMenu.player[i].generic.type = MTYPE_PTEXT;
 		selectPlayerMenu.player[i].generic.flags = QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -137,7 +144,6 @@ static void UI_SelectPlayer_MenuInit(const char *banner) {
 		selectPlayerMenu.player[i].string = selectPlayerMenu.playerString[i];
 		selectPlayerMenu.player[i].color = text_big_color;
 		selectPlayerMenu.player[i].style = UI_CENTER;
-
 		y += SETUP_MENU_VERTICAL_SPACING;
 	}
 
@@ -169,6 +175,7 @@ UI_SelectPlayer_Cache
 =======================================================================================================================================
 */
 void UI_SelectPlayer_Cache(void) {
+
 	trap_R_RegisterShaderNoMip(ART_BACK0);
 	trap_R_RegisterShaderNoMip(ART_BACK1);
 	trap_R_RegisterShaderNoMip(ART_FRAMEL);

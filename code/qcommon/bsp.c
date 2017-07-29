@@ -1,30 +1,37 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
 #include "q_shared.h"
 #include "qcommon.h"
 #include "bsp.h"
+
 #ifdef BSPC
 #include "../bspc/l_qfiles.h"
 #endif
@@ -46,26 +53,24 @@ const int numBspFormats = ARRAY_LEN(bspFormats);
 #define MAX_BSP_FILES 1
 bspFile_t *bsp_loadedFiles[MAX_BSP_FILES] = {0};
 
-/*
-=======================================================================================================================================
-BSP_Load
-=======================================================================================================================================
-*/
+
 bspFile_t *BSP_Load(const char *name) {
 	union {
 		int *i;
+
 		void *v;
 	} buf;
-
 	int i;
 	int length;
 	bspFile_t *bspFile = NULL;
 	int freeSlot = -1;
+
 #ifndef BSPC
 	if (!name || !name[0]) {
 		Com_Error(ERR_DROP, "BSP_Load: NULL name");
 	}
 #endif
+
 	// check if already loaded
 	for (i = 0; i < MAX_BSP_FILES; i++) {
 		if (!bsp_loadedFiles[i]) {
@@ -85,17 +90,22 @@ bspFile_t *BSP_Load(const char *name) {
 	if (freeSlot == -1) {
 		Com_Error(ERR_DROP, "No free slot to load BSP '%s'", name);
 	}
+
 	// load the file
+	//
 #ifndef BSPC
 	length = FS_ReadFile(name, &buf.v);
 #else
 	length = LoadQuakeFile((quakefile_t *)name, &buf.v);
 #endif
+
 	if (!buf.i) {
 		// File not found.
 		return NULL;
 	}
+
 	// check formats
+
 	for (i = 0; i < numBspFormats; i++) {
 		bspFile = bspFormats[i]->loadFunction(bspFormats[i], name, buf.v, length);
 
@@ -108,12 +118,15 @@ bspFile_t *BSP_Load(const char *name) {
 		int ident = LittleLong(buf.i[0]);
 		int version = LittleLong(buf.i[1]);
 
-		Com_Error(ERR_DROP, "Unsupported BSP %s: ident %c%c%c%c, version %d", name, ident & 0xff, (ident >> 8) & 0xff, (ident >> 16) & 0xff, (ident >> 24) & 0xff, version);
+		Com_Error(ERR_DROP, "Unsupported BSP %s: ident %c%c%c%c, version %d",
+				name, ident & 0xff, (ident >> 8)& 0xff, (ident >> 16)& 0xff, (ident >> 24)& 0xff, version);
 	}
 
 	if (bspFile) {
 		Q_strncpyz(bspFile->name, name, sizeof(bspFile->name));
+
 		bspFile->references++;
+
 		bsp_loadedFiles[freeSlot] = bspFile;
 	}
 
@@ -122,11 +135,6 @@ bspFile_t *BSP_Load(const char *name) {
 	return bspFile;
 }
 
-/*
-=======================================================================================================================================
-BSP_FreeInternal
-=======================================================================================================================================
-*/
 static void BSP_FreeInternal(bspFile_t *bsp) {
 	free(bsp->entityString);
 	free(bsp->shaders);
@@ -148,23 +156,16 @@ static void BSP_FreeInternal(bspFile_t *bsp) {
 	free(bsp);
 }
 
-/*
-=======================================================================================================================================
-BSP_Free
-=======================================================================================================================================
-*/
 void BSP_Free(bspFile_t *bspFile) {
 	int i;
 
-	if (!bspFile) {
+	if (!bspFile)
 		return;
-	}
 
 	bspFile->references--;
 
-	if (bspFile->references > 0) {
+	if (bspFile->references > 0)
 		return;
-	}
 
 	for (i = 0; i < MAX_BSP_FILES; i++) {
 		if (bspFile == bsp_loadedFiles[i]) {
@@ -176,11 +177,6 @@ void BSP_Free(bspFile_t *bspFile) {
 	BSP_FreeInternal(bspFile);
 }
 
-/*
-=======================================================================================================================================
-BSP_Shutdown
-=======================================================================================================================================
-*/
 void BSP_Shutdown(void) {
 	int i;
 
@@ -190,33 +186,31 @@ void BSP_Shutdown(void) {
 		}
 
 		BSP_FreeInternal(bsp_loadedFiles[i]);
+
 		bsp_loadedFiles[i] = NULL;
 	}
 }
 
-// Common BSP Loading Utility functions
+/*
+    Common BSP Loading Utility functions
+	*/
 
 /*
    SwapBlock()
    if all values are 32 bits, this can be used to swap everything
- */
-
-/*
-=======================================================================================================================================
-BSP_SwapBlock
-=======================================================================================================================================
-*/
+	*/
 void BSP_SwapBlock(int *dest, const int *src, int size) {
 	int i;
 
-	// dummy check
+	/* dummy check */
 	if (dest == NULL || src == NULL) {
 		return;
 	}
-	// swap
+
+	/* swap */
 	size >>= 2;
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < size; i++)
 		dest[i] = LittleLong(src[i]);
-	}
 }
+

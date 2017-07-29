@@ -754,7 +754,11 @@ typedef enum
 
 	UNIFORM_CUBEMAPINFO,
 
+	UNIFORM_ALPHATEST,
+
 	// new in spearmint
+	UNIFORM_ALPHATESTREF,
+
 	UNIFORM_INTENSITY,
 	UNIFORM_DIFFUSECOLOR,
 	UNIFORM_FOGTYPE,
@@ -765,6 +769,17 @@ typedef enum
 
 	UNIFORM_COUNT
 } uniform_t;
+
+// values for UNIFORM_ALPHATEST. 0-3 match ioquake3's opengl2 renderer.
+enum {
+	U_ATEST_NONE = 0,
+	U_ATEST_EQUAL = 1,
+	U_ATEST_GREATEREQUAL = 2,
+	U_ATEST_LESS = 3,
+	U_ATEST_LESSEQUAL,
+	U_ATEST_NOTEQUAL,
+	U_ATEST_GREATER,
+};
 
 // shaderProgram_t represents a pair of one
 // GLSL vertex and one GLSL fragment shader
@@ -951,7 +966,6 @@ typedef enum {
 	SF_IQM,
 	SF_FLARE,
 	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
-	SF_VAO_MESH,
 	SF_VAO_MDVMESH,
 
 	SF_NUM_SURFACE_TYPES,
@@ -1010,7 +1024,7 @@ typedef struct
 
 #define srfVert_t_cleared(x) srfVert_t (x) = {{0, 0, 0}, {0, 0}, {0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}
 
-// srfBspSurface_t covers SF_GRID, SF_TRIANGLES, SF_POLY, and SF_VAO_MESH
+// srfBspSurface_t covers SF_GRID, SF_TRIANGLES, and SF_POLY
 typedef struct srfBspSurface_s
 {
 	surfaceType_t   surfaceType;
@@ -1032,13 +1046,6 @@ typedef struct srfBspSurface_s
 	// vertexes
 	int             numVerts;
 	srfVert_t      *verts;
-
-	// BSP VBO offsets
-	int             firstVert;
-	int             firstIndex;
-
-	// static render data
-	vao_t          *vao;
 	
 	// SF_GRID specific variables after here
 
@@ -1923,9 +1930,6 @@ extern	cvar_t	*r_lodCurveError;
 extern	cvar_t	*r_skipBackEnd;
 
 extern	cvar_t	*r_anaglyphMode;
-
-extern  cvar_t  *r_mergeMultidraws;
-extern  cvar_t  *r_mergeLeafSurfaces;
 
 extern  cvar_t  *r_externalGLSL;
 

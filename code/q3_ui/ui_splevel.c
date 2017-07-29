@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -208,6 +214,7 @@ static void UI_SPLevelMenu_SetBots(void) {
 		}
 
 		Q_CleanStr(levelMenuInfo.botNames[levelMenuInfo.numBots]);
+
 		levelMenuInfo.numBots++;
 	}
 }
@@ -416,7 +423,6 @@ static void UI_SPLevelMenu_LevelEvent(void *ptr, int notification) {
 	levelMenuInfo.selectedArenaInfo = UI_GetArenaInfoByNumber(selectedArenaSet * ARENAS_PER_TIER + selectedArena);
 
 	UI_SPLevelMenu_SetBots();
-
 	trap_Cvar_SetValue("ui_spSelection", selectedArenaSet * ARENAS_PER_TIER + selectedArena);
 }
 
@@ -544,13 +550,12 @@ static void UI_SPLevelMenu_CustomEvent(void *ptr, int notification) {
 	UI_StartServerMenu(qfalse);
 }
 
+#define LEVEL_DESC_LEFT_MARGIN 332
 /*
 =======================================================================================================================================
 UI_SPLevelMenu_MenuDraw
 =======================================================================================================================================
 */
-#define LEVEL_DESC_LEFT_MARGIN 332
-
 static void UI_SPLevelMenu_MenuDraw(void) {
 	int n, i;
 	int x, y;
@@ -626,6 +631,7 @@ static void UI_SPLevelMenu_MenuDraw(void) {
 	}
 	// show levelshots for levels of current tier
 	Vector4Copy(color_white, color);
+
 	color[3] = 0.5 + 0.5 * sin(uis.realtime / PULSE_DIVISOR);
 
 	for (n = 0; n < levelMenuInfo.numMaps; n++) {

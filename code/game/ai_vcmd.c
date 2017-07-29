@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -102,12 +108,11 @@ BotVoiceChat_Offense
 =======================================================================================================================================
 */
 void BotVoiceChat_Offense(bot_state_t *bs, int playernum, int mode) {
-
 	if (gametype == GT_CTF
 #ifdef MISSIONPACK
 		|| gametype == GT_1FCTF
 #endif
-	) {
+		) {
 		BotVoiceChat_GetFlag(bs, playernum, mode);
 		return;
 	}
@@ -173,7 +178,7 @@ void BotVoiceChat_Defend(bot_state_t *bs, int playernum, int mode) {
 #ifdef MISSIONPACK
 			|| gametype == GT_1FCTF
 #endif
-		) {
+			) {
 		switch (BotTeam(bs)) {
 			case TEAM_RED:
 				memcpy(&bs->teamgoal, &ctf_redflag, sizeof(bot_goal_t));
@@ -228,9 +233,7 @@ void BotVoiceChat_Patrol(bot_state_t *bs, int playernum, int mode) {
 	bs->lastgoal_ltgtype = 0;
 
 	BotAI_BotInitialChat(bs, "dismissed", NULL);
-
 	BotEnterChat(bs->cs, playernum, CHAT_TELL);
-
 	BotVoiceChatOnly(bs, -1, VOICECHAT_ONPATROL);
 	BotSetTeamStatus(bs);
 	BotPrintTeamGoal(bs);
@@ -255,9 +258,10 @@ void BotVoiceChat_Camp(bot_state_t *bs, int playernum, int mode) {
 
 		if (areanum) { // && trap_AAS_AreaReachability(areanum)) {
 			// NOTE: just assume the bot knows where the person is
-			//if (BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, playernum)) {
+			//if(BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, playernum)) {
 				bs->teamgoal.entitynum = playernum;
 				bs->teamgoal.areanum = areanum;
+
 				VectorCopy(entinfo.origin, bs->teamgoal.origin);
 				VectorSet(bs->teamgoal.mins, -8, -8, -8);
 				VectorSet(bs->teamgoal.maxs, 8, 8, 8);
@@ -374,7 +378,7 @@ void BotVoiceChat_ReturnFlag(bot_state_t *bs, int playernum, int mode) {
 #ifdef MISSIONPACK
 		&& gametype != GT_1FCTF
 #endif
-	) {
+		) {
 		return;
 	}
 
@@ -451,7 +455,6 @@ void BotVoiceChat_WantOnDefense(bot_state_t *bs, int playernum, int mode) {
 	preference |= TEAMTP_DEFENDER;
 
 	BotSetTeamMateTaskPreference(bs, playernum, preference);
-
 	EasyPlayerName(playernum, netname, sizeof(netname));
 	BotAI_BotInitialChat(bs, "keepinmind", netname, NULL);
 	BotEnterChat(bs->cs, playernum, CHAT_TELL);
@@ -473,7 +476,6 @@ void BotVoiceChat_WantOnOffense(bot_state_t *bs, int playernum, int mode) {
 	preference |= TEAMTP_ATTACKER;
 
 	BotSetTeamMateTaskPreference(bs, playernum, preference);
-
 	EasyPlayerName(playernum, netname, sizeof(netname));
 	BotAI_BotInitialChat(bs, "keepinmind", netname, NULL);
 	BotEnterChat(bs->cs, playernum, CHAT_TELL);
@@ -487,6 +489,7 @@ BotVoiceChat_Dummy
 =======================================================================================================================================
 */
 void BotVoiceChat_Dummy(bot_state_t *bs, int playernum, int mode) {
+
 }
 
 voiceCommand_t voiceCommands[] = {
@@ -526,6 +529,7 @@ int BotVoiceChatCommand(bot_state_t *bs, int mode, char *voiceChat) {
 	}
 
 	Q_strncpyz(buf, voiceChat, sizeof(buf));
+
 	cmd = buf;
 
 	for (; *cmd && *cmd > ' '; cmd++);
@@ -533,7 +537,7 @@ int BotVoiceChatCommand(bot_state_t *bs, int mode, char *voiceChat) {
 	while (*cmd && *cmd <= ' ') {
 		*cmd++ = '\0';
 	}
-	//voiceOnly = atoi(ptr);
+	// voiceOnly = atoi(ptr);
 	for (ptr = cmd; *cmd && *cmd > ' '; cmd++);
 
 	while (*cmd && *cmd <= ' ') {
@@ -547,7 +551,7 @@ int BotVoiceChatCommand(bot_state_t *bs, int mode, char *voiceChat) {
 	while (*cmd && *cmd <= ' ') {
 		*cmd++ = '\0';
 	}
-	//color = atoi(ptr);
+	// color = atoi(ptr);
 	if (!BotSameTeam(bs, playerNum)) {
 		return qfalse;
 	}

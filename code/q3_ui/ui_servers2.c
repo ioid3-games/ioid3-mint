@@ -1,25 +1,31 @@
 /*
-=======================================================================================================================================
+===========================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, 
+or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-=======================================================================================================================================
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
+Suite 120, Rockville, Maryland 20850 USA.
+===========================================================================
 */
 
 /*
@@ -80,14 +86,15 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define GR_LETTERS	31
 
 #define UIAS_LOCAL		0
-#define UIAS_GLOBAL1	1
-#define UIAS_GLOBAL2	2
-#define UIAS_GLOBAL3	3
-#define UIAS_GLOBAL4	4
-#define UIAS_GLOBAL5	5
-#define UIAS_FAVORITES	6
+#define UIAS_GLOBAL0	1
+#define UIAS_GLOBAL1	2
+#define UIAS_GLOBAL2	3
+#define UIAS_GLOBAL3	4
+#define UIAS_GLOBAL4	5
+#define UIAS_GLOBAL5	6
+#define UIAS_FAVORITES	7
 
-#define UI_MAX_MASTER_SERVERS 5
+#define UI_MAX_MASTER_SERVERS 6
 
 #define SORT_HOST		0
 #define SORT_MAP		1
@@ -105,45 +112,45 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define GAMES_OBELISK	6
 #define GAMES_HARVESTER	7
 #endif // MISSIONPACK
-
 static const char *master_items[] = {
-	"Local",
-	"Internet1",
-	"Internet2",
-	"Internet3",
-	"Internet4",
-	"Internet5",
-	"Favorites",
+	"Local", 
+	"Internet", 
+	"Master1", 
+	"Master2", 
+	"Master3", 
+	"Master4", 
+	"Master5", 
+	"Favorites", 
 	NULL
 };
 
 static const char *servertype_items[] = {
-	"All",
-	"Free For All",
-	"Team Deathmatch",
-	"Tournament",
-	"Capture the Flag",
+	"All", 
+	"Free For All", 
+	"Team Deathmatch", 
+	"Tournament", 
+	"Capture the Flag", 
 #ifdef MISSIONPACK
-	"1 Flag CTF",
-	"Overload",
-	"Harvester",
+	"1 Flag CTF", 
+	"Overload", 
+	"Harvester", 
 #endif // MISSIONPACK
 	NULL
 };
 
 static const char *sortkey_items[] = {
-	"Server Name",
-	"Map Name",
-	"Open Player Spots",
-	"Game Type",
-	"Ping Time",
+	"Server Name", 
+	"Map Name", 
+	"Open Player Spots", 
+	"Game Type", 
+	"Ping Time", 
 	NULL
 };
 
 static char *netnames[] = {
-	"???",
-	"UDP",
-	"UDP6",
+	"???", 
+	"UDP", 
+	"UDP6", 
 	NULL
 };
 
@@ -169,7 +176,7 @@ typedef struct servernode_s {
 } servernode_t;
 
 typedef struct {
-	char buff[2]; // List box key handler selects item based on buff[0].
+	char buff[2]; // list box key handler selects item based on buff[0].
 	servernode_t *servernode;
 	int displayclients;
 	const char *pingColor;
@@ -314,6 +321,7 @@ int ArenaServers_SourceForLAN(void) {
 		default:
 		case UIAS_LOCAL:
 			return AS_LOCAL;
+		case UIAS_GLOBAL0:
 		case UIAS_GLOBAL1:
 		case UIAS_GLOBAL2:
 		case UIAS_GLOBAL3:
@@ -432,7 +440,6 @@ static void ArenaServers_UpdateMenu(void) {
 			qsort(g_arenaservers.serverlist, *g_arenaservers.numservers, sizeof(servernode_t), ArenaServers_Compare);
 		} else {
 			// all servers pinged - enable controls
-			g_arenaservers.master.generic.flags &= ~QMF_GRAYED;
 			g_arenaservers.gametype.generic.flags &= ~QMF_GRAYED;
 			g_arenaservers.sortkey.generic.flags &= ~QMF_GRAYED;
 			g_arenaservers.showempty.generic.flags &= ~QMF_GRAYED;
@@ -442,7 +449,7 @@ static void ArenaServers_UpdateMenu(void) {
 			g_arenaservers.refresh.generic.flags &= ~QMF_GRAYED;
 			g_arenaservers.go.generic.flags &= ~QMF_GRAYED;
 			// update status bar
-			if (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) {
+			if (g_servertype >= UIAS_GLOBAL0 && g_servertype <= UIAS_GLOBAL5) {
 				g_arenaservers.statusbar.string = communityMessage;
 			} else {
 				g_arenaservers.statusbar.string = "";
@@ -454,7 +461,6 @@ static void ArenaServers_UpdateMenu(void) {
 			strcpy(g_arenaservers.status.string, "Scanning For Servers.");
 			g_arenaservers.statusbar.string = "Press SPACE to stop";
 			// disable controls during refresh
-			g_arenaservers.master.generic.flags |= QMF_GRAYED;
 			g_arenaservers.gametype.generic.flags |= QMF_GRAYED;
 			g_arenaservers.sortkey.generic.flags |= QMF_GRAYED;
 			g_arenaservers.showempty.generic.flags |= QMF_GRAYED;
@@ -470,7 +476,7 @@ static void ArenaServers_UpdateMenu(void) {
 				strcpy(g_arenaservers.status.string, "No Servers Found.");
 			}
 			// update status bar
-			if (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) {
+			if (g_servertype >= UIAS_GLOBAL0 && g_servertype <= UIAS_GLOBAL5) {
 				g_arenaservers.statusbar.string = communityMessage;
 			} else {
 				g_arenaservers.statusbar.string = "";
@@ -639,7 +645,6 @@ static void ArenaServers_Insert(char *adrstr, char *info, int pingtime) {
 	servernodeptr->maxPing = atoi(Info_ValueForKey(info, "maxPing"));
 	/*
 	s = Info_ValueForKey(info, "nettype");
-
 	for (i = 0;; i++) {
 		if (!netnames[i]) {
 			servernodeptr->nettype = 0;
@@ -658,37 +663,6 @@ static void ArenaServers_Insert(char *adrstr, char *info, int pingtime) {
 
 	Q_strncpyz(servernodeptr->gametypeName, Info_ValueForKey(info, "gametype"), sizeof(servernodeptr->gametypeName));
 	Q_CleanStr(servernodeptr->gametypeName);
-}
-
-/*
-=======================================================================================================================================
-ArenaServers_InsertFavorites
-
-Insert nonresponsive address book entries into display lists.
-=======================================================================================================================================
-*/
-void ArenaServers_InsertFavorites(void) {
-	int i;
-	int j;
-	char info[MAX_INFO_STRING];
-
-	// resync existing results with new or deleted cvars
-	info[0] = '\0';
-	Info_SetValueForKey(info, "hostname", "No Response");
-
-	for (i = 0; i < g_arenaservers.numfavoriteaddresses; i++) {
-		// find favorite address in refresh list
-		for (j = 0; j < g_numfavoriteservers; j++) {
-			if (!Q_stricmp(g_arenaservers.favoriteaddresses[i], g_favoriteserverlist[j].adrstr)) {
-				break;
-			}
-		}
-
-		if (j >= g_numfavoriteservers) {
-			// not in list, add it
-			ArenaServers_Insert(g_arenaservers.favoriteaddresses[i], info, ArenaServers_MaxPing());
-		}
-	}
 }
 
 /*
@@ -769,11 +743,6 @@ static void ArenaServers_StopRefresh(void) {
 	}
 
 	g_arenaservers.refreshservers = qfalse;
-
-	if (g_servertype == UIAS_FAVORITES) {
-		// nonresponsive favorites must be shown
-		ArenaServers_InsertFavorites();
-	}
 	// final tally
 	if (g_arenaservers.numqueriedservers >= 0) {
 		g_arenaservers.currentping = *g_arenaservers.numservers;
@@ -810,6 +779,13 @@ static void ArenaServers_DoRefresh(void) {
 				// still waiting for response
 				return;
 			}
+		}
+	} else if (g_servertype == UIAS_LOCAL) {
+		if (!trap_LAN_GetServerCount(AS_LOCAL)) {
+			// no local servers found, check again
+			trap_Cmd_ExecuteText(EXEC_APPEND, "localservers\n");
+			g_arenaservers.refreshtime = uis.realtime + 5000;
+			return;
 		}
 	}
 
@@ -851,6 +827,11 @@ static void ArenaServers_DoRefresh(void) {
 				// stale it out
 				info[0] = '\0';
 				time = maxPing;
+				// set hostname for nonresponsive favorite server
+				if (g_servertype == UIAS_FAVORITES) {
+					Info_SetValueForKey(info, "hostname", adrstr);
+					Info_SetValueForKey(info, "game", "???");
+				}
 			} else {
 				trap_LAN_GetPingInfo(i, info, MAX_INFO_STRING);
 			}
@@ -947,11 +928,11 @@ static void ArenaServers_StartRefresh(void) {
 		return;
 	}
 
-	if (g_servertype >= UIAS_GLOBAL1 && g_servertype <= UIAS_GLOBAL5) {
+	if (g_servertype >= UIAS_GLOBAL0 && g_servertype <= UIAS_GLOBAL5) {
 		gametype = ArenaServers_GametypeForGames(g_arenaservers.gametype.curvalue);
 		// add requested gametype to args for dpmaster protocol
 		if (gametype != -1) {
-			Com_sprintf(myargs, sizeof(myargs), " gametype = %s", bg_netGametypeNames[gametype]);
+			Com_sprintf(myargs, sizeof (myargs), " gametype=%s", bg_netGametypeNames[gametype]);
 		} else {
 			myargs[0] = '\0';
 		}
@@ -968,9 +949,9 @@ static void ArenaServers_StartRefresh(void) {
 		trap_Cvar_VariableStringBuffer("debug_protocol", protocol, sizeof(protocol));
 
 		if (strlen(protocol)) {
-			trap_Cmd_ExecuteText(EXEC_APPEND, va("globalservers %d %s%s\n", g_servertype - UIAS_GLOBAL1, protocol, myargs));
+			trap_Cmd_ExecuteText(EXEC_APPEND, va("globalservers %d %s%s\n", g_servertype - UIAS_GLOBAL0, protocol, myargs));
 		} else {
-			trap_Cmd_ExecuteText(EXEC_APPEND, va("globalservers %d %d%s\n", g_servertype - UIAS_GLOBAL1, (int)trap_Cvar_VariableValue("protocol"), myargs));
+			trap_Cmd_ExecuteText(EXEC_APPEND, va("globalservers %d %d%s\n", g_servertype - UIAS_GLOBAL0, (int)trap_Cvar_VariableValue("protocol"), myargs));
 		}
 	}
 }
@@ -1014,11 +995,13 @@ ArenaServers_SetType
 */
 int ArenaServers_SetType(int type) {
 
+	ArenaServers_StopRefresh();
+
 	if (type >= UIAS_GLOBAL1 && type <= UIAS_GLOBAL5) {
 		char masterstr[2], cvarname[sizeof("sv_master1")];
 
 		while (type <= UIAS_GLOBAL5) {
-			Com_sprintf(cvarname, sizeof(cvarname), "sv_master%d", type);
+			Com_sprintf(cvarname, sizeof(cvarname), "sv_master%d", type - UIAS_GLOBAL0);
 			trap_Cvar_VariableStringBuffer(cvarname, masterstr, sizeof(masterstr));
 
 			if (*masterstr) {
@@ -1039,14 +1022,15 @@ int ArenaServers_SetType(int type) {
 			g_arenaservers.numservers = &g_numlocalservers;
 			g_arenaservers.maxservers = MAX_LOCALSERVERS;
 			break;
+		case UIAS_GLOBAL0:
 		case UIAS_GLOBAL1:
 		case UIAS_GLOBAL2:
 		case UIAS_GLOBAL3:
 		case UIAS_GLOBAL4:
 		case UIAS_GLOBAL5:
 			g_arenaservers.remove.generic.flags |= (QMF_INACTIVE|QMF_HIDDEN);
-			g_arenaservers.serverlist = g_globalserverlist[type - UIAS_GLOBAL1];
-			g_arenaservers.numservers = &g_numglobalservers[type - UIAS_GLOBAL1];
+			g_arenaservers.serverlist = g_globalserverlist[type - UIAS_GLOBAL0];
+			g_arenaservers.numservers = &g_numglobalservers[type - UIAS_GLOBAL0];
 			g_arenaservers.maxservers = MAX_GLOBALSERVERS;
 			break;
 		case UIAS_FAVORITES:
@@ -1063,6 +1047,7 @@ int ArenaServers_SetType(int type) {
 		// avoid slow operation, use existing results
 		g_arenaservers.currentping = *g_arenaservers.numservers;
 		g_arenaservers.numqueriedservers = *g_arenaservers.numservers;
+
 		ArenaServers_UpdateMenu();
 		strcpy(g_arenaservers.status.string, "hit refresh to update");
 	}
@@ -1310,7 +1295,7 @@ static void ArenaServers_MenuInit(void) {
 	static char statusbuffer[MAX_STATUSLENGTH];
 
 	// zero set all our globals
-	memset(&g_arenaservers, 0, sizeof(arenaservers_t));
+	memset(&g_arenaservers, 0 , sizeof(arenaservers_t));
 
 	ArenaServers_Cache();
 
@@ -1539,7 +1524,7 @@ static void ArenaServers_MenuInit(void) {
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.refresh);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.create);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.go);
-
+	
 	ArenaServers_LoadFavorites();
 
 	g_arenaservers.master.curvalue = g_servertype = Com_Clamp(0, 6, ui_browserMaster.integer);

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -37,7 +43,6 @@ IN_VoipRecordDown
 =======================================================================================================================================
 */
 void IN_VoipRecordDown(void) {
-
 	Cvar_Set("cl_voipSend", "1");
 }
 
@@ -47,7 +52,6 @@ IN_VoipRecordUp
 =======================================================================================================================================
 */
 void IN_VoipRecordUp(void) {
-
 	Cvar_Set("cl_voipSend", "0");
 }
 #endif
@@ -108,12 +112,13 @@ void CL_MouseEvent(int localPlayerNum, int dx, int dy, int time) {
 
 	plr = &cl.localPlayers[localPlayerNum];
 
-	if (Mouse_GetState(localPlayerNum) & MOUSE_CLIENT) {
+	if (Mouse_GetState(localPlayerNum)& MOUSE_CLIENT) {
 		plr->mouseDx[plr->mouseIndex] += dx;
+
 		plr->mouseDy[plr->mouseIndex] += dy;
 	}
 
-	if (Mouse_GetState(localPlayerNum) & MOUSE_CGAME) {
+	if (Mouse_GetState(localPlayerNum)& MOUSE_CGAME) {
 		VM_Call(cgvm, CG_MOUSE_EVENT, localPlayerNum, dx, dy);
 	}
 }
@@ -195,6 +200,7 @@ CL_FinishMove
 =======================================================================================================================================
 */
 void CL_FinishMove(usercmd_t *cmd) {
+
 	// send the current server time so the amount of movement can be determined without allowing cheating
 	cmd->serverTime = cl.serverTime;
 }
@@ -214,7 +220,6 @@ usercmd_t CL_CreateCmd(int localPlayerNum) {
 	if (cgvm) {
 		// get basic movement from mouse
 		CL_MouseMove(localPlayerNum, &mx, &my);
-
 		vmCmd = VM_ExplicitArgPtr(cgvm, VM_Call(cgvm, CG_CREATE_USER_CMD, localPlayerNum, com_frameTime, frame_msec, FloatAsInt(mx), FloatAsInt(my), anykeydown));
 
 		if (vmCmd) {
@@ -285,7 +290,7 @@ qboolean CL_ReadyToSendPacket(void) {
 	if (clc.demoplaying || clc.state == CA_CINEMATIC) {
 		return qfalse;
 	}
-	// If we are downloading, we send no less than 50ms between packets
+	// if we are downloading, we send no less than 50ms between packets
 	if (*clc.downloadTempName && cls.realtime - clc.lastPacketSentTime < 50) {
 		return qfalse;
 	}
@@ -302,8 +307,8 @@ qboolean CL_ReadyToSendPacket(void) {
 		return qtrue;
 	}
 	// check for exceeding cl_maxpackets
-	oldPacketNum = (clc.netchan.outgoingSequence - 1) & PACKET_MASK;
-	delta = cls.realtime - cl.outPackets[oldPacketNum].p_realtime;
+	oldPacketNum = (clc.netchan.outgoingSequence - 1)& PACKET_MASK;
+	delta = cls.realtime -  cl.outPackets[oldPacketNum].p_realtime;
 
 	if (delta < 1000 / cl_maxpackets->integer) {
 		// the accumulated commands will go out in the next packet
@@ -330,8 +335,10 @@ During normal gameplay, a client packet will contain something like:
 
 	<optional reliable commands>
  1	clc_move or clc_moveNoDelta
+ 1	local player bits
  1	command count
-	<count * usercmds>
+	<local players * count * usercmds>
+
 =======================================================================================================================================
 */
 void CL_WritePacket(void) {
@@ -344,6 +351,7 @@ void CL_WritePacket(void) {
 	int oldPacketNum;
 	int count, key;
 	int lc, localPlayerBits;
+
 	// don't send anything if playing back a demo
 	if (clc.demoplaying || clc.state == CA_CINEMATIC) {
 		return;
@@ -397,7 +405,7 @@ void CL_WritePacket(void) {
 			MSG_WriteByte(&buf, clc.voipFlags);
 			MSG_WriteShort(&buf, clc.voipOutgoingDataSize);
 			MSG_WriteData(&buf, clc.voipOutgoingData, clc.voipOutgoingDataSize);
-			// If we're recording a demo, we have to fake a server packet with this VoIP data so it gets to disk; the server doesn't send it
+			// if we're recording a demo, we have to fake a server packet with this VoIP data so it gets to disk; the server doesn't send it
 			// back to us, and we might as well eliminate concerns about dropped and misordered packets here.
 			if (clc.demorecording && !clc.demowaiting) {
 				const int voipSize = clc.voipOutgoingDataSize;
@@ -424,7 +432,7 @@ void CL_WritePacket(void) {
 			clc.voipOutgoingDataSize = 0;
 			clc.voipOutgoingDataFrames = 0;
 		} else {
-			// We have data, but no targets. Silently discard all data
+			// we have data, but no targets. Silently discard all data
 			clc.voipOutgoingDataSize = 0;
 			clc.voipOutgoingDataFrames = 0;
 		}
@@ -448,7 +456,7 @@ void CL_WritePacket(void) {
 				continue;
 			}
 
-			localPlayerBits |= (1 << lc);
+			localPlayerBits |= (1<<lc);
 		}
 		// write the local player bits
 		MSG_WriteByte(&buf, localPlayerBits);
@@ -457,26 +465,30 @@ void CL_WritePacket(void) {
 		// use the message acknowledge in the key
 		key = clc.serverMessageSequence;
 		// also use the last acknowledged server command in the key
-		key ^= MSG_HashKey(clc.serverCommands[clc.serverCommandSequence & (MAX_RELIABLE_COMMANDS - 1)], 32);
+		key ^= MSG_HashKey(clc.serverCommands[clc.serverCommandSequence &(MAX_RELIABLE_COMMANDS-1)], 32);
 
 		for (lc = 0; lc < MAX_SPLITVIEW; lc++) {
-			if (!(localPlayerBits & (1 << lc))) {
+			if (!(localPlayerBits &(1<<lc))) {
 				continue;
 			}
 
 			Com_Memset(&nullcmd, 0, sizeof(nullcmd));
+
 			oldcmd = &nullcmd;
 			// write all the commands, including the predicted command
 			for (i = 0; i < count; i++) {
-				j = (cl.cmdNumber - count + i + 1) & CMD_MASK;
+				j = (cl.cmdNumber - count + i + 1)& CMD_MASK;
 				cmd = &cl.cmdss[lc][j];
+
 				MSG_WriteDeltaUsercmdKey(&buf, key, oldcmd, cmd);
+
 				oldcmd = cmd;
 			}
 		}
 	}
 	// deliver the message
 	packetNum = clc.netchan.outgoingSequence & PACKET_MASK;
+
 	cl.outPackets[packetNum].p_realtime = cls.realtime;
 	cl.outPackets[packetNum].p_serverTime = oldcmd->serverTime;
 	cl.outPackets[packetNum].p_cmdNumber = cl.cmdNumber;
@@ -508,7 +520,7 @@ void CL_SendCmd(void) {
 	}
 	// we create commands even if a demo is playing,
 	CL_CreateNewCommands();
-
+	// don't send a packet if the last packet was sent too recently
 	if (!CL_ReadyToSendPacket()) {
 		if (cl_showSend->integer) {
 			Com_Printf(". ");
@@ -526,7 +538,6 @@ CL_InitInput
 =======================================================================================================================================
 */
 void CL_InitInput(void) {
-
 #ifdef USE_VOIP
 	Cmd_AddCommand("+voiprecord", IN_VoipRecordDown);
 	Cmd_AddCommand("-voiprecord", IN_VoipRecordUp);

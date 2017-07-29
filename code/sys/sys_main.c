@@ -1,25 +1,31 @@
 /*
-=======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+===========================================================================
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code. If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License. If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-=======================================================================================================================================
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
+===========================================================================
 */
 
 #ifdef WIN32 // ZTM: for numlock state
@@ -161,9 +167,9 @@ Sys_GetCapsLockMode
 qboolean Sys_GetCapsLockMode(void) {
 #ifdef WIN32
 	// ZTM: TODO: SDL does not track Windows num/caps lock state. Remove this after it's fixed by a major SDL version? (i.e., SDL 2.1)
-	return (GetKeyState(VK_CAPITAL) & 0x0001) ? qtrue : qfalse;
+	return(GetKeyState(VK_CAPITAL)& 0x0001)? qtrue : qfalse;
 #else
-	return (SDL_GetModState() & KMOD_CAPS) ? qtrue : qfalse;
+	return(SDL_GetModState()& KMOD_CAPS)? qtrue : qfalse;
 #endif
 }
 
@@ -175,13 +181,12 @@ Sys_GetNumLockMode
 qboolean Sys_GetNumLockMode(void) {
 #ifdef WIN32
 	// ZTM: TODO: SDL does not track Windows num/caps lock state. Remove this after it's fixed by a major SDL version? (i.e., SDL 2.1)
-	return (GetKeyState(VK_NUMLOCK) & 0x0001) ? qtrue : qfalse;
+	return(GetKeyState(VK_NUMLOCK)& 0x0001)? qtrue : qfalse;
 #else
-	return (SDL_GetModState() & KMOD_NUM) ? qtrue : qfalse;
+	return(SDL_GetModState()& KMOD_NUM)? qtrue : qfalse;
 #endif
 }
 #endif
-
 #ifdef DEDICATED
 #define PID_FILENAME "server.pid"
 #else
@@ -275,9 +280,7 @@ void Sys_InitPIDFile(const char *gamedir) {
 #ifndef DEDICATED
 		char message[1024];
 
-		Com_sprintf(message, sizeof(message), "The last time %s ran, "
-			"it didn't exit properly. This may be due to inappropriate video "
-			"settings. Would you like to start with \"safe\" video settings?", com_productName->string);
+		Com_sprintf(message, sizeof(message), "The last time %s ran, it didn't exit properly. This may be due to inappropriate video settings. Would you like to start with \"safe\" video settings?", com_productName->string);
 
 		if (Sys_Dialog(DT_YES_NO, message, "Abnormal Exit") == DR_YES) {
 			Cvar_Set("com_abnormalExit", "1");
@@ -431,6 +434,7 @@ Sys_Print
 =======================================================================================================================================
 */
 void Sys_Print(const char *msg) {
+
 	CON_LogWrite(msg);
 	CON_Print(msg);
 }
@@ -519,7 +523,7 @@ void *Sys_LoadDll(const char *name, qboolean useSystemLib) {
 		Com_Printf("Trying to load \"%s\"...\n", name);
 		dllhandle = Sys_LoadLibrary(name);
 	}
-	
+
 	if (!dllhandle) {
 		const char *topDir;
 		char libPath[MAX_OSPATH];
@@ -542,11 +546,11 @@ void *Sys_LoadDll(const char *name, qboolean useSystemLib) {
 
 		if (!dllhandle) {
 			const char *basePath = Cvar_VariableString("fs_basepath");
-			
+
 			if (!basePath || !*basePath) {
 				basePath = ".";
 			}
-			
+
 			if (FS_FilenameCompare(topDir, basePath)) {
 				len = Com_sprintf(libPath, sizeof(libPath), "%s%c%s", basePath, PATH_SEP, name);
 
@@ -617,7 +621,7 @@ void Sys_ParseArgs(int argc, char **argv) {
 
 	if (argc == 2) {
 		if (!strcmp(argv[1], "--version") || !strcmp(argv[1], "-v")) {
-			const char* date = PRODUCT_DATE;
+			const char *date = PRODUCT_DATE;
 #ifdef DEDICATED
 			fprintf(stdout, Q3_VERSION " dedicated server (%s)\n", date);
 #else
@@ -722,26 +726,23 @@ int main(int argc, char **argv) {
 		Q_strcat(commandLine, sizeof(commandLine), " ");
 	}
 
-	Com_Init(commandLine);
-
-	NET_Init();
-
 	CON_Init();
+	Com_Init(commandLine);
+	NET_Init();
 
 	signal(SIGILL, Sys_SigHandler);
 	signal(SIGFPE, Sys_SigHandler);
 	signal(SIGSEGV, Sys_SigHandler);
 	signal(SIGTERM, Sys_SigHandler);
 	signal(SIGINT, Sys_SigHandler);
-#if !defined DEDICATED && !defined MACOS_X && !defined WIN32
-	// HACK: Before SDL 2.0.4, Linux(X11) did not set numlock or capslock state
-	//       so I made the engine always assumed num lock was on.
+#if !defined DEDICATED && !defined __APPLE__ && !defined WIN32
+	// HACK: Before SDL 2.0.4, Linux(X11)did not set numlock or capslock state so I made the engine always assumed num lock was on.
 	// NOTE: The SDL mod state on X11 is not set at this point even when it's fixed
-	//       and will be corrected regardless of what is done here, //       but limit to SDL 2.0.3 and earlier so that the message isn't shown.
+	// and will be corrected regardless of what is done here, but limit to SDL 2.0.3 and earlier so that the message isn't shown.
 	if (SDL_VERSIONNUM(ver.major, ver.minor, ver.patch) < SDL_VERSIONNUM(2, 0, 4)) {
-		if (!(SDL_GetModState() & KMOD_NUM)) {
-			Com_Printf("INFO: Forcing NUMLOCK modifier state to enabled(actual state unknown)!\n");
-			SDL_SetModState(SDL_GetModState()|KMOD_NUM);
+		if (!(SDL_GetModState()& KMOD_NUM)) {
+			Com_Printf("INFO: Forcing NUMLOCK modifier state to enabled(actual state unknown) !\n");
+			SDL_SetModState(SDL_GetModState()| KMOD_NUM);
 		}
 	}
 #endif

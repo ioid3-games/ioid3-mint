@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -44,6 +50,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "inv.h" // indexes into the inventory
 #include "syn.h" // synonyms
 #include "match.h" // string matching types and vars
+
 #ifndef MAX_PATH
 #define MAX_PATH 144
 #endif
@@ -98,7 +105,6 @@ void QDECL BotAI_Print(int type, char *fmt, ...) {
 
 			break;
 		}
-
 		case PRT_MESSAGE: {
 			G_Printf("%s", str);
 			break;
@@ -290,7 +296,7 @@ void BotReportStatus(bot_state_t *bs) {
 	char action[MAX_MESSAGE_SIZE];
 	char node[MAX_MESSAGE_SIZE];
 
-	trap_GetConfigstring(CS_BOTINFO + bs->playernum, buf, sizeof(buf));
+	trap_GetConfigstring(CS_BOTINFO+bs->playernum, buf, sizeof(buf));
 
 	if (!*buf) {
 		return;
@@ -302,7 +308,8 @@ void BotReportStatus(bot_state_t *bs) {
 	Q_strncpyz(carrying, Info_ValueForKey(buf, "c"), sizeof(carrying));
 	Q_strncpyz(action, Info_ValueForKey(buf, "a"), sizeof(action));
 	Q_strncpyz(node, Info_ValueForKey(buf, "n"), sizeof(node));
-	BotAI_Print(PRT_MESSAGE, "%-20s%-1s%-2s: %s (%s)\n", netname, leader, carrying, action, node);
+
+	BotAI_Print(PRT_MESSAGE, "%-20s%-1s%-2s: %s(%s)\n", netname, leader, carrying, action, node);
 }
 
 /*
@@ -319,7 +326,7 @@ void Svcmd_BotTeamplayReport_f(void) {
 	}
 
 	if (gametype >= GT_TEAM) {
-		BotAI_Print(PRT_MESSAGE, S_COLOR_RED "RED\n");
+		BotAI_Print(PRT_MESSAGE, S_COLOR_RED"RED\n");
 
 		for (i = 0; i < level.maxplayers; i++) {
 			if (!botstates[i] || !botstates[i]->inuse) {
@@ -331,7 +338,7 @@ void Svcmd_BotTeamplayReport_f(void) {
 			}
 		}
 
-		BotAI_Print(PRT_MESSAGE, S_COLOR_BLUE "BLUE\n");
+		BotAI_Print(PRT_MESSAGE, S_COLOR_BLUE"BLUE\n");
 
 		for (i = 0; i < level.maxplayers; i++) {
 			if (!botstates[i] || !botstates[i]->inuse) {
@@ -472,6 +479,7 @@ void BotSetInfoConfigString(bot_state_t *bs) {
 	}
 
 	cs = va("l\\%s\\c\\%s\\a\\%s\\n\\%s", leader, carrying, action, bs->ainodename);
+
 	trap_SetConfigstring(CS_BOTINFO + bs->playernum, cs);
 }
 
@@ -496,7 +504,7 @@ void BotUpdateInfoConfigStrings(void) {
 			continue;
 		}
 
-		trap_GetConfigstring(CS_PLAYERS + i, buf, sizeof(buf));
+		trap_GetConfigstring(CS_PLAYERS+i, buf, sizeof(buf));
 		// if no config string or no name
 		if (!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) {
 			continue;
@@ -884,7 +892,9 @@ void BotChangeViewAngles(bot_state_t *bs, float thinktime) {
 		//BotAI_Print(PRT_MESSAGE, "ideal_angles %f %f\n", bs->ideal_viewangles[0], bs->ideal_viewangles[1], bs->ideal_viewangles[2]);
 		//bs->viewangles[i] = bs->ideal_viewangles[i];
 	}
+
 	//bs->viewangles[PITCH] = 0;
+
 	if (bs->viewangles[PITCH] > 180) {
 		bs->viewangles[PITCH] -= 360;
 	}
@@ -1368,7 +1378,7 @@ int BotAISetupPlayer(int playernum, struct bot_settings_s *settings, qboolean re
 	if (bot_testichat.integer) {
 		BotChatTest(bs);
 	}
-	// NOTE: reschedule the bot thinking
+	// OTE: reschedule the bot thinking
 	BotScheduleBotThink();
 	// if interbreeding start with a mutation
 	if (bot_interbreed) {
@@ -1416,7 +1426,6 @@ int BotAIShutdownPlayer(int playernum, qboolean restart) {
 	BotFreeWeaponState(bs->ws);
 	// free the bot character
 	BotFreeCharacter(bs->character);
-
 	BotFreeWaypoints(bs->checkpoints);
 	BotFreeWaypoints(bs->patrolpoints);
 	// clear activate goal stack
@@ -1621,6 +1630,7 @@ int BotAIStartFrame(int time) {
 	// update the bot library
 	if (botlib_residual >= thinktime) {
 		botlib_residual -= thinktime;
+
 		trap_BotLibStartFrame((float)time / 1000);
 
 		if (!trap_AAS_Initialized()) {
@@ -1851,6 +1861,7 @@ int BotAISetup(int restart) {
 	trap_Cvar_Register(&bot_interbreedwrite, "bot_interbreedwrite", "", 0);
 
 	level.botReportModificationCount = bot_report.modificationCount;
+
 	// if the game isn't restarted for a tournament
 	if (!restart) {
 		// initialize the bot states

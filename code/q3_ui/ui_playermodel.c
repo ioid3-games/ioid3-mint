@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -174,7 +180,6 @@ static void PlayerModel_UpdateModel(void) {
 	viewangles[YAW] = 180 - 30;
 	viewangles[PITCH] = 0;
 	viewangles[ROLL] = 0;
-
 	VectorClear(moveangles);
 
 	UI_PlayerInfo_SetModel(&s_playermodel.playerinfo, s_playermodel.modelskin, s_playermodel.headmodelskin, NULL);
@@ -321,7 +326,6 @@ static void PlayerModel_PicEvent(void *ptr, int event) {
 		// track the whole model/skin name
 		Q_strncpyz(s_playermodel.modelskin, buffptr, pdest - buffptr + 1);
 		Q_strcat(s_playermodel.modelskin, sizeof(s_playermodel.modelskin), pdest + 5);
-
 		strcpy(s_playermodel.headmodelskin, s_playermodel.modelskin);
 		// separate the model name
 		maxlen = pdest - buffptr;
@@ -515,7 +519,8 @@ static void PlayerModel_MenuInit(int localPlayerNum) {
 	memset(&s_playermodel, 0, sizeof(playermodel_t));
 
 	s_playermodel.localPlayerNum = localPlayerNum;
-	Com_sprintf(s_playermodel.bannerString, sizeof(s_playermodel.bannerString), "PLAYER %d MODEL", s_playermodel.localPlayerNum + 1);
+
+	Com_sprintf(s_playermodel.bannerString, sizeof(s_playermodel.bannerString), "PLAYER %d MODEL", s_playermodel.localPlayerNum+1);
 
 	PlayerModel_Cache();
 
@@ -583,6 +588,7 @@ static void PlayerModel_MenuInit(int localPlayerNum) {
 			s_playermodel.picbuttons[k].height = 128;
 			s_playermodel.picbuttons[k].focuspic = MODEL_SELECT;
 			s_playermodel.picbuttons[k].focuscolor = colorRed;
+
 			x += 64 + 6;
 		}
 

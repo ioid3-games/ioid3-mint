@@ -4,21 +4,27 @@ Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -156,6 +162,7 @@ static void Preferences_SetMenuItems(void) {
 	}
 
 	s_preferences.thirdsize.curvalue = trap_Cvar_VariableValue("cg_splitviewThirdEqual") != 0;
+
 	s_preferences.atmeffects.curvalue = 2 * trap_Cvar_VariableValue("cg_atmosphericEffects");
 
 	if (s_preferences.atmeffects.curvalue < 0) {
@@ -226,7 +233,7 @@ static void Preferences_Event(void *ptr, int notification) {
 			trap_Cvar_SetValue("cg_splitviewTextScale", 1.0f + (float)s_preferences.splittextsize.curvalue / 2.0f);
 			break;
 		case ID_THIRDSIZE:
-			trap_Cvar_SetValue( "cg_splitviewThirdEqual", s_preferences.thirdsize.curvalue );
+			trap_Cvar_SetValue("cg_splitviewThirdEqual", s_preferences.thirdsize.curvalue);
 			break;
 		case ID_ATMEFFECTS:
 			trap_Cvar_SetValue("cg_atmosphericEffects", (float)s_preferences.atmeffects.curvalue / 2.0f);
@@ -320,7 +327,7 @@ static void Preferences_MenuInit(void) {
 	s_preferences.framer.width = 256;
 	s_preferences.framer.height = 334;
 
-	y = (SCREEN_HEIGHT - ID_NUM_ITEMS * (BIGCHAR_HEIGHT + 2) - (2 + 4)) / 2;
+	y = (SCREEN_HEIGHT - ID_NUM_ITEMS*(BIGCHAR_HEIGHT + 2) - (2 + 4)) / 2;
 	s_preferences.crosshair.generic.type = MTYPE_SPINCONTROL;
 	s_preferences.crosshair.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_NODEFAULTINIT|QMF_OWNERDRAW;
 	s_preferences.crosshair.generic.x = PREFERENCES_X_POS;
@@ -465,7 +472,7 @@ static void Preferences_MenuInit(void) {
 	s_preferences.thirdsize.generic.y = y;
 	s_preferences.thirdsize.itemnames = thirdsize_names;
 
-	y += BIGCHAR_HEIGHT+2;
+	y += BIGCHAR_HEIGHT + 2;
 	s_preferences.atmeffects.generic.type = MTYPE_SPINCONTROL;
 	s_preferences.atmeffects.generic.name = "Snow/Rain:";
 	s_preferences.atmeffects.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;

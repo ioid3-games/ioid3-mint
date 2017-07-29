@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -42,7 +48,6 @@ static qboolean mouseActive = qfalse;
 
 static cvar_t *in_mouse = NULL;
 static cvar_t *in_nograb;
-
 static cvar_t *in_joystick[CL_MAX_SPLITVIEW] = {NULL};
 static cvar_t *in_joystickThreshold[CL_MAX_SPLITVIEW] = {NULL};
 static cvar_t *in_joystickNo[CL_MAX_SPLITVIEW] = {NULL};
@@ -463,7 +468,7 @@ static void IN_GetUIMousePosition(int localPlayerNum, int *x, int *y) {
 	if (cgvm) {
 		int pos = VM_Call(cgvm, CG_MOUSE_POSITION, localPlayerNum);
 		*x = Com_Clamp(0, cls.glconfig.vidWidth - 1, pos & 0xFFFF);
-		*y = Com_Clamp(0, cls.glconfig.vidHeight - 1, (pos >> 16) & 0xFFFF);
+		*y = Com_Clamp(0, cls.glconfig.vidHeight - 1, (pos >> 16)& 0xFFFF);
 	} else {
 		*x = cls.glconfig.vidWidth / 2;
 		*y = cls.glconfig.vidHeight / 2;
@@ -524,7 +529,7 @@ static void IN_DeactivateMouse(qboolean showSystemCursor) {
 	if (!SDL_WasInit(SDL_INIT_VIDEO)) {
 		return;
 	}
-	// Show the cursor when the mouse is disabled and not drawing UI cursor, but not when fullscreen
+	// show the cursor when the mouse is disabled and not drawing UI cursor, but not when fullscreen
 	if (!Cvar_VariableIntegerValue("r_fullscreen")) {
 		SDL_ShowCursor(showSystemCursor);
 	}
@@ -538,7 +543,7 @@ static void IN_DeactivateMouse(qboolean showSystemCursor) {
 		SDL_SetWindowGrab(SDL_window, SDL_FALSE);
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 		// Don't warp the mouse unless the cursor is within the window
-		if (SDL_GetWindowFlags(SDL_window) & SDL_WINDOW_MOUSE_FOCUS) {
+		if (SDL_GetWindowFlags(SDL_window)& SDL_WINDOW_MOUSE_FOCUS) {
 			int x, y;
 
 			IN_GetUIMousePosition(0, &x, &y);
@@ -555,6 +560,7 @@ IN_SetGameControllerDefaults
 =======================================================================================================================================
 */
 static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum) {
+
 	struct {
 		int sdlAxis;
 		int negKey;
@@ -567,6 +573,7 @@ static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum
 		{SDL_CONTROLLER_AXIS_TRIGGERLEFT, -1, K_JOY_LEFTTRIGGER},
 		{SDL_CONTROLLER_AXIS_TRIGGERRIGHT, -1, K_JOY_RIGHTTRIGGER}
 	};
+
 	struct {
 		int sdlButton;
 		int key;
@@ -606,10 +613,12 @@ static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum
 			event.type = JOYEVENT_AXIS;
 			event.value.axis.num = bind.value.axis;
 			event.value.axis.sign = 1;
+
 			CL_SetKeyForJoyEvent(localPlayerNum, &event, axisRemap[b].posKey);
 
 			if (axisRemap[b].negKey != -1) {
 				event.value.axis.sign = -1;
+
 				CL_SetKeyForJoyEvent(localPlayerNum, &event, axisRemap[b].negKey);
 			}
 
@@ -661,7 +670,7 @@ static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum
 			default:
 				continue;
 		}
-		// buttons and hats only handle positive axis key(works for triggers, but not left / right sticks)
+		// buttons and hats only handle positive axis key(works for triggers, but not left/right sticks)
 		CL_SetKeyForJoyEvent(localPlayerNum, &event, axisRemap[b].posKey);
 	}
 
@@ -753,16 +762,15 @@ static void IN_InitJoystick(void) {
 		}
 
 		stick[i] = NULL;
+
 		memset(&stick_state[i], '\0', sizeof(stick_state[i]));
 
 		if (in_joystick[i]->integer) {
 			joyEnabled = qtrue;
 		}
 	}
-	// SDL 2.0.4 requires SDL_INIT_JOYSTICK to be initialized separately from
-	// SDL_INIT_GAMECONTROLLER for SDL_JoystickOpen() to work correctly,
-	// despite https://wiki.libsdl.org/SDL_Init (retrieved 2016-08-16)
-	// indicating SDL_INIT_JOYSTICK should be initialized automatically.
+	// SDL 2.0.4 requires SDL_INIT_JOYSTICK to be initialized separately from SDL_INIT_GAMECONTROLLER for SDL_JoystickOpen()to work correctly,
+	// despite https://wiki.libsdl.org/SDL_Init (retrieved2016-08-16) indicating SDL_INIT_JOYSTICK should be initialized automatically.
 	if (!SDL_WasInit(SDL_INIT_JOYSTICK)) {
 		Com_DPrintf("Calling SDL_Init(SDL_INIT_JOYSTICK)...\n");
 
@@ -793,7 +801,7 @@ static void IN_InitJoystick(void) {
 		Com_DPrintf("Calling SDL_Init(SDL_INIT_GAMECONTROLLER)...\n");
 
 		if (SDL_Init(SDL_INIT_GAMECONTROLLER) == -1) {
-			Com_DPrintf("SDL_Init(SDL_INIT_GAMECONTROLLER) failed: %s\n", SDL_GetError());
+			Com_DPrintf("SDL_Init(SDL_INIT_GAMECONTROLLER)failed: %s\n", SDL_GetError());
 		} else {
 			static qboolean firstTime = qtrue;
 			const char *homePath = Cvar_VariableString("fs_homepath");
@@ -801,14 +809,14 @@ static void IN_InitJoystick(void) {
 			char *testpath;
 			int numMappings;
 
-			Com_DPrintf("SDL_Init(SDL_INIT_GAMECONTROLLER) passed.\n");
+			Com_DPrintf("SDL_Init(SDL_INIT_GAMECONTROLLER)passed.\n");
 			// check if mappings file is in home path, else try basepath
 			testpath = FS_BuildOSPath(homePath, "gamecontrollerdb.txt", "");
-			testpath[strlen(testpath) - 1] = '\0';
+			testpath[strlen(testpath) -1] = '\0';
 
 			if (!FS_FileInPathExists(testpath)) {
 				testpath = FS_BuildOSPath(basePath, "gamecontrollerdb.txt", "");
-				testpath[strlen(testpath) - 1] = '\0';
+				testpath[strlen(testpath) -1] = '\0';
 			}
 
 			numMappings = SDL_GameControllerAddMappingsFromFile(testpath);
@@ -840,20 +848,20 @@ static void IN_InitJoystick(void) {
 		}
 
 		if (j != i) {
-			Com_DPrintf("Joystick for player %d already in use by player %d.\n", i + 1, j + 1);
+			Com_DPrintf("Joystick for player %d already in use by player %d.\n", i+1, j+1);
 			continue;
 		}
 
 		stick[i] = SDL_JoystickOpen(in_joystickNo[i]->integer);
 
 		if (stick[i] == NULL) {
-			Com_DPrintf("Opening joystick for player %d failed.\n", i + 1);
+			Com_DPrintf("Opening joystick for player %d failed.\n", i+1);
 			continue;
 		}
 
 		SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(stick[i]), guid, sizeof(guid));
 
-		Com_DPrintf("Joystick %d opened for player %d\n", in_joystickNo[i]->integer, i + 1);
+		Com_DPrintf("Joystick %d opened for player %d\n", in_joystickNo[i]->integer, i+1);
 		Com_DPrintf("Name:       %s\n", SDL_JoystickNameForIndex(in_joystickNo[i]->integer));
 		Com_DPrintf("GUID:       %s\n", guid);
 		Com_DPrintf("Axes:       %d\n", SDL_JoystickNumAxes(stick[i]));
@@ -935,7 +943,9 @@ static void IN_JoyMove(void) {
 			for (i = 0; i < total; i++) {
 				int dx = 0;
 				int dy = 0;
+
 				SDL_JoystickGetBall(stick[joy], i, &dx, &dy);
+
 				balldx += dx;
 				balldy += dy;
 			}
@@ -943,11 +953,14 @@ static void IN_JoyMove(void) {
 			if (balldx || balldy) {
 				// !!! FIXME: is this good for stick balls, or just mice?
 				// Scale like the mouse input...
-				if (abs(balldx) > 1)
+				if (abs(balldx) > 1) {
 					balldx *= 2;
+				}
 
-				if (abs(balldy) > 1)
+				if (abs(balldy) > 1) {
 					balldy *= 2;
+				}
+
 				Com_QueueEvent(0, SE_MOUSE + joy, balldx, balldy, 0, NULL);
 			}
 		}
@@ -955,14 +968,15 @@ static void IN_JoyMove(void) {
 		total = SDL_JoystickNumButtons(stick[joy]);
 
 		if (total > 0) {
-			if (total > ARRAY_LEN(stick_state[joy].buttons))
+			if (total > ARRAY_LEN(stick_state[joy].buttons)) {
 				total = ARRAY_LEN(stick_state[joy].buttons);
+			}
 
 			for (i = 0; i < total; i++) {
 				qboolean pressed = (SDL_JoystickGetButton(stick[joy], i) != 0);
 
 				if (pressed != stick_state[joy].buttons[i]) {
-					Com_QueueEvent(0, SE_JOYSTICK_BUTTON + joy, i, pressed, 0, NULL);
+					Com_QueueEvent(0, SE_JOYSTICK_BUTTON+joy, i, pressed, 0, NULL);
 					stick_state[joy].buttons[i] = pressed;
 				}
 			}
@@ -971,8 +985,9 @@ static void IN_JoyMove(void) {
 		total = SDL_JoystickNumHats(stick[joy]);
 
 		if (total > 0) {
-			if (total > ARRAY_LEN(stick_state[joy].oldhats))
+			if (total > ARRAY_LEN(stick_state[joy].oldhats)) {
 				total = ARRAY_LEN(stick_state[joy].oldhats);
+			}
 
 			for (i = 0; i < total; i++) {
 				Uint8 state = SDL_JoystickGetHat(stick[joy], i), value;
@@ -1009,7 +1024,7 @@ static void IN_JoyMove(void) {
 							break;
 					}
 
-					Com_QueueEvent(0, SE_JOYSTICK_HAT + joy, i, value, 0, NULL);
+					Com_QueueEvent(0, SE_JOYSTICK_HAT+joy, i, value, 0, NULL);
 					stick_state[joy].oldhats[i] = state;
 				}
 			}
@@ -1018,13 +1033,17 @@ static void IN_JoyMove(void) {
 		total = SDL_JoystickNumAxes(stick[joy]);
 
 		if (total > 0) {
-			if (total > MAX_JOYSTICK_AXIS) total = MAX_JOYSTICK_AXIS;
+			if (total > MAX_JOYSTICK_AXIS) {
+				total = MAX_JOYSTICK_AXIS;
+			}
 
 			for (i = 0; i < total; i++) {
 				Sint16 axis = SDL_JoystickGetAxis(stick[joy], i);
 				float f = ((float)abs(axis)) / 32767.0f;
 				
-				if (f < in_joystickThreshold[joy]->value) axis = 0;
+				if (f < in_joystickThreshold[joy]->value) {
+					axis = 0;
+				}
 
 				if (axis != stick_state[joy].oldaaxes[i]) {
 					Com_QueueEvent(0, SE_JOYSTICK_AXIS + joy, i, axis, 0, NULL);
@@ -1144,9 +1163,9 @@ static void IN_ProcessEvents(void) {
 						case SDL_BUTTON_X2:
 							b = K_MOUSE5;
 							break;
-							// ZTM: HACK around incorrect SDL2 code
-							// SDL X11 passes the button value directly from X11 instead of remapping to SDL_BUTTON_*
-							// Other than that, SDL does not use buttons aside from the above 5, so.. ignore how this would affect AUX
+						// ZTM: HACK around incorrect SDL2 code
+						// SDL X11 passes the button value directly from X11 instead of remapping to SDL_BUTTON_*
+						// Other than that, SDL does not use buttons aside from the above 5, so.. ignore how this would affect AUX
 						case 8:
 							b = K_MOUSE4;
 							break;
@@ -1254,8 +1273,8 @@ void IN_Frame(void) {
 	IN_JoyMove();
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 	loading = (clc.state != CA_DISCONNECTED && clc.state != CA_ACTIVE);
-	mouseGrab = (Mouse_GetState(0) & MOUSE_CLIENT);
-	systemCursor = (Mouse_GetState(0) & MOUSE_SYSTEMCURSOR);
+	mouseGrab = (Mouse_GetState(0)& MOUSE_CLIENT);
+	systemCursor = (Mouse_GetState(0)& MOUSE_SYSTEMCURSOR);
 
 	if (!cls.glconfig.isFullscreen && !mouseGrab && systemCursor) {
 		// Loading in windowed mode
@@ -1266,7 +1285,7 @@ void IN_Frame(void) {
 	} else if (!cls.glconfig.isFullscreen && !mouseGrab) {
 		// Showing cursor in windowed mode
 		IN_DeactivateMouse(qfalse);
-	} else if (!(SDL_GetWindowFlags(SDL_window) & SDL_WINDOW_INPUT_FOCUS)) {
+	} else if (!(SDL_GetWindowFlags(SDL_window)& SDL_WINDOW_INPUT_FOCUS)) {
 		// Window not got focus
 		IN_DeactivateMouse(qtrue);
 	} else {
@@ -1332,14 +1351,13 @@ IN_Shutdown
 =======================================================================================================================================
 */
 void IN_Shutdown(void) {
-	SDL_StopTextInput();
 
+	SDL_StopTextInput();
 	IN_DeactivateMouse(qtrue);
 
 	mouseAvailable = qfalse;
 
 	IN_ShutdownJoystick();
-
 	SDL_window = NULL;
 }
 
@@ -1349,6 +1367,7 @@ IN_Restart
 =======================================================================================================================================
 */
 void IN_Restart(void) {
+
 	IN_ShutdownJoystick();
 	IN_Init(SDL_window);
 }

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -28,11 +34,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "ui_local.h"
 
-/*
-=======================================================================================================================================
-UI_SetBestScores
-=======================================================================================================================================
-*/
 void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 
 	trap_Cvar_Set("ui_scoreAccuracy", va("%i%%", newInfo->accuracy));
@@ -170,6 +171,7 @@ static void UI_CalcPostGameStats(void) {
 
 	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
 	Q_strncpyz(map, Info_ValueForKey(info, "mapname"), sizeof(map));
+
 	game = atoi(Info_ValueForKey(info, "g_gametype"));
 	// compose file name
 	Com_sprintf(fileName, MAX_QPATH, "games/%s_%i.game", map, game);
@@ -177,8 +179,9 @@ static void UI_CalcPostGameStats(void) {
 	memset(&oldInfo, 0, sizeof(postGameInfo_t));
 
 	if (trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0) {
-	// if so load it
+		// if so load it
 		size = 0;
+
 		trap_FS_Read(&size, sizeof(int), f);
 
 		if (size == sizeof(postGameInfo_t)) {
@@ -266,13 +269,13 @@ static void UI_Test_f(void) {
 
 /*
 =======================================================================================================================================
- UI_Load_f
+UI_Load_f
 =======================================================================================================================================
 */
 static void UI_Load_f(void) {
 #ifdef MISSIONPACK_HUD
 	if (cg.connected) {
-		// if hud scripts are loaded, UI_Load() will break it. So reload hud and ui using loadhud command.
+		// if hud scripts are loaded, UI_Load()will break it. So reload hud and ui using loadhud command.
 		trap_Cmd_ExecuteText(EXEC_NOW, "loadhud\n");
 		return;
 	}
@@ -294,10 +297,11 @@ int ui_numCommands = ARRAY_LEN(ui_commands);
 =======================================================================================================================================
 UI_ConsoleCommand
 
-Update frame time, commands are executed by CG_ConsoleCommand.
+update frame time, commands are executed by CG_ConsoleCommand.
 =======================================================================================================================================
 */
 void UI_ConsoleCommand(int realTime) {
+
 	uiInfo.uiDC.frameTime = realTime - uiInfo.uiDC.realTime;
 	uiInfo.uiDC.realTime = realTime;
 }

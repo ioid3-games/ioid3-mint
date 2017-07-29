@@ -1,25 +1,31 @@
 /*
-=======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+===========================================================================
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, 
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-=======================================================================================================================================
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
+Suite 120, Rockville, Maryland 20850 USA.
+===========================================================================
 */
 
 #ifdef USE_LOCAL_HEADERS
@@ -50,15 +56,16 @@ cvar_t *r_allowResize; // make window resizable
 cvar_t *r_centerWindow;
 cvar_t *r_sdlDriver;
 cvar_t *r_forceWindowIcon32;
+
 // GL_ARB_multisample
-void (APIENTRYP qglActiveTextureARB)(GLenum texture);
-void (APIENTRYP qglClientActiveTextureARB)(GLenum texture);
-void (APIENTRYP qglMultiTexCoord2fARB)(GLenum target, GLfloat s, GLfloat t);
+void(APIENTRYP qglActiveTextureARB)(GLenum texture);
+void(APIENTRYP qglClientActiveTextureARB)(GLenum texture);
+void(APIENTRYP qglMultiTexCoord2fARB)(GLenum target, GLfloat s, GLfloat t);
 // GL_EXT_compiled_vertex_array
-void (APIENTRYP qglLockArraysEXT)(GLint first, GLsizei count);
-void (APIENTRYP qglUnlockArraysEXT)(void);
+void(APIENTRYP qglLockArraysEXT)(GLint first, GLsizei count);
+void(APIENTRYP qglUnlockArraysEXT)(void);
 // GL_ARB_texture_compression
-void (APIENTRYP qglCompressedTexImage2DARB)(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid *data);
+void(APIENTRYP qglCompressedTexImage2DARB)(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid *data);
 
 /*
 =======================================================================================================================================
@@ -129,9 +136,7 @@ static void GLimp_DetectAvailableModes(void) {
 	int numSDLModes;
 	SDL_Rect *modes;
 	int numModes = 0;
-
 	SDL_DisplayMode windowMode;
-
 	int display = SDL_GetWindowDisplayIndex(SDL_window);
 
 	if (display < 0) {
@@ -213,7 +218,7 @@ static void GLimp_DetectAvailableModes(void) {
 GLimp_SetMode
 =======================================================================================================================================
 */
-static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder) {
+static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder, qboolean coreContext) {
 	const char *glstring;
 	int perChannelColorBits;
 	int colorBits, depthBits, stencilBits;
@@ -230,6 +235,7 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder) {
 	int bytesPerPixel, width, height;
 
 	ri.Printf(PRINT_ALL, "Initializing OpenGL display\n");
+
 	ri.Cvar_VariableStringBuffer("com_productName", windowTitle, sizeof(windowTitle));
 
 	if (r_allowResize->integer) {
@@ -246,7 +252,7 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder) {
 
 		R_LoadImage("windowicon32", &numLevels, &iconPic);
 
-		if (iconPic && (iconPic[0].width != 32 || iconPic[0].height != 32)) {
+		if (iconPic &&(iconPic[0].width != 32 || iconPic[0].height != 32)) {
 			ri.Free(iconPic);
 			iconPic = NULL;
 			ri.Printf(PRINT_WARNING, "Ignoring windowicon32: Image must be 32 x 32!\n");
@@ -496,7 +502,34 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder) {
 		// limit window minimum size to 320x200 unless a smaller size was specified
 		SDL_SetWindowMinimumSize(SDL_window, MIN(320, glConfig.vidWidth), MIN(200, glConfig.vidHeight));
 
-		if ((SDL_glContext = SDL_GL_CreateContext(SDL_window)) == NULL) {
+		if (coreContext) {
+			int profileMask, majorVersion, minorVersion;
+
+			SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &profileMask);
+			SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &majorVersion);
+			SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minorVersion);
+
+			ri.Printf(PRINT_ALL, "Trying to get an OpenGL 3.2 core context\n");
+
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+
+			if ((SDL_glContext = SDL_GL_CreateContext(SDL_window)) == NULL) {
+				ri.Printf(PRINT_ALL, "SDL_GL_CreateContext failed: %s\n", SDL_GetError());
+				ri.Printf(PRINT_ALL, "Reverting to default context\n");
+
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, profileMask);
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, majorVersion);
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minorVersion);
+			} else {
+				ri.Printf(PRINT_ALL, "SDL_GL_CreateContext succeeded, but: %s\n", SDL_GetError());
+			}
+		} else {
+			SDL_glContext = NULL;
+		}
+
+		if (!SDL_glContext && (SDL_glContext = SDL_GL_CreateContext(SDL_window)) == NULL) {
 			ri.Printf(PRINT_DEVELOPER, "SDL_GL_CreateContext failed: %s\n", SDL_GetError());
 			continue;
 		}
@@ -542,7 +575,7 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder) {
 GLimp_StartDriverAndSetMode
 =======================================================================================================================================
 */
-static qboolean GLimp_StartDriverAndSetMode(int mode, qboolean fullscreen, qboolean noborder) {
+static qboolean GLimp_StartDriverAndSetMode(int mode, qboolean fullscreen, qboolean noborder, qboolean gl3Core) {
 	rserr_t err;
 
 	if (!SDL_WasInit(SDL_INIT_VIDEO)) {
@@ -565,7 +598,7 @@ static qboolean GLimp_StartDriverAndSetMode(int mode, qboolean fullscreen, qbool
 		fullscreen = qfalse;
 	}
 
-	err = GLimp_SetMode(mode, fullscreen, noborder);
+	err = GLimp_SetMode(mode, fullscreen, noborder, gl3Core);
 
 	switch (err) {
 		case RSERR_INVALID_FULLSCREEN:
@@ -585,7 +618,7 @@ static qboolean GLimp_StartDriverAndSetMode(int mode, qboolean fullscreen, qbool
 =======================================================================================================================================
 GLimp_ResizeWindow
 
-Window has been resized, update glconfig
+Window has been resized, update glconfig.
 =======================================================================================================================================
 */
 qboolean GLimp_ResizeWindow(int width, int height) {
@@ -733,7 +766,7 @@ GLimp_Init
 This routine is responsible for initializing the OS specific portions of OpenGL.
 =======================================================================================================================================
 */
-void GLimp_Init(void) {
+void GLimp_Init(qboolean coreContext) {
 
 	ri.Printf(PRINT_DEVELOPER, "Glimp_Init()\n");
 
@@ -755,20 +788,20 @@ void GLimp_Init(void) {
 
 	ri.Sys_GLimpInit();
 	// Create the window and set up the context
-	if (GLimp_StartDriverAndSetMode(r_mode->integer, r_fullscreen->integer, r_noborder->integer)) {
+	if (GLimp_StartDriverAndSetMode(r_mode->integer, r_fullscreen->integer, r_noborder->integer, coreContext)) {
 		goto success;
 	}
 	// Try again, this time in a platform specific "safe mode"
 	ri.Sys_GLimpSafeInit();
 
-	if (GLimp_StartDriverAndSetMode(r_mode->integer, r_fullscreen->integer, qfalse)) {
+	if (GLimp_StartDriverAndSetMode(r_mode->integer, r_fullscreen->integer, qfalse, coreContext)) {
 		goto success;
 	}
 	// Finally, try the default screen resolution
 	if (r_mode->integer != R_MODE_FALLBACK) {
 		ri.Printf(PRINT_ALL, "Setting r_mode %d failed, falling back on r_mode %d\n", r_mode->integer, R_MODE_FALLBACK);
 
-		if (GLimp_StartDriverAndSetMode(R_MODE_FALLBACK, qfalse, qfalse)) {
+		if (GLimp_StartDriverAndSetMode(R_MODE_FALLBACK, qfalse, qfalse, coreContext)) {
 			goto success;
 		}
 	}
@@ -786,7 +819,12 @@ success:
 	}
 
 	Q_strncpyz(glConfig.version_string, (char *)qglGetString(GL_VERSION), sizeof(glConfig.version_string));
-	Q_strncpyz(glConfig.extensions_string, (char *)qglGetString(GL_EXTENSIONS), sizeof(glConfig.extensions_string));
+
+	if (qglGetString(GL_EXTENSIONS)) {
+		Q_strncpyz(glConfig.extensions_string, (char *)qglGetString(GL_EXTENSIONS), sizeof(glConfig.extensions_string));
+	} else {
+		Q_strncpyz(glConfig.extensions_string, "Not available (core context, fixme)", sizeof(glConfig.extensions_string));
+	}
 	// initialize extensions
 	GLimp_InitExtensions();
 

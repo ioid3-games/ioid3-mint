@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -35,8 +41,10 @@ void ScorePlum(gentity_t *ent, vec3_t origin, int score) {
 	plum = G_TempEntity(origin, EV_SCOREPLUM);
 	// only send this temp entity to a single player
 	plum->r.svFlags |= SVF_PLAYERMASK;
+
 	Com_ClientListClear(&plum->r.sendPlayers);
 	Com_ClientListAdd(&plum->r.sendPlayers, ent->s.number);
+
 	plum->s.otherEntityNum = ent->s.number;
 	plum->s.time = score;
 }
@@ -92,12 +100,13 @@ void TossPlayerItems(gentity_t *self) {
 			BG_DecomposeUserCmdValue(self->player->pers.cmd.stateValue, &weapon);
 		}
 
-		if (!(self->player->ps.stats[STAT_WEAPONS] & (1 << weapon))) {
+		if (!(self->player->ps.stats[STAT_WEAPONS] &(1 << weapon))) {
 			weapon = WP_NONE;
 		}
 	}
 
-	if (weapon > WP_MACHINEGUN && weapon != WP_GRAPPLING_HOOK && self->player->ps.ammo[weapon]) {
+	if (weapon > WP_MACHINEGUN && weapon != WP_GRAPPLING_HOOK && 
+		self->player->ps.ammo[weapon]) {
 		// find the item type for this weapon
 		item = BG_FindItemForWeapon(weapon);
 		// spawn the item
@@ -181,7 +190,6 @@ void TossPlayerGametypeItems(gentity_t *ent) {
 			if (item) {
 				for (j = 0; j < ent->player->ps.tokens; j++) {
 					drop = Drop_Item(ent, item, angle);
-
 					if (ent->player->sess.sessionTeam == TEAM_RED) {
 						drop->s.team = TEAM_BLUE;
 					} else {
@@ -672,7 +680,6 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	self->s.angles[2] = 0;
 
 	LookAtKiller(self, inflictor, attacker);
-
 	VectorCopy(self->s.angles, self->player->ps.viewangles);
 
 	self->s.loopSound = 0;
@@ -684,6 +691,7 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	memset(self->player->ps.powerups, 0, sizeof(self->player->ps.powerups));
 	// never gib in a nodrop
 	contents = trap_PointContents(self->r.currentOrigin, -1);
+
 	gibPlayer = ((self->health <= GIB_HEALTH && !(contents & CONTENTS_NODROP)) || meansOfDeath == MOD_SUICIDE);
 
 	if (gibPlayer) {
@@ -713,12 +721,12 @@ void player_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 			break;
 	}
 
-	self->player->ps.legsAnim = ((self->player->ps.legsAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
-	self->player->ps.torsoAnim = ((self->player->ps.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
+	self->player->ps.legsAnim = ((self->player->ps.legsAnim & ANIM_TOGGLEBIT)^ ANIM_TOGGLEBIT)| anim;
+	self->player->ps.torsoAnim = ((self->player->ps.torsoAnim & ANIM_TOGGLEBIT)^ ANIM_TOGGLEBIT)| anim;
 
 	G_AddEvent(self, EV_DEATH1 + rndAnim, gibPlayer);
 	// globally cycle through the different death animations
-	rndAnim = (rndAnim + 1) % 3;
+	rndAnim = (rndAnim + 1)% 3;
 
 	trap_LinkEntity(self);
 }
@@ -771,7 +779,7 @@ RaySphereIntersections
 int RaySphereIntersections(vec3_t origin, float radius, vec3_t point, vec3_t dir, vec3_t intersections[2]) {
 	float b, c, d, t;
 
-	//	| origin - (point + t * dir)|= radius
+	//	| origin - (point + t * dir) |= radius
 	//	a = dir[0] ^ 2 + dir[1] ^ 2 + dir[2] ^ 2;
 	//	b = 2 * (dir[0] * (point[0] - origin[0]) + dir[1] * (point[1] - origin[1]) + dir[2] * (point[2] - origin[2]));
 	//	c = (point[0] - origin[0]) ^ 2 + (point[1] - origin[1]) ^ 2 + (point[2] - origin[2]) ^ 2 - radius ^ 2;
@@ -1024,7 +1032,7 @@ void G_Damage(gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_t
 			attacker->player->ps.persistant[PERS_HITS]++;
 		}
 
-		attacker->player->ps.persistant[PERS_ATTACKEE_ARMOR] = (targ->health << 8)|(player->ps.stats[STAT_ARMOR]);
+		attacker->player->ps.persistant[PERS_ATTACKEE_ARMOR] = (targ->health<<8)|(player->ps.stats[STAT_ARMOR]);
 	}
 	// always give half damage if hurting self, calculated after knockback, so rocket jumping works
 	if (targ == attacker) {
@@ -1116,7 +1124,6 @@ qboolean CanDamage(gentity_t *targ, vec3_t origin) {
 	// use the midpoint of the bounds instead of the origin, because bmodels may have their origin is 0, 0, 0
 	VectorAdd(targ->r.absmin, targ->r.absmax, midpoint);
 	VectorScale(midpoint, 0.5, midpoint);
-
 	VectorCopy(midpoint, dest);
 	trap_Trace(&tr, origin, vec3_origin, vec3_origin, dest, ENTITYNUM_NONE, MASK_SOLID);
 

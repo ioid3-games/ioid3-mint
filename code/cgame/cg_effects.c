@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -50,7 +56,7 @@ void CG_BubbleTrail(vec3_t start, vec3_t end, float spacing) {
 
 	len = VectorNormalize(vec);
 	// advance a random amount first
-	i = rand() % (int)spacing;
+	i = rand()% (int)spacing;
 
 	VectorMA(move, i, vec, move);
 	VectorScale(vec, spacing, vec);
@@ -173,9 +179,9 @@ int CG_SpawnBubbles(localEntity_t **bubbles, vec3_t origin, float baseSize, int 
 		le->pos.trBase[0] += crandom() * baseSize;
 		le->pos.trBase[1] += crandom() * baseSize;
 		le->pos.trBase[2] += crandom() * baseSize;
-		le->pos.trDelta[0] = baseSize * crandom() * 5;
-		le->pos.trDelta[1] = baseSize * crandom() * 5;
-		le->pos.trDelta[2] = 85 + random() * 10;
+		le->pos.trDelta[0] = baseSize * crandom() *5;
+		le->pos.trDelta[1] = baseSize * crandom() *5;
+		le->pos.trDelta[2] = 85 + random() *10;
 	}
 
 	return numBubbles;
@@ -264,7 +270,6 @@ void CG_SpawnEffect(vec3_t org) {
 	re->hModel = cgs.media.teleportEffectModel;
 
 	AxisClear(re->axis);
-
 	VectorCopy(org, re->origin);
 #ifdef MISSIONPACK
 	re->origin[2] += 16;
@@ -614,7 +619,7 @@ Generated a bunch of gibs launching out from the bodies location.
 void CG_GibPlayer(vec3_t playerOrigin) {
 	vec3_t origin, velocity;
 
-	if (CG_PointContents(playerOrigin, -1) & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
+	if (CG_PointContents(playerOrigin, -1)&(CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
 		CG_SpawnBubbles(NULL, playerOrigin, 3, 5 + random() * 5);
 	}
 

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -64,13 +70,14 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define WINDOW_POPUP			0x00200000 // popup
 #define WINDOW_BACKCOLORSET		0x00400000 // backcolor was explicitly set
 #define WINDOW_TIMEDVISIBLE		0x00800000 // visibility timing(NOT implemented)
+
+
 // CGAME cursor type bits
 #define CURSOR_NONE		0x00000001
 #define CURSOR_ARROW	0x00000002
 #define CURSOR_SIZER	0x00000004
 
 #define STRING_POOL_SIZE (384 + 128) * 1024
-
 #define MAX_STRING_HANDLES 4096
 #define MAX_SCRIPT_ARGS 12
 #define MAX_EDITFIELD 256
@@ -166,7 +173,6 @@ typedef struct {
 // many of the vars are re-used for different item types, as such they are not always named appropriately
 // the benefits of c++ in DOOM will greatly help crap like this
 // FIXME: need to put a type ptr that points to specific type info per type
-
 #define MAX_LB_COLUMNS 16
 
 typedef struct columnInfo_s {
@@ -319,14 +325,14 @@ typedef struct {
 } commandDef_t;
 
 typedef struct {
-	qhandle_t(*registerShaderNoMip)(const char *p);
+	qhandle_t (*registerShaderNoMip)(const char *p);
 	void (*setColor)(const vec4_t v);
 	void (*drawHandlePic)(float x, float y, float w, float h, qhandle_t asset);
 	void (*drawStretchPic)(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader);
 	void (*drawText)(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int style);
 	int (*textWidth)(const char *text, float scale, int limit);
 	int (*textHeight)(const char *text, float scale, int limit);
-	qhandle_t(*registerModel)(const char *p);
+	qhandle_t (*registerModel)(const char *p);
 	int (*modelBounds)(qhandle_t model, vec3_t min, vec3_t max, int startFrame, int endFrame, float frac);
 	void (*fillRect)(float x, float y, float w, float h, const vec4_t color);
 	void (*drawRect)(float x, float y, float w, float h, float size, const vec4_t color);
@@ -379,7 +385,7 @@ typedef struct {
 	qhandle_t gradientImage;
 	qhandle_t cursor;
 	float FPS;
-	menuDef_t Menus[MAX_MENUS];	// defined menus
+	menuDef_t Menus[MAX_MENUS]; // defined menus
 	int menuCount;
 } displayContextDef_t;
 

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -103,7 +109,6 @@ markPoly_t *CG_AllocMark(void) {
 	}
 
 	le = cg_freeMarkPolys;
-
 	cg_freeMarkPolys = cg_freeMarkPolys->nextMark;
 
 	memset(le, 0, sizeof(*le));
@@ -145,7 +150,6 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 	if (radius <= 0) {
 		CG_Error("CG_ImpactMark called with <= 0 radius");
 	}
-
 	//if (markTotal >= MAX_MARK_POLYS) {
 	//	return;
 	//}
@@ -178,11 +182,13 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 		markPoly_t *mark;
 		vec3_t delta;
 		vec3_t localOrigin;
+
 		// create the texture axis
 		VectorNormalize2(mf->projectionDir, axis[0]);
 		VectorScale(axis[0], -1, axis[0]); // ZTM: the dir was scaled to -20 before giving to renderer, turn it back around. :S
 		PerpendicularVector(axis[1], axis[0]);
 		RotatePointAroundVector(axis[2], axis[0], axis[1], orientation);
+
 		CrossProduct(axis[0], axis[2], axis[1]);
 
 		if (mf->bmodelNum) {
@@ -202,8 +208,8 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 
 		for (j = 0, v = verts; j < mf->numPoints; j++, v++) {
 			VectorCopy(markPoints[mf->firstPoint + j], v->xyz);
-
 			VectorSubtract(v->xyz, localOrigin, delta);
+
 			v->st[0] = 0.5 + DotProduct(delta, axis[1]) * texCoordScale;
 			v->st[1] = 0.5 + DotProduct(delta, axis[2]) * texCoordScale;
 			*(int *)v->modulate = *(int *)colors;
@@ -233,7 +239,6 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 
 #define MARK_TOTAL_TIME 10000
 #define MARK_FADE_TIME 1000
-
 /*
 =======================================================================================================================================
 CG_AddMarks

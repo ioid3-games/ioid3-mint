@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -314,7 +320,7 @@ int NumPlayersOnSameTeam(bot_state_t *bs) {
 	num = 0;
 
 	for (i = 0; i < level.maxplayers; i++) {
-		trap_GetConfigstring(CS_PLAYERS + i, buf, MAX_INFO_STRING);
+		trap_GetConfigstring(CS_PLAYERS+i, buf, MAX_INFO_STRING);
 
 		if (strlen(buf)) {
 			if (BotSameTeam(bs, i + 1)) {
@@ -519,6 +525,7 @@ int BotGPSToPosition(char *buf, vec3_t position) {
 		}
 
 		BotAI_Print(PRT_MESSAGE, "%d\n", sign * num);
+
 		position[i] = (float)sign * num;
 	}
 
@@ -551,6 +558,7 @@ void BotMatch_HelpAccompany(bot_state_t *bs, bot_match_t *match) {
 	if (BotFindMatch(teammate, &teammatematch, MTCONTEXT_TEAMMATE) && teammatematch.type == MSG_ME) { // if someone asks for him or herself
 		// get the netname
 		BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 		playernum = PlayerFromName(netname);
 		other = qfalse;
 	} else {
@@ -575,6 +583,7 @@ void BotMatch_HelpAccompany(bot_state_t *bs, bot_match_t *match) {
 		}
 
 		playernum = PlayerFromName(netname);
+
 		BotEnterChat(bs->cs, playernum, CHAT_TELL);
 		return;
 	}
@@ -620,6 +629,7 @@ void BotMatch_HelpAccompany(bot_state_t *bs, bot_match_t *match) {
 		}
 
 		playernum = PlayerFromName(netname);
+
 		BotEnterChat(bs->cs, playernum, CHAT_TEAM);
 		return;
 	}
@@ -757,9 +767,7 @@ void BotMatch_GetItem(bot_state_t *bs, bot_match_t *match) {
 	bs->teamgoal_time = FloatTime() + TEAM_GETITEM_TIME;
 
 	BotSetTeamStatus(bs);
-
 	BotPrintTeamGoal(bs);
-
 }
 
 /*
@@ -807,6 +815,7 @@ void BotMatch_Camp(bot_state_t *bs, bot_match_t *match) {
 		}
 
 		bs->teamgoal.entitynum = -1;
+
 		BotEntityInfo(playernum, &entinfo);
 		// if info is valid (in PVS)
 		if (entinfo.valid) {
@@ -814,7 +823,7 @@ void BotMatch_Camp(bot_state_t *bs, bot_match_t *match) {
 
 			if (areanum) { // && trap_AAS_AreaReachability(areanum)) {
 				// NOTE: just assume the bot knows where the person is
-				//if (BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, playernum)) {
+				//if(BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, playernum)) {
 					bs->teamgoal.entitynum = playernum;
 					bs->teamgoal.areanum = areanum;
 					VectorCopy(entinfo.origin, bs->teamgoal.origin);
@@ -1113,6 +1122,7 @@ void BotMatch_TaskPreference(bot_state_t *bs, bot_match_t *match) {
 	}
 
 	BotMatchVariable(match, NETNAME, teammatename, sizeof(teammatename));
+
 	teammate = PlayerFromName(teammatename);
 
 	if (teammate < 0) {
@@ -1216,7 +1226,9 @@ void BotMatch_JoinSubteam(bot_state_t *bs, bot_match_t *match) {
 
 	BotMatchVariable(match, NETNAME, netname, sizeof(netname));
 	BotAI_BotInitialChat(bs, "joinedteam", teammate, NULL);
+
 	playernum = PlayerFromName(netname);
+
 	BotEnterChat(bs->cs, playernum, CHAT_TELL);
 }
 
@@ -1240,7 +1252,9 @@ void BotMatch_LeaveSubteam(bot_state_t *bs, bot_match_t *match) {
 	if (strlen(bs->subteam)) {
 		BotAI_BotInitialChat(bs, "leftteam", bs->subteam, NULL);
 		BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 		playernum = PlayerFromName(netname);
+
 		BotEnterChat(bs->cs, playernum, CHAT_TELL);
 	}
 
@@ -1289,8 +1303,8 @@ void BotMatch_CheckPoint(bot_state_t *bs, bot_match_t *match) {
 
 	BotMatchVariable(match, POSITION, buf, MAX_MESSAGE_SIZE);
 	VectorClear(position);
-
 	BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 	playernum = PlayerFromName(netname);
 	//BotGPSToPosition(buf, position);
 	sscanf(buf, "%f %f %f", &position[0], &position[1], &position[2]);
@@ -1336,7 +1350,6 @@ void BotMatch_CheckPoint(bot_state_t *bs, bot_match_t *match) {
 
 	if (BotAddressedToBot(bs, match)) {
 		Com_sprintf(buf, sizeof(buf), "%1.0f %1.0f %1.0f", cp->goal.origin[0], cp->goal.origin[1], cp->goal.origin[2]);
-
 		BotAI_BotInitialChat(bs, "checkpoint_confirm", cp->name, buf, NULL);
 		BotEnterChat(bs->cs, playernum, CHAT_TELL);
 	}
@@ -1393,6 +1406,7 @@ void BotMatch_Dismiss(bot_state_t *bs, bot_match_t *match) {
 	}
 
 	BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 	playernum = PlayerFromName(netname);
 
 	bs->decisionmaker = playernum;
@@ -1422,8 +1436,8 @@ void BotMatch_Suicide(bot_state_t *bs, bot_match_t *match) {
 	}
 
 	EA_Command(bs->playernum, "kill");
-
 	BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 	playernum = PlayerFromName(netname);
 
 	BotVoiceChat(bs, playernum, VOICECHAT_TAUNT);
@@ -1447,11 +1461,13 @@ void BotMatch_StartTeamLeaderShip(bot_state_t *bs, bot_match_t *match) {
 		// get the team mate that will be the team leader
 		BotMatchVariable(match, NETNAME, teammate, sizeof(teammate));
 		strncpy(bs->teamleader, teammate, sizeof(bs->teamleader));
+
 		bs->teamleader[sizeof(bs->teamleader) - 1] = '\0';
 	// chats for someone else
 	} else {
 		// get the team mate that will be the team leader
 		BotMatchVariable(match, TEAMMATE, teammate, sizeof(teammate));
+
 		playernum = FindPlayerByName(teammate);
 
 		if (playernum >= 0) {
@@ -1478,6 +1494,7 @@ void BotMatch_StopTeamLeaderShip(bot_state_t *bs, bot_match_t *match) {
 	// if chats for him or herself
 	if (match->subtype & ST_I) {
 		BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 		playernum = FindPlayerByName(netname);
 	// chats for someone else
 	} else {
@@ -1603,7 +1620,9 @@ void BotMatch_WhatAreYouDoing(bot_state_t *bs, bot_match_t *match) {
 	}
 	// chat what the bot is doing
 	BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 	playernum = PlayerFromName(netname);
+
 	BotEnterChat(bs->cs, playernum, CHAT_TELL);
 }
 
@@ -1642,6 +1661,7 @@ float BotNearestVisibleItem(bot_state_t *bs, char *itemname, bot_goal_t *goal) {
 
 	do {
 		i = BotGetLevelItemGoal(i, itemname, &tmpgoal);
+
 		BotGoalName(tmpgoal.number, name, sizeof(name));
 
 		if (Q_stricmp(itemname, name) != 0) {
@@ -1649,6 +1669,7 @@ float BotNearestVisibleItem(bot_state_t *bs, char *itemname, bot_goal_t *goal) {
 		}
 
 		VectorSubtract(tmpgoal.origin, bs->origin, dir);
+
 		dist = VectorLength(dir);
 
 		if (dist < bestdist) {
@@ -1709,7 +1730,7 @@ void BotMatch_WhereAreYou(bot_state_t *bs, bot_match_t *match) {
 #ifdef MISSIONPACK
 			|| (it->giType == IT_TEAM && it->giTag == 0)
 #endif
-		) {
+			) {
 			continue;
 		}
 
@@ -1735,7 +1756,7 @@ void BotMatch_WhereAreYou(bot_state_t *bs, bot_match_t *match) {
 #ifdef MISSIONPACK
 			|| gametype == GT_1FCTF || gametype == GT_OBELISK || gametype == GT_HARVESTER
 #endif
-		) {
+			) {
 #ifdef MISSIONPACK
 			if (gametype == GT_OBELISK || gametype == GT_HARVESTER) {
 				redtt = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, redobelisk.areanum, TFL_DEFAULT);
@@ -1765,7 +1786,9 @@ void BotMatch_WhereAreYou(bot_state_t *bs, bot_match_t *match) {
 		}
 
 		BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 		playernum = PlayerFromName(netname);
+
 		BotEnterChat(bs->cs, playernum, CHAT_TELL);
 	}
 }
@@ -1791,6 +1814,7 @@ void BotMatch_LeadTheWay(bot_state_t *bs, bot_match_t *match) {
 	if (match->subtype & ST_SOMEONE) {
 		// get the team mate name
 		BotMatchVariable(match, TEAMMATE, teammate, sizeof(teammate));
+
 		playernum = FindPlayerByName(teammate);
 		// if this is the bot self
 		if (playernum == bs->playernum) {
@@ -1804,6 +1828,7 @@ void BotMatch_LeadTheWay(bot_state_t *bs, bot_match_t *match) {
 	} else {
 		// get the netname
 		BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 		playernum = PlayerFromName(netname);
 		other = qfalse;
 	}
@@ -1815,6 +1840,7 @@ void BotMatch_LeadTheWay(bot_state_t *bs, bot_match_t *match) {
 	}
 
 	bs->lead_teamgoal.entitynum = -1;
+
 	BotEntityInfo(playernum, &entinfo);
 	// if info is valid (in PVS)
 	if (entinfo.valid) {
@@ -1871,7 +1897,9 @@ void BotMatch_Kill(bot_state_t *bs, bot_match_t *match) {
 	if (playernum < 0) {
 		BotAI_BotInitialChat(bs, "whois", enemy, NULL);
 		BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 		playernum = PlayerFromName(netname);
+
 		BotEnterChat(bs->cs, playernum, CHAT_TELL);
 		return;
 	}
@@ -1937,6 +1965,7 @@ void BotMatch_CTF(bot_state_t *bs, bot_match_t *match) {
 	else if (gametype == GT_1FCTF) {
 		if (match->subtype & ST_1FCTFGOTFLAG) {
 			BotMatchVariable(match, NETNAME, netname, sizeof(netname));
+
 			bs->flagcarrier = PlayerFromName(netname);
 			bs->lastflagcapture_time = FloatTime();
 		}
@@ -1962,9 +1991,9 @@ void BotMatch_EnterGame(bot_state_t *bs, bot_match_t *match) {
 		notleader[playernum] = qfalse;
 	}
 	// NOTE: eliza chats will catch this
-	//if (playernum != bs->playernum) {
-	// 	Com_sprintf(buf, sizeof(buf), "heya %s", netname);
-	// 	EA_Say(bs->playernum, buf);
+	//if(playernum != bs->playernum) {
+	//	Com_sprintf(buf, sizeof(buf), "heya %s", netname);
+	//	EA_Say(bs->playernum, buf);
 	//}
 }
 

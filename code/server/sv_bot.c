@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -81,7 +87,7 @@ int SV_BotAllocateClient(void) {
 
 	SV_SetupPlayerEntity(player);
 
-	return ((int)(cl - svs.clients) & 0xFFFF)|((int)(player - svs.players) << 16);
+	return ((int)(cl - svs.clients)& 0xFFFF)|((int)(player - svs.players) << 16);
 }
 
 /*
@@ -101,6 +107,7 @@ void SV_BotFreeClient(int playerNum) {
 
 	client = player->client;
 	client->localPlayers[0] = NULL;
+
 	SV_FreeClient(client);
 
 	player->client = NULL;
@@ -147,7 +154,9 @@ void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *poin
 
 		parm0 = 0;
 		// ZTM: FIXME: Moved BUTTONS_GENERATED from engine to bg_misc.h, the Test function it self should move to game VM.
-		//if (svs.players[0].lastUsercmd.buttons & ~BUTTONS_GENERATED) parm0 |= 1;
+		//if(svs.players[0].lastUsercmd.buttons & ~BUTTONS_GENERATED) {
+		//	parm0 |= 1;
+		//}
 
 		if (bot_reachability->integer) {
 			parm0 |= 2;
@@ -481,7 +490,7 @@ static void BotImport_DebugLineShow(int line, vec3_t start, vec3_t end, int colo
 =======================================================================================================================================
 SV_ClientForPlayerNum
 
-ClientNum is for players array and we want client_t
+ClientNum is for players array and we want client_t.
 =======================================================================================================================================
 */
 client_t *SV_ClientForPlayerNum(int playerNum) {
@@ -497,7 +506,7 @@ client_t *SV_ClientForPlayerNum(int playerNum) {
 =======================================================================================================================================
 SV_ForceClientCommand
 
-Sends a client command for the specified playerNum
+Sends a client command for the specified playerNum.
 =======================================================================================================================================
 */
 void SV_ForceClientCommand(int playerNum, const char *command) {
@@ -555,8 +564,7 @@ int SV_BotLibSetup(void) {
 =======================================================================================================================================
 SV_BotLibShutdown
 
-Called when either the entire server is being killed, or it is changing to a
-different game directory.
+Called when either the entire server is being killed, or it is changing to a different game directory.
 =======================================================================================================================================
 */
 int SV_BotLibShutdown(void) {

@@ -1,30 +1,41 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- Bot chat AI.
-**************************************************************************************************************************************/
+/*****************************************************************************
+	* name:		ai_chat_sys.c
+	*
+	* desc:		bot chat AI
+	*
+	* $Archive: /MissionPack/code/game/ai_chat_sys.c $
+	*
+	*****************************************************************************/
 
 #include "g_local.h"
 #include "../botlib/botlib.h"
@@ -48,11 +59,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "syn.h" // synonyms
 #include "match.h" // string matching types and vars
 
-#define GetClearedHunkMemory(_s) trap_HeapMalloc(_s)
-#define GetClearedMemory(_s) trap_HeapMalloc(_s)
-#define FreeMemory(_data) trap_HeapFree(_data)
+#define GetClearedHunkMemory(_s)trap_HeapMalloc(_s)
+#define GetClearedMemory(_s)trap_HeapMalloc(_s)
+#define FreeMemory(_data)trap_HeapFree(_data)
 // escape character
-#define ESCAPE_CHAR 0x01 // '_'
+#define ESCAPE_CHAR 0x01 //'_'
+
 // "hi ", people, " ", 0, " entered the game"
 // becomes:
 // "hi _rpeople_ _v0_ entered the game"
@@ -72,11 +84,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define RCKFL_GENDERLESS	256 // bot must be genderless
 // time to ignore a chat message after using it
 #define CHATMESSAGE_RECENTTIME 20
+
 // the actuall chat messages
 typedef struct bot_chatmessage_s {
-	char *chatmessage; // chat message string
-	float time; // last time used
-	struct bot_chatmessage_s *next; // next chat message in a list
+	char *chatmessage;					// chat message string
+	float time;							// last time used
+	struct bot_chatmessage_s *next;		// next chat message in a list
 } bot_chatmessage_t;
 // bot chat type with chat lines
 typedef struct bot_chattype_s {
@@ -156,14 +169,14 @@ typedef struct bot_stringlist_s {
 } bot_stringlist_t;
 // chat state of a bot
 typedef struct bot_chatstate_s {
-	int gender; // 0 = it, 1 = female, 2 = male
-	int playernum; // player number
-	char name[32]; // name of the bot
+	int gender;								// 0 = it, 1 = female, 2 = male
+	int playernum;							// player number
+	char name[32];							// name of the bot
 	char chatmessage[MAX_MESSAGE_SIZE];
 	int handle;
 	// the console messages visible to the bot
-	bot_consolemessage_t *firstmessage; // first message is the first typed message
-	bot_consolemessage_t *lastmessage; // last message is the last typed message, bottom of console
+	bot_consolemessage_t *firstmessage;		// first message is the first typed message
+	bot_consolemessage_t *lastmessage;		// last message is the last typed message, bottom of console
 	// number of console messages stored in the state
 	int numconsolemessages;
 	// the bot chat lines
@@ -226,13 +239,13 @@ void InitConsoleMessageHeap(void) {
 	consolemessageheap[0].prev = NULL;
 	consolemessageheap[0].next = &consolemessageheap[1];
 
-	for (i = 1; i < MAX_MESSAGES - 1; i++) {
+	for (i = 1; i < MAX_MESSAGES-1; i++) {
 		consolemessageheap[i].prev = &consolemessageheap[i - 1];
 		consolemessageheap[i].next = &consolemessageheap[i + 1];
 	}
 
-	consolemessageheap[MAX_MESSAGES - 1].prev = &consolemessageheap[MAX_MESSAGES - 2];
-	consolemessageheap[MAX_MESSAGES - 1].next = NULL;
+	consolemessageheap[MAX_MESSAGES-1].prev = &consolemessageheap[MAX_MESSAGES-2];
+	consolemessageheap[MAX_MESSAGES-1].next = NULL;
 	// pointer to the free console messages
 	freeconsolemessages = consolemessageheap;
 }
@@ -382,10 +395,16 @@ int BotNextConsoleMessage(int chatstate, bot_consolemessage_t *cm) {
 		cm->handle = firstmsg->handle;
 		cm->time = firstmsg->time;
 		cm->type = firstmsg->type;
+
 		Q_strncpyz(cm->message, firstmsg->message, sizeof(cm->message));
-		// We omit setting the two pointers in cm because pointer size in the VM differs between the size in the engine on 64 bit
-		// machines, which would lead to a buffer overflow if this functions is called from the VM. The pointers are of no interest
-		// to functions calling BotNextConsoleMessage anyways.
+		/*
+		We omit setting the two pointers in cm because pointer
+		 * size in the VM differs between the size in the engine on
+		 * 64 bit machines, which would lead to a buffer overflow if
+		 * this functions is called from the VM. The pointers are
+		 * of no interest to functions calling
+		 * BotNextConsoleMessage anyways.
+		 */
 		return cm->handle;
 	}
 
@@ -416,7 +435,7 @@ IsWhiteSpace
 */
 int IsWhiteSpace(char c) {
 
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '(' || c == ')' || c == '?' || c == ':' || c == '\'' || c == '/' || c == ',' || c == '.' || c == '[' || c == ']' || c == '-' || c == '_' || c == '+' || c == '=') {
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '(' || c == ')' || c == '?' || c == ':' || c == '\''|| c == '/' || c == ',' || c == '.' || c == '[' || c == ']' || c == '-' || c == '_' || c == '+' || c == '=') {
 		return qfalse;
 	}
 
@@ -448,9 +467,7 @@ void UnifyWhiteSpaces(char *string) {
 	char *ptr, *oldptr;
 
 	for (ptr = oldptr = string; *ptr; oldptr = ptr) {
-		while (*ptr && IsWhiteSpace(*ptr)) {
-			ptr++;
-		}
+		while (*ptr && IsWhiteSpace(*ptr))ptr++;
 
 		if (ptr > oldptr) {
 			// if not at the start and not at the end of the string
@@ -567,7 +584,7 @@ void StringReplaceWords(char *string, char *synonym, char *replacement) {
 	// if the synonym occured in the string
 	while (str) {
 		// if the synonym isn't part of the replacement which is already in the string
-		// useful for abbreviations
+		// usefull for abreviations
 		str2 = StringContainsWord(string, replacement, qfalse);
 
 		while (str2) {
@@ -579,12 +596,12 @@ void StringReplaceWords(char *string, char *synonym, char *replacement) {
 		}
 
 		if (!str2) {
-			memmove(str + strlen(replacement), str + strlen(synonym), strlen(str + strlen(synonym)) + 1);
-			// append the synonym replacement
+			memmove(str + strlen(replacement), str + strlen(synonym), strlen(str+strlen(synonym)) + 1);
+			// append the synonum replacement
 			Com_Memcpy(str, replacement, strlen(replacement));
 		}
 		// find the next synonym in the string
-		str = StringContainsWord(str + strlen(replacement), synonym, qfalse);
+		str = StringContainsWord(str+strlen(replacement), synonym, qfalse);
 	}
 }
 #if 0
@@ -643,8 +660,8 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename) {
 	synonym = NULL; // make compiler happy
 	// the synonyms are parsed in two phases
 	for (pass = 0; pass < 2; pass++) {
-		if (pass && size) {
-			ptr = (char *)GetClearedHunkMemory(size);
+		if (pass && size)ptr = (char *) {
+			GetClearedHunkMemory(size);
 		}
 
 		source = trap_PC_LoadSource(filename, BOTFILESBASEFOLDER);
@@ -656,6 +673,7 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename) {
 
 		context = 0;
 		contextlevel = 0;
+
 		synlist = NULL; // list synonyms
 		lastsyn = NULL; // last synonym in the list
 
@@ -680,7 +698,7 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename) {
 					contextlevel--;
 
 					if (contextlevel < 0) {
-						PC_SourceError(source, "too many }");
+						PC_SourceError(source, "too many}");
 						trap_PC_FreeSource(source);
 						return NULL;
 					}
@@ -711,7 +729,8 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename) {
 					while (1) {
 						size_t len;
 
-						if (!PC_ExpectTokenString(source, "(") || !PC_ExpectTokenType(source, TT_STRING, 0, &token)) {
+						if (!PC_ExpectTokenString(source, "(") ||
+							!PC_ExpectTokenType(source, TT_STRING, 0, &token)) {
 							trap_PC_FreeSource(source);
 							return NULL;
 						}
@@ -744,7 +763,9 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename) {
 
 						numsynonyms++;
 
-						if (!PC_ExpectTokenString(source, ",") || !PC_ExpectTokenType(source, TT_NUMBER, 0, &token) || !PC_ExpectTokenString(source, ")")) {
+						if (!PC_ExpectTokenString(source, ",") ||
+							!PC_ExpectTokenType(source, TT_NUMBER, 0, &token) ||
+							!PC_ExpectTokenString(source, ")")) {
 							trap_PC_FreeSource(source);
 							return NULL;
 						}
@@ -755,7 +776,7 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename) {
 						}
 
 						if (PC_CheckTokenString(source, "]")) {
-							break;
+							break;;
 						}
 
 						if (!PC_ExpectTokenString(source, ",")) {
@@ -780,13 +801,12 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename) {
 		trap_PC_FreeSource(source);
 
 		if (contextlevel > 0) {
-			PC_SourceError(source, "missing }");
+			PC_SourceError(source, "missing}");
 			return NULL;
 		}
 	}
 
 	BotAI_Print(PRT_DEVELOPER, "loaded %s\n", filename);
-
 	//BotDumpSynonymList(synlist);
 
 	return synlist;
@@ -795,8 +815,6 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename) {
 /*
 =======================================================================================================================================
 BotReplaceSynonyms
-
-Replace all the synonyms in the string.
 =======================================================================================================================================
 */
 void BotReplaceSynonyms(char *string, unsigned long int context) {
@@ -901,7 +919,7 @@ void BotReplaceReplySynonyms(char *string, unsigned long int context) {
 				}
 
 				memmove(str1 + strlen(replacement), str1 + strlen(synonym->string), strlen(str1 + strlen(synonym->string)) + 1);
-				// append the synonym replacement
+				// append the synonum replacement
 				Com_Memcpy(str1, replacement, strlen(replacement));
 				break;
 			}
@@ -934,9 +952,7 @@ int BotLoadChatMessage(int source, char *chatmessagestring) {
 	*ptr = 0;
 
 	while (1) {
-		if (!PC_ExpectAnyToken(source, &token)) {
-			return qfalse;
-		}
+		if (!PC_ExpectAnyToken(source, &token)) return qfalse;
 		// fixed string
 		if (token.type == TT_STRING) {
 			if (strlen(ptr) + strlen(token.string) + 1 > MAX_MESSAGE_SIZE) {
@@ -1000,8 +1016,8 @@ void BotDumpRandomStringList(bot_randomlist_t *randomlist) {
 		for (rs = random->firstrandomstring; rs; rs = rs->next) {
 			fprintf(fp, "\"%s\"", rs->string);
 
-			if (rs->next) {
-				fprintf(fp, ", ");
+			if (rs->next)fprintf {
+				(fp, ", ");
 			} else {
 				fprintf(fp, "}\n");
 			}
@@ -1023,7 +1039,7 @@ bot_randomlist_t *BotLoadRandomStrings(char *filename) {
 	bot_randomstring_t *randomstring;
 #ifdef DEBUG
 	int starttime = Sys_MilliSeconds();
-#endif // DEBUG
+#endif //DEBUG
 	if (!*filename) {
 		return NULL;
 	}
@@ -1039,7 +1055,7 @@ bot_randomlist_t *BotLoadRandomStrings(char *filename) {
 
 		source = trap_PC_LoadSource(filename, BOTFILESBASEFOLDER);
 
-		if (!source {
+		if (!source) {
 			BotAI_Print(PRT_ERROR, "counldn't load %s\n", filename);
 			return NULL;
 		}
@@ -1078,7 +1094,8 @@ bot_randomlist_t *BotLoadRandomStrings(char *filename) {
 				lastrandom = random;
 			}
 
-			if (!PC_ExpectTokenString(source, "=") || !PC_ExpectTokenString(source, "{")) {
+			if (!PC_ExpectTokenString(source, "=") ||
+				!PC_ExpectTokenString(source, "{")) {
 				trap_PC_FreeSource(source);
 				return NULL;
 			}
@@ -1099,7 +1116,6 @@ bot_randomlist_t *BotLoadRandomStrings(char *filename) {
 					randomstring->string = ptr;
 					ptr += len;
 					strcpy(randomstring->string, chatmessagestring);
-
 					random->numstrings++;
 					randomstring->next = random->firstrandomstring;
 					random->firstrandomstring = randomstring;
@@ -1113,7 +1129,7 @@ bot_randomlist_t *BotLoadRandomStrings(char *filename) {
 	BotAI_Print(PRT_DEVELOPER, "loaded %s\n", filename);
 #ifdef DEBUG
 	BotAI_Print(PRT_DEVELOPER, "random strings %d msec\n", Sys_MilliSeconds() - starttime);
-	//BotDumpRandomStringList(randomlist);
+	// BotDumpRandomStringList(randomlist);
 #endif // DEBUG
 	return randomlist;
 }
@@ -1133,9 +1149,7 @@ char *RandomString(char *name) {
 			i = random() * random->numstrings;
 
 			for (rs = random->firstrandomstring; rs; rs = rs->next) {
-				if (--i < 0) {
-					break;
-				}
+				if (--i < 0)break;
 			}
 
 			if (rs) {
@@ -1255,7 +1269,6 @@ bot_matchpiece_t *BotLoadMatchPieces(int source, char *endtoken) {
 			} else {
 				firstpiece = matchpiece;
 			}
-
 			lastpiece = matchpiece;
 		} else if (token.type == TT_STRING) {
 			matchpiece = (bot_matchpiece_t *)GetClearedHunkMemory(sizeof(bot_matchpiece_t));
@@ -1434,7 +1447,6 @@ bot_matchtemplate_t *BotLoadMatchTemplates(char *matchfile) {
 	// free the source
 	trap_PC_FreeSource(source);
 	BotAI_Print(PRT_DEVELOPER, "loaded %s\n", matchfile);
-
 	//BotDumpMatchTemplates(matches);
 
 	return matches;
@@ -1467,14 +1479,17 @@ int StringsMatch(bot_matchpiece_t *pieces, bot_match_t *match) {
 					newstrptr = strptr;
 					break;
 				}
+
 				//Log_Write("MT_STRING: %s", mp->string);
+
 				index = StringContains(strptr, ms->string, qfalse);
 
 				if (index >= 0) {
 					newstrptr = strptr + index;
 
 					if (lastvariable >= 0) {
-						match->variables[lastvariable].length = (newstrptr - match->string) - match->variables[lastvariable].offset; // newstrptr - match->variables[lastvariable].ptr;
+						match->variables[lastvariable].length = (newstrptr - match->string) - match->variables[lastvariable].offset;
+						// newstrptr - match->variables[lastvariable].ptr;
 						lastvariable = -1;
 						break;
 					} else if (index == 0) {
@@ -1522,8 +1537,8 @@ int BotFindMatch(char *str, bot_match_t *match, unsigned long int context) {
 
 	strncpy(match->string, str, MAX_MESSAGE_SIZE);
 	// remove any trailing enters
-	while (strlen(match->string) && match->string[strlen(match->string) - 1] == '\n') {
-		match->string[strlen(match->string) - 1] = '\0';
+	while (strlen(match->string) && match->string[strlen(match->string) -1] == '\n') {
+		match->string[strlen(match->string) -1] = '\0';
 	}
 	// compare the string with all the match strings
 	for (ms = matchtemplates; ms; ms = ms->next) {
@@ -1531,9 +1546,7 @@ int BotFindMatch(char *str, bot_match_t *match, unsigned long int context) {
 			continue;
 		}
 		// reset the match variable offsets
-		for (i = 0; i < MAX_MATCHVARIABLES; i++) {
-			match->variables[i].offset = -1;
-		}
+		for (i = 0; i < MAX_MATCHVARIABLES; i++)match->variables[i].offset = -1;
 
 		if (StringsMatch(ms->first, match)) {
 			match->type = ms->type;
@@ -1559,8 +1572,7 @@ int BotMatchTemplatesContainsString(const char *findstr) {
 
 	// compare the string with all the match strings
 	for (mt = matchtemplates; mt; mt = mt->next) {
-		// if (!(mt->context & context))continue;
-
+		// if(!(mt->context & context))continue;
 		for (mp = mt->first; mp; mp = mp->next) {
 			// if it is a piece of string
 			if (mp->type == MT_STRING) {
@@ -1568,9 +1580,7 @@ int BotMatchTemplatesContainsString(const char *findstr) {
 					if (!strlen(ms->string)) {
 						break;
 					}
-
-					// Log_Write("MT_STRING: %s", mp->string);
-
+					//Log_Write("MT_STRING: %s", mp->string);
 					if (strstr(ms->string, findstr) != NULL) {
 						return qtrue;
 					}
@@ -1641,13 +1651,11 @@ bot_stringlist_t *BotCheckChatMessageIntegrety(char *message, bot_stringlist_t *
 	while (*msgptr) {
 		if (*msgptr == ESCAPE_CHAR) {
 			msgptr++;
-
 			switch (*msgptr) {
 				case 'v': // variable
 				{
 					// step over the 'v'
 					msgptr++;
-
 					while (*msgptr && *msgptr != ESCAPE_CHAR) {
 						msgptr++;
 					}
@@ -1663,7 +1671,7 @@ bot_stringlist_t *BotCheckChatMessageIntegrety(char *message, bot_stringlist_t *
 					// step over the 'r'
 					msgptr++;
 
-					for (i = 0; (*msgptr && *msgptr != ESCAPE_CHAR); i++) {
+					for (i = 0;(*msgptr && *msgptr != ESCAPE_CHAR); i++) {
 						temp[i] = *msgptr++;
 					}
 
@@ -1675,7 +1683,7 @@ bot_stringlist_t *BotCheckChatMessageIntegrety(char *message, bot_stringlist_t *
 					// find the random keyword
 					if (!RandomString(temp)) {
 						if (!BotFindStringInList(stringlist, temp)) {
-							BotAI_Print(PRT_ERROR, "%s = {\"%s\"} // MISSING RANDOM\r\n", temp, temp);
+							BotAI_Print(PRT_ERROR, "%s = {\"%s\"} //MISSING RANDOM\r\n", temp, temp);
 							s = GetClearedMemory(sizeof(bot_stringlist_t) + strlen(temp) + 1);
 							s->string = (char *)s + sizeof(bot_stringlist_t);
 							strcpy(s->string, temp);
@@ -1686,11 +1694,12 @@ bot_stringlist_t *BotCheckChatMessageIntegrety(char *message, bot_stringlist_t *
 
 					break;
 				}
+
 				default:
 				{
 					BotAI_Print(PRT_FATAL, "BotCheckChatMessageIntegrety: message \"%s\" invalid escape char\n", message);
 					break;
-				}
+				} // end default
 			}
 		} else {
 			msgptr++;
@@ -1874,7 +1883,7 @@ void BotCheckValidReplyChatKeySet(int source, bot_replychatkey_t *keys) {
 	hasvariableskey = hasstringkey = qfalse;
 
 	for (key = keys; key; key = key->next) {
-		if (!(key->flags & (RCKFL_AND|RCKFL_NOT))) {
+		if (!(key->flags &(RCKFL_AND|RCKFL_NOT))) {
 			allprefixed = qfalse;
 
 			if (key->flags & RCKFL_VARIABLES) {
@@ -1954,7 +1963,7 @@ void BotCheckValidReplyChatKeySet(int source, bot_replychatkey_t *keys) {
 	}
 
 	if (hasvariableskey && hasstringkey) {
-		PC_SourceWarning(source, "variables from the match template(s) could be invalid when outputting one of the chat messages");
+		PC_SourceWarning(source, "variables from the match template(s)could be invalid when outputting one of the chat messages");
 	}
 }
 
@@ -2054,6 +2063,7 @@ bot_replychat_t *BotLoadReplyChat(char *filename) {
 				}
 
 				key->string = (char *)GetClearedHunkMemory(strlen(namebuffer) + 1);
+
 				strcpy(key->string, namebuffer);
 			} else { // normal string key
 				key->flags |= RCKFL_STRING;
@@ -2065,6 +2075,7 @@ bot_replychat_t *BotLoadReplyChat(char *filename) {
 				}
 
 				key->string = (char *)GetClearedHunkMemory(strlen(token.string) + 1);
+
 				strcpy(key->string, token.string);
 			}
 
@@ -2073,7 +2084,8 @@ bot_replychat_t *BotLoadReplyChat(char *filename) {
 
 		BotCheckValidReplyChatKeySet(source, replychat->keys);
 		// read the = sign and the priority
-		if (!PC_ExpectTokenString(source, "=") || !PC_ExpectTokenType(source, TT_NUMBER, 0, &token)) {
+		if (!PC_ExpectTokenString(source, "=") ||
+			!PC_ExpectTokenType(source, TT_NUMBER, 0, &token)) {
 			BotFreeReplyChat(replychatlist);
 			trap_PC_FreeSource(source);
 			return NULL;
@@ -2088,7 +2100,7 @@ bot_replychat_t *BotLoadReplyChat(char *filename) {
 		}
 
 		replychat->numchatmessages = 0;
-		// while the trailing } is not found
+		// while the trailing} is not found
 		while (!PC_CheckTokenString(source, "}")) {
 			if (!BotLoadChatMessage(source, chatmessagestring)) {
 				BotFreeReplyChat(replychatlist);
@@ -2099,7 +2111,7 @@ bot_replychat_t *BotLoadReplyChat(char *filename) {
 			chatmessage = (bot_chatmessage_t *)GetClearedHunkMemory(sizeof(bot_chatmessage_t) + strlen(chatmessagestring) + 1);
 			chatmessage->chatmessage = (char *)chatmessage + sizeof(bot_chatmessage_t);
 			strcpy(chatmessage->chatmessage, chatmessagestring);
-			chatmessage->time = -2 * CHATMESSAGE_RECENTTIME;
+			chatmessage->time = -2*CHATMESSAGE_RECENTTIME;
 			chatmessage->next = replychat->firstchatmessage;
 			// add the chat message to the reply chat
 			replychat->firstchatmessage = chatmessage;
@@ -2109,7 +2121,6 @@ bot_replychat_t *BotLoadReplyChat(char *filename) {
 
 	trap_PC_FreeSource(source);
 	BotAI_Print(PRT_DEVELOPER, "loaded %s\n", filename);
-
 	//BotDumpReplyChat(replychatlist);
 
 	if (bot_developer.integer) {
@@ -2222,7 +2233,8 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname) {
 							return NULL;
 						}
 						// expect the chat type name
-						if (!PC_ExpectTokenType(source, TT_STRING, 0, &token) || !PC_ExpectTokenString(source, "{")) {
+						if (!PC_ExpectTokenType(source, TT_STRING, 0, &token) ||
+							!PC_ExpectTokenString(source, "{")) {
 							trap_PC_FreeSource(source);
 							return NULL;
 						}
@@ -2252,7 +2264,7 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname) {
 
 							if (pass && ptr) {
 								chatmessage = (bot_chatmessage_t *)ptr;
-								chatmessage->time = -2 * CHATMESSAGE_RECENTTIME;
+								chatmessage->time = -2*CHATMESSAGE_RECENTTIME;
 								// put the chat message in the list
 								chatmessage->next = chattype->firstchatmessage;
 								chattype->firstchatmessage = chatmessage;
@@ -2300,7 +2312,6 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname) {
 	}
 
 	BotAI_Print(PRT_DEVELOPER, "loaded %s from %s\n", chatname, chatfile);
-
 	//BotDumpInitialChat(chat);
 
 	if (bot_developer.integer) {
@@ -2308,7 +2319,7 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname) {
 	}
 #ifdef DEBUG
 	BotAI_Print(PRT_DEVELOPER, "initial chats loaded in %d msec\n", Sys_MilliSeconds() - starttime);
-#endif // DEBUG
+#endif //DEBUG
 	// character was read successfully
 	return chat;
 }
@@ -2466,11 +2477,12 @@ int BotExpandChatMessage(char *outmessage, char *message, unsigned long mcontext
 
 					break;
 				}
+
 				case 'r': // random
 				{
 					msgptr++;
 
-					for (i = 0; (*msgptr && *msgptr != ESCAPE_CHAR); i++) {
+					for (i = 0;(*msgptr && *msgptr != ESCAPE_CHAR); i++) {
 						temp[i] = *msgptr++;
 					}
 
@@ -2497,6 +2509,7 @@ int BotExpandChatMessage(char *outmessage, char *message, unsigned long mcontext
 					expansion = qtrue;
 					break;
 				}
+
 				default:
 				{
 					BotAI_Print(PRT_FATAL, "BotConstructChat: message \"%s\" invalid escape char\n", message);
@@ -2664,7 +2677,7 @@ void BotInitialChat(int chatstate, char *type, int mcontext, char *var0, char *v
 	if (!message) {
 #ifdef DEBUG
 		BotAI_Print(PRT_MESSAGE, "no chat messages of type %s\n", type);
-#endif // DEBUG
+#endif //DEBUG
 		return;
 	}
 
@@ -3080,7 +3093,7 @@ void BotSetChatName(int chatstate, char *name, int playernum) {
 	Com_Memset(cs->name, 0, sizeof(cs->name));
 
 	strncpy(cs->name, name, sizeof(cs->name));
-	cs->name[sizeof(cs->name) - 1] = '\0';
+	cs->name[sizeof(cs->name) -1] = '\0';
 }
 
 /*

@@ -1,30 +1,41 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- Weapon AI.
-**************************************************************************************************************************************/
+/*****************************************************************************
+	* name:		ai_weap.c
+	*
+	* desc:		weapon AI
+	*
+	* $Archive: /MissionPack/code/game/ai_weap.c $
+	*
+	*****************************************************************************/
 
 #include "g_local.h"
 #include "../botlib/botlib.h"
@@ -50,38 +61,38 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "match.h" // string matching types and vars
 
 //#define DEBUG_AI_WEAP
-
 // structure field offsets
 #define WEAPON_OFS(x) (size_t)&(((weaponinfo_t *)0)->x)
 #define PROJECTILE_OFS(x) (size_t)&(((projectileinfo_t *)0)->x)
 // weapon definition
 static fielddef_t weaponinfo_fields[] = {
-	{"number", WEAPON_OFS(number), FT_INT},						// weapon number
-	{"name", WEAPON_OFS(name), FT_STRING},						// name of the weapon
+	{"number", WEAPON_OFS(number), FT_INT},							// weapon number
+	{"name", WEAPON_OFS(name), FT_STRING},							// name of the weapon
 	{"level", WEAPON_OFS(level), FT_INT},
-	{"model", WEAPON_OFS(model), FT_STRING},					// model of the weapon
-	{"weaponindex", WEAPON_OFS(weaponindex), FT_INT},			// index of weapon in inventory
-	{"flags", WEAPON_OFS(flags), FT_INT},						// special flags
-	{"projectile", WEAPON_OFS(projectile), FT_STRING},			// projectile used by the weapon
-	{"numprojectiles", WEAPON_OFS(numprojectiles), FT_INT},		// number of projectiles
-	{"hspread", WEAPON_OFS(hspread), FT_FLOAT},					// horizontal spread of projectiles (degrees from middle)
-	{"vspread", WEAPON_OFS(vspread), FT_FLOAT},					// vertical spread of projectiles (degrees from middle)
-	{"speed", WEAPON_OFS(speed), FT_FLOAT},						// speed of the projectile (0 = instant hit)
-	{"acceleration", WEAPON_OFS(acceleration), FT_FLOAT},		// "acceleration" * time (in seconds) + "speed" = projectile speed
-	{"recoil", WEAPON_OFS(recoil), FT_FLOAT|FT_ARRAY, 3},		// amount of recoil the player gets from the weapon
-	{"offset", WEAPON_OFS(offset), FT_FLOAT|FT_ARRAY, 3},		// projectile start offset relative to eye and view angles
-	{"angleoffset", WEAPON_OFS(angleoffset), FT_FLOAT|FT_ARRAY, 3}, // offset of the shoot angles relative to the view angles
-	{"extrazvelocity", WEAPON_OFS(extrazvelocity), FT_FLOAT},	// extra z velocity the projectile gets
-	{"ammoamount", WEAPON_OFS(ammoamount), FT_INT},				// ammo amount used per shot
-	{"ammoindex", WEAPON_OFS(ammoindex), FT_INT},				// index of ammo in inventory
-	{"activate", WEAPON_OFS(activate), FT_FLOAT},				// time it takes to select the weapon
-	{"reload", WEAPON_OFS(reload), FT_FLOAT},					// time it takes to reload the weapon
-	{"spinup", WEAPON_OFS(spinup), FT_FLOAT},					// time it takes before first shot
-	{"spindown", WEAPON_OFS(spindown), FT_FLOAT},				// time it takes before weapon stops firing
+	{"model", WEAPON_OFS(model), FT_STRING},						// model of the weapon
+	{"weaponindex", WEAPON_OFS(weaponindex), FT_INT},				// index of weapon in inventory
+	{"flags", WEAPON_OFS(flags), FT_INT},							// special flags
+	{"projectile", WEAPON_OFS(projectile), FT_STRING},				// projectile used by the weapon
+	{"numprojectiles", WEAPON_OFS(numprojectiles), FT_INT},			// number of projectiles
+	{"hspread", WEAPON_OFS(hspread), FT_FLOAT},						// horizontal spread of projectiles (degrees from middle)
+	{"vspread", WEAPON_OFS(vspread), FT_FLOAT},						// vertical spread of projectiles (degrees from middle)
+	{"speed", WEAPON_OFS(speed), FT_FLOAT},							// speed of the projectile (0 = instant hit)
+	{"acceleration", WEAPON_OFS(acceleration), FT_FLOAT},			// "acceleration" * time (in seconds) + "speed" = projectile speed
+	{"recoil", WEAPON_OFS(recoil), FT_FLOAT|FT_ARRAY, 3},			// amount of recoil the player gets from the weapon
+	{"offset", WEAPON_OFS(offset), FT_FLOAT|FT_ARRAY, 3},			// projectile start offset relative to eye and view angles
+	{"angleoffset", WEAPON_OFS(angleoffset), FT_FLOAT|FT_ARRAY, 3},	// offset of the shoot angles relative to the view angles
+	{"extrazvelocity", WEAPON_OFS(extrazvelocity), FT_FLOAT},		// extra z velocity the projectile gets
+	{"ammoamount", WEAPON_OFS(ammoamount), FT_INT},					// ammo amount used per shot
+	{"ammoindex", WEAPON_OFS(ammoindex), FT_INT},					// index of ammo in inventory
+	{"activate", WEAPON_OFS(activate), FT_FLOAT},					// time it takes to select the weapon
+	{"reload", WEAPON_OFS(reload), FT_FLOAT},						// time it takes to reload the weapon
+	{"spinup", WEAPON_OFS(spinup), FT_FLOAT},						// time it takes before first shot
+	{"spindown", WEAPON_OFS(spindown), FT_FLOAT},					// time it takes before weapon stops firing
 	{NULL, 0, 0, 0}
 };
+
 // projectile definition
-static fielddef_t projectileinfo_fields[] = {
+static fielddef_t projectileinfo_fields[] = 	{
 	{"name", PROJECTILE_OFS(name), FT_STRING},				// name of the projectile
 	{"model", PROJECTILE_OFS(model), FT_STRING},			// model of the projectile
 	{"flags", PROJECTILE_OFS(flags), FT_INT},				// special flags
@@ -96,14 +107,13 @@ static fielddef_t projectileinfo_fields[] = {
 	{"bounce", PROJECTILE_OFS(bounce), FT_FLOAT},			// amount the projectile bounces
 	{"bouncefric", PROJECTILE_OFS(bouncefric), FT_FLOAT},	// amount the bounce decreases per bounce
 	{"bouncestop", PROJECTILE_OFS(bouncestop), FT_FLOAT},	// minimum bounce value before bouncing stops
-	// recurive projectile definition??
+// recurive projectile definition??
 	{NULL, 0, 0, 0}
 };
 
 static structdef_t weaponinfo_struct = {
 	sizeof(weaponinfo_t), weaponinfo_fields
 };
-
 static structdef_t projectileinfo_struct = {
 	sizeof(projectileinfo_t), projectileinfo_fields
 };
@@ -181,6 +191,7 @@ qboolean LoadWeaponConfig(char *filename) {
 	weaponinfo_t weaponinfo;
 
 	Q_strncpyz(path, filename, sizeof(path));
+
 	source = trap_PC_LoadSource(path, BOTFILESBASEFOLDER);
 
 	if (!source) {
@@ -270,6 +281,7 @@ qboolean LoadWeaponConfig(char *filename) {
 	}
 
 	BotAI_Print(PRT_DEVELOPER, "loaded %s\n", path);
+
 	wc->valid = qtrue;
 	return qtrue;
 }
@@ -414,6 +426,7 @@ BotResetWeaponState
 =======================================================================================================================================
 */
 void BotResetWeaponState(int weaponstate) {
+
 }
 
 /*

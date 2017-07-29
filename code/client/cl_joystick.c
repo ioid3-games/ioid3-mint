@@ -1,27 +1,32 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
 #include "client.h"
 
 typedef struct {
@@ -40,13 +45,15 @@ typedef struct {
 
 joyDevice_t joyDevice[CL_MAX_SPLITVIEW];
 int playerJoyRemapIndex[CL_MAX_SPLITVIEW];
-// joystick remaps are not cross - platform
+// joystick remaps are not cross-platform
 #ifdef _WIN32
 // use generic "windows" instead of being separate for mingw/msvc and 32/64 bit
 #define JOY_PLATFORM "windows"
 #else
 #define JOY_PLATFORM OS_STRING
 #endif
+
+
 /*
 =======================================================================================================================================
 CL_StringToJoyEvent
@@ -85,13 +92,14 @@ qboolean CL_StringToJoyEvent(char *str, joyevent_t *event) {
 		return qtrue;
 	} else if (str[0] == '+' || str[0] == '-') {
 		// +axis0
-		if (!Q_stricmpn(str + 1, "axis", 4)) {
+		if (!Q_stricmpn(str+1, "axis", 4)) {
 			event->type = JOYEVENT_AXIS;
 			event->value.axis.num = atoi(&str[5]);
 			event->value.axis.sign = (str[0] == '+') ? 1 : -1;
 			return qtrue;
+		}
 		// +a0
-		} else if (str[1] == 'a') {
+		else if (str[1] == 'a') {
 			event->type = JOYEVENT_AXIS;
 			event->value.axis.num = atoi(&str[2]);
 			event->value.axis.sign = (str[0] == '+') ? 1 : -1;
@@ -133,7 +141,7 @@ char *CL_JoyEventToString(const joyevent_t *event) {
 =======================================================================================================================================
 CL_JoyEventsMatch
 
-Returns qtrue if events are the same.
+Returns qtrue if events are the same
 =======================================================================================================================================
 */
 qboolean CL_JoyEventsMatch(const joyevent_t *e1, const joyevent_t *e2) {
@@ -172,6 +180,7 @@ qboolean CL_SetKeyForJoyEvent(int localPlayerNum, const joyevent_t *joyevent, in
 	}
 
 	device = &joyDevice[playerJoyRemapIndex[localPlayerNum]];
+
 	// always remap to main joystick enum range
 	if (keynum >= K_FIRST_2JOY && keynum <= K_LAST_2JOY) {
 		keynum = K_FIRST_JOY + keynum - K_FIRST_2JOY;
@@ -262,7 +271,7 @@ int CL_GetKeyForJoyEvent(int localPlayerNum, const joyevent_t *joyevent) {
 =======================================================================================================================================
 CL_GetJoyEventForKey
 
-Sets joyevent and returns index(for using with startIndex to find multiple joyevents).
+Sets joyevent and returns index (for using with startIndex to find multiple joyevents).
 =======================================================================================================================================
 */
 int CL_GetJoyEventForKey(int localPlayerNum, int keynum, int startIndex, joyevent_t *joyevent) {
@@ -316,7 +325,7 @@ void Cmd_JoyUnmap_f(void) {
 	localPlayerNum = Com_LocalPlayerForCvarName(Cmd_Argv(0));
 
 	if (playerJoyRemapIndex[localPlayerNum] == -1) {
-		Com_Printf("Joystick for player %d not initialized\n", localPlayerNum + 1);
+		Com_Printf("Joystick for player %d not initialized\n", localPlayerNum+1);
 		return;
 	}
 
@@ -342,7 +351,7 @@ void Cmd_JoyUnmapAll_f(void) {
 	localPlayerNum = Com_LocalPlayerForCvarName(Cmd_Argv(0));
 
 	if (playerJoyRemapIndex[localPlayerNum] == -1) {
-		Com_Printf("Joystick for player %d not initialized\n", localPlayerNum + 1);
+		Com_Printf("Joystick for player %d not initialized\n", localPlayerNum+1);
 		return;
 	}
 
@@ -371,7 +380,7 @@ void Cmd_JoyRemap_f(void) {
 	localPlayerNum = Com_LocalPlayerForCvarName(Cmd_Argv(0));
 
 	if (playerJoyRemapIndex[localPlayerNum] == -1) {
-		Com_Printf("Joystick for player %d not initialized\n", localPlayerNum + 1);
+		Com_Printf("Joystick for player %d not initialized\n", localPlayerNum+1);
 		return;
 	}
 
@@ -394,7 +403,7 @@ void Cmd_JoyRemap_f(void) {
 
 	key = Key_StringToKeynum(Cmd_Argv(2));
 
-	if (key == -1) {
+	if (key==-1) {
 		Com_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(2));
 		return;
 	}
@@ -417,7 +426,7 @@ void Cmd_JoyRemapList_f(void) {
 	localPlayerNum = Com_LocalPlayerForCvarName(Cmd_Argv(0));
 
 	if (playerJoyRemapIndex[localPlayerNum] == -1) {
-		Com_Printf("Joystick for player %d not initialized\n", localPlayerNum + 1);
+		Com_Printf("Joystick for player %d not initialized\n", localPlayerNum+1);
 		return;
 	}
 
@@ -440,7 +449,7 @@ void Cmd_JoyRemapList_f(void) {
 #if 0
 /*
 =======================================================================================================================================
-Cmd_CompleteJoyUnmap
+Cmd_CompleteJoyRemap
 =======================================================================================================================================
 */
 static void Cmd_CompleteJoyUnmap(char *args, int argNum) {
@@ -448,7 +457,7 @@ static void Cmd_CompleteJoyUnmap(char *args, int argNum) {
 	if (argNum == 2) {
 		// Skip "joyunmap "
 		char *p = Com_SkipTokens(args, 1, " ");
-		// ZTM: TODO: add completion for (existing) joystick event?
+		// ZTM: TODO: add completion for(existing)joystick event?
 	}
 }
 #endif
@@ -462,10 +471,10 @@ static void Cmd_CompleteJoyRemap(char *args, int argNum) {
 
 	if (argNum == 2) {
 		// Skip "joyremap "
-		//p = Com_SkipTokens(args, 1, " ");
-		// ZTM: TODO: add completion for (any) joystick event?
+		// p = Com_SkipTokens(args, 1, " ");
+		// ZTM: TODO: add completion for(any)joystick event?
 	} else if (argNum == 3) {
-		// Skip "joyremap <event>"
+		// Skip "joyremap <event> "
 		p = Com_SkipTokens(args, 2, " ");
 
 		if (p > args) {
@@ -487,7 +496,7 @@ void CL_InitJoyRemapCommands(void) {
 	for (i = 0; i < CL_MAX_SPLITVIEW; i++) {
 		playerJoyRemapIndex[i] = -1;
 
-		Cmd_AddCommand(Com_LocalPlayerCvarName(i, "joyremap"), Cmd_JoyRemap_f);
+		Cmd_AddCommand(Com_LocalPlayerCvarName(i, "joyremap"),Cmd_JoyRemap_f);
 		Cmd_SetCommandCompletionFunc(Com_LocalPlayerCvarName(i, "joyremap"), Cmd_CompleteJoyRemap);
 		Cmd_AddCommand(Com_LocalPlayerCvarName(i, "joyunmap"), Cmd_JoyUnmap_f);
 		//Cmd_SetCommandCompletionFunc(Com_LocalPlayerCvarName(i, "joyunmap"), Cmd_CompleteJoyUnmap);
@@ -568,7 +577,7 @@ void CL_CloseJoystickRemap(int localPlayerNum) {
 =======================================================================================================================================
 CL_OpenJoystickRemap
 
-JoystickIdent could be a name or hash.
+joystickIdent could be a name or hash
 =======================================================================================================================================
 */
 qboolean CL_OpenJoystickRemap(int localPlayerNum, const char *joystickName, const char *joystickIdent) {
@@ -621,16 +630,19 @@ qboolean CL_OpenJoystickRemap(int localPlayerNum, const char *joystickName, cons
 	joyDevice[i].references = 1;
 
 	Com_sprintf(filename, sizeof(filename), "joy-%s-%s.txt", JOY_PLATFORM, joyDevice[i].ident);
+
 	len = FS_SV_FOpenFileRead(filename, &f);
 
 	if (!f) {
 		return qfalse;
 	}
 
-	buffer = Hunk_AllocateTempMemory(len + 1);
+	buffer = Hunk_AllocateTempMemory(len+1);
+
 	FS_Read(buffer, len, f);
 	// guarantee that it will have a trailing 0 for string operations
 	buffer[len] = 0;
+
 	FS_FCloseFile(f);
 
 	text = buffer;

@@ -1,40 +1,44 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- Stateless support routines that are included in each code module.
-**************************************************************************************************************************************/
+// q_math.c -- stateless support routines that are included in each code module
 
-// Some of the vector functions are static inline in q_shared.h. q3asm doesn't understand static functions though, so we only want them
-// in one file. That's what this is about.
+// Some of the vector functions are static inline in q_shared.h. q3asm doesn't understand static functions though, so we only want them in
+// one file. That's what this is about.
 #ifdef Q3_VM
 #define __Q3_VM_MATH
 #endif
 
 #include "q_shared.h"
 
-vec3_t vec3_origin = {0, 0, 0};
+vec3_t vec3_origin = {0,0,0};
 vec3_t axisDefault[3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
 
 vec4_t colorBlack = {0, 0, 0, 1};
@@ -42,7 +46,7 @@ vec4_t colorRed = {1, 0, 0, 1};
 vec4_t colorGreen = {0, 1, 0, 1};
 vec4_t colorBlue = {0, 0, 1, 1};
 vec4_t colorYellow = {1, 1, 0, 1};
-vec4_t colorMagenta = {1, 0, 1, 1};
+vec4_t colorMagenta= {1, 0, 1, 1};
 vec4_t colorCyan = {0, 1, 1, 1};
 vec4_t colorWhite = {1, 1, 1, 1};
 vec4_t colorLtGrey = {0.75, 0.75, 0.75, 1};
@@ -69,9 +73,9 @@ vec3_t bytedirs[NUMVERTEXNORMALS] = {
 	{0.309017f, 0.500000f, 0.809017f}, {0.525731f, 0.000000f, 0.850651f},
 	{0.295242f, 0.000000f, 0.955423f}, {0.442863f, 0.238856f, 0.864188f},
 	{0.162460f, 0.262866f, 0.951056f}, {-0.681718f, 0.147621f, 0.716567f},
-	{-0.809017f, 0.309017f, 0.500000f}, {-0.587785f, 0.425325f, 0.688191f},
-	{-0.850651f, 0.525731f, 0.000000f}, {-0.864188f, 0.442863f, 0.238856f},
-	{-0.716567f, 0.681718f, 0.147621f}, {-0.688191f, 0.587785f, 0.425325f},
+	{-0.809017f, 0.309017f, 0.500000f},{-0.587785f, 0.425325f, 0.688191f},
+	{-0.850651f, 0.525731f, 0.000000f},{-0.864188f, 0.442863f, 0.238856f},
+	{-0.716567f, 0.681718f, 0.147621f},{-0.688191f, 0.587785f, 0.425325f},
 	{-0.500000f, 0.809017f, 0.309017f}, {-0.238856f, 0.864188f, 0.442863f},
 	{-0.425325f, 0.688191f, 0.587785f}, {-0.716567f, 0.681718f, -0.147621f},
 	{-0.500000f, 0.809017f, -0.309017f}, {-0.525731f, 0.850651f, 0.000000f},
@@ -80,21 +84,21 @@ vec3_t bytedirs[NUMVERTEXNORMALS] = {
 	{0.000000f, 1.000000f, 0.000000f}, {0.000000f, 0.955423f, 0.295242f},
 	{-0.262866f, 0.951056f, 0.162460f}, {0.238856f, 0.864188f, 0.442863f},
 	{0.262866f, 0.951056f, 0.162460f}, {0.500000f, 0.809017f, 0.309017f},
-	{0.238856f, 0.864188f, -0.442863f}, {0.262866f, 0.951056f, -0.162460f},
-	{0.500000f, 0.809017f, -0.309017f}, {0.850651f, 0.525731f, 0.000000f},
+	{0.238856f, 0.864188f, -0.442863f},{0.262866f, 0.951056f, -0.162460f},
+	{0.500000f, 0.809017f, -0.309017f},{0.850651f, 0.525731f, 0.000000f},
 	{0.716567f, 0.681718f, 0.147621f}, {0.716567f, 0.681718f, -0.147621f},
 	{0.525731f, 0.850651f, 0.000000f}, {0.425325f, 0.688191f, 0.587785f},
 	{0.864188f, 0.442863f, 0.238856f}, {0.688191f, 0.587785f, 0.425325f},
 	{0.809017f, 0.309017f, 0.500000f}, {0.681718f, 0.147621f, 0.716567f},
 	{0.587785f, 0.425325f, 0.688191f}, {0.955423f, 0.295242f, 0.000000f},
 	{1.000000f, 0.000000f, 0.000000f}, {0.951056f, 0.162460f, 0.262866f},
-	{0.850651f, -0.525731f, 0.000000f}, {0.955423f, -0.295242f, 0.000000f},
+	{0.850651f, -0.525731f, 0.000000f},{0.955423f, -0.295242f, 0.000000f},
 	{0.864188f, -0.442863f, 0.238856f}, {0.951056f, -0.162460f, 0.262866f},
 	{0.809017f, -0.309017f, 0.500000f}, {0.681718f, -0.147621f, 0.716567f},
 	{0.850651f, 0.000000f, 0.525731f}, {0.864188f, 0.442863f, -0.238856f},
 	{0.809017f, 0.309017f, -0.500000f}, {0.951056f, 0.162460f, -0.262866f},
 	{0.525731f, 0.000000f, -0.850651f}, {0.681718f, 0.147621f, -0.716567f},
-	{0.681718f, -0.147621f, -0.716567f}, {0.850651f, 0.000000f, -0.525731f},
+	{0.681718f, -0.147621f, -0.716567f},{0.850651f, 0.000000f, -0.525731f},
 	{0.809017f, -0.309017f, -0.500000f}, {0.864188f, -0.442863f, -0.238856f},
 	{0.951056f, -0.162460f, -0.262866f}, {0.147621f, 0.716567f, -0.681718f},
 	{0.309017f, 0.500000f, -0.809017f}, {0.425325f, 0.688191f, -0.587785f},
@@ -160,7 +164,7 @@ Q_random
 =======================================================================================================================================
 */
 float Q_random(int *seed) {
-	return (Q_rand(seed) & 0xffff) / (float)0x10000;
+	return (Q_rand(seed)& 0xffff) / (float)0x10000;
 }
 
 /*
@@ -208,11 +212,11 @@ signed short ClampShort(int i) {
 	return i;
 }
 
+// this isn't a real cheap function to call!
+
 /*
 =======================================================================================================================================
 DirToByte
-
-This isn't a real cheap function to call!
 =======================================================================================================================================
 */
 int DirToByte(vec3_t dir) {
@@ -255,7 +259,7 @@ void ByteToDir(int b, vec3_t dir) {
 
 /*
 =======================================================================================================================================
-ColorBytes3
+pw
 =======================================================================================================================================
 */
 unsigned ColorBytes3(float r, float g, float b) {
@@ -264,6 +268,7 @@ unsigned ColorBytes3(float r, float g, float b) {
 	((byte *)&i)[0] = r * 255;
 	((byte *)&i)[1] = g * 255;
 	((byte *)&i)[2] = b * 255;
+
 	return i;
 }
 
@@ -279,6 +284,7 @@ unsigned ColorBytes4(float r, float g, float b, float a) {
 	((byte *)&i)[1] = g * 255;
 	((byte *)&i)[2] = b * 255;
 	((byte *)&i)[3] = a * 255;
+
 	return i;
 }
 
@@ -315,7 +321,7 @@ float NormalizeColor(const vec3_t in, vec3_t out) {
 =======================================================================================================================================
 PlaneFromPoints
 
-Returns false if the triangle is degenerate. The normal will point out of the clock for clockwise ordered points.
+Returns false if the triangle is degenrate. The normal will point out of the clock for clockwise ordered points.
 =======================================================================================================================================
 */
 qboolean PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c) {
@@ -383,7 +389,6 @@ void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, f
 	zrot[0][0] = zrot[1][1] = zrot[2][2] = 1.0F;
 
 	rad = DEG2RAD(degrees);
-
 	zrot[0][0] = cos(rad);
 	zrot[0][1] = sin(rad);
 	zrot[1][0] = -sin(rad);
@@ -404,7 +409,7 @@ RotateAroundDirection
 */
 void RotateAroundDirection(vec3_t axis[3], float yaw) {
 
-	// create an arbitrary axis[1]
+	// create an arbitrary axis[1] 
 	PerpendicularVector(axis[1], axis[0]);
 	// rotate it around axis[0] by yaw
 	if (yaw) {
@@ -447,7 +452,7 @@ void vectoangles(const vec3_t value1, vec3_t angles) {
 			yaw += 360;
 		}
 
-		forward = sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
+		forward = sqrt(value1[0]*value1[0] + value1[1]*value1[1]);
 		pitch = (atan2(value1[2], forward) * 180 / M_PI);
 
 		if (pitch < 0) {
@@ -479,6 +484,7 @@ AxisClear
 =======================================================================================================================================
 */
 void AxisClear(vec3_t axis[3]) {
+
 	axis[0][0] = 1;
 	axis[0][1] = 0;
 	axis[0][2] = 0;
@@ -496,6 +502,7 @@ AxisCopy
 =======================================================================================================================================
 */
 void AxisCopy(vec3_t in[3], vec3_t out[3]) {
+
 	VectorCopy(in[0], out[0]);
 	VectorCopy(in[1], out[1]);
 	VectorCopy(in[2], out[2]);
@@ -525,12 +532,11 @@ void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal) {
 	vec3_t n;
 	float inv_denom;
 
-	inv_denom = DotProduct(normal, normal);
+	inv_denom =  DotProduct(normal, normal);
 #ifndef Q3_VM
 	assert(Q_fabs(inv_denom) != 0.0f); // zero vectors get here
 #endif
 	inv_denom = 1.0f / inv_denom;
-
 	d = DotProduct(normal, p) * inv_denom;
 
 	n[0] = normal[0] * inv_denom;
@@ -552,7 +558,8 @@ Given a normalized forward vector, create two other perpendicular vectors.
 void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up) {
 	float d;
 
-	// this rotate and negate guarantees a vector not colinear with the original
+	// this rotate and negate guarantees a vector
+	// not colinear with the original
 	right[1] = -forward[0];
 	right[2] = forward[1];
 	right[0] = forward[2];
@@ -570,6 +577,7 @@ VectorRotate
 =======================================================================================================================================
 */
 void VectorRotate(vec3_t in, vec3_t matrix[3], vec3_t out) {
+
 	out[0] = DotProduct(in, matrix[0]);
 	out[1] = DotProduct(in, matrix[1]);
 	out[2] = DotProduct(in, matrix[2]);
@@ -578,8 +586,6 @@ void VectorRotate(vec3_t in, vec3_t matrix[3], vec3_t out) {
 /*
 =======================================================================================================================================
 Q_rsqrt
-
-float q_rsqrt(float number)
 =======================================================================================================================================
 */
 float Q_rsqrt(float number) {
@@ -604,8 +610,8 @@ Q_fabs
 */
 float Q_fabs(float f) {
 	floatint_t fi;
-
 	fi.f = f;
+
 	fi.i &= 0x7FFFFFFF;
 	return fi.f;
 }
@@ -660,6 +666,7 @@ AnglesSubtract
 =======================================================================================================================================
 */
 void AnglesSubtract(vec3_t v1, vec3_t v2, vec3_t v3) {
+
 	v3[0] = AngleSubtract(v1[0], v2[0]);
 	v3[1] = AngleSubtract(v1[1], v2[1]);
 	v3[2] = AngleSubtract(v1[2], v2[2]);
@@ -671,7 +678,7 @@ AngleMod
 =======================================================================================================================================
 */
 float AngleMod(float a) {
-	a = (360.0 / 65536) * ((int)(a * (65536 / 360.0)) & 65535);
+	a = (360.0 / 65536) * ((int)(a * (65536/360.0)) & 65535);
 	return a;
 }
 
@@ -761,7 +768,7 @@ int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, struct cplane_s *p) {
 	// general case
 	dist[0] = dist[1] = 0;
 
-	if (p->signbits < 8) { // >= 8: default case is original code (dist[0] = dist[1] = 0)
+	if (p->signbits < 8) // >= 8: default case is original code(dist[0]=dist[1]=0) {
 		for (i = 0; i < 3; i++) {
 			b = (p->signbits >> i) & 1;
 			dist[b] += p->normal[i] * emaxs[i];
@@ -891,7 +898,6 @@ VectorNormalize
 =======================================================================================================================================
 */
 vec_t VectorNormalize(vec3_t v) {
-
 	// NOTE: TTimo - Apple G4 altivec source uses double?
 	float length, ilength;
 
@@ -921,9 +927,9 @@ vec_t VectorNormalize2(const vec3_t v, vec3_t out) {
 	length = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
 
 	if (length) {
-		// writing it this way allows gcc to recognize that rsqrt can be used
+		// writing it this way allows gcc to recognize that rsqrt can be used´´
 		ilength = 1 / (float)sqrt(length);
-		// sqrt(length) = length * (1 / sqrt(length))
+		// sqrt(length) = length * (1 / sqrt(length)) */
 		length *= ilength;
 		out[0] = v[0] * ilength;
 		out[1] = v[1] * ilength;
@@ -937,10 +943,11 @@ vec_t VectorNormalize2(const vec3_t v, vec3_t out) {
 
 /*
 =======================================================================================================================================
-VectorMA
+_VectorMA
 =======================================================================================================================================
 */
 void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc) {
+
 	vecc[0] = veca[0] + scale * vecb[0];
 	vecc[1] = veca[1] + scale * vecb[1];
 	vecc[2] = veca[2] + scale * vecb[2];
@@ -948,7 +955,7 @@ void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc) {
 
 /*
 =======================================================================================================================================
-DotProduct
+_DotProduct
 =======================================================================================================================================
 */
 vec_t _DotProduct(const vec3_t v1, const vec3_t v2) {
@@ -957,10 +964,11 @@ vec_t _DotProduct(const vec3_t v1, const vec3_t v2) {
 
 /*
 =======================================================================================================================================
-VectorSubtract
+_VectorSubtract
 =======================================================================================================================================
 */
 void _VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out) {
+
 	out[0] = veca[0] - vecb[0];
 	out[1] = veca[1] - vecb[1];
 	out[2] = veca[2] - vecb[2];
@@ -968,10 +976,11 @@ void _VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out) {
 
 /*
 =======================================================================================================================================
-VectorAdd
+_VectorAdd
 =======================================================================================================================================
 */
 void _VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out) {
+
 	out[0] = veca[0] + vecb[0];
 	out[1] = veca[1] + vecb[1];
 	out[2] = veca[2] + vecb[2];
@@ -979,10 +988,11 @@ void _VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out) {
 
 /*
 =======================================================================================================================================
-VectorCopy
+_VectorCopy
 =======================================================================================================================================
 */
 void _VectorCopy(const vec3_t in, vec3_t out) {
+
 	out[0] = in[0];
 	out[1] = in[1];
 	out[2] = in[2];
@@ -990,10 +1000,11 @@ void _VectorCopy(const vec3_t in, vec3_t out) {
 
 /*
 =======================================================================================================================================
-VectorScale
+_VectorScale
 =======================================================================================================================================
 */
 void _VectorScale(const vec3_t in, vec_t scale, vec3_t out) {
+
 	out[0] = in[0] * scale;
 	out[1] = in[1] * scale;
 	out[2] = in[2] * scale;
@@ -1005,6 +1016,7 @@ Vector4Scale
 =======================================================================================================================================
 */
 void Vector4Scale(const vec4_t in, vec_t scale, vec4_t out) {
+
 	out[0] = in[0] * scale;
 	out[1] = in[1] * scale;
 	out[2] = in[2] * scale;
@@ -1021,7 +1033,7 @@ int Q_log2(int val) {
 
 	answer = 0;
 
-	while ((val >>= 1) != 0) {
+	while ((val >> = 1) != 0) {
 		answer++;
 	}
 
@@ -1057,6 +1069,7 @@ MatrixMultiply
 =======================================================================================================================================
 */
 void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]) {
+
 	out[0][0] = in1[0][0] * in2[0][0] + in1[0][1] * in2[1][0] + in1[0][2] * in2[2][0];
 	out[0][1] = in1[0][0] * in2[0][1] + in1[0][1] * in2[1][1] + in1[0][2] * in2[2][1];
 	out[0][2] = in1[0][0] * in2[0][2] + in1[0][1] * in2[1][2] + in1[0][2] * in2[2][2];
@@ -1076,8 +1089,8 @@ AngleVectors
 void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up) {
 	float angle;
 	static float sr, sp, sy, cr, cp, cy;
-	// static to help MS compiler fp bugs
 
+	// static to help MS compiler fp bugs
 	angle = angles[YAW] * (M_PI * 2 / 360);
 	sy = sin(angle);
 	cy = cos(angle);
@@ -1108,10 +1121,12 @@ void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up) 
 }
 
 /*
+// assumes "src" is normalized
+*/
+
+/*
 =======================================================================================================================================
 PerpendicularVector
-
-Assumes "src" is normalized.
 =======================================================================================================================================
 */
 void PerpendicularVector(vec3_t dst, const vec3_t src) {
@@ -1137,6 +1152,7 @@ void PerpendicularVector(vec3_t dst, const vec3_t src) {
 }
 
 #define LINE_DISTANCE_EPSILON 1e-05f
+
 /*
 =======================================================================================================================================
 DistanceBetweenLineSegmentsSquared
@@ -1145,7 +1161,9 @@ Return the smallest distance between two line segments, squared.
 =======================================================================================================================================
 */
 vec_t DistanceBetweenLineSegmentsSquared(
-	const vec3_t sP0, const vec3_t sP1, const vec3_t tP0, const vec3_t tP1, float *s, float *t) {
+	const vec3_t sP0, const vec3_t sP1,
+	const vec3_t tP0, const vec3_t tP1,
+	float *s, float *t) {
 	vec3_t sMag, tMag, diff;
 	float a, b, c, d, e;
 	float D;
@@ -1156,7 +1174,6 @@ vec_t DistanceBetweenLineSegmentsSquared(
 	VectorSubtract(sP1, sP0, sMag);
 	VectorSubtract(tP1, tP0, tMag);
 	VectorSubtract(sP0, tP0, diff);
-
 	a = DotProduct(sMag, sMag);
 	b = DotProduct(sMag, tMag);
 	c = DotProduct(tMag, tMag);
@@ -1176,12 +1193,12 @@ vec_t DistanceBetweenLineSegmentsSquared(
 		tN = (a * e - b * d);
 
 		if (sN < 0.0) {
-			// sN < 0 => the s = 0 edge is visible
+			// sN < 0 => the s=0 edge is visible
 			sN = 0.0;
 			tN = e;
 			tD = c;
 		} else if (sN > sD) {
-			// sN > sD => the s = 1 edge is visible
+			// sN > sD => the s=1 edge is visible
 			sN = sD;
 			tN = e + b;
 			tD = c;
@@ -1189,7 +1206,7 @@ vec_t DistanceBetweenLineSegmentsSquared(
 	}
 
 	if (tN < 0.0) {
-		// tN < 0 => the t = 0 edge is visible
+		// tN < 0 => the t=0 edge is visible
 		tN = 0.0;
 		// recompute sN for this edge
 		if (-d < 0.0) {
@@ -1201,7 +1218,7 @@ vec_t DistanceBetweenLineSegmentsSquared(
 			sD = a;
 		}
 	} else if (tN > tD) {
-		// tN > tD = > the t = 1 edge is visible
+		// tN > tD => the t=1 edge is visible
 		tN = tD;
 		// recompute sN for this edge
 		if ((-d + b) < 0.0) {
@@ -1238,7 +1255,6 @@ int Q_isnan(float x) {
 	fi.f = x;
 	fi.ui &= 0x7FFFFFFF;
 	fi.ui = 0x7F800000 - fi.ui;
-
 	return (int)((unsigned int)fi.ui >> 31);
 }
 #ifndef Q3_VM
@@ -1250,7 +1266,8 @@ The msvc acos doesn't always return a value between 0 and PI:
 
 int i;
 i = 1065353246;
-acos(*(float *)&i) == -1.#IND0
+acos(*(float*)&i) == -1.#IND0
+
 =======================================================================================================================================
 */
 float Q_acos(float c) {

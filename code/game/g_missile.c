@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -42,7 +48,8 @@ void G_BounceMissile(gentity_t *ent, trace_t *trace) {
 	BG_EvaluateTrajectoryDelta(&ent->s.pos, hitTime, velocity);
 
 	dot = DotProduct(velocity, trace->plane.normal);
-	VectorMA(velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta);
+
+	VectorMA(velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta);
 
 	if (ent->s.eFlags & EF_BOUNCE_HALF) {
 		VectorScale(ent->s.pos.trDelta, 0.65, ent->s.pos.trDelta);
@@ -114,6 +121,7 @@ ProximityMine_Die
 =======================================================================================================================================
 */
 static void ProximityMine_Die(gentity_t *ent, gentity_t *inflictor, gentity_t *attacker, int damage, int mod) {
+
 	ent->think = ProximityMine_Explode;
 	ent->nextthink = level.time + 1;
 }
@@ -330,9 +338,10 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 
 		SnapVectorTowards(trace->endpos, ent->s.pos.trBase);
 		G_SetOrigin(ent, trace->endpos);
-		ent->s.pos.trType = TR_STATIONARY;
-		VectorClear(ent->s.pos.trDelta);
 
+		ent->s.pos.trType = TR_STATIONARY;
+
+		VectorClear(ent->s.pos.trDelta);
 		G_AddEvent(ent, EV_PROXIMITY_MINE_STICK, trace->surfaceFlags);
 
 		ent->think = ProximityMine_Activate;
@@ -348,7 +357,6 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 		VectorCopy(trace->plane.normal, ent->movedir);
 		VectorSet(ent->s.mins, -4, -4, -4);
 		VectorSet(ent->s.maxs, 4, 4, 4);
-
 		trap_LinkEntity(ent);
 		return;
 	}
@@ -373,7 +381,6 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 		}
 
 		nent->s.weapon = ent->s.weapon;
-
 		ent->enemy = other;
 		ent->s.groundEntityNum = other->s.number;
 
@@ -382,7 +389,6 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 		nent->freeAfterEvent = qtrue;
 		// change over to a normal entity right at the point of impact
 		nent->s.eType = ET_GENERAL;
-
 		ent->s.eType = ET_GRAPPLE;
 
 		G_SetOrigin(ent, v);
@@ -413,7 +419,6 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 	ent->s.eType = ET_GENERAL;
 
 	SnapVectorTowards(trace->endpos, ent->s.pos.trBase); // save net bandwidth
-
 	G_SetOrigin(ent, trace->endpos);
 	// splash damage (doesn't apply to person directly hit)
 	if (ent->splashDamage) {

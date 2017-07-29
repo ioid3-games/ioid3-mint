@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -90,6 +96,7 @@ int Pickup_Powerup(gentity_t *ent, gentity_t *other) {
 		}
 		// if too far away, no sound
 		VectorSubtract(ent->s.pos.trBase, player->ps.origin, delta);
+
 		len = VectorNormalize(delta);
 
 		if (len > 192) {
@@ -295,6 +302,7 @@ Pickup_Armor
 =======================================================================================================================================
 */
 int Pickup_Armor(gentity_t *ent, gentity_t *other) {
+
 	int upperBound;
 #ifdef MISSIONPACK
 	if (BG_ItemForItemNum(other->player->ps.stats[STAT_PERSISTANT_POWERUP])->giTag == PW_GUARD) {
@@ -350,6 +358,7 @@ void RespawnItem(gentity_t *ent) {
 	ent->s.contents = CONTENTS_TRIGGER;
 	ent->s.eFlags &= ~EF_NODRAW;
 	ent->r.svFlags &= ~SVF_NOCLIENT;
+
 	trap_LinkEntity(ent);
 
 	if (ent->item->giType == IT_POWERUP) {
@@ -529,10 +538,9 @@ gentity_t *LaunchItem(gitem_t *item, vec3_t origin, vec3_t velocity) {
 	gentity_t *dropped;
 
 	dropped = G_Spawn();
-
 	dropped->s.eType = ET_ITEM;
 	dropped->s.modelindex = BG_ItemNumForItem(item); // store item number in modelindex
-	dropped->s.modelindex2 = 1; // This is non-zero is it's a dropped item
+	dropped->s.modelindex2 = 1; // this is non-zero is it's a dropped item
 	dropped->classname = item->classname;
 	dropped->item = item;
 
@@ -551,9 +559,9 @@ gentity_t *LaunchItem(gitem_t *item, vec3_t origin, vec3_t velocity) {
 
 	dropped->s.eFlags |= EF_BOUNCE_HALF;
 #ifdef MISSIONPACK
-	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF) && item->giType == IT_TEAM) { // Special case for CTF flags
+	if ((g_gametype.integer == GT_CTF || g_gametype.integer == GT_1FCTF) && item->giType == IT_TEAM) { // special case for CTF flags
 #else
-	if (g_gametype.integer == GT_CTF && item->giType == IT_TEAM) { // Special case for CTF flags
+	if (g_gametype.integer == GT_CTF && item->giType == IT_TEAM) { // special case for CTF flags
 #endif
 		dropped->think = Team_DroppedFlagThink;
 		dropped->nextthink = level.time + 30000;
@@ -654,6 +662,7 @@ void FinishSpawningItem(gentity_t *ent) {
 		float respawn;
 
 		respawn = 45 + crandom() * 15;
+
 		ent->s.eFlags |= EF_NODRAW;
 		ent->s.contents = 0;
 		ent->nextthink = level.time + respawn * 1000;
@@ -673,7 +682,7 @@ G_CheckTeamItems
 */
 void G_CheckTeamItems(void) {
 
-	// Set up team stuff
+	// set up team stuff
 	Team_InitGame();
 
 	if (g_gametype.integer == GT_CTF) {
@@ -844,7 +853,6 @@ int G_ItemDisabled(gitem_t *item) {
 G_SpawnItem
 
 Sets the clipping size and plants the object on the floor.
-
 Items can't be immediately dropped to floor, because they might be on an entity that hasn't spawned yet.
 =======================================================================================================================================
 */
@@ -872,8 +880,8 @@ void G_SpawnItem(gentity_t *ent, gitem_t *item) {
 #ifdef MISSIONPACK
 	if (item->giType == IT_PERSISTANT_POWERUP) {
 		qboolean redTeam = !!(ent->spawnflags & 2);
-		qboolean blueTeam = !!(ent->spawnflags & 4);
 
+		qboolean blueTeam = !!(ent->spawnflags & 4);
 		// only one team can pick it up
 		if (redTeam && !blueTeam) {
 			ent->s.team = TEAM_RED;
@@ -903,6 +911,7 @@ void G_BounceItem(gentity_t *ent, trace_t *trace) {
 	BG_EvaluateTrajectoryDelta(&ent->s.pos, hitTime, velocity);
 
 	dot = DotProduct(velocity, trace->plane.normal);
+
 	VectorMA(velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta);
 	// cut the velocity to keep from bouncing forever
 	VectorScale(ent->s.pos.trDelta, ent->physicsBounce, ent->s.pos.trDelta);
@@ -917,6 +926,7 @@ void G_BounceItem(gentity_t *ent, trace_t *trace) {
 
 	VectorAdd(ent->r.currentOrigin, trace->plane.normal, ent->r.currentOrigin);
 	VectorCopy(ent->r.currentOrigin, ent->s.pos.trBase);
+
 	ent->s.pos.trTime = level.time;
 }
 
@@ -954,7 +964,6 @@ void G_RunItem(gentity_t *ent) {
 	}
 
 	trap_Trace(&tr, ent->r.currentOrigin, ent->s.mins, ent->s.maxs, origin, ent->r.ownerNum, mask);
-
 	VectorCopy(tr.endpos, ent->r.currentOrigin);
 
 	if (tr.startsolid) {
