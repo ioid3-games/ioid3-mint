@@ -224,6 +224,7 @@ static void StartServer_Update(void) {
 		}
 		// set the map name
 		info = UI_GetArenaInfoByNumber(s_startserver.maplist[s_startserver.currentmap]);
+
 		Q_strncpyz(s_startserver.mapname.string, Info_ValueForKey(info, "map"), MAX_NAMELENGTH);
 	}
 
@@ -621,7 +622,7 @@ void UI_StartServerMenu(qboolean multiplayer) {
 #define ID_DEDICATED	21
 #define ID_GO			22
 #define ID_BACK			23
-#define ID_PLAYER_TYPE	24 // Goes up to ID_PLAYER_TYPE + PLAYER_SLOTS
+#define ID_PLAYER_TYPE	24 // goes up to ID_PLAYER_TYPE + PLAYER_SLOTS
 
 #define PLAYER_SLOTS 12
 
@@ -832,6 +833,7 @@ static void ServerOptions_Start(void) {
 	}
 	// the wait commands will allow the dedicated to take effect
 	info = UI_GetArenaInfoByNumber(s_startserver.maplist[s_startserver.currentmap]);
+
 	trap_Cmd_ExecuteText(EXEC_APPEND, va("wait; wait; map %s\n", Info_ValueForKey(info, "map")));
 	// add bots
 	trap_Cmd_ExecuteText(EXEC_APPEND, "wait 3\n");
@@ -1146,6 +1148,7 @@ static void ServerOptions_InitBotNames(void) {
 	arenaInfo = UI_GetArenaInfoByMap(s_serveroptions.mapnamebuffer);
 	// get the bot info - we'll seed with them if any are listed
 	Q_strncpyz(bots, Info_ValueForKey(arenaInfo, "bots"), sizeof(bots));
+
 	p = &bots[0];
 
 	while (*p && count < PLAYER_SLOTS) {
@@ -1242,6 +1245,7 @@ static void ServerOptions_SetMenuItems(void) {
 	s_serveroptions.publicserver.curvalue = Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_publicServer"));
 
 	MField_SetText(&s_serveroptions.hostname.field, CG_Cvar_VariableString("sv_hostname"));
+
 	s_serveroptions.pure.curvalue = Com_Clamp(0, 1, trap_Cvar_VariableValue("sv_pure"));
 	// set the map pic
 	info = UI_GetArenaInfoByNumber(s_startserver.maplist[s_startserver.currentmap]);

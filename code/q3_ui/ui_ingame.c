@@ -251,6 +251,7 @@ void InGame_MenuInit(void) {
 		s_ingame.teamorders.generic.flags |= QMF_GRAYED;
 	} else {
 		trap_GetConfigString(CS_PLAYERS + cg.localPlayers[0].playerNum, info, MAX_INFO_STRING);
+
 		team = atoi(Info_ValueForKey(info, "t"));
 
 		if (team == TEAM_SPECTATOR) {
