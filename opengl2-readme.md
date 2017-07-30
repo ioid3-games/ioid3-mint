@@ -41,7 +41,7 @@ compatibility with existing Quake 3 mods.
 
 Cvars for simple rendering features:
 
-* `r_ext_compressed_textures`       - Automatically compress textures.
+*  `r_ext_compressed_textures`       - Automatically compress textures.
                                      0 - No texture compression. (default)
                                      1 - DXT/RGTC texture compression if
                                          supported.
@@ -60,7 +60,7 @@ Cvars for simple rendering features:
 
 Cvars for HDR and tonemapping:
 
- * `r_hdr`                          - Do scene rendering in a framebuffer with
+*  `r_hdr`                          - Do scene rendering in a framebuffer with
                                    high dynamic range.  (Less banding, and
                                    exposure changes look much better)
                                      0 - No.
@@ -366,7 +366,7 @@ they mean:
     - State how metallic this material is.  Metals typically have a high 
       specular and a low diffuse, so this is typically high for them, and low
       for other materials, such as plastic.  For typical values for various
-      materials, see http://refractiveindex.info , pick a material, then scroll
+      materials, see http://refractiveindex.info, pick a material, then scroll
       down to the reflection calculator and look up its reflectance.  Default
       is 0.04, since most materials aren't metallic.
   

@@ -1,33 +1,31 @@
-/*
-===========================================================================
+
+=======================================================================================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
-===========================================================================
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+=======================================================================================================================================
 */
-// qcommon.h -- definitions common between client and server, but not game.or ref modules
+
+/**************************************************************************************************************************************
+ Definitions common between client and server, but not game.or ref modules.
+**************************************************************************************************************************************/
+
 #ifndef _QCOMMON_H_
 #define _QCOMMON_H_
 
@@ -72,12 +70,11 @@ Suite 120, Rockville, Maryland 20850 USA.
 // In the future if the client-server protocol is modified, this may allow old and new engines to play together
 //#define LEGACY_PROTOCOL
 // Heartbeat for dpmaster protocol. You shouldn't change this unless you know what you're doing
-#define HEARTBEAT_FOR_MASTER		"DarkPlaces"
-#define FLATLINE_FOR_MASTER			HEARTBEAT_FOR_MASTER
-#define MAX_MASTER_SERVERS      5	// number of supported master servers
-#define DEMOEXT	"mintdemo"			// standard demo extension
-
-//Ignore __attribute__ on non-gcc platforms
+#define HEARTBEAT_FOR_MASTER "DarkPlaces"
+#define FLATLINE_FOR_MASTER HEARTBEAT_FOR_MASTER
+#define MAX_MASTER_SERVERS 5 // number of supported master servers
+#define DEMOEXT	"mintdemo" // standard demo extension
+//ignore __attribute__ on non-gcc platforms
 #ifndef __GNUC__
 #ifndef __attribute__
 #define __attribute__(x)
@@ -85,7 +82,6 @@ Suite 120, Rockville, Maryland 20850 USA.
 #endif
 
 // msg.c
-
 typedef struct {
 	qboolean allowoverflow;	// if false, do a Com_Error
 	qboolean overflowed;	// set to true if the buffer size failed (with allowoverflow set)
@@ -96,45 +92,45 @@ typedef struct {
 	int readcount;
 	int bit;				// for bitwise reads and writes
 } msg_t;
-void MSG_Init (msg_t *buf, byte *data, int length);
-void MSG_InitOOB(msg_t *buf, byte *data, int length);
-void MSG_Clear (msg_t *buf);
-void MSG_WriteData (msg_t *buf, const void *data, int length);
-void MSG_Bitstream(msg_t *buf);
 
+void MSG_Init(msg_t *buf, byte *data, int length);
+void MSG_InitOOB(msg_t *buf, byte *data, int length);
+void MSG_Clear(msg_t *buf);
+void MSG_WriteData(msg_t *buf, const void *data, int length);
+void MSG_Bitstream(msg_t *buf);
 // TTimo
-// copy a msg_t in case we need to store it as is for a bit
-// (as I needed this to keep an msg_t from a static var for later use)
+// copy a msg_t in case we need to store it as is for a bit (as I needed this to keep an msg_t from a static var for later use)
 // sets data buffer as MSG_Init does prior to do the copy
 void MSG_Copy(msg_t *buf, byte *data, int length, msg_t *src);
 
 struct usercmd_s;
 struct entityState_s;
 struct playerState_s;
+
 void MSG_WriteBits(msg_t *msg, int value, int bits);
-void MSG_WriteChar (msg_t *sb, int c);
-void MSG_WriteByte (msg_t *sb, int c);
-void MSG_WriteShort (msg_t *sb, int c);
-void MSG_WriteLong (msg_t *sb, int c);
-void MSG_WriteFloat (msg_t *sb, float f);
-void MSG_WriteString (msg_t *sb, const char *s);
-void MSG_WriteBigString (msg_t *sb, const char *s);
-void MSG_WriteAngle16 (msg_t *sb, float f);
+void MSG_WriteChar(msg_t *sb, int c);
+void MSG_WriteByte(msg_t *sb, int c);
+void MSG_WriteShort(msg_t *sb, int c);
+void MSG_WriteLong(msg_t *sb, int c);
+void MSG_WriteFloat(msg_t *sb, float f);
+void MSG_WriteString(msg_t *sb, const char *s);
+void MSG_WriteBigString(msg_t *sb, const char *s);
+void MSG_WriteAngle16(msg_t *sb, float f);
 int MSG_HashKey(const char *string, int maxlen);
-void MSG_BeginReading (msg_t *sb);
+void MSG_BeginReading(msg_t *sb);
 void MSG_BeginReadingOOB(msg_t *sb);
 int MSG_ReadBits(msg_t *msg, int bits);
-int MSG_ReadChar (msg_t *sb);
-int MSG_ReadByte (msg_t *sb);
-int MSG_ReadShort (msg_t *sb);
-int MSG_ReadLong (msg_t *sb);
-float MSG_ReadFloat (msg_t *sb);
-char *MSG_ReadString (msg_t *sb);
-char *MSG_ReadBigString (msg_t *sb);
-char *MSG_ReadStringLine (msg_t *sb);
-float MSG_ReadAngle16 (msg_t *sb);
-void MSG_ReadData (msg_t *sb, void *buffer, int size);
-int MSG_LookaheadByte (msg_t *msg);
+int MSG_ReadChar(msg_t *sb);
+int MSG_ReadByte(msg_t *sb);
+int MSG_ReadShort(msg_t *sb);
+int MSG_ReadLong(msg_t *sb);
+float MSG_ReadFloat(msg_t *sb);
+char *MSG_ReadString(msg_t *sb);
+char *MSG_ReadBigString(msg_t *sb);
+char *MSG_ReadStringLine(msg_t *sb);
+float MSG_ReadAngle16(msg_t *sb);
+void MSG_ReadData(msg_t *sb, void *buffer, int size);
+int MSG_LookaheadByte(msg_t *msg);
 void MSG_WriteDeltaUsercmdKey(msg_t *msg, int key, usercmd_t *from, usercmd_t *to);
 void MSG_ReadDeltaUsercmdKey(msg_t *msg, int key, usercmd_t *from, usercmd_t *to);
 void MSG_SetNetFields(vmNetField_t *vmEntityFields, int numEntityFields, int entityStateSize, int entityNetworkSize, vmNetField_t *vmPlayerFields, int numPlayerFields, int playerStateSize, int playerNetworkSize);
@@ -143,28 +139,24 @@ void MSG_WriteDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntitySta
 void MSG_ReadDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntityState_t *to, int number);
 void MSG_WriteDeltaPlayerstate(msg_t *msg, sharedPlayerState_t *from, sharedPlayerState_t *to);
 void MSG_ReadDeltaPlayerstate(msg_t *msg, sharedPlayerState_t *from, sharedPlayerState_t *to, int number);
-
-
 void MSG_ReportChangeVectors_f(void);
 
-//============================================================================
-
 /*
-==============================================================
+=======================================================================================================================================
 
-NET
+	NET
 
-==============================================================
+=======================================================================================================================================
 */
 
-#define NET_ENABLEV4            0x01
-#define NET_ENABLEV6            0x02
+#define NET_ENABLEV4		0x01
+#define NET_ENABLEV6		0x02
 // if this flag is set, always attempt ipv6 connections instead of ipv4 if a v6 address is found.
-#define NET_PRIOV6              0x04
+#define NET_PRIOV6			0x04
 // disables ipv6 multicast support if set.
-#define NET_DISABLEMCAST        0x08
+#define NET_DISABLEMCAST	0x08
 
-#define PACKET_BACKUP 32 // number of old messages that must be kept on client and server for delta comrpession and ping estimation
+#define PACKET_BACKUP 32 // number of old messages that must be kept on client and server for delta compression and ping estimation
 #define PACKET_MASK (PACKET_BACKUP - 1)
 #define MAX_PACKET_USERCMDS 32 // max number of usercmd_t in a packet
 #define MAX_SNAPSHOT_ENTITIES 512
@@ -188,6 +180,7 @@ typedef enum {
 } netsrc_t;
 
 #define NET_ADDRSTRMAXLEN 48 // maximum length of an IPv6 address string including trailing '\0'
+
 typedef struct {
 	netadrtype_t type;
 	byte ip[4];
@@ -201,17 +194,17 @@ void NET_Shutdown(void);
 void NET_Restart_f(void);
 void NET_Config(qboolean enableNetworking);
 void NET_FlushPacketQueue(void);
-void NET_SendPacket (netsrc_t sock, int length, const void *data, netadr_t to);
-void QDECL NET_OutOfBandPrint(netsrc_t net_socket, netadr_t adr, const char *format, ...) __attribute__ ((format (printf, 3, 4)));
+void NET_SendPacket(netsrc_t sock, int length, const void *data, netadr_t to);
+void QDECL NET_OutOfBandPrint(netsrc_t net_socket, netadr_t adr, const char *format, ...) __attribute__((format (printf, 3, 4)));
 void QDECL NET_OutOfBandData(netsrc_t sock, netadr_t adr, byte *format, int len);
-qboolean NET_CompareAdr (netadr_t a, netadr_t b);
+qboolean NET_CompareAdr(netadr_t a, netadr_t b);
 qboolean NET_CompareBaseAdrMask(netadr_t a, netadr_t b, int netmask);
-qboolean NET_CompareBaseAdr (netadr_t a, netadr_t b);
-qboolean NET_IsLocalAddress (netadr_t adr);
-const char *NET_AdrToString (netadr_t a);
-const char *NET_AdrToStringwPort (netadr_t a);
-int NET_StringToAdr (const char *s, netadr_t *a, netadrtype_t family);
-qboolean NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, msg_t *net_message);
+qboolean NET_CompareBaseAdr(netadr_t a, netadr_t b);
+qboolean NET_IsLocalAddress(netadr_t adr);
+const char *NET_AdrToString(netadr_t a);
+const char *NET_AdrToStringwPort(netadr_t a);
+int NET_StringToAdr(const char *s, netadr_t *a, netadrtype_t family);
+qboolean NET_GetLoopPacket(netsrc_t sock, netadr_t *net_from, msg_t *net_message);
 void NET_JoinMulticast6(void);
 void NET_LeaveMulticast6(void);
 void NET_Sleep(int msec);
@@ -220,16 +213,12 @@ void NET_Sleep(int msec);
 #define MAX_DOWNLOAD_WINDOW 48 // ACK window of 48 download chunks. Cannot set this higher, or clients will overflow the reliable commands buffer
 #define MAX_DOWNLOAD_BLKSIZE 1024 // 896 byte block chunks
 #define NETCHAN_GENCHECKSUM(challenge, sequence) ((challenge) ^ ((sequence) * (challenge)))
-
-/*
-Netchan handles packet fragmentation and out of order / duplicate suppression
-*/
-
+// Netchan handles packet fragmentation and out of order/duplicate suppression
 typedef struct {
 	netsrc_t sock;
-	int dropped;			// between last packet and previous
+	int dropped;	// between last packet and previous
 	netadr_t remoteAddress;
-	int qport;				// qport value to write when transmitting
+	int qport;		// qport value to write when transmitting
 	// sequencing variables
 	int incomingSequence;
 	int outgoingSequence;
@@ -246,25 +235,23 @@ typedef struct {
 	int challenge;
 	int lastSentTime;
 	int lastSentSize;
-
 #ifdef LEGACY_PROTOCOL
 	qboolean compat;
 #endif
 } netchan_t;
+
 void Netchan_Init(int qport);
 void Netchan_Setup(netsrc_t sock, netchan_t *chan, netadr_t adr, int qport, int challenge, qboolean compat);
 void Netchan_Transmit(netchan_t *chan, int length, const byte *data);
 void Netchan_TransmitNextFragment(netchan_t *chan);
-
 qboolean Netchan_Process(netchan_t *chan, msg_t *msg);
 
-
 /*
-==============================================================
+=======================================================================================================================================
 
-PROTOCOL
+	PROTOCOL
 
-==============================================================
+=======================================================================================================================================
 */
 
 #define PROTOCOL_VERSION 10
@@ -274,63 +261,50 @@ PROTOCOL
 // NOTE: that stuff only works with two digits protocols
 extern int demo_protocols[];
 
-//#define UPDATE_SERVER_NAME	"update.quake3arena.com"
+//#define UPDATE_SERVER_NAME "update.quake3arena.com"
 // override on command line, config files etc.
 #ifndef MASTER_SERVER_NAME
-#define MASTER_SERVER_NAME	"dpmaster.deathmask.net"
+#define MASTER_SERVER_NAME "dpmaster.deathmask.net"
 #endif
-
 #define PORT_MASTER			27950
 #define PORT_UPDATE			27951
 #define PORT_SERVER			27960
-#define NUM_SERVER_PORTS	4		// broadcast scan this many ports after
-									// PORT_SERVER so a single machine can
-									// run multiple servers
-
-
+#define NUM_SERVER_PORTS	4 // broadcast scan this many ports after PORT_SERVER so a single machine can run multiple servers
 // the svc_strings[] array in cl_parse.c should mirror this
-
 // server to client
-
 enum svc_ops_e {
 	svc_bad,
 	svc_nop,
 	svc_gamestate,
-	svc_configstring,			// [short] [string] only in gamestate messages
+	svc_configstring,	// [short] [string] only in gamestate messages
 	svc_baseline,
-	svc_serverCommand,			// [string] to be executed by client game module
-	svc_download,				// [short] size [size bytes]
+	svc_serverCommand,	// [string] to be executed by client game module
+	svc_download,		// [short] size [size bytes]
 	svc_snapshot,
 	svc_EOF,
-
-// new commands, supported only by ioquake3 protocol but not legacy
-	svc_voipSpeex,     // not wrapped in USE_VOIP, so this value is reserved.
-	svc_voipOpus,      //
+	// new commands, supported only by ioquake3 protocol but not legacy
+	svc_voipSpeex,		// not wrapped in USE_VOIP, so this value is reserved.
+	svc_voipOpus,
 };
-
-
-//
 // client to server
-//
 enum clc_ops_e {
 	clc_bad,
-	clc_nop, 		
-	clc_move,				// [[usercmd_t]
-	clc_moveNoDelta,		// [[usercmd_t]
-	clc_clientCommand,		// [string] message
+	clc_nop,
+	clc_move,			// [[usercmd_t]
+	clc_moveNoDelta,	// [[usercmd_t]
+	clc_clientCommand,	// [string] message
 	clc_EOF,
-
-// new commands, supported only by ioquake3 protocol but not legacy
-	clc_voipSpeex,   // not wrapped in USE_VOIP, so this value is reserved.
-	clc_voipOpus,    //
+	// new commands, supported only by ioquake3 protocol but not legacy
+	clc_voipSpeex,		// not wrapped in USE_VOIP, so this value is reserved.
+	clc_voipOpus,
 };
 
 /*
-==============================================================
+=======================================================================================================================================
 
-VIRTUAL MACHINE
+	VIRTUAL MACHINE
 
-==============================================================
+=======================================================================================================================================
 */
 
 typedef struct vm_s vm_t;
@@ -362,15 +336,13 @@ typedef enum {
 	TRAP_SYSCALL
 } qvmTraps_t;
 void VM_Init(void);
-vm_t *VM_Create(const char *module, intptr_t (*systemCalls)(intptr_t *), vmInterpret_t interpret, int zoneTag, int heapRequestedSize);
+vm_t *VM_Create(const char *module, intptr_t(*systemCalls)(intptr_t *), vmInterpret_t interpret, int zoneTag, int heapRequestedSize);
 // module should be bare: "cgame", not "cgame.dll" or "vm/cgame.qvm"
-
 void VM_Free(vm_t *vm);
 void VM_Clear(void);
 void VM_Forced_Unload_Start(void);
 void VM_Forced_Unload_Done(void);
 vm_t *VM_Restart(vm_t *vm, qboolean unpure);
-
 intptr_t QDECL VM_Call(vm_t *vm, int callNum, ...);
 intptr_t QDECL VM_SafeCall(vm_t *vm, int callnum);
 void VM_GetVersion(vm_t *vm, int nameCallNum, int versionCallNum, char *apiName, int apiNameSize, int *major, int *minor);
@@ -386,58 +358,44 @@ int VM_HeapAvailable(void);
 void VM_HeapFree(void *data);
 
 /*
-==============================================================
+=======================================================================================================================================
 
-CMD
+	CMD
 
-Command text buffering and command execution
+	Command text buffering and command execution
 
-==============================================================
+=======================================================================================================================================
 */
 
-/*
+/**************************************************************************************************************************************
+	Any number of commands can be added in a frame, from several different sources.
+	Most commands come from either keybindings or console line input, but entire text files can be execed.
+**************************************************************************************************************************************/
 
-Any number of commands can be added in a frame, from several different sources.
-Most commands come from either keybindings or console line input, but entire text
-files can be execed.
-
-*/
-
-void Cbuf_Init (void);
+void Cbuf_Init(void);
 // allocates an initial text buffer that will grow as needed
-
 void Cbuf_AddText(const char *text);
 // Adds command text at the end of the buffer, does NOT add a final \n
-
 void Cbuf_ExecuteText(int exec_when, const char *text);
 // this can be used in place of either Cbuf_AddText or Cbuf_InsertText
-
 void Cbuf_ExecuteTextSafe(int exec_when, const char *text);
 // used by VMs with special handling for unsafe calls.
-
-void Cbuf_Execute (void);
-// Pulls off \n terminated lines of text from the command buffer and sends
-// them through Cmd_ExecuteString.  Stops when the buffer is empty.
+void Cbuf_Execute(void);
+// Pulls off \n terminated lines of text from the command buffer and sends them through Cmd_ExecuteString. Stops when the buffer is empty.
 // Normally called once per frame, but may be explicitly invoked.
 // Do not call inside a command function, or current args will be destroyed.
 
-//===========================================================================
+/**************************************************************************************************************************************
+	Command execution takes a null terminated string, breaks it into tokens, then searches for a command or variable that matches the
+	first token.
+**************************************************************************************************************************************/
 
-/*
-
-Command execution takes a null terminated string, breaks it into tokens,
-then searches for a command or variable that matches the first token.
-
-*/
-
-typedef void (*xcommand_t) (void);
-void Cmd_Init (void);
+typedef void (*xcommand_t)(void);
+void Cmd_Init(void);
 void Cmd_AddCommand(const char *cmd_name, xcommand_t function);
-// called by the init functions of other parts of the program to
-// register commands and functions to call for them.
+// called by the init functions of other parts of the program to register commands and functions to call for them.
 // The cmd_name is referenced later, so it should not be in temp memory
-// if function is NULL, the command will be forwarded to the server
-// as a clc_clientCommand instead of executed locally
+// if function is NULL, the command will be forwarded to the server as a clc_clientCommand instead of executed locally
 void Cmd_RemoveCommand(const char *cmd_name);
 void Cmd_RemoveCommandsByFunc(xcommand_t function);
 typedef void (*completionFunc_t)(char *args, int argNum);
@@ -449,37 +407,34 @@ void Cmd_CommandCompletion(void(*callback)(const char *s));
 void Cmd_SetCommandCompletionFunc(const char *command, completionFunc_t complete);
 void Cmd_CompleteArgument(const char *command, char *args, int argNum);
 void Cmd_CompleteCfgName(char *args, int argNum);
-int Cmd_Argc (void);
-char *Cmd_Argv (int arg);
+int Cmd_Argc(void);
+char *Cmd_Argv(int arg);
 void Cmd_ArgvBuffer(int arg, char *buffer, int bufferLength);
-char *Cmd_Args (void);
+char *Cmd_Args(void);
 char *Cmd_ArgsFrom(int arg);
 void Cmd_ArgsBuffer(char *buffer, int bufferLength);
 void Cmd_LiteralArgsBuffer(char *buffer, int bufferLength);
-char *Cmd_Cmd (void);
+char *Cmd_Cmd(void);
 void Cmd_Args_Sanitize(void);
-// The functions that execute commands get their parameters with these
-// functions. Cmd_Argv () will return an empty string, not a NULL
-// if arg > argc, so string operations are allways safe.
+// The functions that execute commands get their parameters with these functions. Cmd_Argv() will return an empty string, not a NULL
+// if arg > argc, so string operations are always safe.
 void Cmd_TokenizeString(const char *text);
 void Cmd_TokenizeStringIgnoreQuotes(const char *text_in);
-// Takes a null terminated string.  Does not need to be /n terminated.
-// breaks the string up into arg tokens.
+// Takes a null terminated string. Does not need to be /n terminated. breaks the string up into arg tokens.
 void Cmd_ExecuteString(const char *text);
 // Parses a single line of text into arguments and tries to execute it as if it was typed at the console
 void Cmd_SaveCmdContext(void);
 void Cmd_RestoreCmdContext(void);
 
 /*
-==============================================================
+=======================================================================================================================================
 
-CVAR
+	CVARS
 
-==============================================================
+=======================================================================================================================================
 */
 
-/*
-
+/**************************************************************************************************************************************
 cvar_t variables are used to hold scalar or string variables that can be changed
 or displayed at the console or prog code as well as accessed directly
 in C code.
@@ -489,13 +444,10 @@ r_draworder			prints the current value
 r_draworder 0		sets the current value to 0
 set r_draworder 0	as above, but creates the cvar if not present
 
-Cvars are restricted from having the same names as commands to keep this
-interface from being ambiguous.
+Cvars are restricted from having the same names as commands to keep this interface from being ambiguous.
 
-The are also occasionally used to communicated information between different
-modules of the program.
-
-*/
+The are also occasionally used to communicated information between different modules of the program.
+**************************************************************************************************************************************/
 
 cvar_t *Cvar_Get(const char *var_name, const char *value, int flags);
 // creates the variable if it doesn't exist, or returns the existing one
@@ -1026,21 +978,21 @@ int SV_FrameMsec(void);
 int SV_SendQueuedPackets(void);
 
 /*
-==============================================================
+=======================================================================================================================================
 
-NON-PORTABLE SYSTEM SERVICES
+	NON-PORTABLE SYSTEM SERVICES
 
-==============================================================
+=======================================================================================================================================
 */
 
 void Sys_Init (void);
 // general development dll loading for virtual machine testing
-void * QDECL Sys_LoadGameDll(const char *name, intptr_t (QDECL **entryPoint)(int, ...), intptr_t (QDECL *systemcalls)(intptr_t, ...));
+void *QDECL Sys_LoadGameDll(const char *name, intptr_t(QDECL **entryPoint)(int, ...), intptr_t(QDECL *systemcalls)(intptr_t, ...));
 void Sys_UnloadDll(void *dllHandle);
 qboolean Sys_DllExtension(const char *name);
 char *Sys_GetCurrentUser(void);
-void QDECL Sys_Error(const char *error, ...) __attribute__ ((noreturn, format (printf, 1, 2)));
-void Sys_Quit (void) __attribute__ ((noreturn));
+void QDECL Sys_Error(const char *error, ...) __attribute__((noreturn, format (printf, 1, 2)));
+void Sys_Quit (void) __attribute__((noreturn));
 char *Sys_GetClipboardData(void); // note that this isn't journaled...
 qboolean Sys_GetCapsLockMode(void);
 qboolean Sys_GetNumLockMode(void);
@@ -1055,10 +1007,9 @@ cpuFeatures_t Sys_GetProcessorFeatures(void);
 void Sys_SetErrorText(const char *text);
 void Sys_SendPacket(int length, const void *data, netadr_t to);
 qboolean Sys_StringToAdr(const char *s, netadr_t *a, netadrtype_t family);
-// Does NOT parse port numbers, only base addresses.
-qboolean Sys_IsLANAddress (netadr_t adr);
+// does NOT parse port numbers, only base addresses.
+qboolean Sys_IsLANAddress(netadr_t adr);
 void Sys_ShowIP(void);
-
 FILE *Sys_FOpen(const char *ospath, const char *mode);
 qboolean Sys_Mkdir(const char *path);
 qboolean Sys_Rmdir(const char *path);

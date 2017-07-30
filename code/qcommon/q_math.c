@@ -1,44 +1,40 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-// q_math.c -- stateless support routines that are included in each code module
+/**************************************************************************************************************************************
+ Stateless support routines that are included in each code module.
+**************************************************************************************************************************************/
 
-// Some of the vector functions are static inline in q_shared.h. q3asm doesn't understand static functions though, so we only want them in
-// one file. That's what this is about.
+// Some of the vector functions are static inline in q_shared.h. q3asm doesn't understand static functions though, so we only want them
+// in one file. That's what this is about.
 #ifdef Q3_VM
 #define __Q3_VM_MATH
 #endif
 
 #include "q_shared.h"
 
-vec3_t vec3_origin = {0,0,0};
+vec3_t vec3_origin = {0, 0, 0};
 vec3_t axisDefault[3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
 
 vec4_t colorBlack = {0, 0, 0, 1};
@@ -73,9 +69,9 @@ vec3_t bytedirs[NUMVERTEXNORMALS] = {
 	{0.309017f, 0.500000f, 0.809017f}, {0.525731f, 0.000000f, 0.850651f},
 	{0.295242f, 0.000000f, 0.955423f}, {0.442863f, 0.238856f, 0.864188f},
 	{0.162460f, 0.262866f, 0.951056f}, {-0.681718f, 0.147621f, 0.716567f},
-	{-0.809017f, 0.309017f, 0.500000f},{-0.587785f, 0.425325f, 0.688191f},
-	{-0.850651f, 0.525731f, 0.000000f},{-0.864188f, 0.442863f, 0.238856f},
-	{-0.716567f, 0.681718f, 0.147621f},{-0.688191f, 0.587785f, 0.425325f},
+	{-0.809017f, 0.309017f, 0.500000f}, {-0.587785f, 0.425325f, 0.688191f},
+	{-0.850651f, 0.525731f, 0.000000f}, {-0.864188f, 0.442863f, 0.238856f},
+	{-0.716567f, 0.681718f, 0.147621f}, {-0.688191f, 0.587785f, 0.425325f},
 	{-0.500000f, 0.809017f, 0.309017f}, {-0.238856f, 0.864188f, 0.442863f},
 	{-0.425325f, 0.688191f, 0.587785f}, {-0.716567f, 0.681718f, -0.147621f},
 	{-0.500000f, 0.809017f, -0.309017f}, {-0.525731f, 0.850651f, 0.000000f},
@@ -84,21 +80,21 @@ vec3_t bytedirs[NUMVERTEXNORMALS] = {
 	{0.000000f, 1.000000f, 0.000000f}, {0.000000f, 0.955423f, 0.295242f},
 	{-0.262866f, 0.951056f, 0.162460f}, {0.238856f, 0.864188f, 0.442863f},
 	{0.262866f, 0.951056f, 0.162460f}, {0.500000f, 0.809017f, 0.309017f},
-	{0.238856f, 0.864188f, -0.442863f},{0.262866f, 0.951056f, -0.162460f},
-	{0.500000f, 0.809017f, -0.309017f},{0.850651f, 0.525731f, 0.000000f},
+	{0.238856f, 0.864188f, -0.442863f}, {0.262866f, 0.951056f, -0.162460f},
+	{0.500000f, 0.809017f, -0.309017f}, {0.850651f, 0.525731f, 0.000000f},
 	{0.716567f, 0.681718f, 0.147621f}, {0.716567f, 0.681718f, -0.147621f},
 	{0.525731f, 0.850651f, 0.000000f}, {0.425325f, 0.688191f, 0.587785f},
 	{0.864188f, 0.442863f, 0.238856f}, {0.688191f, 0.587785f, 0.425325f},
 	{0.809017f, 0.309017f, 0.500000f}, {0.681718f, 0.147621f, 0.716567f},
 	{0.587785f, 0.425325f, 0.688191f}, {0.955423f, 0.295242f, 0.000000f},
 	{1.000000f, 0.000000f, 0.000000f}, {0.951056f, 0.162460f, 0.262866f},
-	{0.850651f, -0.525731f, 0.000000f},{0.955423f, -0.295242f, 0.000000f},
+	{0.850651f, -0.525731f, 0.000000f}, {0.955423f, -0.295242f, 0.000000f},
 	{0.864188f, -0.442863f, 0.238856f}, {0.951056f, -0.162460f, 0.262866f},
 	{0.809017f, -0.309017f, 0.500000f}, {0.681718f, -0.147621f, 0.716567f},
 	{0.850651f, 0.000000f, 0.525731f}, {0.864188f, 0.442863f, -0.238856f},
 	{0.809017f, 0.309017f, -0.500000f}, {0.951056f, 0.162460f, -0.262866f},
 	{0.525731f, 0.000000f, -0.850651f}, {0.681718f, 0.147621f, -0.716567f},
-	{0.681718f, -0.147621f, -0.716567f},{0.850651f, 0.000000f, -0.525731f},
+	{0.681718f, -0.147621f, -0.716567f}, {0.850651f, 0.000000f, -0.525731f},
 	{0.809017f, -0.309017f, -0.500000f}, {0.864188f, -0.442863f, -0.238856f},
 	{0.951056f, -0.162460f, -0.262866f}, {0.147621f, 0.716567f, -0.681718f},
 	{0.309017f, 0.500000f, -0.809017f}, {0.425325f, 0.688191f, -0.587785f},
@@ -164,7 +160,7 @@ Q_random
 =======================================================================================================================================
 */
 float Q_random(int *seed) {
-	return (Q_rand(seed)& 0xffff) / (float)0x10000;
+	return (Q_rand(seed) & 0xffff) / (float)0x10000;
 }
 
 /*
@@ -212,11 +208,11 @@ signed short ClampShort(int i) {
 	return i;
 }
 
-// this isn't a real cheap function to call!
-
 /*
 =======================================================================================================================================
 DirToByte
+
+This isn't a real cheap function to call!
 =======================================================================================================================================
 */
 int DirToByte(vec3_t dir) {
@@ -259,7 +255,7 @@ void ByteToDir(int b, vec3_t dir) {
 
 /*
 =======================================================================================================================================
-pw
+ColorBytes3
 =======================================================================================================================================
 */
 unsigned ColorBytes3(float r, float g, float b) {
@@ -268,7 +264,6 @@ unsigned ColorBytes3(float r, float g, float b) {
 	((byte *)&i)[0] = r * 255;
 	((byte *)&i)[1] = g * 255;
 	((byte *)&i)[2] = b * 255;
-
 	return i;
 }
 
@@ -284,7 +279,6 @@ unsigned ColorBytes4(float r, float g, float b, float a) {
 	((byte *)&i)[1] = g * 255;
 	((byte *)&i)[2] = b * 255;
 	((byte *)&i)[3] = a * 255;
-
 	return i;
 }
 
@@ -321,7 +315,7 @@ float NormalizeColor(const vec3_t in, vec3_t out) {
 =======================================================================================================================================
 PlaneFromPoints
 
-Returns false if the triangle is degenrate. The normal will point out of the clock for clockwise ordered points.
+Returns false if the triangle is degenerate. The normal will point out of the clock for clockwise ordered points.
 =======================================================================================================================================
 */
 qboolean PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c) {
@@ -389,6 +383,7 @@ void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, f
 	zrot[0][0] = zrot[1][1] = zrot[2][2] = 1.0F;
 
 	rad = DEG2RAD(degrees);
+
 	zrot[0][0] = cos(rad);
 	zrot[0][1] = sin(rad);
 	zrot[1][0] = -sin(rad);
@@ -409,7 +404,7 @@ RotateAroundDirection
 */
 void RotateAroundDirection(vec3_t axis[3], float yaw) {
 
-	// create an arbitrary axis[1] 
+	// create an arbitrary axis[1]
 	PerpendicularVector(axis[1], axis[0]);
 	// rotate it around axis[0] by yaw
 	if (yaw) {
@@ -452,7 +447,7 @@ void vectoangles(const vec3_t value1, vec3_t angles) {
 			yaw += 360;
 		}
 
-		forward = sqrt(value1[0]*value1[0] + value1[1]*value1[1]);
+		forward = sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
 		pitch = (atan2(value1[2], forward) * 180 / M_PI);
 
 		if (pitch < 0) {
@@ -532,11 +527,12 @@ void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal) {
 	vec3_t n;
 	float inv_denom;
 
-	inv_denom =  DotProduct(normal, normal);
+	inv_denom = DotProduct(normal, normal);
 #ifndef Q3_VM
 	assert(Q_fabs(inv_denom) != 0.0f); // zero vectors get here
 #endif
 	inv_denom = 1.0f / inv_denom;
+
 	d = DotProduct(normal, p) * inv_denom;
 
 	n[0] = normal[0] * inv_denom;
@@ -558,8 +554,7 @@ Given a normalized forward vector, create two other perpendicular vectors.
 void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up) {
 	float d;
 
-	// this rotate and negate guarantees a vector
-	// not colinear with the original
+	// this rotate and negate guarantees a vector not colinear with the original
 	right[1] = -forward[0];
 	right[2] = forward[1];
 	right[0] = forward[2];
@@ -610,8 +605,8 @@ Q_fabs
 */
 float Q_fabs(float f) {
 	floatint_t fi;
-	fi.f = f;
 
+	fi.f = f;
 	fi.i &= 0x7FFFFFFF;
 	return fi.f;
 }
@@ -678,7 +673,7 @@ AngleMod
 =======================================================================================================================================
 */
 float AngleMod(float a) {
-	a = (360.0 / 65536) * ((int)(a * (65536/360.0)) & 65535);
+	a = (360.0 / 65536) * ((int)(a * (65536 / 360.0)) & 65535);
 	return a;
 }
 
@@ -768,7 +763,7 @@ int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, struct cplane_s *p) {
 	// general case
 	dist[0] = dist[1] = 0;
 
-	if (p->signbits < 8) // >= 8: default case is original code(dist[0]=dist[1]=0) {
+	if (p->signbits < 8) { // >= 8: default case is original code (dist[0] = dist[1] = 0)
 		for (i = 0; i < 3; i++) {
 			b = (p->signbits >> i) & 1;
 			dist[b] += p->normal[i] * emaxs[i];
@@ -898,6 +893,7 @@ VectorNormalize
 =======================================================================================================================================
 */
 vec_t VectorNormalize(vec3_t v) {
+
 	// NOTE: TTimo - Apple G4 altivec source uses double?
 	float length, ilength;
 
@@ -927,9 +923,9 @@ vec_t VectorNormalize2(const vec3_t v, vec3_t out) {
 	length = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
 
 	if (length) {
-		// writing it this way allows gcc to recognize that rsqrt can be used´´
+		// writing it this way allows gcc to recognize that rsqrt can be used
 		ilength = 1 / (float)sqrt(length);
-		// sqrt(length) = length * (1 / sqrt(length)) */
+		// sqrt(length) = length * (1 / sqrt(length))
 		length *= ilength;
 		out[0] = v[0] * ilength;
 		out[1] = v[1] * ilength;
@@ -1033,7 +1029,7 @@ int Q_log2(int val) {
 
 	answer = 0;
 
-	while ((val >> = 1) != 0) {
+	while ((val >>= 1) != 0) {
 		answer++;
 	}
 
@@ -1121,12 +1117,10 @@ void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up) 
 }
 
 /*
-// assumes "src" is normalized
-*/
-
-/*
 =======================================================================================================================================
 PerpendicularVector
+
+Assumes "src" is normalized.
 =======================================================================================================================================
 */
 void PerpendicularVector(vec3_t dst, const vec3_t src) {
@@ -1262,12 +1256,11 @@ int Q_isnan(float x) {
 =======================================================================================================================================
 Q_acos
 
-The msvc acos doesn't always return a value between 0 and PI:
+The MSVC acos doesn't always return a value between 0 and PI:
 
 int i;
 i = 1065353246;
-acos(*(float*)&i) == -1.#IND0
-
+acos(*(float *)&i) == -1.#IND0
 =======================================================================================================================================
 */
 float Q_acos(float c) {
@@ -1290,7 +1283,7 @@ float Q_acos(float c) {
 =======================================================================================================================================
 Q_asin
 
-The msvc asin probably has same odd behavior as acos.
+The MSVC asin probably has same odd behavior as acos.
 =======================================================================================================================================
 */
 float Q_asin(float c) {

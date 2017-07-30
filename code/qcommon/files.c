@@ -2479,6 +2479,7 @@ char **FS_ListFilteredFiles(const char *path, const char *extension, char *filte
 
 				netpath = FS_BuildOSPath(search->dir->fullpath, NULL, path);
 				sysFiles = Sys_ListFiles(netpath, extension, filter, &numSysFiles, qfalse);
+
 				for (i = 0; i < numSysFiles; i++) {
 					// unique the match
 					name = sysFiles[i];
@@ -3121,7 +3122,7 @@ void FS_Path_f(void) {
 
 	for (s = fs_searchpaths; s; s = s->next) {
 		if (s->pack) {
-			Com_Printf("%s(%i files)\n", s->pack->pakFilename, s->pack->numfiles);
+			Com_Printf("%s (%i files)\n", s->pack->pakFilename, s->pack->numfiles);
 
 			if (fs_numServerPaks) {
 				if (!FS_PakIsPure(s->pack)) {
@@ -3561,11 +3562,11 @@ qboolean FS_ComparePaks(char *neededpaks, int len, qboolean dlstring) {
 				Q_strcat(neededpaks, len, ".pk3");
 				// do we have one with the same name?
 				if (FS_SV_FileExists(va("%s.pk3", fs_serverReferencedPakNames[i]))) {
-					Q_strcat(neededpaks, len, "(local file exists with wrong checksum)");
+					Q_strcat(neededpaks, len, " (local file exists with wrong checksum)");
 				} else if(pakType == PAK_COMMERCIAL) {
-					Q_strcat(neededpaks, len, "(commercial pak, downloading not allowed)");
+					Q_strcat(neededpaks, len, " (commercial pak, downloading not allowed)");
 				} else if(pakType == PAK_NO_DOWNLOAD) {
-					Q_strcat(neededpaks, len, "(downloading not allowed)");
+					Q_strcat(neededpaks, len, " (downloading not allowed)");
 				}
 
 				Q_strcat(neededpaks, len, "\n");
@@ -4017,7 +4018,7 @@ Add a directory as a qpath. For example, searching in c:\quake3\fonts(path C:\qu
 void FS_AddQPathDirectory(const char *path, const char *qpath) {
 	searchpath_t *search, *sp;
 
-	// Unique
+	// unique
 	for (sp = fs_searchpaths; sp; sp = sp->next) {
 		if (sp->dir && sp->dir->virtualDir && !Q_stricmp(sp->dir->fullpath, path) && !Q_stricmp(sp->dir->qpath, qpath)) {
 			return; // we've already got this one
@@ -4069,6 +4070,7 @@ FS_AddGame
 =======================================================================================================================================
 */
 static void FS_AddGame(const char *gameName) {
+
 	// add search path elements in reverse priority order
 	if (fs_cdpath->string[0]) {
 		FS_AddGameDirectory(fs_cdpath->string, gameName);
@@ -4153,7 +4155,6 @@ static void FS_Startup(qboolean quiet) {
 	}
 
 	Q_strncpyz(fs_gamedir, fs_gamedirvar->string, sizeof(fs_gamedir));
-
 	FS_GetModDescription(fs_gamedir, description, sizeof(description));
 	Q_CleanStr(description);
 	Cvar_Set("com_productName", description);

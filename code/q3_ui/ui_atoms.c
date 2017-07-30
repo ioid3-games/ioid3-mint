@@ -109,7 +109,7 @@ void UI_PopMenu(void) {
 	}
 
 	if (uis.menusp) {
-		uis.activemenu = uis.stack[uis.menusp- 1];
+		uis.activemenu = uis.stack[uis.menusp - 1];
 		uis.firstdraw = qtrue;
 	} else {
 		UI_ForceMenuOff();

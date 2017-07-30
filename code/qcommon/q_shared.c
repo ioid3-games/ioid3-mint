@@ -1,34 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-// q_shared.c -- stateless support routines that are included in each code dll
+/**************************************************************************************************************************************
+ Stateless support routines that are included in each code dll.
+**************************************************************************************************************************************/
 
 #include "q_shared.h"
 
@@ -114,7 +110,7 @@ void COM_StripExtension(const char *in, char *out, int destsize) {
 
 	if (in == out && destsize > 1) {
 		out[destsize - 1] = '\0';
-	} else
+	} else {
 		Q_strncpyz(out, in, destsize);
 	}
 }
@@ -134,7 +130,7 @@ qboolean COM_CompareExtension(const char *in, const char *ext) {
 
 	if (extlen <= inlen) {
 		in += inlen - extlen;
-		
+
 		if (!Q_stricmp(in, ext)) {
 			return qtrue;
 		}
@@ -147,7 +143,7 @@ qboolean COM_CompareExtension(const char *in, const char *ext) {
 =======================================================================================================================================
 COM_DefaultExtension
 
-if path doesn't have an extension, then append the specified one(which should include the .)
+If path doesn't have an extension, then append the specified one (which should include the .).
 =======================================================================================================================================
 */
 void COM_DefaultExtension(char *path, int maxSize, const char *extension) {
@@ -179,8 +175,7 @@ void COM_SetExtension(char *path, int maxSize, const char *extension) {
 =======================================================================================================================================
 */
 #ifdef Q3_PORTABLE_ENDIAN
-// can't just use function pointers, or dll linkage can
-// mess up when qcommon is included in multiple places
+// can't just use function pointers, or dll linkage can mess up when qcommon is included in multiple places
 static short (*_BigShort)(short l);
 static short (*_LittleShort)(short l);
 static int (*_BigLong)(int l);
@@ -189,6 +184,7 @@ static qint64 (*_BigLong64)(qint64 l);
 static qint64 (*_LittleLong64)(qint64 l);
 static float (*_BigFloat)(const float *l);
 static float (*_LittleFloat)(const float *l);
+
 short BigShort(short l) {return _BigShort(l);}
 short LittleShort(short l) {return _LittleShort(l);}
 int BigLong(int l) {return _BigLong(l);}
@@ -198,7 +194,6 @@ qint64 LittleLong64(qint64 l) {return _LittleLong64(l);}
 float BigFloatPtr(const float *l) {return _BigFloat(l);}
 float LittleFloatPtr(const float *l) {return _LittleFloat(l);}
 #endif
-
 /*
 =======================================================================================================================================
 CopyShortSwap
@@ -231,9 +226,9 @@ ShortSwap
 =======================================================================================================================================
 */
 short ShortSwap(short l) {
-	byte b1,b2;
+	byte b1, b2;
 
-	b1 = l&255;
+	b1 = l &255;
 	b2 = (l >> 8)&255;
 
 	return (b1 << 8) + b2;
@@ -256,7 +251,7 @@ LongSwap
 int LongSwap(int l) {
 	byte b1, b2, b3, b4;
 
-	b1 = l&255;
+	b1 = l &255;
 	b2 = (l >> 8)&255;
 	b3 = (l >> 16)&255;
 	b4 = (l >> 24)&255;
@@ -357,7 +352,7 @@ void Swap_Init(void) {
 /*
 =======================================================================================================================================
 
-PARSING
+	PARSING
 
 =======================================================================================================================================
 */
@@ -508,7 +503,7 @@ int COM_Compress(char *data_p) {
 				in++;
 				// an actual token
 			} else {
-				// if we have a pending newline, emit it(and it counts as whitespace)
+				// if we have a pending newline, emit it (and it counts as whitespace)
 				if (newline) {
 					*out++ = '\n';
 					newline = qfalse;
@@ -596,7 +591,7 @@ char *COM_ParseExt2(char **data_p, qboolean allowLineBreaks, char delimiter) {
 				data++;
 			}
 		// skip /* */ comments
-		} else if (c=='/' && data[1] == '*') {
+		} else if (c == '/' && data[1] == '*') {
 			data += 2;
 
 			while (*data && (*data != '*' || data[1] != '/')) {
@@ -623,7 +618,7 @@ char *COM_ParseExt2(char **data_p, qboolean allowLineBreaks, char delimiter) {
 		while (1) {
 			c = *data++;
 
-			if (c=='\"' || !c) {
+			if (c == '\"' || !c) {
 				com_token[len] = 0;
 				*data_p = (char *)data;
 				return com_token;
@@ -648,7 +643,7 @@ char *COM_ParseExt2(char **data_p, qboolean allowLineBreaks, char delimiter) {
 
 		data++;
 		c = *data;
-	} while (c>32 && c != delimiter);
+	} while (c > 32 && c != delimiter);
 
 	com_token[len] = 0;
 	*data_p = (char *)data;
@@ -794,7 +789,7 @@ void Parse3DMatrix(char **buf_p, int z, int y, int x, float *m) {
 	COM_MatchToken(buf_p, "(");
 
 	for (i = 0; i < z; i++) {
-		Parse2DMatrix(buf_p, y, x, m + i * x*y);
+		Parse2DMatrix(buf_p, y, x, m + i * x * y);
 	}
 
 	COM_MatchToken(buf_p, ")");
@@ -932,7 +927,7 @@ qboolean Q_isintegral(float f) {
 =======================================================================================================================================
 Q_vsnprintf
 
-Special wrapper function for Microsoft's broken _vsnprintf()function. MinGW comes with its own snprintf()which is not broken.
+Special wrapper function for Microsoft's broken _vsnprintf() function. MinGW comes with its own snprintf() which is not broken.
 =======================================================================================================================================
 */
 int Q_vsnprintf(char *str, size_t size, const char *format, va_list ap) {
@@ -941,8 +936,8 @@ int Q_vsnprintf(char *str, size_t size, const char *format, va_list ap) {
 	retval = _vsnprintf(str, size, format, ap);
 
 	if (retval < 0 || retval == size) {
-		// Microsoft doesn't adhere to the C99 standard of vsnprintf,
-		// which states that the return value must be the number ofbytes written if the output string had sufficient length.
+		// Microsoft doesn't adhere to the C99 standard of vsnprintf, which states that the return value must be the number of
+		// bytes written if the output string had sufficient length.
 		// Obviously we cannot determine that value from Microsoft's implementation, so we have no choice but to return size.
 		str[size - 1] = '\0';
 		return size;
@@ -969,7 +964,7 @@ void Q_strncpyz(char *dest, const char *src, int destsize) {
 	}
 
 	if (destsize < 1) {
-		Com_Error(ERR_FATAL,"Q_strncpyz: destsize < 1");
+		Com_Error(ERR_FATAL, "Q_strncpyz: destsize < 1");
 	}
 
 	strncpy(dest, src, destsize - 1);
@@ -1001,7 +996,7 @@ int Q_stricmpn(const char *s1, const char *s2, int n) {
 		if (!n--) {
 			return 0; // strings are equal until end point
 		}
-		
+
 		if (c1 != c2) {
 			if (c1 >= 'a' && c1 <= 'z') {
 				c1 -= ('a' - 'A');
@@ -1035,7 +1030,7 @@ int Q_strncmp(const char *s1, const char *s2, int n) {
 		if (!n--) {
 			return 0; // strings are equal until end point
 		}
-		
+
 		if (c1 != c2) {
 			return c1 < c2 ? -1 : 1;
 		}
@@ -1050,7 +1045,7 @@ Q_stricmp
 =======================================================================================================================================
 */
 int Q_stricmp(const char *s1, const char *s2) {
-	return (s1 && s2) ? Q_stricmpn(s1, s2, 99999): -1;
+	return (s1 && s2) ? Q_stricmpn(s1, s2, 99999) : -1;
 }
 
 /*
@@ -1089,11 +1084,11 @@ char *Q_strupr(char *s1) {
 	return s1;
 }
 
-// never goes past bounds or leaves without a terminating 0
-
 /*
 =======================================================================================================================================
 Q_strcat
+
+Never goes past bounds or leaves without a terminating 0.
 =======================================================================================================================================
 */
 void Q_strcat(char *dest, int size, const char *src) {
@@ -1109,12 +1104,10 @@ void Q_strcat(char *dest, int size, const char *src) {
 }
 
 /*
-* Find the first occurrence of find in s.
-*/
-
-/*
 =======================================================================================================================================
 Q_stristr
+
+Find the first occurrence of find in s.
 =======================================================================================================================================
 */
 const char *Q_stristr(const char *s, const char *find) {
@@ -1139,6 +1132,7 @@ const char *Q_stristr(const char *s, const char *find) {
 				}
 			} while (sc != c);
 		} while (Q_stricmpn(s, find, len) != 0);
+
 		s--;
 	}
 
@@ -1221,14 +1215,14 @@ int Q_CountChar(const char *string, char tocount) {
 
 /*
 =======================================================================================================================================
-COM_SetExtension
+Com_sprintf
 =======================================================================================================================================
 */
 int QDECL Com_sprintf(char *dest, int size, const char *fmt, ...) {
 	int len;
 	va_list argptr;
 
-	va_start(argptr,fmt);
+	va_start(argptr, fmt);
 	len = Q_vsnprintf(dest, size, fmt, argptr);
 	va_end(argptr);
 
@@ -1243,7 +1237,7 @@ int QDECL Com_sprintf(char *dest, int size, const char *fmt, ...) {
 =======================================================================================================================================
 va
 
-does a varargs printf into a temp buffer, so I don't need to have varargs versions of all text functions.
+Does a varargs printf into a temp buffer, so I don't need to have varargs versions of all text functions.
 =======================================================================================================================================
 */
 char *QDECL va(char *format, ...) {
@@ -1258,7 +1252,6 @@ char *QDECL va(char *format, ...) {
 	va_start(argptr, format);
 	Q_vsnprintf(buf, sizeof(*string), format, argptr);
 	va_end(argptr);
-
 	return buf;
 }
 
@@ -1284,7 +1277,7 @@ void Com_TruncateLongString(char *buffer, const char *s) {
 /*
 =======================================================================================================================================
 
-  INFO STRINGS
+	INFO STRINGS
 
 =======================================================================================================================================
 */

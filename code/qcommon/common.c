@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, 
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -42,8 +36,8 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include <winsock.h>
 #endif
 #include "../sys/sys_loadlib.h"
-// List of demo protocols that are supported for playback.
-// Also plays protocol com_protocol
+// list of demo protocols that are supported for playback.
+// also plays protocol com_protocol
 int demo_protocols[] = {PROTOCOL_VERSION, 5, 4, 3, 2, 0};
 
 #define MAX_NUM_ARGVS 50
@@ -391,7 +385,7 @@ void Com_Quit_f(void) {
 	char *p = Cmd_Args();
 
 	if (!com_errorEntered) {
-		// Some VMs might execute "quit" command directly, which would trigger an unload of active VM error.
+		// some VMs might execute "quit" command directly, which would trigger an unload of active VM error.
 		// Sys_Quit will kill this process anyways, so a corrupt call stack makes no difference
 		VM_Forced_Unload_Start();
 		SV_Shutdown(p[0] ? p : "Server quit");
@@ -2390,6 +2384,7 @@ sysEvent_t Com_GetSystemEvent(void) {
 
 		len = strlen(s) + 1;
 		b = Z_Malloc(len);
+
 		strcpy(b, s);
 		Com_QueueEvent(0, SE_CONSOLE, 0, 0, len, b);
 	}
@@ -2723,7 +2718,7 @@ For controlling environment variables.
 void Com_ExecuteCfg(void) {
 
 	Cbuf_ExecuteText(EXEC_NOW, "exec default.cfg\n");
-	Cbuf_Execute(); // Always execute after exec to prevent text buffer overflowing
+	Cbuf_Execute(); // always execute after exec to prevent text buffer overflowing
 
 	if (!Com_SafeMode()) {
 		// skip the q3config.cfg and autoexec.cfg if "safe" is on the command line
@@ -2765,12 +2760,12 @@ void Com_GameRestart(qboolean disconnect) {
 		}
 
 		FS_Restart(qtrue);
-		// Clean out any user and VM created cvars
+		// clean out any user and VM created cvars
 		Cvar_Restart(qtrue);
 		Com_ExecuteCfg();
 
 		if (disconnect) {
-			// We don't want to change any network settings if gamedir change was triggered by a connect to server because the
+			// we don't want to change any network settings if gamedir change was triggered by a connect to server because the
 			// new network settings might make the connection fail.
 			NET_Restart_f();
 			// switching from another game and not connection to a server
@@ -2900,7 +2895,7 @@ void Com_Init(char *commandLine) {
 	if (setjmp(abortframe)) {
 		Sys_Error("Error during initialization");
 	}
-	// Clear queues
+	// clear queues
 	Com_Memset(&eventQueue[0], 0, MAX_QUEUED_EVENTS * sizeof(sysEvent_t));
 	// initialize the weak pseudo-random number generator for use later.
 	Com_InitRand();
@@ -2928,7 +2923,7 @@ void Com_Init(char *commandLine) {
 
 	FS_InitFilesystem();
 	Com_InitJournaling();
-	// Add some commands here already so users can use them from config files
+	// add some commands here already so users can use them from config files
 	Cmd_AddCommand("setenv", Com_Setenv_f);
 
 	if (com_developer && com_developer->integer) {
@@ -3002,7 +2997,7 @@ void Com_Init(char *commandLine) {
 #endif
 	Sys_Init();
 	Sys_InitPIDFile(FS_GetCurrentGameDir());
-	// Pick a random port value
+	// pick a random port value
 	Com_RandomBytes((byte *)&qport, sizeof(int));
 	Netchan_Init(qport & 0xffff);
 	VM_Init();
@@ -3272,7 +3267,7 @@ void Com_WriteConfigToFile(const char *filename) {
 		return;
 	}
 
-	FS_Printf(f, "// generated by " PRODUCT_NAME ", do not modify\n");
+	FS_Printf(f, "// Generated by " PRODUCT_NAME ", do not modify\n");
 	Key_WriteBindings(f);
 	Cvar_WriteVariables(f);
 	FS_FCloseFile(f);
@@ -3420,7 +3415,7 @@ void Com_Frame(void) {
 	if (com_speeds->integer) {
 		timeBeforeFirstEvents = Sys_Milliseconds();
 	}
-	// Figure out how much time we have
+	// figure out how much time we have
 	if (!com_timedemo->integer) {
 		if (com_dedicated->integer) {
 			minMsec = SV_FrameMsec();
@@ -3441,7 +3436,7 @@ void Com_Frame(void) {
 			if (bias > minMsec) {
 				bias = minMsec;
 			}
-			// Adjust minMsec if previous frame took too long to render so that framerate is stable at the requested value.
+			// adjust minMsec if previous frame took too long to render so that framerate is stable at the requested value.
 			minMsec -= bias;
 		}
 	} else {
@@ -3487,7 +3482,7 @@ void Com_Frame(void) {
 
 	SV_Frame(msec);
 	// if "dedicated" has been modified, start up or shut down the client system.
-	// Do this after the server may have started, but before the client tries to auto-connect
+	// do this after the server may have started, but before the client tries to auto-connect
 	if (com_dedicated->modified) {
 		// get the latched value
 		Cvar_Get("dedicated", "0", 0);
@@ -3752,12 +3747,12 @@ Field_CompleteCommand
 void Field_CompleteCommand(char *cmd, qboolean doCommands, qboolean doCvars) {
 	int completionArgument = 0;
 
-	// Skip leading whitespace and quotes
+	// skip leading whitespace and quotes
 	cmd = Com_SkipCharset(cmd, " \"");
 
 	Cmd_TokenizeStringIgnoreQuotes(cmd);
 	completionArgument = Cmd_Argc();
-	// If there is trailing whitespace on the cmd
+	// if there is trailing whitespace on the cmd
 	if (*(cmd + strlen(cmd) - 1) == ' ') {
 		completionString = "";
 		completionArgument++;
@@ -3768,7 +3763,7 @@ void Field_CompleteCommand(char *cmd, qboolean doCommands, qboolean doCvars) {
 	// add a '\' to the start of the buffer if it might be sent as chat otherwise
 	if (con_autochat->integer && completionField->buffer[0] && completionField->buffer[0] != '\\') {
 		if (completionField->buffer[0] != '/') {
-			// Buffer is full, refuse to complete
+			// buffer is full, refuse to complete
 			if (strlen(completionField->buffer) + 1 >= sizeof(completionField->buffer)) {
 				return;
 			}
@@ -3784,13 +3779,13 @@ void Field_CompleteCommand(char *cmd, qboolean doCommands, qboolean doCvars) {
 		const char *baseCmd = Cmd_Argv(0);
 		char *p;
 #ifndef DEDICATED
-		// This should always be true
+		// this should always be true
 		if (baseCmd[0] == '\\' || baseCmd[0] == '/') {
 			baseCmd++;
 		}
 #endif
 		if ((p = Field_FindFirstSeparator(cmd))) {
-			Field_CompleteCommand(p + 1, qtrue, qtrue); // Compound command
+			Field_CompleteCommand(p + 1, qtrue, qtrue); // compound command
 		} else {
 			Cmd_CompleteArgument(baseCmd, cmd, completionArgument);
 		}
