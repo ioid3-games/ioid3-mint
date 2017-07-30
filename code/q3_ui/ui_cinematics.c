@@ -130,7 +130,7 @@ static void UI_CinematicsMenu_Init(void) {
 	cinematicsMenuInfo.banner.generic.type = MTYPE_BTEXT;
 	cinematicsMenuInfo.banner.generic.x = 320;
 	cinematicsMenuInfo.banner.generic.y = 16;
-	cinematicsMenuInfo.banner.string = "CINEMATICS";
+	cinematicsMenuInfo.banner.string = "Cinematics";
 	cinematicsMenuInfo.banner.color = text_banner_color;
 	cinematicsMenuInfo.banner.style = UI_CENTER;
 
@@ -302,7 +302,7 @@ static void UI_CinematicsMenu_Init(void) {
 	cinematicsMenuInfo.back.generic.id = ID_BACK;
 	cinematicsMenuInfo.back.generic.callback = UI_CinematicsMenu_BackEvent;
 	cinematicsMenuInfo.back.generic.x = 0;
-	cinematicsMenuInfo.back.generic.y = 480-64;
+	cinematicsMenuInfo.back.generic.y = 480 - 64;
 	cinematicsMenuInfo.back.width = 128;
 	cinematicsMenuInfo.back.height = 64;
 	cinematicsMenuInfo.back.focuspic = ART_BACK1;

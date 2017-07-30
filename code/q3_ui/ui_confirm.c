@@ -168,8 +168,8 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw)(void), v
 
 	ConfirmMenu_Cache();
 
-	n1 = UI_ProportionalStringWidth("YES/NO");
-	n2 = UI_ProportionalStringWidth("YES");
+	n1 = UI_ProportionalStringWidth("Yes/No");
+	n2 = UI_ProportionalStringWidth("Yes");
 	n3 = UI_ProportionalStringWidth("/");
 
 	l1 = 320 - (n1 / 2);
@@ -198,7 +198,7 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw)(void), v
 	s_confirm.yes.generic.id = ID_CONFIRM_YES;
 	s_confirm.yes.generic.x = l1;
 	s_confirm.yes.generic.y = 264;
-	s_confirm.yes.string = "YES";
+	s_confirm.yes.string = "Yes";
 	s_confirm.yes.color = text_big_color;
 	s_confirm.yes.style = UI_LEFT;
 
@@ -208,7 +208,7 @@ void UI_ConfirmMenu_Style(const char *question, int style, void (*draw)(void), v
 	s_confirm.no.generic.id = ID_CONFIRM_NO;
 	s_confirm.no.generic.x = l3;
 	s_confirm.no.generic.y = 264;
-	s_confirm.no.string = "NO";
+	s_confirm.no.string = "No";
 	s_confirm.no.color = text_big_color;
 	s_confirm.no.style = UI_LEFT;
 
@@ -271,8 +271,6 @@ void UI_Message(const char **lines) {
 	s_confirm.yes.style = UI_LEFT;
 
 	Menu_AddItem(&s_confirm.menu, &s_confirm.yes);
-
 	UI_PushMenu(&s_confirm.menu);
-
 	Menu_SetCursorToItem(&s_confirm.menu, &s_confirm.yes);
 }

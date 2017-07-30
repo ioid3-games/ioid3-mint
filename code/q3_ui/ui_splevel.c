@@ -555,7 +555,6 @@ static void UI_SPLevelMenu_MenuDraw(void) {
 	int x, y;
 	vec4_t color;
 	int level;
-//	int fraglimit;
 	int pad;
 	char buf[MAX_INFO_VALUE];
 	char string[64];
@@ -659,9 +658,6 @@ static void UI_SPLevelMenu_MenuDraw(void) {
 
 	Com_sprintf(string, sizeof(string), "%s: %s", buf, Info_ValueForKey(levelMenuInfo.selectedArenaInfo, "longname"));
 	UI_DrawProportionalString(320, y, string, UI_CENTER|UI_SMALLFONT, color_orange);
-
-//	fraglimit = atoi(Info_ValueForKey(levelMenuInfo.selectedArenaInfo, "fraglimit"));
-//	UI_DrawString(18, 212, va("Frags %i", fraglimit), UI_LEFT|UI_SMALLFONT, color_orange);
 	// draw bot opponents
 	y += 24;
 	pad = (7 - levelMenuInfo.numBots) * (64 + 26) / 2;
@@ -750,7 +746,7 @@ static void UI_SPLevelMenu_Init(void) {
 	levelMenuInfo.item_banner.generic.type = MTYPE_BTEXT;
 	levelMenuInfo.item_banner.generic.x = 320;
 	levelMenuInfo.item_banner.generic.y = 16;
-	levelMenuInfo.item_banner.string = "CHOOSE LEVEL";
+	levelMenuInfo.item_banner.string = "Choose Level";
 	levelMenuInfo.item_banner.color = text_banner_color;
 	levelMenuInfo.item_banner.style = UI_CENTER;
 

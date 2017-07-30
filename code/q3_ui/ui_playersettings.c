@@ -259,7 +259,6 @@ static void PlayerSettings_DrawPlayer(void *self) {
 
 	if (strcmp(model, s_playersettings.playerModel) != 0 || strcmp(headmodel, s_playersettings.playerHead) != 0) {
 		UI_PlayerInfo_SetModel(&s_playersettings.playerinfo, model, headmodel, NULL);
-
 		strcpy(s_playersettings.playerModel, model);
 		strcpy(s_playersettings.playerHead, headmodel);
 
@@ -393,10 +392,10 @@ static void PlayerSettings_StatusBar(void *ptr) {
 			UI_DrawString(320, 420, "giving you more of a challenge", UI_CENTER|UI_SMALLFONT, colorWhite);
 			break;
 		case ID_EFFECTS:
-			UI_DrawString(320, 410, "Color of railgun core", UI_CENTER|UI_SMALLFONT, colorWhite);
+			UI_DrawString(320, 410, "Color of Railgun core.", UI_CENTER|UI_SMALLFONT, colorWhite);
 			break;
 		case ID_EFFECTS2:
-			UI_DrawString(320, 410, "Color of railgun disks", UI_CENTER|UI_SMALLFONT, colorWhite);
+			UI_DrawString(320, 410, "Color of Railgun disks.", UI_CENTER|UI_SMALLFONT, colorWhite);
 			break;
 		default:
 			break;
@@ -499,7 +498,7 @@ static void PlayerSettings_MenuInit(int localPlayerNum) {
 	s_playersettings.effects.generic.bottom = y + 2 * PROP_HEIGHT;
 	s_playersettings.effects.numitems = NUM_COLOR_EFFECTS;
 
-	y += 1 * PROP_HEIGHT;
+	y += PROP_HEIGHT;
 	s_playersettings.effects2.generic.type = MTYPE_SPINCONTROL;
 	s_playersettings.effects2.generic.flags = QMF_NODEFAULTINIT;
 	s_playersettings.effects2.generic.id = ID_EFFECTS2;

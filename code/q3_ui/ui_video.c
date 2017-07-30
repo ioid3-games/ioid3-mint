@@ -1,31 +1,25 @@
 /*
-===========================================================================
+=======================================================================================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
-===========================================================================
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+=======================================================================================================================================
 */
 
 #include "ui_local.h"
@@ -158,7 +152,7 @@ static void UI_DriverInfo_Menu(void) {
 	s_driverinfo.banner.generic.type = MTYPE_BTEXT;
 	s_driverinfo.banner.generic.x = 320;
 	s_driverinfo.banner.generic.y = 16;
-	s_driverinfo.banner.string = "DRIVER INFO";
+	s_driverinfo.banner.string = "Driver Info";
 	s_driverinfo.banner.color = text_banner_color;
 	s_driverinfo.banner.style = UI_CENTER;
 
@@ -253,7 +247,7 @@ static void UI_DriverInfo_Menu(void) {
 #define ID_RATIO		110
 
 typedef struct {
-	menuframework_smenu;
+	menuframework_s menu;
 	menutext_s banner;
 	menubitmap_s framel;
 	menubitmap_s framer;
@@ -295,29 +289,17 @@ static graphicsoptions_t s_graphicsoptions;
 
 static InitialVideoOptions_s s_ivo_templates[] = {
 	// very high
-	{
-		6, qtrue, 3, 0, 2, 4, 5, 2, qtrue // Note: If r_availableModes is found, mode is changed to -2.
-	},
+	{6, qtrue, 3, 0, 2, 4, 5, 2, qtrue}, // Note: If r_availableModes is found, mode is changed to -2.
 	// high
-	{
-		6, qtrue, 3, 0, 2, 3, 2, 1, qtrue
-	},
+	{6, qtrue, 3, 0, 2, 3, 2, 1, qtrue},
 	// normal
-	{
-		6, qtrue, 3, 0, 2, 2, 1, 0, qtrue
-	},
+	{6, qtrue, 3, 0, 2, 2, 1, 0, qtrue},
 	// fast
-	{
-		4, qtrue, 2, 0, 0, 1, 0, 0, qfalse
-	},
+	{4, qtrue, 2, 0, 0, 1, 0, 0, qfalse},
 	// fastest
-	{
-		3, qtrue, 1, 1, 0, 0, 0, 0, qfalse
-	},
+	{3, qtrue, 1, 1, 0, 0, 0, 0, qfalse},
 	// custom
-	{
-		3, qtrue, 1, 0, 0, 1, 0, 0, qfalse
-	}
+	{3, qtrue, 1, 0, 0, 1, 0, 0, qfalse}
 };
 
 #define NUM_IVO_TEMPLATES (ARRAY_LEN(s_ivo_templates))
@@ -397,7 +379,7 @@ GraphicsOptions_FindDetectedResolution
 static int GraphicsOptions_FindDetectedResolution(int mode) {
 	int i;
 
-	if (!resolutionsDetected)
+	if (!resolutionsDetected) {
 		return mode;
 	}
 	// display resolution
@@ -460,7 +442,7 @@ static void GraphicsOptions_GetAspectRatios(void) {
 			Com_sprintf(str, sizeof(str), "Auto (%s)", GraphicsOptions_AspectString(w, h));
 		} else {
 			x = strchr(resolutions[r], 'x') + 1;
-			Q_strncpyz(str, resolutions[r], x-resolutions[r]);
+			Q_strncpyz(str, resolutions[r], x - resolutions[r]);
 			w = atoi(str);
 			h = atoi(x);
 			Q_strncpyz(str, GraphicsOptions_AspectString(w, h), sizeof(str));
@@ -502,7 +484,7 @@ static void GraphicsOptions_GetInitialVideo(void) {
 	s_ivo.multisample = s_graphicsoptions.multisample.curvalue;
 	s_ivo.texturebits = s_graphicsoptions.texturebits.curvalue;
 #if 0
-	Com_Printf("DEBUG: s_ivo = { %d, %d, %d, %d, %d, %d, %d, %d, %s }\n", s_ivo.mode, s_ivo.fullscreen, s_ivo.tq, s_ivo.lighting, s_ivo.texturebits, s_ivo.geometry, s_ivo.filter, s_ivo.multisample, s_ivo.flares ? "qtrue" : "qfalse");
+	Com_Printf("DEBUG: s_ivo = {%d, %d, %d, %d, %d, %d, %d, %d, %s}\n", s_ivo.mode, s_ivo.fullscreen, s_ivo.tq, s_ivo.lighting, s_ivo.texturebits, s_ivo.geometry, s_ivo.filter, s_ivo.multisample, s_ivo.flares ? "qtrue" : "qfalse");
 #endif
 }
 
@@ -557,7 +539,8 @@ static void GraphicsOptions_CheckConfig(void) {
 		if (GraphicsOptions_FindDetectedResolution(s_ivo_templates[i].mode) != s_graphicsoptions.mode.curvalue) {
 			continue;
 		}
-//		if (s_ivo_templates[i].fullscreen != s_graphicsoptions.fs.curvalue)
+
+//		if (s_ivo_templates[i].fullscreen != s_graphicsoptions.fs.curvalue) {
 //			continue;
 //		}
 
@@ -585,7 +568,7 @@ static void GraphicsOptions_CheckConfig(void) {
 			continue;
 		}
 
-//		if (s_ivo_templates[i].texturebits != s_graphicsoptions.texturebits.curvalue)
+//		if (s_ivo_templates[i].texturebits != s_graphicsoptions.texturebits.curvalue) {
 //			continue;
 //		}
 
@@ -655,7 +638,7 @@ static void GraphicsOptions_ApplyChanges(void *unused, int notification) {
 		return;
 	}
 
-	switch (s_graphicsoptions.texturebits.curvalue ) {
+	switch (s_graphicsoptions.texturebits.curvalue) {
 		case 0:
 			trap_Cvar_SetValue("r_texturebits", 0);
 			break;
@@ -861,7 +844,7 @@ static void GraphicsOptions_SetMenuItems(void) {
 
 	s_graphicsoptions.ratio.curvalue = resToRatio[s_graphicsoptions.mode.curvalue];
 	s_graphicsoptions.fs.curvalue = trap_Cvar_VariableValue("r_fullscreen");
-	s_graphicsoptions.tq.curvalue = 3-trap_Cvar_VariableValue("r_picmip");
+	s_graphicsoptions.tq.curvalue = 3 - trap_Cvar_VariableValue("r_picmip");
 
 	if (s_graphicsoptions.tq.curvalue < 0) {
 		s_graphicsoptions.tq.curvalue = 0;
@@ -886,7 +869,7 @@ static void GraphicsOptions_SetMenuItems(void) {
 	}
 
 	if (trap_Cvar_VariableIntegerValue("r_ext_texture_filter_anisotropic") != 0) {
-		switch ((int) trap_Cvar_VariableValue("r_ext_max_anisotropy")) {
+		switch ((int)trap_Cvar_VariableValue("r_ext_max_anisotropy")) {
 			default:
 			case 2:
 				s_graphicsoptions.filter.curvalue = 2;
@@ -900,27 +883,27 @@ static void GraphicsOptions_SetMenuItems(void) {
 			case 16:
 				s_graphicsoptions.filter.curvalue = 5;
 				break;
-			}
-		} else if (!Q_stricmp(CG_Cvar_VariableString("r_textureMode"), "GL_LINEAR_MIPMAP_NEAREST")) {
-			s_graphicsoptions.filter.curvalue = 0;
-		} else {
-			s_graphicsoptions.filter.curvalue = 1;
 		}
+	} else if (!Q_stricmp(CG_Cvar_VariableString("r_textureMode"), "GL_LINEAR_MIPMAP_NEAREST")) {
+		s_graphicsoptions.filter.curvalue = 0;
+	} else {
+		s_graphicsoptions.filter.curvalue = 1;
+	}
 
-		if (trap_Cvar_VariableValue("r_lodBias") > 0) {
-			if (trap_Cvar_VariableValue("r_subdivisions") >= 20) {
-				s_graphicsoptions.geometry.curvalue = 0;
-			} else {
-				s_graphicsoptions.geometry.curvalue = 1;
-			}
-		} else if (trap_Cvar_VariableValue("r_lodBias") == 0) {
-			s_graphicsoptions.geometry.curvalue = 2;
+	if (trap_Cvar_VariableValue("r_lodBias") > 0) {
+		if (trap_Cvar_VariableValue("r_subdivisions") >= 20) {
+			s_graphicsoptions.geometry.curvalue = 0;
 		} else {
-			if (trap_Cvar_VariableValue("r_subdivisions") == 1) {
-				s_graphicsoptions.geometry.curvalue = 4;
-			} else {
-				s_graphicsoptions.geometry.curvalue = 3;
-			}
+			s_graphicsoptions.geometry.curvalue = 1;
+		}
+	} else if (trap_Cvar_VariableValue("r_lodBias") == 0) {
+		s_graphicsoptions.geometry.curvalue = 2;
+	} else {
+		if (trap_Cvar_VariableValue("r_subdivisions") == 1) {
+			s_graphicsoptions.geometry.curvalue = 4;
+		} else {
+			s_graphicsoptions.geometry.curvalue = 3;
+		}
 	}
 	// use higher multisample value
 	// r_ext_framebuffer_multisample is currently only used by the OpenGL2 renderer
@@ -944,6 +927,7 @@ GraphicsOptions_MenuInit
 =======================================================================================================================================
 */
 void GraphicsOptions_MenuInit(void) {
+
 	static const char *tq_names[] = {
 		"Default",
 		"16 bit",
@@ -1023,7 +1007,7 @@ void GraphicsOptions_MenuInit(void) {
 	s_graphicsoptions.banner.generic.type = MTYPE_BTEXT;
 	s_graphicsoptions.banner.generic.x = 320;
 	s_graphicsoptions.banner.generic.y = 16;
-	s_graphicsoptions.banner.string = "SYSTEM SETUP";
+	s_graphicsoptions.banner.string = "System Setup";
 	s_graphicsoptions.banner.color = text_banner_color;
 	s_graphicsoptions.banner.style = UI_CENTER;
 
@@ -1049,7 +1033,7 @@ void GraphicsOptions_MenuInit(void) {
 	s_graphicsoptions.graphics.generic.callback = GraphicsOptions_Event;
 	s_graphicsoptions.graphics.generic.x = 216;
 	s_graphicsoptions.graphics.generic.y = 240 - 2 * PROP_HEIGHT;
-	s_graphicsoptions.graphics.string = "GRAPHICS";
+	s_graphicsoptions.graphics.string = "Graphics";
 	s_graphicsoptions.graphics.style = UI_RIGHT;
 	s_graphicsoptions.graphics.color = text_big_color;
 
@@ -1059,7 +1043,7 @@ void GraphicsOptions_MenuInit(void) {
 	s_graphicsoptions.display.generic.callback = GraphicsOptions_Event;
 	s_graphicsoptions.display.generic.x = 216;
 	s_graphicsoptions.display.generic.y = 240 - PROP_HEIGHT;
-	s_graphicsoptions.display.string = "DISPLAY";
+	s_graphicsoptions.display.string = "Display";
 	s_graphicsoptions.display.style = UI_RIGHT;
 	s_graphicsoptions.display.color = text_big_color;
 
@@ -1069,7 +1053,7 @@ void GraphicsOptions_MenuInit(void) {
 	s_graphicsoptions.sound.generic.callback = GraphicsOptions_Event;
 	s_graphicsoptions.sound.generic.x = 216;
 	s_graphicsoptions.sound.generic.y = 240;
-	s_graphicsoptions.sound.string = "SOUND";
+	s_graphicsoptions.sound.string = "Sound";
 	s_graphicsoptions.sound.style = UI_RIGHT;
 	s_graphicsoptions.sound.color = text_big_color;
 
@@ -1079,7 +1063,7 @@ void GraphicsOptions_MenuInit(void) {
 	s_graphicsoptions.network.generic.callback = GraphicsOptions_Event;
 	s_graphicsoptions.network.generic.x = 216;
 	s_graphicsoptions.network.generic.y = 240 + PROP_HEIGHT;
-	s_graphicsoptions.network.string = "NETWORK";
+	s_graphicsoptions.network.string = "Network";
 	s_graphicsoptions.network.style = UI_RIGHT;
 	s_graphicsoptions.network.color = text_big_color;
 

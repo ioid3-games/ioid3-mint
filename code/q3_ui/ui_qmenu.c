@@ -763,7 +763,6 @@ static sfxHandle_t SpinControl_Key(menulist_s *s, int key) {
 
 			sound = menu_move_sound;
 			break;
-		
 		case K_JOY_DPAD_LEFT:
 		case K_JOY_LEFTSTICK_LEFT:
 		case K_2JOY_DPAD_LEFT:
@@ -1719,6 +1718,7 @@ void Menu_Cache(void) {
 	uis.cursor = trap_R_RegisterShaderNoMip("menu/art/3_cursor2");
 	uis.rb_on = trap_R_RegisterShaderNoMip("menu/art/switch_on");
 	uis.rb_off = trap_R_RegisterShaderNoMip("menu/art/switch_off");
+
 	uis.whiteShader = trap_R_RegisterShaderNoMip("white");
 	uis.menuBackShader = trap_R_RegisterShaderNoMip("menuback");
 	uis.menuBackNoLogoShader = trap_R_RegisterShaderNoMip("menubacknologo");

@@ -32,6 +32,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "ui_local.h"
 
+#define MAIN_BANNER_MODEL "models/mapobjects/banner/banner5.md3"
+#define MAIN_MENU_VERTICAL_SPACING 34
+
 #define ID_SINGLEPLAYER	10
 #define ID_MULTIPLAYER	11
 #define ID_SETUP		12
@@ -42,9 +45,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #endif
 #define ID_MODS			16
 #define ID_EXIT			17
-
-#define MAIN_BANNER_MODEL "models/mapobjects/banner/banner5.md3"
-#define MAIN_MENU_VERTICAL_SPACING 34
 
 typedef struct {
 	menuframework_s menu;
@@ -122,7 +122,7 @@ void Main_MenuEvent(void *ptr, int event) {
 			break;
 #endif
 		case ID_EXIT:
-			UI_ConfirmMenu("EXIT GAME?", 0, MainMenu_ExitAction);
+			UI_ConfirmMenu("Exit Game?", 0, MainMenu_ExitAction);
 			break;
 	}
 }
@@ -307,7 +307,7 @@ void UI_MainMenu(void) {
 	s_main.singleplayer.generic.y = y;
 	s_main.singleplayer.generic.id = ID_SINGLEPLAYER;
 	s_main.singleplayer.generic.callback = Main_MenuEvent;
-	s_main.singleplayer.string = "SINGLE PLAYER";
+	s_main.singleplayer.string = "Singleplayer";
 	s_main.singleplayer.color = text_big_color;
 	s_main.singleplayer.style = style;
 
@@ -318,31 +318,9 @@ void UI_MainMenu(void) {
 	s_main.multiplayer.generic.y = y;
 	s_main.multiplayer.generic.id = ID_MULTIPLAYER;
 	s_main.multiplayer.generic.callback = Main_MenuEvent;
-	s_main.multiplayer.string = "MULTIPLAYER";
+	s_main.multiplayer.string = "Multiplayer";
 	s_main.multiplayer.color = text_big_color;
 	s_main.multiplayer.style = style;
-
-	y += MAIN_MENU_VERTICAL_SPACING;
-	s_main.setup.generic.type = MTYPE_PTEXT;
-	s_main.setup.generic.flags = QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_main.setup.generic.x = 320;
-	s_main.setup.generic.y = y;
-	s_main.setup.generic.id = ID_SETUP;
-	s_main.setup.generic.callback = Main_MenuEvent;
-	s_main.setup.string = "SETUP";
-	s_main.setup.color = text_big_color;
-	s_main.setup.style = style;
-
-	y += MAIN_MENU_VERTICAL_SPACING;
-	s_main.demos.generic.type = MTYPE_PTEXT;
-	s_main.demos.generic.flags = QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_main.demos.generic.x = 320;
-	s_main.demos.generic.y = y;
-	s_main.demos.generic.id = ID_DEMOS;
-	s_main.demos.generic.callback = Main_MenuEvent;
-	s_main.demos.string = "DEMOS";
-	s_main.demos.color = text_big_color;
-	s_main.demos.style = style;
 
 	y += MAIN_MENU_VERTICAL_SPACING;
 	s_main.cinematics.generic.type = MTYPE_PTEXT;
@@ -351,9 +329,31 @@ void UI_MainMenu(void) {
 	s_main.cinematics.generic.y = y;
 	s_main.cinematics.generic.id = ID_CINEMATICS;
 	s_main.cinematics.generic.callback = Main_MenuEvent;
-	s_main.cinematics.string = "CINEMATICS";
+	s_main.cinematics.string = "Cinematics";
 	s_main.cinematics.color = text_big_color;
 	s_main.cinematics.style = style;
+
+	y += MAIN_MENU_VERTICAL_SPACING;
+	s_main.demos.generic.type = MTYPE_PTEXT;
+	s_main.demos.generic.flags = QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
+	s_main.demos.generic.x = 320;
+	s_main.demos.generic.y = y;
+	s_main.demos.generic.id = ID_DEMOS;
+	s_main.demos.generic.callback = Main_MenuEvent;
+	s_main.demos.string = "Demos";
+	s_main.demos.color = text_big_color;
+	s_main.demos.style = style;
+
+	y += MAIN_MENU_VERTICAL_SPACING;
+	s_main.setup.generic.type = MTYPE_PTEXT;
+	s_main.setup.generic.flags = QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
+	s_main.setup.generic.x = 320;
+	s_main.setup.generic.y = y;
+	s_main.setup.generic.id = ID_SETUP;
+	s_main.setup.generic.callback = Main_MenuEvent;
+	s_main.setup.string = "Setup";
+	s_main.setup.color = text_big_color;
+	s_main.setup.style = style;
 #ifndef MISSIONPACK
 	if (!uis.demoversion && UI_TeamArenaExists()) {
 		teamArena = qtrue;
@@ -366,7 +366,7 @@ void UI_MainMenu(void) {
 		s_main.teamArena.generic.y = y;
 		s_main.teamArena.generic.id = ID_TEAMARENA;
 		s_main.teamArena.generic.callback = Main_MenuEvent;
-		s_main.teamArena.string = "TEAM ARENA";
+		s_main.teamArena.string = "Team Arena";
 		s_main.teamArena.color = text_big_color;
 		s_main.teamArena.style = style;
 	}
@@ -379,7 +379,7 @@ void UI_MainMenu(void) {
 		s_main.mods.generic.y = y;
 		s_main.mods.generic.id = ID_MODS;
 		s_main.mods.generic.callback = Main_MenuEvent;
-		s_main.mods.string = "MODS";
+		s_main.mods.string = "Mods";
 		s_main.mods.color = text_big_color;
 		s_main.mods.style = style;
 	}
@@ -391,15 +391,15 @@ void UI_MainMenu(void) {
 	s_main.exit.generic.y = y;
 	s_main.exit.generic.id = ID_EXIT;
 	s_main.exit.generic.callback = Main_MenuEvent;
-	s_main.exit.string = "EXIT";
+	s_main.exit.string = "Exit";
 	s_main.exit.color = text_big_color;
 	s_main.exit.style = style;
 
 	Menu_AddItem(&s_main.menu, &s_main.singleplayer);
 	Menu_AddItem(&s_main.menu, &s_main.multiplayer);
-	Menu_AddItem(&s_main.menu, &s_main.setup);
-	Menu_AddItem(&s_main.menu, &s_main.demos);
 	Menu_AddItem(&s_main.menu, &s_main.cinematics);
+	Menu_AddItem(&s_main.menu, &s_main.demos);
+	Menu_AddItem(&s_main.menu, &s_main.setup);
 #ifndef MISSIONPACK
 	if (teamArena) {
 		Menu_AddItem(&s_main.menu, &s_main.teamArena);

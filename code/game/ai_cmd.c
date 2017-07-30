@@ -66,19 +66,24 @@ void BotPrintTeamGoal(bot_state_t *bs) {
 	t = bs->teamgoal_time - FloatTime();
 
 	switch (bs->ltgtype) {
-		case LTG_TEAMHELP:
-		{
-			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna help a team mate for %1.0f secs\n", netname, t);
-			break;
-		}
-		case LTG_TEAMACCOMPANY:
-		{
-			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna accompany a team mate for %1.0f secs\n", netname, t);
-			break;
-		}
 		case LTG_GETFLAG:
 		{
 			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna get the flag for %1.0f secs\n", netname, t);
+			break;
+		}
+		case LTG_ATTACKENEMYBASE:
+		{
+			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna attack the enemy base for %1.0f secs\n", netname, t);
+			break;
+		}
+		case LTG_HARVEST:
+		{
+			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna harvest for %1.0f secs\n", netname, t);
+			break;
+		}
+		case LTG_DEFENDKEYAREA:
+		{
+			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna defend a key area for %1.0f secs\n", netname, t);
 			break;
 		}
 		case LTG_RUSHBASE:
@@ -91,31 +96,14 @@ void BotPrintTeamGoal(bot_state_t *bs) {
 			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna try to return the flag for %1.0f secs\n", netname, t);
 			break;
 		}
-#ifdef MISSIONPACK
-		case LTG_ATTACKENEMYBASE:
+		case LTG_TEAMHELP:
 		{
-			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna attack the enemy base for %1.0f secs\n", netname, t);
+			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna help a team mate for %1.0f secs\n", netname, t);
 			break;
 		}
-		case LTG_HARVEST:
+		case LTG_TEAMACCOMPANY:
 		{
-			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna harvest for %1.0f secs\n", netname, t);
-			break;
-		}
-#endif
-		case LTG_DEFENDKEYAREA:
-		{
-			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna defend a key area for %1.0f secs\n", netname, t);
-			break;
-		}
-		case LTG_GETITEM:
-		{
-			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna get an item for %1.0f secs\n", netname, t);
-			break;
-		}
-		case LTG_KILL:
-		{
-			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna kill someone for %1.0f secs\n", netname, t);
+			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna accompany a team mate for %1.0f secs\n", netname, t);
 			break;
 		}
 		case LTG_CAMP:
@@ -127,6 +115,16 @@ void BotPrintTeamGoal(bot_state_t *bs) {
 		case LTG_PATROL:
 		{
 			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna patrol for %1.0f secs\n", netname, t);
+			break;
+		}
+		case LTG_GETITEM:
+		{
+			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna get an item for %1.0f secs\n", netname, t);
+			break;
+		}
+		case LTG_KILL:
+		{
+			BotAI_Print(PRT_MESSAGE, "%s: I'm gonna kill someone for %1.0f secs\n", netname, t);
 			break;
 		}
 		default:
@@ -920,15 +918,11 @@ void BotMatch_GetFlag(bot_state_t *bs, bot_match_t *match) {
 		if (!ctf_redflag.areanum || !ctf_blueflag.areanum) {
 			return;
 		}
-	}
-#ifdef MISSIONPACK
-	else if (gametype == GT_1FCTF) {
+	} else if (gametype == GT_1FCTF) {
 		if (!ctf_neutralflag.areanum || !ctf_redflag.areanum || !ctf_blueflag.areanum) {
 			return;
 		}
-	}
-#endif
-	else {
+	} else {
 		return;
 	}
 	// if not addressed to this bot
@@ -972,15 +966,11 @@ void BotMatch_AttackEnemyBase(bot_state_t *bs, bot_match_t *match) {
 
 	if (gametype == GT_CTF) {
 		BotMatch_GetFlag(bs, match);
-	}
-#ifdef MISSIONPACK
-	else if (gametype == GT_1FCTF || gametype == GT_OBELISK || gametype == GT_HARVESTER) {
+	} else if (gametype == GT_1FCTF || gametype == GT_OBELISK || gametype == GT_HARVESTER) {
 		if (!redobelisk.areanum || !blueobelisk.areanum) {
 			return;
 		}
-	}
-#endif
-	else {
+	} else {
 		return;
 	}
 	// if not addressed to this bot
@@ -1064,15 +1054,11 @@ void BotMatch_RushBase(bot_state_t *bs, bot_match_t *match) {
 		if (!ctf_redflag.areanum || !ctf_blueflag.areanum) {
 			return;
 		}
-	}
-#ifdef MISSIONPACK
-	else if (gametype == GT_1FCTF || gametype == GT_HARVESTER) {
+	} else if (gametype == GT_1FCTF || gametype == GT_HARVESTER) {
 		if (!redobelisk.areanum || !blueobelisk.areanum) {
 			return;
 		}
-	}
-#endif
-	else {
+	} else {
 		return;
 	}
 	// if not addressed to this bot
@@ -1164,11 +1150,7 @@ void BotMatch_ReturnFlag(bot_state_t *bs, bot_match_t *match) {
 	int playernum;
 
 	// if not in CTF mode
-	if (gametype != GT_CTF
-#ifdef MISSIONPACK
-		&& gametype != GT_1FCTF
-#endif
-		) {
+	if (gametype != GT_CTF && gametype != GT_1FCTF) {
 		return;
 	}
 	// if not addressed to this bot
@@ -1538,6 +1520,37 @@ void BotMatch_WhatAreYouDoing(bot_state_t *bs, bot_match_t *match) {
 	}
 
 	switch (bs->ltgtype) {
+		case LTG_GETFLAG:
+		{
+			BotAI_BotInitialChat(bs, "capturingflag", NULL);
+			break;
+		}
+		case LTG_ATTACKENEMYBASE:
+		{
+			BotAI_BotInitialChat(bs, "attackingenemybase", NULL);
+			break;
+		}
+		case LTG_HARVEST:
+		{
+			BotAI_BotInitialChat(bs, "harvesting", NULL);
+			break;
+		}
+		case LTG_DEFENDKEYAREA:
+		{
+			BotGoalName(bs->teamgoal.number, goalname, sizeof(goalname));
+			BotAI_BotInitialChat(bs, "defending", goalname, NULL);
+			break;
+		}
+		case LTG_RUSHBASE:
+		{
+			BotAI_BotInitialChat(bs, "rushingbase", NULL);
+			break;
+		}
+		case LTG_RETURNFLAG:
+		{
+			BotAI_BotInitialChat(bs, "returningflag", NULL);
+			break;
+		}
 		case LTG_TEAMHELP:
 		{
 			EasyPlayerName(bs->teammate, netname, sizeof(netname));
@@ -1550,10 +1563,15 @@ void BotMatch_WhatAreYouDoing(bot_state_t *bs, bot_match_t *match) {
 			BotAI_BotInitialChat(bs, "accompanying", netname, NULL);
 			break;
 		}
-		case LTG_DEFENDKEYAREA:
+		case LTG_CAMP:
+		case LTG_CAMPORDER:
 		{
-			BotGoalName(bs->teamgoal.number, goalname, sizeof(goalname));
-			BotAI_BotInitialChat(bs, "defending", goalname, NULL);
+			BotAI_BotInitialChat(bs, "camping", NULL);
+			break;
+		}
+		case LTG_PATROL:
+		{
+			BotAI_BotInitialChat(bs, "patrolling", NULL);
 			break;
 		}
 		case LTG_GETITEM:
@@ -1568,44 +1586,6 @@ void BotMatch_WhatAreYouDoing(bot_state_t *bs, bot_match_t *match) {
 			BotAI_BotInitialChat(bs, "killing", netname, NULL);
 			break;
 		}
-		case LTG_CAMP:
-		case LTG_CAMPORDER:
-		{
-			BotAI_BotInitialChat(bs, "camping", NULL);
-			break;
-		}
-		case LTG_PATROL:
-		{
-			BotAI_BotInitialChat(bs, "patrolling", NULL);
-			break;
-		}
-		case LTG_GETFLAG:
-		{
-			BotAI_BotInitialChat(bs, "capturingflag", NULL);
-			break;
-		}
-		case LTG_RUSHBASE:
-		{
-			BotAI_BotInitialChat(bs, "rushingbase", NULL);
-			break;
-		}
-		case LTG_RETURNFLAG:
-		{
-			BotAI_BotInitialChat(bs, "returningflag", NULL);
-			break;
-		}
-#ifdef MISSIONPACK
-		case LTG_ATTACKENEMYBASE:
-		{
-			BotAI_BotInitialChat(bs, "attackingenemybase", NULL);
-			break;
-		}
-		case LTG_HARVEST:
-		{
-			BotAI_BotInitialChat(bs, "harvesting", NULL);
-			break;
-		}
-#endif
 		default:
 		{
 			BotAI_BotInitialChat(bs, "roaming", NULL);
@@ -1694,11 +1674,9 @@ void BotMatch_WhereAreYou(bot_state_t *bs, bot_match_t *match) {
 	gitem_t *it;
 	char netname[MAX_MESSAGE_SIZE];
 	char *nearbyitems[] = {
-#ifdef MISSIONPACK
 		"Red Obelisk",
 		"Blue Obelisk",
 		"Neutral Obelisk",
-#endif
 		NULL
 	};
 
@@ -1720,11 +1698,7 @@ void BotMatch_WhereAreYou(bot_state_t *bs, bot_match_t *match) {
 			continue;
 		}
 		// ignore health, ammo, holdables, small armor, and Red Cube and Blue Cube
-		if (it->giType == IT_HEALTH || it->giType == IT_AMMO || it->giType == IT_HOLDABLE || (it->giType == IT_ARMOR && it->quantity < 50)
-#ifdef MISSIONPACK
-			|| (it->giType == IT_TEAM && it->giTag == 0)
-#endif
-			) {
+		if (it->giType == IT_HEALTH || it->giType == IT_AMMO || it->giType == IT_HOLDABLE || (it->giType == IT_ARMOR && it->quantity < 50) || (it->giType == IT_TEAM && it->giTag == 0)) {
 			continue;
 		}
 
@@ -1746,18 +1720,11 @@ void BotMatch_WhereAreYou(bot_state_t *bs, bot_match_t *match) {
 	}
 
 	if (bestitemname) {
-		if (gametype == GT_CTF
-#ifdef MISSIONPACK
-			|| gametype == GT_1FCTF || gametype == GT_OBELISK || gametype == GT_HARVESTER
-#endif
-			) {
-#ifdef MISSIONPACK
+		if (gametype == GT_CTF || gametype == GT_1FCTF || gametype == GT_OBELISK || gametype == GT_HARVESTER) {
 			if (gametype == GT_OBELISK || gametype == GT_HARVESTER) {
 				redtt = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, redobelisk.areanum, TFL_DEFAULT);
 				bluett = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, blueobelisk.areanum, TFL_DEFAULT);
-			} else
-#endif
-			{
+			} else {
 				redtt = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, ctf_redflag.areanum, TFL_DEFAULT);
 				bluett = trap_AAS_AreaTravelTimeToGoalArea(bs->areanum, bs->origin, ctf_blueflag.areanum, TFL_DEFAULT);
 			}
@@ -1954,9 +1921,7 @@ void BotMatch_CTF(bot_state_t *bs, bot_match_t *match) {
 
 			bs->flagstatuschanged = 1;
 		}
-	}
-#ifdef MISSIONPACK
-	else if (gametype == GT_1FCTF) {
+	} else if (gametype == GT_1FCTF) {
 		if (match->subtype & ST_1FCTFGOTFLAG) {
 			BotMatchVariable(match, NETNAME, netname, sizeof(netname));
 
@@ -1964,7 +1929,6 @@ void BotMatch_CTF(bot_state_t *bs, bot_match_t *match) {
 			bs->lastflagcapture_time = FloatTime();
 		}
 	}
-#endif
 }
 
 /*
@@ -2053,7 +2017,6 @@ int BotMatchMessage(bot_state_t *bs, char *message) {
 			BotMatch_GetFlag(bs, &match);
 			break;
 		}
-#ifdef MISSIONPACK
 		// CTF & 1FCTF & Obelisk & Harvester
 		case MSG_ATTACKENEMYBASE:
 		{
@@ -2066,7 +2029,6 @@ int BotMatchMessage(bot_state_t *bs, char *message) {
 			BotMatch_Harvest(bs, &match);
 			break;
 		}
-#endif
 		// CTF & 1FCTF & Harvester
 		case MSG_RUSHBASE: // ctf rush to the base
 		{

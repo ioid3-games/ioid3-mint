@@ -51,7 +51,7 @@ void MenuField_Init(menufield_s *m) {
 
 	m->generic.left = m->generic.x - l;
 	m->generic.top = m->generic.y;
-	m->generic.right = m->generic.x + w + m->field.widthInChars* w;
+	m->generic.right = m->generic.x + w + m->field.widthInChars * w;
 	m->generic.bottom = m->generic.y + h;
 }
 

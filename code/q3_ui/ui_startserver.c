@@ -89,24 +89,14 @@ static const char *gametype_items[] = {
 	"Team Deathmatch",
 	"Tournament",
 	"Capture the Flag",
-#ifdef MISSIONPACK
 	"1 Flag CTF",
 	"Overload",
 	"Harvester",
-#endif
 	NULL
 };
 
-static int gametype_remap[] = {GT_FFA, GT_TEAM, GT_TOURNAMENT, GT_CTF
-#ifdef MISSIONPACK
-,GT_1FCTF, GT_OBELISK, GT_HARVESTER
-#endif
-};
-static int gametype_remap2[] = {0, 2, 0, 1, 3
-#ifdef MISSIONPACK
-,4, 5, 6
-#endif
-};
+static int gametype_remap[] = {GT_FFA, GT_TEAM, GT_TOURNAMENT, GT_CTF ,GT_1FCTF, GT_OBELISK, GT_HARVESTER};
+static int gametype_remap2[] = {0, 2, 0, 1, 3 ,4, 5, 6};
 
 static void UI_ServerOptionsMenu(qboolean multiplayer);
 
@@ -154,7 +144,7 @@ static int GametypeBits(char *string) {
 			bits |= 1 << GT_CTF;
 			continue;
 		}
-#ifdef MISSIONPACK
+
 		if (Q_stricmp(token, "oneflag") == 0) {
 			bits |= 1 << GT_1FCTF;
 			continue;
@@ -169,7 +159,6 @@ static int GametypeBits(char *string) {
 			bits |= 1 << GT_HARVESTER;
 			continue;
 		}
-#endif
 	}
 
 	return bits;
@@ -597,6 +586,7 @@ void StartServer_Cache(void) {
 	if (precache) {
 		for (i = 0; i < UI_GetNumArenas(); i++) {
 			info = UI_GetArenaInfoByNumber(i);
+
 			Q_strncpyz(mapname, Info_ValueForKey(info, "map"), MAX_NAMELENGTH);
 			Com_sprintf(picname, sizeof(picname), "levelshots/%s_small", mapname);
 
@@ -631,7 +621,7 @@ void UI_StartServerMenu(qboolean multiplayer) {
 #define ID_DEDICATED	21
 #define ID_GO			22
 #define ID_BACK			23
-#define ID_PLAYER_TYPE	24 // Goes up to ID_PLAYER_TYPE+PLAYER_SLOTS
+#define ID_PLAYER_TYPE	24 // Goes up to ID_PLAYER_TYPE + PLAYER_SLOTS
 
 #define PLAYER_SLOTS 12
 
@@ -799,7 +789,6 @@ static void ServerOptions_Start(void) {
 			trap_Cvar_SetValue("ui_ctf_timelimit", timelimit);
 			trap_Cvar_SetValue("ui_ctf_friendly", friendlyfire);
 			break;
-#ifdef MISSIONPACK
 		case GT_1FCTF:
 			trap_Cvar_SetValue("ui_1flag_capturelimit", flaglimit);
 			trap_Cvar_SetValue("ui_1flag_timelimit", timelimit);
@@ -815,7 +804,6 @@ static void ServerOptions_Start(void) {
 			trap_Cvar_SetValue("ui_harvester_timelimit", timelimit);
 			trap_Cvar_SetValue("ui_harvester_friendly", friendlyfire);
 			break;
-#endif
 	}
 
 	trap_Cvar_SetValue("sv_maxclients", Com_Clamp(0, 12, maxplayers));
@@ -1011,9 +999,9 @@ static void ServerOptions_Event(void *ptr, int event) {
 	}
 
 	switch (((menucommon_s *)ptr)->id) {
-	// if(event != QM_ACTIVATED && event != QM_LOSTFOCUS) {
-	//	return;
-	//}
+		//if (event != QM_ACTIVATED && event != QM_LOSTFOCUS) {
+		//	return;
+		//}
 
 		case ID_MAXCLIENTS:
 		case ID_DEDICATED:
@@ -1234,7 +1222,6 @@ static void ServerOptions_SetMenuItems(void) {
 			MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_ctf_timelimit"))));
 			s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_ctf_friendly"));
 			break;
-#ifdef MISSIONPACK
 		case GT_1FCTF:
 			MField_SetText(&s_serveroptions.flaglimit.field, va("%i", (int)Com_Clamp(0, 100, trap_Cvar_VariableValue("ui_1flag_capturelimit"))));
 			MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_1flag_timelimit"))));
@@ -1250,10 +1237,10 @@ static void ServerOptions_SetMenuItems(void) {
 			MField_SetText(&s_serveroptions.timelimit.field, va("%i", (int)Com_Clamp(0, 999, trap_Cvar_VariableValue("ui_harvester_timelimit"))));
 			s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_harvester_friendly"));
 			break;
-#endif
 	}
 
 	s_serveroptions.publicserver.curvalue = Com_Clamp(0, 1, trap_Cvar_VariableValue("ui_publicServer"));
+
 	MField_SetText(&s_serveroptions.hostname.field, CG_Cvar_VariableString("sv_hostname"));
 	s_serveroptions.pure.curvalue = Com_Clamp(0, 1, trap_Cvar_VariableValue("sv_pure"));
 	// set the map pic
@@ -1723,7 +1710,7 @@ static void ServerPlayerIcon(const char *modelAndSkin, char *iconName, int iconN
 		Com_sprintf(iconName, iconNameMaxSize, "menu/art/randombot_icon.tga");
 
 		if (!trap_R_RegisterShaderNoMip(iconName)) {
-			// If missing random bot icon fallback to unknown map icon
+			// if missing random bot icon fallback to unknown map icon
 			Com_sprintf(iconName, iconNameMaxSize, "menu/art/unknownmap.tga");
 			trap_R_RegisterShaderNoMip(iconName);
 		}

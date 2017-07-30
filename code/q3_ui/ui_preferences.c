@@ -96,36 +96,36 @@ typedef struct {
 static preferences_t s_preferences;
 
 static const char *teamoverlay_names[] = {
-	"off",
-	"upper right",
-	"lower right",
-	"lower left",
+	"Off",
+	"Upper right",
+	"Lower right",
+	"Lower left",
 	NULL
 };
 
 static const char *splitvertical_names[] = {
-	"horizontal",
-	"vertical",
+	"Horizontal",
+	"Vertical",
 	NULL
 };
 
 static const char *splittextsize_names[] = {
-	"small",
-	"medium",
-	"large",
+	"Small",
+	"Medium",
+	"Large",
 	NULL
 };
 
 static const char *thirdsize_names[] = {
-	"half",
-	"quarter",
+	"Half",
+	"Quarter",
 	NULL
 };
 
 static const char *atmeffects_names[] = {
-	"off",
-	"low",
-	"high",
+	"Off",
+	"Low",
+	"High",
 	NULL
 };
 
@@ -307,7 +307,7 @@ static void Preferences_MenuInit(void) {
 	s_preferences.banner.generic.type = MTYPE_BTEXT;
 	s_preferences.banner.generic.x = 320;
 	s_preferences.banner.generic.y = 16;
-	s_preferences.banner.string = "GAME OPTIONS";
+	s_preferences.banner.string = "Game Options";
 	s_preferences.banner.color = text_banner_color;
 	s_preferences.banner.style = UI_CENTER;
 
@@ -327,7 +327,7 @@ static void Preferences_MenuInit(void) {
 	s_preferences.framer.width = 256;
 	s_preferences.framer.height = 334;
 
-	y = (SCREEN_HEIGHT - ID_NUM_ITEMS*(BIGCHAR_HEIGHT + 2) - (2 + 4)) / 2;
+	y = (SCREEN_HEIGHT - ID_NUM_ITEMS * (BIGCHAR_HEIGHT + 2) - (2 + 4)) / 2;
 	s_preferences.crosshair.generic.type = MTYPE_SPINCONTROL;
 	s_preferences.crosshair.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT|QMF_NODEFAULTINIT|QMF_OWNERDRAW;
 	s_preferences.crosshair.generic.x = PREFERENCES_X_POS;

@@ -156,7 +156,7 @@ static void UI_NetworkOptionsMenu_Init(void) {
 	networkOptionsInfo.banner.generic.flags = QMF_CENTER_JUSTIFY;
 	networkOptionsInfo.banner.generic.x = 320;
 	networkOptionsInfo.banner.generic.y = 16;
-	networkOptionsInfo.banner.string = "SYSTEM SETUP";
+	networkOptionsInfo.banner.string = "System Setup";
 	networkOptionsInfo.banner.color = text_banner_color;
 	networkOptionsInfo.banner.style = UI_CENTER;
 
@@ -182,7 +182,7 @@ static void UI_NetworkOptionsMenu_Init(void) {
 	networkOptionsInfo.graphics.generic.callback = UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.graphics.generic.x = 216;
 	networkOptionsInfo.graphics.generic.y = 240 - 2 * PROP_HEIGHT;
-	networkOptionsInfo.graphics.string = "GRAPHICS";
+	networkOptionsInfo.graphics.string = "Graphics";
 	networkOptionsInfo.graphics.style = UI_RIGHT;
 	networkOptionsInfo.graphics.color = text_big_color;
 
@@ -192,7 +192,7 @@ static void UI_NetworkOptionsMenu_Init(void) {
 	networkOptionsInfo.display.generic.callback = UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.display.generic.x = 216;
 	networkOptionsInfo.display.generic.y = 240 - PROP_HEIGHT;
-	networkOptionsInfo.display.string = "DISPLAY";
+	networkOptionsInfo.display.string = "Display";
 	networkOptionsInfo.display.style = UI_RIGHT;
 	networkOptionsInfo.display.color = text_big_color;
 
@@ -202,7 +202,7 @@ static void UI_NetworkOptionsMenu_Init(void) {
 	networkOptionsInfo.sound.generic.callback = UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.sound.generic.x = 216;
 	networkOptionsInfo.sound.generic.y = 240;
-	networkOptionsInfo.sound.string = "SOUND";
+	networkOptionsInfo.sound.string = "Sound";
 	networkOptionsInfo.sound.style = UI_RIGHT;
 	networkOptionsInfo.sound.color = text_big_color;
 
@@ -212,7 +212,7 @@ static void UI_NetworkOptionsMenu_Init(void) {
 	networkOptionsInfo.network.generic.callback = UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.network.generic.x = 216;
 	networkOptionsInfo.network.generic.y = 240 + PROP_HEIGHT;
-	networkOptionsInfo.network.string = "NETWORK";
+	networkOptionsInfo.network.string = "Network";
 	networkOptionsInfo.network.style = UI_RIGHT;
 	networkOptionsInfo.network.color = text_big_color;
 
@@ -228,7 +228,7 @@ static void UI_NetworkOptionsMenu_Init(void) {
 
 	y += BIGCHAR_HEIGHT + 2;
 	networkOptionsInfo.voip.generic.type = MTYPE_RADIOBUTTON;
-	networkOptionsInfo.voip.generic.name = "Voice chat(VoIP):";
+	networkOptionsInfo.voip.generic.name = "Voice chat (VoIP):";
 	networkOptionsInfo.voip.generic.x = 400;
 	networkOptionsInfo.voip.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
 	networkOptionsInfo.voip.generic.callback = UI_NetworkOptionsMenu_Event;

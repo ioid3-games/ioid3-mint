@@ -448,6 +448,7 @@ void UI_SPPostgameMenu_f(void);
 // ui_spSkill.c
 void UI_SPSkillMenu(const char *arenaInfo);
 void UI_SPSkillMenu_Cache(void);
+
 // ui_addbots.c
 void UI_AddBots_Cache(void);
 void UI_AddBotsMenu(void);

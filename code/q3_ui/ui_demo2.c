@@ -124,7 +124,7 @@ static void Demos_MenuInit(void) {
 	s_demos.banner.generic.type = MTYPE_BTEXT;
 	s_demos.banner.generic.x = 320;
 	s_demos.banner.generic.y = 16;
-	s_demos.banner.string = "DEMOS";
+	s_demos.banner.string = "Demos";
 	s_demos.banner.color = text_banner_color;
 	s_demos.banner.style = UI_CENTER;
 

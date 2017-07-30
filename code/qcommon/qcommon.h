@@ -1,4 +1,4 @@
-
+/*
 =======================================================================================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
@@ -195,7 +195,7 @@ void NET_Restart_f(void);
 void NET_Config(qboolean enableNetworking);
 void NET_FlushPacketQueue(void);
 void NET_SendPacket(netsrc_t sock, int length, const void *data, netadr_t to);
-void QDECL NET_OutOfBandPrint(netsrc_t net_socket, netadr_t adr, const char *format, ...) __attribute__((format (printf, 3, 4)));
+void QDECL NET_OutOfBandPrint(netsrc_t net_socket, netadr_t adr, const char *format, ...) __attribute__((format(printf, 3, 4)));
 void QDECL NET_OutOfBandData(netsrc_t sock, netadr_t adr, byte *format, int len);
 qboolean NET_CompareAdr(netadr_t a, netadr_t b);
 qboolean NET_CompareBaseAdrMask(netadr_t a, netadr_t b, int netmask);
@@ -362,7 +362,7 @@ void VM_HeapFree(void *data);
 
 	CMD
 
-	Command text buffering and command execution
+	Command text buffering and command execution.
 
 =======================================================================================================================================
 */
@@ -450,10 +450,8 @@ The are also occasionally used to communicated information between different mod
 **************************************************************************************************************************************/
 
 cvar_t *Cvar_Get(const char *var_name, const char *value, int flags);
-// creates the variable if it doesn't exist, or returns the existing one
-// if it exists, the value will not be changed, but flags will be ORed in
-// that allows variables to be unarchived without needing bitflags
-// if value is "", the value will not override a previously set value.
+// creates the variable if it doesn't exist, or returns the existing one if it exists, the value will not be changed, but flags will be ORed
+// in that allows variables to be unarchived without needing bitflags if value is "", the value will not override a previously set value.
 void Cvar_Register(vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags);
 // basically a slightly modified Cvar_Get for the interpreted modules
 void Cvar_Update(vmCvar_t *vmCvar);
@@ -464,7 +462,7 @@ cvar_t *Cvar_Set2(const char *var_name, const char *value, int defaultFlags, qbo
 cvar_t *Cvar_Set(const char *var_name, const char *value);
 // will create the variable with no flags if it doesn't exist
 cvar_t *Cvar_SetSafe(const char *var_name, const char *value);
-// same as Cvar_Set, but doesn't force setting the value (respects CVAR_ROM, etc)
+// same as Cvar_Set, but doesn't force setting the value (respects CVAR_ROM, etc.)
 cvar_t *Cvar_User_Set(const char *var_name, const char *value);
 // same as Cvar_SetSafe, but defaults to CVAR_USER_CREATED
 void Cvar_VM_Set(const char *var_name, const char *value, const char *vmName);
@@ -492,17 +490,14 @@ void Cvar_ForceReset(const char *var_name);
 void Cvar_SetCheatState(void);
 // reset all testing vars to a safe value
 qboolean Cvar_Command(void);
-// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
-// command.  Returns true if the command was a variable reference that
+// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known command. Returns true if the command was a variable reference that
 // was handled. (print or change)
 void Cvar_WriteVariables(fileHandle_t f);
-// writes lines containing "set variable value" for all variables
-// with the archive flag set to true.
+// writes lines containing "set variable value" for all variables with the archive flag set to true.
 void Cvar_Init(void);
 char *Cvar_InfoString(int bit);
 char *Cvar_InfoString_Big(int bit);
-// returns an info string containing all the cvars that have the given bit set
-// in their flags (CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc)
+// returns an info string containing all the cvars that have the given bit set in their flags (CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc.)
 void Cvar_InfoStringBuffer(int bit, char *buff, int buffsize);
 void Cvar_CheckRange(cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral);
 void Cvar_SetDescription(cvar_t *var, const char *var_description);
@@ -513,20 +508,17 @@ void Cvar_Restart_f(void);
 void Cvar_ResetDefaultOverrides(void);
 void Cvar_CompleteCvarName(char *args, int argNum);
 extern int cvar_modifiedFlags;
-// whenever a cvar is modifed, its flags will be OR'd into this, so
-// a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,
-// etc, variables have been modified since the last check.  The bit
-// can then be cleared to allow another change detection.
+// whenever a cvar is modifed, its flags will be OR'd into this, so a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,
+// etc. variables have been modified since the last check. The bit can then be cleared to allow another change detection.
 
 /*
-==============================================================
+=======================================================================================================================================
 
-FILESYSTEM
+	FILESYSTEM
 
-No stdio calls should be used by any part of the game, because
-we need to deal with all sorts of directory and seperator char
-issues.
-==============================================================
+	No stdio calls should be used by any part of the game, because we need to deal with all sorts of directory and separator char issues.
+
+=======================================================================================================================================
 */
 
 typedef enum {
@@ -543,9 +535,8 @@ typedef enum {
 #else
 #define Q3CONFIG_CFG "config.cfg"
 #endif
-
 qboolean FS_Initialized(void);
-void FS_InitFilesystem (void);
+void FS_InitFilesystem(void);
 void FS_Shutdown(qboolean closemfp);
 qboolean FS_ConditionalRestart(qboolean disconnect);
 void FS_Restart(qboolean gameDirChanged);
@@ -560,19 +551,19 @@ char **FS_ListFiles(const char *directory, const char *extension, int *numfiles)
 void FS_FreeFileList(char **list);
 qboolean FS_FileExists(const char *file);
 qboolean FS_FileInPathExists(const char *testpath);
-qboolean FS_CreatePath (char *OSPath);
+qboolean FS_CreatePath(char *OSPath);
 int FS_PathCmp(const char *s1, const char *s2);
 int FS_FindVM(void **startSearch, char *found, int foundlen, const char *name, int enableDll);
 char *FS_BuildOSPath(const char *base, const char *game, const char *qpath);
 qboolean FS_CompareZipChecksum(const char *zipfile);
 int FS_LoadStack(void);
-int FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize);
-int FS_GetModList( char *listbuf, int bufsize);
+int FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize);
+int FS_GetModList(char *listbuf, int bufsize);
 void FS_GetModDescription(const char *modDir, char *description, int descriptionLen);
 fileHandle_t FS_FOpenFileWrite(const char *qpath);
 fileHandle_t FS_FOpenFileAppend(const char *filename);
 fileHandle_t FS_FCreateOpenPipeFile(const char *filename);
-// will properly create any needed paths and deal with seperater character issues
+// will properly create any needed paths and deal with separater character issues
 qboolean FS_SV_FileExists(const char *filename);
 qboolean FS_SV_RW_FileExists(const char *filename);
 fileHandle_t FS_SV_FOpenFileWrite(const char *filename);
@@ -580,12 +571,12 @@ long FS_SV_FOpenFileRead(const char *filename, fileHandle_t *fp);
 void FS_SV_Rename(const char *from, const char *to, qboolean safe);
 long FS_FOpenFileRead(const char *qpath, fileHandle_t *file, qboolean uniqueFILE);
 // if uniqueFILE is true, then a new FILE will be fopened even if the file
-// is found in an already open pak file.  If uniqueFILE is false, you must call
+// is found in an already open pak file. If uniqueFILE is false, you must call
 // FS_FCloseFile instead of fclose, otherwise the pak FILE would be improperly closed
 // It is generally safe to always set uniqueFILE to true, because the majority of
 // file IO goes through FS_ReadFile, which Does The Right Thing already.
 long FS_System_FOpenFileRead(const char *ospath, fileHandle_t *fp);
-int FS_Delete(char *filename);    // only works inside the 'save' directory (for deleting savegames/images)
+int FS_Delete(char *filename); // only works inside the 'save' directory (for deleting savegames/images)
 int FS_Write(const void *buffer, int len, fileHandle_t f);
 int FS_Read(void *buffer, int len, fileHandle_t f);
 // properly handles partial reads and reads from other dlls
@@ -610,7 +601,7 @@ long FS_filelength(fileHandle_t f);
 int FS_FTell(fileHandle_t f);
 // where are we?
 void FS_Flush(fileHandle_t f);
-void QDECL FS_Printf(fileHandle_t f, const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
+void QDECL FS_Printf(fileHandle_t f, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 // like fprintf
 int FS_FOpenFileByMode(const char *qpath, fileHandle_t *f, fsMode_t mode);
 // opens a file for reading, writing, or appending depending on the value of mode
@@ -643,11 +634,11 @@ const char *FS_GetCurrentGameDir(void);
 qboolean FS_Which(const char *filename, void *searchPath);
 
 /*
-==============================================================
+=======================================================================================================================================
 
-Game config, loaded from mint-game.settings (see GAMESETTINGS define)
+	Game config, loaded from mint-game.settings (see GAMESETTINGS define).
 
-==============================================================
+=======================================================================================================================================
 */
 
 #define MAX_GAMEDIRS 16 // max gamedirs a mod can have
@@ -672,14 +663,15 @@ typedef struct {
 extern gameConfig_t com_gameConfig;
 
 /*
-==============================================================
+=======================================================================================================================================
 
-Edit fields and command line history/completion
+	Edit fields and command line history/completion.
 
-==============================================================
+=======================================================================================================================================
 */
 
 #define MAX_EDIT_LINE 256
+
 typedef struct {
 	int cursor;
 	int scroll;
@@ -694,11 +686,11 @@ void Field_CompleteFilename(const char *dir, const char *ext, qboolean stripExt,
 void Field_CompleteCommand(char *cmd, qboolean doCommands, qboolean doCvars);
 
 /*
-==============================================================
+=======================================================================================================================================
 
-MISC
+	MISC
 
-==============================================================
+=======================================================================================================================================
 */
 
 // returned by Sys_GetProcessorFeatures
@@ -712,10 +704,8 @@ typedef enum {
 	CF_SSE2 = 1 << 6,
 	CF_ALTIVEC = 1 << 7
 } cpuFeatures_t;
-
 // centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
 #define MAXPRINTMSG 4096
-
 
 typedef enum {
 	// SE_NONE must be zero
@@ -740,17 +730,18 @@ typedef struct {
 	int evPtrLength;	// bytes of data pointed to by evPtr, for journaling
 	void *evPtr;		// this must be manually freed if not NULL
 } sysEvent_t;
+
 void Com_QueueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr);
 int Com_EventLoop(void);
 sysEvent_t Com_GetSystemEvent(void);
 char *CopyString(const char *in);
 void Info_Print(const char *s);
-void Com_BeginRedirect (char *buffer, int buffersize, void (*flush)(char *));
+void Com_BeginRedirect(char *buffer, int buffersize, void (*flush)(char *));
 void Com_EndRedirect(void);
-void QDECL Com_Printf(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
-void QDECL Com_DPrintf(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
-void QDECL Com_Error(int code, const char *fmt, ...) __attribute__ ((noreturn, format(printf, 2, 3)));
-void Com_Quit_f(void) __attribute__ ((noreturn));
+void QDECL Com_Printf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
+void QDECL Com_DPrintf(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
+void QDECL Com_Error(int code, const char *fmt, ...) __attribute__((noreturn, format(printf, 2, 3)));
+void Com_Quit_f(void) __attribute__((noreturn));
 void Com_GameRestart(qboolean disconnect);
 void Com_ExecuteCfg(void);
 int Com_Milliseconds(void); // will be journaled properly
@@ -765,8 +756,7 @@ qboolean Com_IsVoipTarget(uint8_t *voipTargets, int voipTargetsSize, int playerN
 qboolean Com_GameIsSinglePlayer(void);
 void Com_StartupVariable(const char *match);
 // checks for and removes command line "+set var arg" constructs
-// if match is NULL, all set commands will be executed, otherwise
-// only a set with the exact name.  Only used during startup.
+// if match is NULL, all set commands will be executed, otherwise only a set with the exact name. Only used during startup.
 extern cvar_t *com_fs_pure;
 extern cvar_t *com_developer;
 extern cvar_t *com_dedicated;
@@ -813,6 +803,7 @@ extern int time_game;
 extern int time_frontend;
 extern int time_backend; // renderer backend time
 extern int com_frameTime;
+
 extern int com_errorEntered;
 extern qboolean com_fullyInitialized;
 extern int com_playVideo;
@@ -835,7 +826,7 @@ typedef enum {
 server vm
 server clipmap
 ---mark---
-renderer initialization (shaders, etc)
+renderer initialization (shaders, etc.)
 cgame vm
 renderer map
 renderer models
@@ -849,19 +840,20 @@ temp file loading
 #if !defined(NDEBUG) && !defined(BSPC)
 #define ZONE_DEBUG
 #endif
+
 #ifdef ZONE_DEBUG
 #define Z_TagMalloc(size, tag) Z_TagMallocDebug(size, tag, #size, __FILE__, __LINE__)
 #define Z_Malloc(size) Z_MallocDebug(size, #size, __FILE__, __LINE__)
 #define S_Malloc(size) S_MallocDebug(size, #size, __FILE__, __LINE__)
 #define Z_Free(ptr) Z_FreeDebug(ptr, #ptr, __FILE__, __LINE__)
-void *Z_TagMallocDebug(int size, int tag, char *label, char *file, int line); // NOT 0 filled memory
-void *Z_MallocDebug(int size, char *label, char *file, int line); // returns 0 filled memory
-void *S_MallocDebug(int size, char *label, char *file, int line); // returns 0 filled memory
+void *Z_TagMallocDebug(int size, int tag, char *label, char *file, int line);	// NOT 0 filled memory
+void *Z_MallocDebug(int size, char *label, char *file, int line);				// returns 0 filled memory
+void *S_MallocDebug(int size, char *label, char *file, int line);				// returns 0 filled memory
 void Z_FreeDebug(void *ptr, char *label, char *file, int line );
 #else
-void *Z_TagMalloc(int size, int tag); // NOT 0 filled memory
-void *Z_Malloc(int size); // returns 0 filled memory
-void *S_Malloc(int size); // NOT 0 filled memory only for small allocations
+void *Z_TagMalloc(int size, int tag);	// NOT 0 filled memory
+void *Z_Malloc(int size);				// returns 0 filled memory
+void *S_Malloc(int size);				// NOT 0 filled memory only for small allocations
 void Z_Free(void *ptr);
 #endif
 int Z_FreeTags(int tag);
@@ -909,11 +901,11 @@ void Com_Frame(void);
 void Com_Shutdown(void);
 
 /*
-==============================================================
+=======================================================================================================================================
 
-REFRESH DLL
+	REFRESH DLL
 
-==============================================================
+=======================================================================================================================================
 */
 
 extern refexport_t re; // interface to refresh .dll
@@ -922,11 +914,11 @@ void Com_ShutdownRef(void);
 void Com_InitRef(refimport_t *ri);
 
 /*
-==============================================================
+=======================================================================================================================================
 
-CLIENT / SERVER SYSTEMS
+	CLIENT/SERVER SYSTEMS
 
-==============================================================
+=======================================================================================================================================
 */
 
 // client interface
@@ -938,7 +930,7 @@ void CL_Disconnect(qboolean showMainMenu);
 void CL_Shutdown(char *finalmsg, qboolean disconnect, qboolean quit);
 void CL_Frame(int msec);
 void CL_GameConsoleText(qboolean restoredText);
-void CL_KeyEvent (int key, qboolean down, unsigned time);
+void CL_KeyEvent(int key, qboolean down, unsigned time);
 void CL_CharEvent(int character);
 // char events are for field typing, not game control
 void CL_MouseEvent(int localPlayerNum, int dx, int dy, int time);
@@ -966,7 +958,7 @@ void Key_WriteBindings(fileHandle_t f);
 // for writing the config files
 void S_ClearSoundBuffer(void);
 // call before filesystem access
-void SCR_DebugGraph (float value); // FIXME: move logging to common?
+void SCR_DebugGraph(float value); // FIXME: move logging to common?
 // AVI files have the start of pixel lines 4 byte-aligned
 #define AVI_LINE_PADDING 4
 // server interface
@@ -985,21 +977,20 @@ int SV_SendQueuedPackets(void);
 =======================================================================================================================================
 */
 
-void Sys_Init (void);
+void Sys_Init(void);
 // general development dll loading for virtual machine testing
 void *QDECL Sys_LoadGameDll(const char *name, intptr_t(QDECL **entryPoint)(int, ...), intptr_t(QDECL *systemcalls)(intptr_t, ...));
 void Sys_UnloadDll(void *dllHandle);
 qboolean Sys_DllExtension(const char *name);
 char *Sys_GetCurrentUser(void);
-void QDECL Sys_Error(const char *error, ...) __attribute__((noreturn, format (printf, 1, 2)));
-void Sys_Quit (void) __attribute__((noreturn));
+void QDECL Sys_Error(const char *error, ...) __attribute__((noreturn, format(printf, 1, 2)));
+void Sys_Quit(void) __attribute__((noreturn));
 char *Sys_GetClipboardData(void); // note that this isn't journaled...
 qboolean Sys_GetCapsLockMode(void);
 qboolean Sys_GetNumLockMode(void);
 void Sys_Print(const char *msg);
-// Sys_Milliseconds should only be used for profiling purposes,
-// any game related timing information should come from event timestamps
-int Sys_Milliseconds (void);
+// Sys_Milliseconds should only be used for profiling purposes, any game related timing information should come from event timestamps
+int Sys_Milliseconds(void);
 qboolean Sys_RandomBytes(byte *string, int len);
 // the system console is shown when a dedicated server is running
 void Sys_DisplaySystemConsole(qboolean show);
@@ -1050,38 +1041,35 @@ typedef enum {
 } dialogType_t;
 
 dialogResult_t Sys_Dialog(dialogType_t type, const char *message, const char *title);
+
 void Sys_RemovePIDFile(const char *gamedir);
 void Sys_InitPIDFile(const char *gamedir);
 
 /*
-==============================================================
+=======================================================================================================================================
 
-CONSOLE LOG ACCESS
+	CONSOLE LOG ACCESS
 
-==============================================================
+=======================================================================================================================================
 */
 
 unsigned int CON_LogRead(char *out, unsigned int outSize);
 void CON_LogSaveReadPos(void);
 void CON_LogRestoreReadPos(void);
-
-
-/* This is based on the Adaptive Huffman algorithm described in Sayood's Data
- * Compression book.  The ranks are not actually stored, but implicitly defined
- * by the location of a node within a doubly-linked list */
-
-#define NYT HMAX /* NYT = Not Yet Transmitted */
+// This is based on the Adaptive Huffman algorithm described in Sayood's Data Compression book.
+// The ranks are not actually stored, but implicitly defined by the location of a node within a doubly-linked list
+#define NYT HMAX // NYT = Not Yet Transmitted
 #define INTERNAL_NODE (HMAX + 1)
 
 typedef struct nodetype {
-	struct nodetype *left, *right, *parent; /* tree structure */ 
-	struct nodetype *next, *prev; /* doubly-linked list */
-	struct nodetype **head; /* highest ranked node in block */
+	struct nodetype *left, *right, *parent;	// tree structure
+	struct nodetype *next, *prev;			// doubly-linked list
+	struct nodetype **head;					// highest ranked node in block
 	int weight;
 	int symbol;
 } node_t;
 
-#define HMAX 256 /* Maximum symbol */
+#define HMAX 256 // maximum symbol
 
 typedef struct {
 	int blocNode;
@@ -1089,9 +1077,8 @@ typedef struct {
 	node_t *tree;
 	node_t *lhead;
 	node_t *ltail;
-	node_t *loc[HMAX+1];
+	node_t *loc[HMAX + 1];
 	node_t **freelist;
-
 	node_t nodeList[768];
 	node_t *nodePtrs[768];
 } huff_t;
@@ -1104,11 +1091,11 @@ typedef struct {
 void Huff_Compress(msg_t *buf, int offset);
 void Huff_Decompress(msg_t *buf, int offset);
 void Huff_Init(huffman_t *huff);
-void Huff_addRef(huff_t* huff, byte ch);
-int Huff_Receive (node_t *node, int *ch, byte *fin);
-void Huff_transmit (huff_t *huff, int ch, byte *fout);
-void Huff_offsetReceive (node_t *node, int *ch, byte *fin, int *offset);
-void Huff_offsetTransmit (huff_t *huff, int ch, byte *fout, int *offset);
+void Huff_addRef(huff_t *huff, byte ch);
+int Huff_Receive(node_t *node, int *ch, byte *fin);
+void Huff_transmit(huff_t *huff, int ch, byte *fout);
+void Huff_offsetReceive(node_t *node, int *ch, byte *fin, int *offset);
+void Huff_offsetTransmit(huff_t *huff, int ch, byte *fout, int *offset);
 void Huff_putBit(int bit, byte *fout, int *offset);
 int Huff_getBit(byte *fout, int *offset);
 // don't use if you don't know what you're doing.
@@ -1117,13 +1104,14 @@ void Huff_setBloc(int _bloc);
 
 extern huffman_t clientHuffTables;
 
-#define SV_ENCODE_START 4
-#define SV_DECODE_START 12
-#define CL_ENCODE_START 12
-#define CL_DECODE_START 4
+#define SV_ENCODE_START		4
+#define SV_DECODE_START		12
+
+#define CL_ENCODE_START		12
+#define CL_DECODE_START		4
 // flags for sv_allowDownload and cl_allowDownload
-#define DLF_ENABLE 1
-#define DLF_NO_REDIRECT 2
-#define DLF_NO_UDP 4
-#define DLF_NO_DISCONNECT 8
+#define DLF_ENABLE			1
+#define DLF_NO_REDIRECT		2
+#define DLF_NO_UDP			4
+#define DLF_NO_DISCONNECT	8
 #endif // _QCOMMON_H_

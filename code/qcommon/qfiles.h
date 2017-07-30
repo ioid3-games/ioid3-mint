@@ -21,44 +21,39 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
+
+/**************************************************************************************************************************************
+ Quake file formats. This file must be identical in the quake and utils directories.
+**************************************************************************************************************************************/
+
 #ifndef __QFILES_H__
 #define __QFILES_H__
-
-//
-// qfiles.h: quake file formats
-// This file must be identical in the quake and utils directories
-//
-
-//Ignore __attribute__ on non-gcc platforms
+// ignore __attribute__ on non-gcc platforms
 #ifndef __GNUC__
 #ifndef __attribute__
 #define __attribute__(x)
 #endif
 #endif
-
 // surface geometry should not exceed these limits
 #define SHADER_MAX_VERTEXES	1201 // 1200 + 1 buffer for RB_EndSurface overflow check
-#define SHADER_MAX_INDEXES	(6*SHADER_MAX_VERTEXES)
-#define SHADER_MAX_TRIANGLES	(SHADER_MAX_INDEXES/3)
-
-
+#define SHADER_MAX_INDEXES (6 * SHADER_MAX_VERTEXES)
+#define SHADER_MAX_TRIANGLES (SHADER_MAX_INDEXES / 3)
 // the maximum size of game relative pathnames
-#define MAX_QPATH		64
+#define MAX_QPATH 64
 
 /*
 =======================================================================================================================================
 
-QVM files
+	QVM files
 
 =======================================================================================================================================
 */
 
 // QVM magics not supported by Spearmint
-#define VM_MAGIC			0x12721444
-#define VM_MAGIC_VER2		0x12721445
-
+#define VM_MAGIC 0x12721444
+#define VM_MAGIC_VER2 0x12721445
 // Spearmint QVM magic, it's the same as VM_MAGIC_VER2 but with a different magic number.
-#define VM_MAGIC_VER2_NEO	0x12721443
+#define VM_MAGIC_VER2_NEO 0x12721443
 
 typedef struct {
 	int vmMagic;
@@ -67,35 +62,32 @@ typedef struct {
 	int codeLength;
 	int dataOffset;
 	int dataLength;
-	int litLength;			//(dataLength - litLength)should be byteswapped on load
-	int bssLength;			// zero filled memory appended to datalength
-
-	//!!! below here is VM_MAGIC_VER2 !!!
-	int jtrgLength;			// number of jump table targets
+	int litLength; // (dataLength - litLength) should be byteswapped on load
+	int bssLength; // zero filled memory appended to datalength
+	// !!! below here is VM_MAGIC_VER2 !!!
+	int jtrgLength; // number of jump table targets
 } vmHeader_t;
 
 /*
 =======================================================================================================================================
 
-.MD3 triangle model file format
+	.MD3 triangle model file format
 
 =======================================================================================================================================
 */
 
-#define MD3_IDENT			(('3'<<24) + ('P'<<16) + ('D'<<8) +'I')
-#define MD3_VERSION			15
-
+#define MD3_IDENT (('3' << 24) + ('P' << 16) + ('D' << 8) + 'I')
+#define MD3_VERSION 15
 // limits
-#define MD3_MAX_LODS		3
-#define MD3_MAX_TRIANGLES	8192	// per surface
-#define MD3_MAX_VERTS		4096	// per surface
-#define MD3_MAX_SHADERS		256		// per surface
-#define MD3_MAX_FRAMES		1024	// per model
-#define MD3_MAX_SURFACES	32		// per model
-#define MD3_MAX_TAGS		16		// per frame
-
+#define MD3_MAX_LODS 3
+#define MD3_MAX_TRIANGLES 8192 // per surface
+#define MD3_MAX_VERTS 4096 // per surface
+#define MD3_MAX_SHADERS 256 // per surface
+#define MD3_MAX_FRAMES 1024 // per model
+#define MD3_MAX_SURFACES 32 // per model
+#define MD3_MAX_TAGS 16 // per frame
 // vertex scales
-#define MD3_XYZ_SCALE		(1.0/64)
+#define MD3_XYZ_SCALE (1.0 / 64)
 
 typedef struct md3Frame_s {
 	vec3_t bounds[2];
@@ -105,11 +97,10 @@ typedef struct md3Frame_s {
 } md3Frame_t;
 
 typedef struct md3Tag_s {
-	char name[MAX_QPATH];	// tag name
+	char name[MAX_QPATH]; // tag name
 	vec3_t origin;
 	vec3_t axis[3];
 } md3Tag_t;
-
 /*
 ** md3Surface_t
 **
@@ -121,13 +112,10 @@ typedef struct md3Tag_s {
 ** XyzNormals		sizeof(md3XyzNormal_t) * numVerts * numFrames
 */
 typedef struct {
-	int ident;				// 
-
+	int ident;
 	char name[MAX_QPATH];	// polyset name
-
 	int flags;
 	int numFrames;			// all surfaces in a model should have the same
-
 	int numShaders;			// all surfaces in a model should have the same
 	int numVerts;
 	int numTriangles;
@@ -135,13 +123,12 @@ typedef struct {
 	int ofsShaders;			// offset from start of md3Surface_t
 	int ofsSt;				// texture coords are common for all frames
 	int ofsXyzNormals;		// numVerts * numFrames
-
 	int ofsEnd;				// next surface follows
 } md3Surface_t;
 
 typedef struct {
 	char name[MAX_QPATH];
-	int shaderIndex;	// for in-game use
+	int shaderIndex; // for in-game use
 } md3Shader_t;
 
 typedef struct {
@@ -153,32 +140,29 @@ typedef struct {
 } md3St_t;
 
 typedef struct {
-	short		xyz[3];
-	short		normal;
+	short xyz[3];
+	short normal;
 } md3XyzNormal_t;
 
 typedef struct {
 	int ident;
 	int version;
-
 	char name[MAX_QPATH];	// model name
-
 	int flags;
 	int numFrames;
-	int numTags;			
+	int numTags;
 	int numSurfaces;
 	int numSkins;
 	int ofsFrames;			// offset for first frame
 	int ofsTags;			// numFrames * numTags
 	int ofsSurfaces;		// first surface, others follow
-
 	int ofsEnd;				// end of file
 } md3Header_t;
 
 /*
 =======================================================================================================================================
 
-MDC file format
+	MDC file format
 
 =======================================================================================================================================
 */
@@ -285,13 +269,13 @@ MDR file format
 	* - Thilo Schulz(arny@ats.s.bawue.de)
 	*/
 
-#define MDR_IDENT	(('5'<<24) + ('M'<<16) + ('D'<<8) +'R')
+#define MDR_IDENT (('5' << 24) + ('M' << 16) + ('D' << 8) +'R')
 #define MDR_VERSION	2
-#define MDR_MAX_BONES	128
+#define MDR_MAX_BONES 128
 
 typedef struct {
-	int boneIndex;	// these are indexes into the boneReferences,
-	float boneWeight;		// not the global per-frame bone list
+	int boneIndex;		// these are indexes into the boneReferences,
+	float boneWeight;	// not the global per-frame bone list
 	vec3_t offset;
 } mdrWeight_t;
 
@@ -299,7 +283,7 @@ typedef struct {
 	vec3_t normal;
 	vec2_t texCoords;
 	int numWeights;
-	mdrWeight_t weights[1];		// variable sized
+	mdrWeight_t weights[1]; // variable sized
 } mdrVertex_t;
 
 typedef struct {
@@ -308,26 +292,20 @@ typedef struct {
 
 typedef struct {
 	int ident;
-
 	char name[MAX_QPATH];	// polyset name
 	char shader[MAX_QPATH];
-	int shaderIndex;	// for in-game use
-
-	int ofsHeader;	// this will be a negative number
-
+	int shaderIndex;		// for in-game use
+	int ofsHeader;			// this will be a negative number
 	int numVerts;
 	int ofsVerts;
 	int numTriangles;
 	int ofsTriangles;
-
-	// Bone references are a set of ints representing all the bones
-	// present in any vertex weights for this surface.  This is
-	// needed because a model may have surfaces that need to be
-	// drawn at different sort times, and we don't want to have
+	// Bone references are a set of ints representing all the bones present in any vertex weights for this surface. This is
+	// needed because a model may have surfaces that need to be drawn at different sort times, and we don't want to have
 	// to re-interpolate all the bones for each surface.
 	int numBoneReferences;
 	int ofsBoneReferences;
-	int ofsEnd;		// next surface follows
+	int ofsEnd;				// next surface follows
 } mdrSurface_t;
 
 typedef struct {
@@ -343,52 +321,47 @@ typedef struct {
 } mdrFrame_t;
 
 typedef struct {
-        unsigned char Comp[24]; // MC_COMP_BYTES is in MatComp.h, but don't want to couple
+	unsigned char Comp[24]; // MC_COMP_BYTES is in MatComp.h, but don't want to couple
 } mdrCompBone_t;
 
 typedef struct {
-        vec3_t bounds[2];		// bounds of all surfaces of all LOD's for this frame
-        vec3_t localOrigin;		// midpoint of bounds, used for sphere cull
-        float radius;			// dist from localOrigin to corner
-        mdrCompBone_t bones[1];		// [numBones]
+	vec3_t bounds[2];		// bounds of all surfaces of all LOD's for this frame
+	vec3_t localOrigin;		// midpoint of bounds, used for sphere cull
+	float radius;			// dist from localOrigin to corner
+	mdrCompBone_t bones[1];	// [numBones]
 } mdrCompFrame_t;
 
 typedef struct {
 	int numSurfaces;
-	int ofsSurfaces;		// first surface, others follow
-	int ofsEnd;				// next lod follows
+	int ofsSurfaces;	// first surface, others follow
+	int ofsEnd;			// next lod follows
 } mdrLOD_t;
 
 typedef struct {
-        int boneIndex;
-        char name[32];
+	int boneIndex;
+	char name[32];
 } mdrTag_t;
 
 typedef struct {
 	int ident;
 	int version;
-
 	char name[MAX_QPATH];	// model name
-
 	// frames and bones are shared by all levels of detail
 	int numFrames;
 	int numBones;
 	int ofsFrames;			// mdrFrame_t[numFrames]
-
 	// each level of detail has completely separate sets of surfaces
 	int numLODs;
 	int ofsLODs;
-
-        int numTags;
-        int ofsTags;
+	int numTags;
+	int ofsTags;
 	int ofsEnd;				// end of file
 } mdrHeader_t;
-
 
 /*
 =======================================================================================================================================
 
-MDS file format(Return to Castle Wolfenstein Skeletal Format)
+	MDS file format (Return to Castle Wolfenstein Skeletal Format)
 
 =======================================================================================================================================
 */
@@ -811,45 +784,36 @@ typedef struct {
 =======================================================================================================================================
 */
 
-// there shouldn't be any problem with increasing these values at the
-// expense of more memory allocation in the utilities
-#define MAX_MAP_MODELS		0x400
-#define MAX_MAP_BRUSHES		0x8000 // ZTM: NOTE: Using value from Quake3/RTCW-MP, it's only 0x4000 in WolfET.
-#define MAX_MAP_ENTITIES	0x1000 // ZTM: NOTE: Using value from WolfET, it's only 0x800 in Quake3/RTCW-MP.
-#define MAX_MAP_ENTSTRING	0x40000
-#define MAX_MAP_SHADERS		0x400
-
-#define MAX_MAP_AREAS		0x100	// MAX_MAP_AREA_BYTES in q_shared must match!
-#define MAX_MAP_FOGS		0x100
-#define MAX_MAP_PLANES		0x40000 // ZTM: NOTE: Using value from WolfET, it's only 0x20000 in Quake3/RTCW-MP.
-#define MAX_MAP_NODES		0x20000
-#define MAX_MAP_BRUSHSIDES	0x100000 // ZTM: NOTE: Using value from WolfET, it's only 0x20000 in Quake3/RTCW-MP.
-#define MAX_MAP_LEAFS		0x20000
-#define MAX_MAP_LEAFFACES	0x20000
-#define MAX_MAP_LEAFBRUSHES 0x40000
-#define MAX_MAP_PORTALS		0x20000
-#define MAX_MAP_LIGHTING	0x800000
-#define MAX_MAP_LIGHTGRID	0x800000
-#define MAX_MAP_VISIBILITY	0x200000
-
-#define MAX_MAP_DRAW_SURFS	0x20000
-#define MAX_MAP_DRAW_VERTS	0x80000
+// there shouldn't be any problem with increasing these values at the expense of more memory allocation in the utilities
+#define MAX_MAP_MODELS			0x400
+#define MAX_MAP_BRUSHES			0x8000 // ZTM: NOTE: Using value from Quake3/RTCW-MP, it's only 0x4000 in WolfET.
+#define MAX_MAP_ENTITIES		0x1000 // ZTM: NOTE: Using value from WolfET, it's only 0x800 in Quake3/RTCW-MP.
+#define MAX_MAP_ENTSTRING		0x40000
+#define MAX_MAP_SHADERS			0x400
+#define MAX_MAP_AREAS			0x100 // MAX_MAP_AREA_BYTES in q_shared must match!
+#define MAX_MAP_FOGS			0x100
+#define MAX_MAP_PLANES			0x40000 // ZTM: NOTE: Using value from WolfET, it's only 0x20000 in Quake3/RTCW-MP.
+#define MAX_MAP_NODES			0x20000
+#define MAX_MAP_BRUSHSIDES		0x100000 // ZTM: NOTE: Using value from WolfET, it's only 0x20000 in Quake3/RTCW-MP.
+#define MAX_MAP_LEAFS			0x20000
+#define MAX_MAP_LEAFFACES		0x20000
+#define MAX_MAP_LEAFBRUSHES		0x40000
+#define MAX_MAP_PORTALS			0x20000
+#define MAX_MAP_LIGHTING		0x800000
+#define MAX_MAP_LIGHTGRID		0x800000
+#define MAX_MAP_VISIBILITY		0x200000
+#define MAX_MAP_DRAW_SURFS		0x20000
+#define MAX_MAP_DRAW_VERTS		0x80000
 #define MAX_MAP_DRAW_INDEXES	0x80000
-
-
-// key / value pair sizes in the entities lump
-#define MAX_KEY				32
-#define MAX_VALUE			1024
-
+// key/value pair sizes in the entities lump
+#define MAX_KEY 32
+#define MAX_VALUE 1024
 // the editor uses these predefined yaw angles to orient entities up or down
-#define ANGLE_UP			-1
-#define ANGLE_DOWN			-2
-
-#define LIGHTMAP_WIDTH		128
-#define LIGHTMAP_HEIGHT		128
-
-#define MAX_WORLD_COORD		(128*1024)
-#define MIN_WORLD_COORD		(-128*1024)
-#define WORLD_SIZE			(MAX_WORLD_COORD - MIN_WORLD_COORD)
-
+#define ANGLE_UP -1
+#define ANGLE_DOWN -2
+#define LIGHTMAP_WIDTH 128
+#define LIGHTMAP_HEIGHT 128
+#define MAX_WORLD_COORD (128 * 1024)
+#define MIN_WORLD_COORD (-128 * 1024)
+#define WORLD_SIZE (MAX_WORLD_COORD - MIN_WORLD_COORD)
 #endif

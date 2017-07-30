@@ -107,50 +107,47 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define GAMES_TEAMPLAY	2
 #define GAMES_TOURNEY	3
 #define GAMES_CTF		4
-#ifdef MISSIONPACK
 #define GAMES_1FCTF		5
 #define GAMES_OBELISK	6
 #define GAMES_HARVESTER	7
-#endif // MISSIONPACK
+
 static const char *master_items[] = {
-	"Local", 
-	"Internet", 
-	"Master1", 
-	"Master2", 
-	"Master3", 
-	"Master4", 
-	"Master5", 
-	"Favorites", 
+	"Local",
+	"Internet",
+	"Master1",
+	"Master2",
+	"Master3",
+	"Master4",
+	"Master5",
+	"Favorites",
 	NULL
 };
 
 static const char *servertype_items[] = {
-	"All", 
-	"Free For All", 
-	"Team Deathmatch", 
-	"Tournament", 
-	"Capture the Flag", 
-#ifdef MISSIONPACK
-	"1 Flag CTF", 
-	"Overload", 
-	"Harvester", 
-#endif // MISSIONPACK
+	"All",
+	"Free For All",
+	"Tournament",
+	"Team Deathmatch",
+	"Capture the Flag",
+	"One Flag CTF",
+	"Overload",
+	"Harvester",
 	NULL
 };
 
 static const char *sortkey_items[] = {
-	"Server Name", 
-	"Map Name", 
-	"Open Player Spots", 
-	"Game Type", 
-	"Ping Time", 
+	"Server Name",
+	"Map Name",
+	"Open Player Spots",
+	"Game Type",
+	"Ping Time",
 	NULL
 };
 
 static char *netnames[] = {
-	"???", 
-	"UDP", 
-	"UDP6", 
+	"???",
+	"UDP",
+	"UDP6",
 	NULL
 };
 
@@ -358,7 +355,6 @@ int ArenaServers_GametypeForGames(int games) {
 		case GAMES_CTF:
 			gametype = GT_CTF;
 			break;
-#ifdef MISSIONPACK
 		case GAMES_1FCTF:
 			gametype = GT_1FCTF;
 			break;
@@ -368,7 +364,6 @@ int ArenaServers_GametypeForGames(int games) {
 		case GAMES_HARVESTER:
 			gametype = GT_HARVESTER;
 			break;
-#endif
 	}
 
 	return gametype;
@@ -645,6 +640,7 @@ static void ArenaServers_Insert(char *adrstr, char *info, int pingtime) {
 	servernodeptr->maxPing = atoi(Info_ValueForKey(info, "maxPing"));
 	/*
 	s = Info_ValueForKey(info, "nettype");
+
 	for (i = 0;; i++) {
 		if (!netnames[i]) {
 			servernodeptr->nettype = 0;
@@ -880,6 +876,7 @@ static void ArenaServers_DoRefresh(void) {
 		}
 
 		strcpy(g_arenaservers.pinglist[j].adrstr, adrstr);
+
 		g_arenaservers.pinglist[j].start = uis.realtime;
 
 		trap_Cmd_ExecuteText(EXEC_NOW, va("ping %s\n", adrstr));
@@ -932,7 +929,7 @@ static void ArenaServers_StartRefresh(void) {
 		gametype = ArenaServers_GametypeForGames(g_arenaservers.gametype.curvalue);
 		// add requested gametype to args for dpmaster protocol
 		if (gametype != -1) {
-			Com_sprintf(myargs, sizeof (myargs), " gametype=%s", bg_netGametypeNames[gametype]);
+			Com_sprintf(myargs, sizeof(myargs), " gametype=%s", bg_netGametypeNames[gametype]);
 		} else {
 			myargs[0] = '\0';
 		}
@@ -946,6 +943,7 @@ static void ArenaServers_StartRefresh(void) {
 		}
 
 		protocol[0] = '\0';
+
 		trap_Cvar_VariableStringBuffer("debug_protocol", protocol, sizeof(protocol));
 
 		if (strlen(protocol)) {
@@ -985,6 +983,7 @@ void ArenaServers_Sort(int type) {
 	}
 
 	g_sortkey = type;
+
 	qsort(g_arenaservers.serverlist, *g_arenaservers.numservers, sizeof(servernode_t), ArenaServers_Compare);
 }
 
@@ -1295,7 +1294,7 @@ static void ArenaServers_MenuInit(void) {
 	static char statusbuffer[MAX_STATUSLENGTH];
 
 	// zero set all our globals
-	memset(&g_arenaservers, 0 , sizeof(arenaservers_t));
+	memset(&g_arenaservers, 0, sizeof(arenaservers_t));
 
 	ArenaServers_Cache();
 
@@ -1308,7 +1307,7 @@ static void ArenaServers_MenuInit(void) {
 	g_arenaservers.banner.generic.flags = QMF_CENTER_JUSTIFY;
 	g_arenaservers.banner.generic.x = 320;
 	g_arenaservers.banner.generic.y = 16;
-	g_arenaservers.banner.string = "ARENA SERVERS";
+	g_arenaservers.banner.string = "Arena Servers";
 	g_arenaservers.banner.style = UI_CENTER;
 	g_arenaservers.banner.color = text_banner_color;
 
@@ -1514,17 +1513,17 @@ static void ArenaServers_MenuInit(void) {
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.mappic);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.status);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.statusbar);
+	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.list);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.arrows);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.up);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.down);
-	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.list);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.remove);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.back);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.specify);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.refresh);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.create);
 	Menu_AddItem(&g_arenaservers.menu, (void *)&g_arenaservers.go);
-	
+
 	ArenaServers_LoadFavorites();
 
 	g_arenaservers.master.curvalue = g_servertype = Com_Clamp(0, 6, ui_browserMaster.integer);
