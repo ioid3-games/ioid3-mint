@@ -61,7 +61,6 @@ enum {
 	ID_SPLITVERTICAL,
 	ID_SPLITTEXTSIZE,
 	ID_THIRDSIZE,
-	ID_ATMEFFECTS,
 	ID_NUM_ITEMS,
 	ID_BACK
 };
@@ -88,7 +87,6 @@ typedef struct {
 	menulist_s splitvertical;
 	menulist_s splittextsize;
 	menulist_s thirdsize;
-	menulist_s atmeffects;
 	menubitmap_s back;
 	qhandle_t crosshairShader[NUM_CROSSHAIRS];
 } preferences_t;
@@ -119,13 +117,6 @@ static const char *splittextsize_names[] = {
 static const char *thirdsize_names[] = {
 	"Half",
 	"Quarter",
-	NULL
-};
-
-static const char *atmeffects_names[] = {
-	"Off",
-	"Low",
-	"High",
 	NULL
 };
 
@@ -162,14 +153,6 @@ static void Preferences_SetMenuItems(void) {
 	}
 
 	s_preferences.thirdsize.curvalue = trap_Cvar_VariableValue("cg_splitviewThirdEqual") != 0;
-
-	s_preferences.atmeffects.curvalue = 2 * trap_Cvar_VariableValue("cg_atmosphericEffects");
-
-	if (s_preferences.atmeffects.curvalue < 0) {
-		s_preferences.atmeffects.curvalue = 0;
-	} else if (s_preferences.atmeffects.curvalue > 2) {
-		s_preferences.atmeffects.curvalue = 2;
-	}
 }
 
 /*
@@ -234,9 +217,6 @@ static void Preferences_Event(void *ptr, int notification) {
 			break;
 		case ID_THIRDSIZE:
 			trap_Cvar_SetValue("cg_splitviewThirdEqual", s_preferences.thirdsize.curvalue);
-			break;
-		case ID_ATMEFFECTS:
-			trap_Cvar_SetValue("cg_atmosphericEffects", (float)s_preferences.atmeffects.curvalue / 2.0f);
 			break;
 		case ID_BACK:
 			UI_PopMenu();
@@ -472,16 +452,6 @@ static void Preferences_MenuInit(void) {
 	s_preferences.thirdsize.generic.y = y;
 	s_preferences.thirdsize.itemnames = thirdsize_names;
 
-	y += BIGCHAR_HEIGHT + 2;
-	s_preferences.atmeffects.generic.type = MTYPE_SPINCONTROL;
-	s_preferences.atmeffects.generic.name = "Snow/Rain:";
-	s_preferences.atmeffects.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	s_preferences.atmeffects.generic.callback = Preferences_Event;
-	s_preferences.atmeffects.generic.id = ID_ATMEFFECTS;
-	s_preferences.atmeffects.generic.x = PREFERENCES_X_POS;
-	s_preferences.atmeffects.generic.y = y;
-	s_preferences.atmeffects.itemnames = atmeffects_names;
-
 	s_preferences.back.generic.type = MTYPE_BITMAP;
 	s_preferences.back.generic.name = ART_BACK0;
 	s_preferences.back.generic.flags = QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
@@ -511,7 +481,6 @@ static void Preferences_MenuInit(void) {
 	Menu_AddItem(&s_preferences.menu, &s_preferences.splitvertical);
 	Menu_AddItem(&s_preferences.menu, &s_preferences.splittextsize);
 	Menu_AddItem(&s_preferences.menu, &s_preferences.thirdsize);
-	Menu_AddItem(&s_preferences.menu, &s_preferences.atmeffects);
 	Menu_AddItem(&s_preferences.menu, &s_preferences.back);
 
 	Preferences_SetMenuItems();
