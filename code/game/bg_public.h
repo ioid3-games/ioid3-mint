@@ -1015,6 +1015,7 @@ void SnapVectorTowards(vec3_t v, vec3_t to);
 #define UI_GIANTFONT	0x00000300
 #define UI_TINYFONT		0x00000400
 #define UI_NUMBERFONT	0x00000500
+#define UI_CONSOLEFONT	0x00000600
 #define UI_FONTMASK		0x00000F00
 // other flags
 #define UI_DROPSHADOW	0x00001000

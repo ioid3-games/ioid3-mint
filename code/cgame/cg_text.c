@@ -71,8 +71,12 @@ void CG_TextInit(void) {
 		CG_InitBitmapFont(&cgs.media.bigFont, giantSize, ceil(giantSize * 0.666666f));
 	}
 
-	if (!CG_InitTrueTypeFont("fonts/numberfont", numberSize, 0, &cgs.media.numberFont)) {
-		CG_InitBitmapNumberFont(&cgs.media.numberFont, numberSize, ceil(numberSize * 0.666666f));
+	if ( !CG_InitTrueTypeFont( "fonts/numberfont", numberSize, 0, &cgs.media.numberFont ) ) {
+		CG_InitBitmapNumberFont( &cgs.media.numberFont, numberSize, ceil( numberSize * 0.666666f ) );
+	}
+
+	if ( !CG_InitTrueTypeFont( "fonts/consolefont", smallSize, 0, &cgs.media.consoleFont ) ) {
+		CG_InitBitmapFont( &cgs.media.consoleFont, smallSize, smallSize * 0.5f );
 	}
 }
 
@@ -188,8 +192,10 @@ void CG_InitBitmapNumberFont(fontInfo_t *font, int charHeight, int charWidth) {
 }
 
 // borderWidth is in screen-pixels, not scaled with resolution
-qboolean CG_InitTrueTypeFont(const char *name, int pointSize, float borderWidth, fontInfo_t *font) {
-	if (cg_forceBitmapFonts.integer) {
+qboolean CG_InitTrueTypeFont( const char *name, int pointSize, float borderWidth, fontInfo_t *font ) {
+	int imageHeight;
+
+	if ( cg_forceBitmapFonts.integer ) {
 		return qfalse;
 	}
 
@@ -231,8 +237,9 @@ qboolean CG_InitTrueTypeFont(const char *name, int pointSize, float borderWidth,
 	font->glyphs[GLYPH_INSERT].t = 0;
 	font->glyphs[GLYPH_INSERT].s2 = 1;
 	font->glyphs[GLYPH_INSERT].t2 = 1;
-	font->glyphs[GLYPH_INSERT].top -= font->glyphs[GLYPH_INSERT].imageHeight - 1;
-	font->glyphs[GLYPH_INSERT].imageHeight = 1;
+	imageHeight = Com_Clamp( 1, font->glyphs[GLYPH_INSERT].imageHeight, 1 / ( font->pointSize / 48.0f * font->glyphScale ) );
+	font->glyphs[GLYPH_INSERT].top -= font->glyphs[GLYPH_INSERT].imageHeight - imageHeight;
+	font->glyphs[GLYPH_INSERT].imageHeight = imageHeight;
 
 	return qtrue;
 }
@@ -332,8 +339,21 @@ void Text_PaintChar(float x, float y, float width, float height, float useScale,
 	w = width * useScale;
 	h = height * useScale;
 
-	CG_AdjustFrom640(&x, &y, &w, &h);
-	trap_R_DrawStretchPic(x, y, w, h, s, t, s2, t2, hShader);
+	CG_AdjustFrom640( &x, &y, &w, &h );
+
+	// prevent native resolution text from being blurred due to sub-pixel blending
+	x = floor( x );
+	y = floor( y );
+	w = floor( w );
+	h = floor( h );
+
+	// fix rounding to 0
+	if( w == 0)
+		w = 1;
+	if( h == 0)
+		h = 1;
+
+	trap_R_DrawStretchPic( x, y, w, h, s, t, s2, t2, hShader );
 }
 
 // Note: scale must be multiplied by font->glyphScale
@@ -343,10 +363,22 @@ void Text_PaintGlyph(float x, float y, float useScale, const glyphInfo_t *glyph,
 	w = glyph->imageWidth * useScale;
 	h = glyph->imageHeight * useScale;
 
-	CG_AdjustFrom640(&x, &y, &w, &h);
+	CG_AdjustFrom640( &x, &y, &w, &h );
 
-	if (gradientColor) {
-		trap_R_DrawStretchPicGradient(x, y, w, h, glyph->s, glyph->t, glyph->s2, glyph->t2, glyph->glyph, gradientColor);
+	// prevent native resolution text from being blurred due to sub-pixel blending
+	x = floor( x );
+	y = floor( y );
+	w = floor( w );
+	h = floor( h );
+
+	// fix rounding to 0
+	if( w == 0)
+		w = 1;
+	if( h == 0)
+		h = 1;
+
+	if ( gradientColor ) {
+		trap_R_DrawStretchPicGradient( x, y, w, h, glyph->s, glyph->t, glyph->s2, glyph->t2, glyph->glyph, gradientColor );
 	} else {
 		trap_R_DrawStretchPic(x, y, w, h, glyph->s, glyph->t, glyph->s2, glyph->t2, glyph->glyph);
 	}

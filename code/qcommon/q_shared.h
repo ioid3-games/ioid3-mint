@@ -211,6 +211,9 @@ typedef enum {
 	ERR_DISCONNECT,			// client disconnected from the server
 } errorParm_t;
 #if !defined(NDEBUG) && !defined(BSPC)
+#define ZONE_DEBUG
+#endif
+#if !defined(NDEBUG) && !defined(BSPC)
 #define HUNK_DEBUG
 #endif
 

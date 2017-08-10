@@ -39,9 +39,10 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #endif
 #define Q3_VERSION PRODUCT_NAME " " PRODUCT_VERSION
 // Settings directory name
-#define HOMEPATH_NAME_UNIX			".spearmint"
-#define HOMEPATH_NAME_WIN			"Spearmint"
-#define HOMEPATH_NAME_MACOSX		HOMEPATH_NAME_WIN
+// GNU/Linux: $HOME/.local/share/homepath-name (lower case and spaces replaced with hyphens)
+// MacOS: $HOME/Library/Application Support/Homepath Name
+// Windows: %APPDATA%\Homepath Name
+#define HOMEPATH_NAME				"Spearmint"
 // Steam installation information
 //#define STEAMPATH_NAME			"Quake 3 Arena"
 //#define STEAMPATH_APPID			"2200"
@@ -837,10 +838,6 @@ temp file loading
 --- high memory ---
 */
 
-#if !defined(NDEBUG) && !defined(BSPC)
-#define ZONE_DEBUG
-#endif
-
 #ifdef ZONE_DEBUG
 #define Z_TagMalloc(size, tag) Z_TagMallocDebug(size, tag, #size, __FILE__, __LINE__)
 #define Z_Malloc(size) Z_MallocDebug(size, #size, __FILE__, __LINE__)
@@ -1093,9 +1090,9 @@ void Huff_Decompress(msg_t *buf, int offset);
 void Huff_Init(huffman_t *huff);
 void Huff_addRef(huff_t *huff, byte ch);
 int Huff_Receive(node_t *node, int *ch, byte *fin);
-void Huff_transmit(huff_t *huff, int ch, byte *fout);
-void Huff_offsetReceive(node_t *node, int *ch, byte *fin, int *offset);
-void Huff_offsetTransmit(huff_t *huff, int ch, byte *fout, int *offset);
+void Huff_transmit(huff_t *huff, int ch, byte *fout, int maxoffset);
+void Huff_offsetReceive(node_t *node, int *ch, byte *fin, int *offset, int maxoffset);
+void Huff_offsetTransmit(huff_t *huff, int ch, byte *fout, int *offset, int maxoffset);
 void Huff_putBit(int bit, byte *fout, int *offset);
 int Huff_getBit(byte *fout, int *offset);
 // don't use if you don't know what you're doing.

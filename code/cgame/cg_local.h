@@ -49,11 +49,13 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define TINYCHAR_WIDTH 8
 #define TINYCHAR_HEIGHT cgs.media.tinyFont.pointSize // default: 8
 #define SMALLCHAR_WIDTH 8
-#define SMALLCHAR_HEIGHT cgs.media.smallFont.pointSize // default: 16 (bitmap), 12 (true type)
+#define SMALLCHAR_HEIGHT cgs.media.smallFont.pointSize // default: 16
 #define BIGCHAR_WIDTH 16
 #define BIGCHAR_HEIGHT cgs.media.textFont.pointSize // default: 16
 #define GIANTCHAR_WIDTH 32
-#define GIANTCHAR_HEIGHT cgs.media.bigFont.pointSize // default: 48 (bitmap), 20 (true type)
+#define GIANTCHAR_HEIGHT cgs.media.bigFont.pointSize // default: 48
+#define CONCHAR_WIDTH 8
+#define CONCHAR_HEIGHT cgs.media.consoleFont.pointSize // default: 16
 #define POWERUP_BLINKS 5
 #define POWERUP_BLINK_TIME 1000
 #define FADE_TIME 200
@@ -765,6 +767,7 @@ typedef struct {
 	fontInfo_t textFont;
 	fontInfo_t bigFont;
 	fontInfo_t numberFont; // status bar giant number font
+	fontInfo_t consoleFont;
 	qhandle_t whiteShader;
 	qhandle_t consoleShader;
 	qhandle_t nodrawShader;
@@ -1596,6 +1599,7 @@ qboolean CG_DrawOldScoreboard(void);
 void CG_DrawTourneyScoreboard(void);
 // cg_console.c
 void CG_ConsoleInit(void);
+void CG_ConsoleResized(void);
 void CG_ConsolePrint(const char *text);
 void CG_CloseConsole(void);
 void Con_ClearConsole_f(void);

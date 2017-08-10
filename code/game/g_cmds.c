@@ -995,6 +995,21 @@ void G_Say(gentity_t *ent, gentity_t *target, int mode, const char *chatText) {
 
 /*
 =======================================================================================================================================
+SanitizeChatText
+=======================================================================================================================================
+*/
+static void SanitizeChatText(char *text) {
+	int i;
+
+	for (i = 0; text[i]; i++) {
+		if (text[i] == '\n' || text[i] == '\r') {
+			text[i] = ' ';
+		}
+	}
+}
+
+/*
+=======================================================================================================================================
 Cmd_Say_f
 =======================================================================================================================================
 */
@@ -1010,6 +1025,8 @@ static void Cmd_Say_f(gentity_t *ent, int mode, qboolean arg0) {
 	} else {
 		p = ConcatArgs(1);
 	}
+
+	SanitizeChatText(p);
 
 	G_Say(ent, NULL, mode, p);
 }
@@ -1044,6 +1061,8 @@ static void Cmd_Tell_f(gentity_t *ent) {
 	}
 
 	p = ConcatArgs(2);
+
+	SanitizeChatText(p);
 
 	G_Say(ent, target, SAY_TELL, p);
 }
@@ -1093,30 +1112,42 @@ void G_Voice(gentity_t *ent, gentity_t *target, int mode, const char *id, qboole
 		mode = SAY_ALL;
 	}
 
-	if (mode == SAY_TEAM) {
-		color = COLOR_CYAN;
-		cmd = "vtchat";
-	} else if (mode == SAY_TELL) {
-		color = COLOR_MAGENTA;
-		cmd = "vtell";
-	} else {
-		color = COLOR_GREEN;
-		cmd = "vchat";
+	if (target && !G_VoiceTo(ent, target, mode)) {
+		return;
+	}
+
+	switch (mode) {
+		default:
+		case SAY_ALL:
+			G_LogPrintf("vchat: %s: %s\n", ent->player->pers.netname, id);
+			color = COLOR_GREEN;
+			cmd = "vchat";
+			break;
+		case SAY_TEAM:
+			G_LogPrintf("vtchat: %s: %s\n", ent->player->pers.netname, id);
+			color = COLOR_CYAN;
+			cmd = "vtchat";
+			break;
+		case SAY_TELL:
+			if (target && target->player) {
+				G_LogPrintf("vtell: %s to %s: %s\n", ent->player->pers.netname, target->player->pers.netname, id);
+			}
+
+			color = COLOR_MAGENTA;
+			cmd = "vtell";
+			break;
 	}
 
 	str = va("%s %d %d %d %s", cmd, voiceonly, ent->s.number, color, id);
 
 	if (target) {
-		if (!G_VoiceTo(ent, target, mode)) {
-			return;
+		trap_SendServerCommand(target - g_entities, str);
+		// don't tell to the player self if it was already directed to this player also don't send the chat back to a bot
+		if (ent != target && !(ent->r.svFlags & SVF_BOT)) {
+			trap_SendServerCommand(ent - g_entities, str);
 		}
 
-		trap_SendServerCommand(target-g_entities, str);
 		return;
-	}
-	// echo the text to the console
-	if (g_dedicated.integer) {
-		G_Printf("voice: %s %s\n", ent->player->pers.netname, id);
 	}
 	// send to everyone on team
 	if (mode == SAY_TEAM) {
@@ -1161,6 +1192,8 @@ static void Cmd_Voice_f(gentity_t *ent, int mode, qboolean arg0, qboolean voiceo
 		p = ConcatArgs(1);
 	}
 
+	SanitizeChatText(p);
+
 	G_Voice(ent, NULL, mode, p, voiceonly);
 }
 
@@ -1195,12 +1228,9 @@ static void Cmd_VoiceTell_f(gentity_t *ent, qboolean voiceonly) {
 
 	id = ConcatArgs(2);
 
-	G_LogPrintf("vtell: %s to %s: %s\n", ent->player->pers.netname, target->player->pers.netname, id);
+	SanitizeChatText(id);
+
 	G_Voice(ent, target, SAY_TELL, id, voiceonly);
-	// don't tell to the player self if it was already directed to this player also don't send the chat back to a bot
-	if (ent != target && !(ent->r.svFlags & SVF_BOT)) {
-		G_Voice(ent, ent, SAY_TELL, id, voiceonly);
-	}
 }
 
 /*
@@ -1222,10 +1252,6 @@ static void Cmd_VoiceTaunt_f(gentity_t *ent) {
 			G_Voice(ent, ent->enemy, SAY_TELL, VOICECHAT_DEATHINSULT, qfalse);
 		}
 
-		if (!(ent->r.svFlags & SVF_BOT)) {
-			G_Voice(ent, ent, SAY_TELL, VOICECHAT_DEATHINSULT, qfalse);
-		}
-
 		ent->enemy = NULL;
 		return;
 	}
@@ -1239,17 +1265,9 @@ static void Cmd_VoiceTaunt_f(gentity_t *ent) {
 				if (!(who->r.svFlags & SVF_BOT)) {
 					G_Voice(ent, who, SAY_TELL, VOICECHAT_KILLGAUNTLET, qfalse); // and I killed them with a gauntlet
 				}
-
-				if (!(ent->r.svFlags & SVF_BOT)) {
-					G_Voice(ent, ent, SAY_TELL, VOICECHAT_KILLGAUNTLET, qfalse);
-				}
 			} else {
 				if (!(who->r.svFlags & SVF_BOT)) {
 					G_Voice(ent, who, SAY_TELL, VOICECHAT_KILLINSULT, qfalse); // and I killed them with something else
-				}
-
-				if (!(ent->r.svFlags & SVF_BOT)) {
-					G_Voice(ent, ent, SAY_TELL, VOICECHAT_KILLINSULT, qfalse);
 				}
 			}
 
@@ -1267,10 +1285,6 @@ static void Cmd_VoiceTaunt_f(gentity_t *ent) {
 				if (who->player->rewardTime > level.time) {
 					if (!(who->r.svFlags & SVF_BOT)) {
 						G_Voice(ent, who, SAY_TELL, VOICECHAT_PRAISE, qfalse);
-					}
-
-					if (!(ent->r.svFlags & SVF_BOT)) {
-						G_Voice(ent, ent, SAY_TELL, VOICECHAT_PRAISE, qfalse);
 					}
 
 					return;
@@ -1330,12 +1344,7 @@ void Cmd_GameCommand_f(gentity_t *ent) {
 		return;
 	}
 
-	G_LogPrintf("tell: %s to %s: %s\n", ent->player->pers.netname, target->player->pers.netname, gc_orders[order]);
 	G_Say(ent, target, SAY_TELL, gc_orders[order]);
-	// don't tell to the player self if it was already directed to this player also don't send the chat back to a bot
-	if (ent != target && !(ent->r.svFlags & SVF_BOT)) {
-		G_Say(ent, ent, SAY_TELL, gc_orders[order]);
-	}
 }
 
 /*
@@ -1537,6 +1546,7 @@ Cmd_CallTeamVote_f
 */
 void Cmd_CallTeamVote_f(gentity_t *ent) {
 	int i, team, cs_offset;
+	char *c;
 	char arg1[MAX_STRING_TOKENS];
 	char arg2[MAX_STRING_TOKENS];
 
@@ -1580,10 +1590,16 @@ void Cmd_CallTeamVote_f(gentity_t *ent) {
 
 		trap_Argv(i, &arg2[strlen(arg2)], sizeof(arg2) - strlen(arg2));
 	}
-
-	if (strchr(arg1, ';') || strchr(arg2, ';')) {
-		trap_SendServerCommand(ent - g_entities, "print \"Invalid vote string.\n\"");
-		return;
+	// check for command separators in arg2
+	for (c = arg2; *c; ++c) {
+		switch (*c) {
+			case '\n':
+			case '\r':
+			case ';':
+				trap_SendServerCommand(ent - g_entities, "print \"Invalid vote string.\n\"");
+				return;
+			break;
+		}
 	}
 
 	if (!Q_stricmp(arg1, "leader")) {

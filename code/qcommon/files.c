@@ -2615,7 +2615,8 @@ int FS_GetFileList(const char *path, const char *extension, char *listbuf, int b
 
 	if (Q_stricmp(extension, "$demos") == 0) {
 		// strip extension from list items
-		int extLength = strlen(DEMOEXT) +1;
+		int extLength = strlen(DEMOEXT) + 1;
+
 		pFiles = FS_ListFiles(path, DEMOEXT, &nFiles);
 
 		for (i =0; i < nFiles; i++) {
@@ -2636,15 +2637,17 @@ int FS_GetFileList(const char *path, const char *extension, char *listbuf, int b
 	}
 
 	if (Q_stricmp(extension, "$videos") == 0) {
-		const char *extensions[] = { "RoQ", "roq" };
+		const char *extensions[] = {"RoQ", "roq"};
 		int extNamesSize = ARRAY_LEN(extensions);
+
 		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, qfalse);
-	} else if(Q_stricmp(extension, "$images") == 0) {
-		const char *extensions[] = { "png", "tga", "jpg", "jpeg", "ftx", "dds", "pcx", "bmp" };
+	} else if (Q_stricmp(extension, "$images") == 0) {
+		const char *extensions[] = {"png", "tga", "jpg", "jpeg", "ftx", "dds", "pcx", "bmp"};
 		int extNamesSize = ARRAY_LEN(extensions);
+
 		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, qfalse);
-	} else if(Q_stricmp(extension, "$sounds") == 0) {
-		const char *extensions[] = { "wav"
+	} else if (Q_stricmp(extension, "$sounds") == 0) {
+		const char *extensions[] = {"wav"
 #ifdef USE_CODEC_VORBIS
 			, "ogg"
 #endif
@@ -2653,10 +2656,17 @@ int FS_GetFileList(const char *path, const char *extension, char *listbuf, int b
 #endif
 			};
 		int extNamesSize = ARRAY_LEN(extensions);
+
 		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, qfalse);
+	} else if (Q_stricmp(extension, "$fonts") == 0) {
+		const char *extensions[] = {"ttf", "otf", "ttc", "otc", "fon"};
+		int extNamesSize = ARRAY_LEN(extensions);
+
+		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, qfalse);
+	}
 	// Allow extension to be a list
 	// Example "RoQ;roq;jpg;wav"
-	} else if(strstr(extension, ";")) {
+	} else if (strstr(extension, ";")) {
 		#define MAX_FILE_LIST_EXTS 8
 		char buffer[MAX_QPATH];
 		const char *extensions[MAX_FILE_LIST_EXTS];

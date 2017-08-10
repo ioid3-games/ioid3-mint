@@ -2919,7 +2919,11 @@ void Com_Init(char *commandLine) {
 	CL_InitJoyRemapCommands();
 
 	com_fs_pure = Cvar_Get("fs_pure", "", CVAR_ROM);
-	com_homepath = Cvar_Get("com_homepath", "", CVAR_INIT);
+	com_homepath = Cvar_Get("com_homepath", HOMEPATH_NAME, CVAR_INIT);
+
+	if (!com_homepath->string[0]) {
+		Cvar_ForceReset("com_homepath");
+	}
 
 	FS_InitFilesystem();
 	Com_InitJournaling();
@@ -3080,7 +3084,25 @@ void Com_ReadFromPipe(void) {
 		}
 	}
 }
+#ifdef ZONE_DEBUG
+/*
+=======================================================================================================================================
+Com_RefMalloc
+=======================================================================================================================================
+*/
+void *Com_RefMalloc(int size, char *label, char *file, int line) {
+	return Z_TagMallocDebug(size, TAG_RENDERER, label, file, line);
+}
 
+/*
+=======================================================================================================================================
+Com_RefFree
+=======================================================================================================================================
+*/
+void Com_RefFree(void *pointer, char *label, char *file, int line) {
+	Z_FreeDebug(pointer, label, file, line);
+}
+#else
 /*
 =======================================================================================================================================
 Com_RefMalloc
@@ -3098,7 +3120,7 @@ Com_RefFree
 void Com_RefFree(void *pointer) {
 	Z_Free(pointer);
 }
-
+#endif
 /*
 =======================================================================================================================================
 Com_ScaledMilliseconds
@@ -3210,8 +3232,13 @@ void Com_InitRef(refimport_t *ri) {
 	ri->Printf = Com_RefPrintf;
 	ri->Error = Com_Error;
 	ri->Milliseconds = Com_ScaledMilliseconds;
+#ifdef ZONE_DEBUG
+	ri->MallocDebug = Com_RefMalloc;
+	ri->FreeDebug = Com_RefFree;
+#else
 	ri->Malloc = Com_RefMalloc;
 	ri->Free = Com_RefFree;
+#endif
 #ifdef HUNK_DEBUG
 	ri->Hunk_AllocDebug = Hunk_AllocDebug;
 #else

@@ -110,13 +110,13 @@ void Touch_Multi(gentity_t *self, gentity_t *other, trace_t *trace) {
 		return;
 	}
 
-	multi_trigger(self, other);
+	multi_trigger( self, other );
 }
 
-/*QUAKED trigger_multiple (.5 .5 .5) ?
+/*QUAKED trigger_multiple (.5 .5 .5) ? RED_ONLY BLUE_ONLY
 "wait" : Seconds between triggerings, 0.5 default, -1 = one time only.
-"random" wait variance, default is 0
-Variable sized repeatable trigger. Must be targeted at one or more entities.
+"random"	wait variance, default is 0
+Variable sized repeatable trigger.  Must be targeted at one or more entities.
 so, the basic time between firing is a random time between
 (wait - random) and (wait + random)
 */
