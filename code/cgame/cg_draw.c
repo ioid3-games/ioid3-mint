@@ -291,13 +291,12 @@ static void CG_DrawStatusBarHead(float x) {
 
 	CG_DrawHead(x, 480 - size, size, size, cg.cur_ps->playerNum, angles);
 }
-#endif // MISSIONPACK_HUD
+
 /*
 =======================================================================================================================================
 CG_DrawStatusBarFlag
 =======================================================================================================================================
 */
-#ifndef MISSIONPACK_HUD
 static void CG_DrawStatusBarFlag(float x, int team) {
 	CG_DrawFlagModel(x, 480 - ICON_SIZE, ICON_SIZE, ICON_SIZE, team, qfalse);
 }
@@ -440,7 +439,7 @@ static void CG_DrawStatusBar(void) {
 		}
 	}
 }
-#endif // MISSIONPACK_HUD
+#endif
 /*
 =======================================================================================================================================
 
@@ -499,6 +498,7 @@ static float CG_DrawAttacker(float y) {
 
 	info = CG_ConfigString(CS_PLAYERS + playerNum);
 	name = Info_ValueForKey(info, "n");
+
 	y += size;
 	color[0] = color[1] = color[2] = 1;
 	color[3] = 0.5f;
@@ -541,7 +541,7 @@ static float CG_DrawFPS(float y) {
 	if (cg.viewport != 0) {
 		return y;
 	}
-	// don't use serverTime, because that will be drifting to correct for internet lag changes, timescales, timedemos, etc
+	// don't use serverTime, because that will be drifting to correct for internet lag changes, timescales, timedemos, etc.
 	t = trap_Milliseconds();
 	frameTime = t - previous;
 	previous = t;
@@ -627,7 +627,7 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 	}
 
 	if (cg.time - sortedTeamPlayersTime[team] > 5000) {
-		// Info is too out of date.
+		// info is too out of date.
 		return y;
 	}
 
@@ -784,7 +784,6 @@ static float CG_DrawTeamOverlay(float y, qboolean right, qboolean upper) {
 	}
 
 	return ret_y;
-//#endif
 }
 
 /*
@@ -1014,7 +1013,7 @@ static float CG_DrawScores(float y) {
 				color[2] = 0.5f;
 				color[3] = 0.33f;
 
-				CG_FillRect(x, y - 4,  w, scoreHeight, color);
+				CG_FillRect(x, y - 4, w, scoreHeight, color);
 			}
 
 			CG_DrawBigString(x + 4, y, s, 1.0F);
@@ -1030,14 +1029,12 @@ static float CG_DrawScores(float y) {
 
 	return y1 - 8;
 }
-#endif // MISSIONPACK_HUD
 
 /*
 =======================================================================================================================================
 CG_DrawPowerups
 =======================================================================================================================================
 */
-#ifndef MISSIONPACK_HUD
 static float CG_DrawPowerups(float y) {
 	int sorted[MAX_POWERUPS];
 	int sortedTime[MAX_POWERUPS];
@@ -1135,8 +1132,7 @@ static float CG_DrawPowerups(float y) {
 
 	return y;
 }
-#endif // MISSIONPACK_HUD
-#ifndef MISSIONPACK_HUD
+
 /*
 =======================================================================================================================================
 CG_DrawLowerRight
@@ -1157,8 +1153,7 @@ static void CG_DrawLowerRight(void) {
 
 	CG_DrawPowerups(y);
 }
-#endif // MISSIONPACK_HUD
-#ifndef MISSIONPACK_HUD
+
 /*
 =======================================================================================================================================
 CG_DrawPickupItem
@@ -1189,8 +1184,7 @@ static int CG_DrawPickupItem(int y) {
 
 	return y;
 }
-#endif // MISSIONPACK_HUD
-#ifndef MISSIONPACK_HUD
+
 /*
 =======================================================================================================================================
 CG_DrawLowerLeft
@@ -1209,13 +1203,12 @@ static void CG_DrawLowerLeft(void) {
 
 	CG_DrawPickupItem(y);
 }
-#endif // MISSIONPACK_HUD
+
 /*
 =======================================================================================================================================
 CG_DrawTeamInfo
 =======================================================================================================================================
 */
-#ifndef MISSIONPACK_HUD
 static void CG_DrawTeamInfo(void) {
 	int h;
 	int i;
@@ -1276,14 +1269,12 @@ static void CG_DrawTeamInfo(void) {
 		}
 	}
 }
-#endif // MISSIONPACK_HUD
 
 /*
 =======================================================================================================================================
 CG_DrawHoldableItem
 =======================================================================================================================================
 */
-#ifndef MISSIONPACK_HUD
 static void CG_DrawHoldableItem(void) {
 	int value;
 
@@ -1296,8 +1287,7 @@ static void CG_DrawHoldableItem(void) {
 		CG_DrawPic(640 - ICON_SIZE, (SCREEN_HEIGHT - ICON_SIZE) / 2, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
 	}
 }
-#endif // MISSIONPACK_HUD
-#ifdef MISSIONPACK
+
 /*
 =======================================================================================================================================
 CG_DrawPersistantPowerup
@@ -1316,7 +1306,7 @@ static void CG_DrawPersistantPowerup(void) {
 		CG_DrawPic(640 - ICON_SIZE, (SCREEN_HEIGHT - ICON_SIZE) / 2 - ICON_SIZE, ICON_SIZE, ICON_SIZE, cg_items[value].icon);
 	}
 }
-#endif // MISSIONPACK_HUD
+#endif
 #endif // MISSIONPACK
 /*
 =======================================================================================================================================
@@ -1771,11 +1761,10 @@ static void CG_DrawGlobalCenterString(void) {
 /*
 =======================================================================================================================================
 
-CROSSHAIR
+	CROSSHAIR
 
 =======================================================================================================================================
 */
-
 
 /*
 =======================================================================================================================================
@@ -1964,7 +1953,6 @@ static void CG_DrawThirdPersonCrosshair(void) {
 
 	if (f > 0 && f < ITEM_BLOB_TIME) {
 		f /= ITEM_BLOB_TIME;
-
 		w *= (1 + f);
 	}
 
@@ -2161,8 +2149,6 @@ static void CG_DrawShaderInfo(void) {
 	CG_AdjustFrom640(&x, &y, &width, &height);
 	trap_R_DrawStretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
 }
-
-//==============================================================================
 
 /*
 =======================================================================================================================================
@@ -2412,7 +2398,7 @@ CG_DrawIntermission
 static void CG_DrawIntermission(void) {
 //	int key;
 #ifdef MISSIONPACK_HUD
-	// if(cg_singlePlayer.integer) {
+	//if (cg_singlePlayer.integer) {
 	//	CG_DrawCenterString();
 	//	return;
 	//}

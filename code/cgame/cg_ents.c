@@ -209,6 +209,7 @@ void CG_AddLightstyle(centity_t *cent) {
 	// ydnar: if the dlight has angles, then it is a directional global dlight
 	if (cent->currentState.angles[0] || cent->currentState.angles[1] || cent->currentState.angles[2]) {
 		vec3_t normal;
+
 		// ZTM: NOTE: Lightning on ET's Radar map is too bright with multiple light passes (enabled with r_dynamiclight 2 in vanilla ET, currently always done in Spearmint) so scale the light values down.
 		lightval *= 0.25f;
 		AngleVectors(cent->currentState.angles, normal, NULL, NULL);
@@ -1049,8 +1050,8 @@ static void CG_Corona(centity_t *cent) {
 		if (dot >= -0.6) { // assumes ~90 deg fov (SA) changed value to 0.6 (screen corner at 90 fov)
 			behind = qtrue; // use the dot to at least do trivial removal of those behind you.
 		}
-		// yeah, I could calc side planes to clip against, but would that be worth it? (much better than dumb dot>= thing?)
-		//	CG_Printf("dot: %f\n", dot);
+		// yeah, I could calc side planes to clip against, but would that be worth it? (much better than dumb dot >= thing?)
+		//CG_Printf("dot: %f\n", dot);
 	}
 
 	if (!visible && !behind && !toofar) {

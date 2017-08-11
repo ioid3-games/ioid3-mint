@@ -586,7 +586,7 @@ void CG_AddKamikaze(localEntity_t *le) {
 
 	if (t > KAMI_SHOCKWAVE_STARTTIME && t < KAMI_SHOCKWAVE_ENDTIME) {
 		if (!(le->leFlags & LEF_SOUND1)) {
-//			trap_S_StartSound(re->origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.kamikazeExplodeSound);
+			//trap_S_StartSound(re->origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.kamikazeExplodeSound);
 			trap_S_StartLocalSound(cgs.media.kamikazeExplodeSound, CHAN_AUTO);
 			le->leFlags |= LEF_SOUND1;
 		}
@@ -811,6 +811,7 @@ void CG_AddScorePlum(localEntity_t *le) {
 
 	VectorCopy(origin, re->origin);
 	VectorCopy(origin, re->oldorigin);
+
 	AxisCopy(cg.refdef.viewaxis, re->axis);
 	CG_SurfaceText(re, &cgs.media.numberFont, 1, va("%d", score), 0, 0, 0.4f, qfalse);
 }
@@ -827,7 +828,6 @@ void CG_BubbleThink(localEntity_t *le) {
 
 	// calculate new position
 	BG_EvaluateTrajectory(&le->pos, cg.time, newOrigin);
-
 	// trace a line from previous position to new position
 	CG_Trace(&trace, le->refEntity.origin, NULL, NULL, newOrigin, -1, CONTENTS_SOLID);
 

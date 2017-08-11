@@ -394,42 +394,35 @@ typedef struct {
 typedef struct weaponInfo_s {
 	qboolean registered;
 	gitem_t *item;
-
-	qhandle_t handsModel;			// the hands don't actually draw, they just position the weapon
+	qhandle_t handsModel;		// the hands don't actually draw, they just position the weapon
 	qhandle_t weaponModel;
 	qhandle_t barrelModel;
 	qhandle_t flashModel;
-
 	vec3_t weaponMidpoint;		// so it will rotate centered instead of by tag
-
 	float flashDlight;
 	vec3_t flashDlightColor;
-	sfxHandle_t flashSound[4];		// fast firing weapons randomly choose
-
+	sfxHandle_t flashSound[4];	// fast firing weapons randomly choose
 	qhandle_t weaponIcon;
 	qhandle_t ammoIcon;
-
 	qhandle_t ammoModel;
-
 	qhandle_t missileModel;
 	sfxHandle_t missileSound;
 	void (*missileTrailFunc)(centity_t *, const struct weaponInfo_s *wi);
 	float missileDlight;
 	vec3_t missileDlightColor;
-
 	void (*ejectBrassFunc)(centity_t *);
-
 	float trailRadius;
 	float wiTrailTime;
-
 	sfxHandle_t readySound;
 	sfxHandle_t firingSound;
 } weaponInfo_t;
 
+/**************************************************************************************************************************************
 
-// each IT_* item has an associated itemInfo_t
-// that constains media references necessary to present the
-// item and its effects
+	Each IT_* item has an associated itemInfo_t that constains media references necessary to present the item and its effects.
+
+**************************************************************************************************************************************/
+
 typedef struct {
 	qboolean registered;
 	qhandle_t models[MAX_ITEM_MODELS];
@@ -437,38 +430,31 @@ typedef struct {
 } itemInfo_t;
 
 
-#define MAX_SKULLTRAIL		10
+#define MAX_SKULLTRAIL 10
 
 typedef struct {
 	vec3_t positions[MAX_SKULLTRAIL];
 	int numpositions;
 } skulltrail_t;
 
-
 typedef enum {
 	LEAD_NONE,
-
 	LEAD_LOST,
 	LEAD_TIED,
 	LEAD_TAKEN,
-
 	LEAD_IGNORE // a player played a reward sound, so no lead change sfx this frame.
 } leadChange_t;
 
+#define MAX_REWARDSTACK 10
+#define MAX_SOUNDBUFFER 20
 
-#define MAX_REWARDSTACK		10
-#define MAX_SOUNDBUFFER		20
-
-//======================================================================
-
-typedef struct
-{
+typedef struct {
   int time;
   int length;
 } consoleLine_t;
 
 #define MAX_CONSOLE_LINES 4
-#define MAX_CONSOLE_TEXT  (256 * MAX_CONSOLE_LINES)
+#define MAX_CONSOLE_TEXT (256 * MAX_CONSOLE_LINES)
 
 /**************************************************************************************************************************************
 
@@ -477,76 +463,58 @@ typedef struct
 
 **************************************************************************************************************************************/
 
-#define MAX_PREDICTED_EVENTS	16
- 
+#define MAX_PREDICTED_EVENTS 16
+
 typedef struct {
-
 	int playerNum;
-
 	// prediction state
-	qboolean hyperspace;				// true if prediction has hit a trigger_teleport
+	qboolean hyperspace;			// true if prediction has hit a trigger_teleport
 	playerState_t predictedPlayerState;
 	centity_t predictedPlayerEntity;
 	qboolean validPPS;				// clear until the first call to CG_PredictPlayerState
 	int predictedErrorTime;
 	vec3_t predictedError;
-
 	int eventSequence;
 	int predictableEvents[MAX_PREDICTED_EVENTS];
-
 	float stepChange;				// for stair up smoothing
 	int stepTime;
-
 	float duckChange;				// for duck viewheight smoothing
 	int duckTime;
-
 	float landChange;				// for landing hard
 	int landTime;
-
 	// set by joystick events
 	int joystickAxis[MAX_JOYSTICK_AXIS];
-	byte		joystickHats[MAX_JOYSTICK_AXIS];
-
+	byte joystickHats[MAX_JOYSTICK_AXIS];
 	// used for input state sent to server
 	int weaponSelect;
-
 	// the client maintains its own idea of view angles, which are
 	// sent to the server each frame.  It is cleared to 0 upon entering each level.
 	// the server sends a delta each frame which is added to the locally
 	// tracked view angles to account for standing on rotating objects,
 	// and teleport direction changes
 	vec3_t viewangles;
-
-
 	// centerprinting
 	int centerPrintTime;
 	float centerPrintCharScale;
 	int centerPrintY;
 	char centerPrint[1024];
-
 	// low ammo warning state
-	int lowAmmoWarning;		// 1 = low, 2 = empty
-
+	int lowAmmoWarning; // 1 = low, 2 = empty
 	// crosshair player ID
 	int crosshairPlayerNum;
 	int crosshairPlayerTime;
-
 	// powerup active flashing
 	int powerupActive;
 	int powerupTime;
-
 	// attacking player
 	int attackerTime;
-
 #ifdef MISSIONPACK
 	// voice chat head
 	int voiceTime;
 	int currentVoicePlayerNum;
-
 	// proxy mine warning
 	int proxTime;
 #endif
-
 	// orders
 	int currentOrder;
 	qboolean orderPending;
@@ -555,32 +523,26 @@ typedef struct {
 	int acceptTask;
 	int acceptLeader;
 	char acceptVoice[MAX_NAME_LENGTH];
-
 	// reward medals
 	int rewardStack;
 	int rewardTime;
 	int rewardCount[MAX_REWARDSTACK];
 	qhandle_t rewardShader[MAX_REWARDSTACK];
 	qhandle_t rewardSound[MAX_REWARDSTACK];
-
 	// zoom key
 	qboolean zoomed;
 	int zoomTime;
 	float zoomSensitivity;
-
 	int itemPickup;
 	int itemPickupTime;
-	int itemPickupBlendTime;	// the pulse around the crosshair is timed seperately
-
+	int itemPickupBlendTime; // the pulse around the crosshair is timed separately
 	int weaponSelectTime;
 	int weaponAnimation;
 	int weaponAnimationTime;
 	int weaponToggledFrom;
-
 	// blend blobs
 	float damageTime;
 	float damageX, damageY, damageValue;
-
 	// status bar head
 	float headEndPitch;
 	float headEndYaw;
@@ -588,77 +550,66 @@ typedef struct {
 	float headStartPitch;
 	float headStartYaw;
 	int headStartTime;
-
 	// view movement
 	float v_dmg_time;
 	float v_dmg_pitch;
 	float v_dmg_roll;
-
-	vec3_t kick_angles;	// weapon kicks
+	vec3_t kick_angles;						// weapon kicks
 	vec3_t kick_origin;
-
-	qboolean renderingThirdPerson;		// during deaths, chasecams, etc
-
+	qboolean renderingThirdPerson;			// during deaths, chasecams, etc.
 	// first person gun flash origin
 	vec3_t flashOrigin;
-
-	//qboolean cameraMode;		// if rendering from a loaded camera
-
+	//qboolean cameraMode;					// if rendering from a loaded camera
 	// orbit camera around player
-	float cameraOrbit;			// angles per second to orbit, forces third person.
+	float cameraOrbit;						// angles per second to orbit, forces third person.
 	float cameraOrbitAngle;
 	float cameraOrbitRange;
-
 	vec3_t lastViewPos;
 	vec3_t lastViewAngles;
-
 	// scoreboard
 	qboolean showScores;
 	qboolean scoreBoardShowing;
 	int scoreFadeTime;
 	char killerName[MAX_NAME_LENGTH];
 	int selectedScore;
-
 	// console
-	char consoleText[ MAX_CONSOLE_TEXT ];
-	consoleLine_t consoleLines[ MAX_CONSOLE_LINES ];
+	char consoleText[MAX_CONSOLE_TEXT];
+	consoleLine_t consoleLines[MAX_CONSOLE_LINES];
 	int numConsoleLines;
-
 } localPlayer_t;
  
-#define MAX_SPAWN_VARS          64
-#define MAX_SPAWN_VARS_CHARS    2048
+#define MAX_SPAWN_VARS 64
+#define MAX_SPAWN_VARS_CHARS 2048
 
 typedef struct {
 	connstate_t connState;
-	qboolean connected;			// connected to a server
-	int clientFrame;		// incremented each frame
-	int cinematicHandle;	// handle for fullscreen cinematic
+	qboolean connected;						// connected to a server
+	int clientFrame;						// incremented each frame
+	int cinematicHandle;					// handle for fullscreen cinematic
 	qboolean demoPlayback;
-	qboolean levelShot;			// taking a level menu screenshot
+	qboolean levelShot;						// taking a level menu screenshot
 	int deferredPlayerLoading;
-	qboolean loading;			// don't defer players at initial startup
-	qboolean intermissionStarted;	// don't play voice rewards, because game will end shortly
+	qboolean loading;						// don't defer players at initial startup
+	qboolean intermissionStarted;			// don't play voice rewards, because game will end shortly
 	// there are only one or two snapshot_t that are relevent at a time
-	int latestSnapshotNum;	// the number of snapshots the client system has received
-	int latestSnapshotTime;	// the time from latestSnapshotNum, so we don't need to read the snapshot yet
-	snapshot_t *snap;				// cg.snap->serverTime <= cg.time
-	snapshot_t *nextSnap;			// cg.nextSnap->serverTime > cg.time, or NULL
+	int latestSnapshotNum;					// the number of snapshots the client system has received
+	int latestSnapshotTime;					// the time from latestSnapshotNum, so we don't need to read the snapshot yet
+	snapshot_t *snap;						// cg.snap->serverTime <= cg.time
+	snapshot_t *nextSnap;					// cg.nextSnap->serverTime > cg.time, or NULL
 	snapshot_t activeSnapshots[2];
-	float frameInterpolation;	// (float)(cg.time - cg.frame->serverTime) / (cg.nextFrame->serverTime - cg.frame->serverTime)
+	float frameInterpolation;				// (float)(cg.time - cg.frame->serverTime) / (cg.nextFrame->serverTime - cg.frame->serverTime)
 	qboolean thisFrameTeleport;
 	qboolean nextFrameTeleport;
 	int realTime;
 	int realFrameTime;
-	int frametime;		// cg.time - cg.oldTime
-	int time;			// this is the server time value that the client
-								// is rendering at.
-	int oldTime;		// time at last frame, used for missile trails and prediction checking
-	int physicsTime;	// either cg.snap->time or cg.nextSnap->time
+	int frametime;							// cg.time - cg.oldTime
+	int time;								// this is the server time value that the client is rendering at.
+	int oldTime;							// time at last frame, used for missile trails and prediction checking
+	int physicsTime;						// either cg.snap->time or cg.nextSnap->time
 	leadChange_t bestLeadChange;
-	int timelimitWarnings;	// 5 min, 1 min, overtime
+	int timelimitWarnings;					// 5 min, 1 min, overtime
 	int fraglimitWarnings;
-	qboolean mapRestart;			// set on a map restart to set back the weapon
+	qboolean mapRestart;					// set on a map restart to set back the weapon
 	// auto rotating items
 	vec3_t autoAngles;
 	vec3_t autoAxis[3];
@@ -666,16 +617,16 @@ typedef struct {
 	vec3_t autoAxisFast[3];
 	// view rendering
 	refdef_t refdef;
-	vec3_t refdefViewAngles;		// will be converted to refdef.viewaxis
-	float viewWeaponFov;			// either range checked cg_weaponFov or forced value
+	vec3_t refdefViewAngles;				// will be converted to refdef.viewaxis
+	float viewWeaponFov;					// either range checked cg_weaponFov or forced value
 	// first person view pos, set even when rendering third person view
 	vec3_t firstPersonViewOrg;
 	vec3_t firstPersonViewAngles;
 	vec3_t firstPersonViewAxis[3];
 	// spawn variables
-	qboolean spawning;                  // the CG_Spawn*() functions are valid
+	qboolean spawning;						// the CG_Spawn*() functions are valid
 	int numSpawnVars;
-	char *spawnVars[MAX_SPAWN_VARS][2];  // key/value pairs
+	char *spawnVars[MAX_SPAWN_VARS][2];		// key/value pairs
 	int numSpawnVarChars;
 	char spawnVarChars[MAX_SPAWN_VARS_CHARS];
 	int spawnEntityOffset;
@@ -695,7 +646,7 @@ typedef struct {
 	int viewportY;
 	int viewportWidth;
 	int viewportHeight;
-	qboolean singleCamera; // Rending multiple players using one viewport
+	qboolean singleCamera;					// Rending multiple players using one viewport
 	// information screen text during loading
 	char infoScreenText[MAX_STRING_CHARS];
 	qboolean lightstylesInited;
@@ -708,7 +659,6 @@ typedef struct {
 	char messageCommand[32];
 	char messagePrompt[64];
 	mfield_t messageField;
-
 	// scoreboard
 	int scoresRequestTime;
 	int numScores;
@@ -717,9 +667,9 @@ typedef struct {
 	score_t scores[MAX_CLIENTS];
 	clientList_t readyPlayers;
 #ifdef MISSIONPACK
-	char spectatorList[MAX_STRING_CHARS];		// list of names
-	int spectatorTime;							// last time offset
-	float spectatorOffset;						// current offset from start
+	char spectatorList[MAX_STRING_CHARS];	// list of names
+	int spectatorTime;						// last time offset
+	float spectatorOffset;					// current offset from start
 #endif
 	// sound buffer mainly for announcer sounds
 	int soundBufferIn;
@@ -1114,7 +1064,7 @@ typedef struct {
 	int scores1, scores2;			// from configstrings
 	int redflag, blueflag;			// flag status from configstrings
 	int flagStatus;
-	qboolean  newHud;
+	qboolean newHud;
 	// locally derived information from gamestate
 	qhandle_t gameModels[MAX_MODELS];
 	sfxHandle_t gameSounds[MAX_SOUNDS];
@@ -1311,16 +1261,12 @@ extern vmCvar_t cg_currentSelectedPlayerName[MAX_SPLITVIEW];
 const char *CG_ConfigString(int index);
 const char *CG_Argv(int arg);
 char *CG_Cvar_VariableString(const char *var_name);
-
 int CG_MaxSplitView(void);
-
 void QDECL CG_DPrintf(const char *msg, ...) __attribute__ ((format (printf, 1, 2)));
 void QDECL CG_Printf(const char *msg, ...) __attribute__ ((format (printf, 1, 2)));
 void QDECL CG_Error(const char *msg, ...) __attribute__ ((noreturn, format (printf, 1, 2)));
-
 void QDECL CG_NotifyPrintf(int localPlayerNum, const char *msg, ...) __attribute__ ((format (printf, 2, 3)));
 void QDECL CG_NotifyBitsPrintf(int localPlayerNum, const char *msg, ...) __attribute__ ((format (printf, 2, 3)));
-
 void CG_LocalPlayerAdded(int localPlayerNum, int playerNum);
 void CG_LocalPlayerRemoved(int localPlayerNum);
 void CG_StartMusic(void);
@@ -1530,27 +1476,16 @@ void CG_GrappleTrail(centity_t *ent, const weaponInfo_t *wi);
 void CG_AddViewWeapon (playerState_t *ps);
 void CG_AddPlayerWeapon(refEntity_t *parent, playerState_t *ps, centity_t *cent, int team);
 void CG_DrawWeaponSelect(void);
-
 void CG_OutOfAmmoChange(int localPlayerNum); // should this be in pmove?
-
-//
 // cg_marks.c
-//
 void CG_InitMarkPolys(void);
 void CG_AddMarks(void);
-void CG_ImpactMark(qhandle_t markShader, 
-				    const vec3_t origin, const vec3_t dir, float orientation, float r, float g, float b, float a, qboolean alphaFade, float radius, qboolean temporary);
-
-//
+void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, float orientation, float r, float g, float b, float a, qboolean alphaFade, float radius, qboolean temporary);
 // cg_localents.c
-//
 void CG_InitLocalEntities(void);
 localEntity_t *CG_AllocLocalEntity(void);
 void CG_AddLocalEntities(void);
-
-//
 // cg_effects.c
-//
 localEntity_t *CG_SmokePuff(const vec3_t p, const vec3_t vel,  float radius, float r, float g, float b, float a, float duration, int startTime, int fadeInTime, int leFlags, qhandle_t hShader);
 void CG_BubbleTrail(vec3_t start, vec3_t end, float spacing);
 int CG_SpawnBubbles(localEntity_t **bubbles, vec3_t origin, float baseSize, int numBubbles);
@@ -1721,4 +1656,3 @@ void IN_Button14Down(int localPlayerNum);
 void IN_Button14Up(int localPlayerNum);
 // cg_unlagged.c
 void CG_DrawBBox(centity_t *cent, float *color);
-

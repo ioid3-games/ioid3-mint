@@ -437,15 +437,21 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 			vert[2] = &bspDrawVerts[s->firstVert + bspDrawIndexes[s->firstIndex + t + 2]];
 
 			if (s->surfaceType == MST_PLANAR && VectorCompare(vert[0]->normal, vert[1]->normal) && VectorCompare(vert[1]->normal, vert[2]->normal)) {
-				VectorSubtract(vert[0]->normal, buildPlane->normal, normdiff); if (VectorLength(normdiff) >= normalEpsilon) {
+				VectorSubtract(vert[0]->normal, buildPlane->normal, normdiff);
+
+				if (VectorLength(normdiff) >= normalEpsilon) {
 					continue;
 				}
 
-				VectorSubtract(vert[1]->normal, buildPlane->normal, normdiff); if (VectorLength(normdiff) >= normalEpsilon) {
+				VectorSubtract(vert[1]->normal, buildPlane->normal, normdiff);
+
+				if (VectorLength(normdiff) >= normalEpsilon) {
 					continue;
 				}
 
-				VectorSubtract(vert[2]->normal, buildPlane->normal, normdiff); if (VectorLength(normdiff) >= normalEpsilon) {
+				VectorSubtract(vert[2]->normal, buildPlane->normal, normdiff);
+
+				if (VectorLength(normdiff) >= normalEpsilon) {
 					continue;
 				}
 			} else {
@@ -461,15 +467,15 @@ static int CMod_GetBestSurfaceNumForBrushSide(const cbrushside_t *buildSide) {
 				}
 			}
 
-			if (abs(DotProduct(vert[0]->xyz, buildPlane->normal) - buildPlane->dist) >= distanceEpsilon) {
+			if (fabsf(DotProduct(vert[0]->xyz, buildPlane->normal) - buildPlane->dist) >= distanceEpsilon) {
 				continue;
 			}
 
-			if (abs(DotProduct(vert[1]->xyz, buildPlane->normal) - buildPlane->dist) >= distanceEpsilon) {
+			if (fabsf(DotProduct(vert[1]->xyz, buildPlane->normal) - buildPlane->dist) >= distanceEpsilon) {
 				continue;
 			}
 
-			if (abs(DotProduct(vert[2]->xyz, buildPlane->normal) - buildPlane->dist) >= distanceEpsilon) {
+			if (fabsf(DotProduct(vert[2]->xyz, buildPlane->normal) - buildPlane->dist) >= distanceEpsilon) {
 				continue;
 			}
 			// Okay. Correct surface type, correct shader, correct plane. Let's start with the business...

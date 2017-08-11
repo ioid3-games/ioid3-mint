@@ -319,7 +319,7 @@ void CG_DrawPic(float x, float y, float width, float height, qhandle_t hShader) 
 =======================================================================================================================================
 CG_DrawNamedPic
 
-Coordinates are 640*480 virtual values.
+Coordinates are 640 * 480 virtual values.
 =======================================================================================================================================
 */
 void CG_DrawNamedPic(float x, float y, float width, float height, const char *picname) {

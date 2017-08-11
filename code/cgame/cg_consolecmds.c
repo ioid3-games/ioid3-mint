@@ -182,7 +182,7 @@ static void CG_Viewpos_f(int localPlayerNum) {
 
 /*
 =======================================================================================================================================
-CG_ScoresDown
+CG_ScoresDown_f
 =======================================================================================================================================
 */
 static void CG_ScoresDown_f(int localPlayerNum) {
@@ -1096,14 +1096,14 @@ static playerConsoleCommand_t playerCommands[] = {
 	{"+button8", IN_Button8Down, 0},
 	{"-button8", IN_Button8Up, 0},
 	{"+button9", IN_Button9Down, 0},
-	{ "-button9", IN_Button9Up, 0 },
-	{ "+forward",IN_ForwardDown, 0 },
-	{ "-forward",IN_ForwardUp, 0 },
-	{ "+gesture",IN_Button3Down, 0 },
-	{ "-gesture",IN_Button3Up, 0 },
-	{ "+left",IN_LeftDown, 0 },
-	{ "-left",IN_LeftUp, 0 },
-	{ "+lookdown", IN_LookdownDown, 0 },
+	{"-button9", IN_Button9Up, 0},
+	{"+forward",IN_ForwardDown, 0},
+	{"-forward",IN_ForwardUp, 0},
+	{"+gesture",IN_Button3Down, 0},
+	{"-gesture",IN_Button3Up, 0},
+	{"+left",IN_LeftDown, 0},
+	{"-left",IN_LeftUp, 0},
+	{"+lookdown", IN_LookdownDown, 0},
 	{"-lookdown", IN_LookdownUp, 0},
 	{"+lookup", IN_LookupDown, 0},
 	{"-lookup", IN_LookupUp, 0},
@@ -1122,14 +1122,14 @@ static playerConsoleCommand_t playerCommands[] = {
 	{"+scores", CG_ScoresDown_f, CMD_INGAME},
 	{"-scores", CG_ScoresUp_f, CMD_INGAME},
 	{"+speed", IN_SpeedDown, 0},
-	{ "-speed", IN_SpeedUp, 0 },
-	{ "+strafe", IN_StrafeDown, 0 },
-	{ "-strafe", IN_StrafeUp, 0 },
-	{ "+useitem",IN_Button2Down, 0 },
-	{ "-useitem",IN_Button2Up, 0 },
-	{ "+zoom", CG_ZoomDown_f, CMD_INGAME },
-	{ "-zoom", CG_ZoomUp_f, CMD_INGAME },
-	{ "centerecho", CG_CenterEcho_f, CMD_INGAME },
+	{"-speed", IN_SpeedUp, 0},
+	{"+strafe", IN_StrafeDown, 0},
+	{"-strafe", IN_StrafeUp, 0},
+	{"+useitem",IN_Button2Down, 0},
+	{"-useitem",IN_Button2Up, 0},
+	{"+zoom", CG_ZoomDown_f, CMD_INGAME},
+	{"-zoom", CG_ZoomUp_f, CMD_INGAME},
+	{"centerecho", CG_CenterEcho_f, CMD_INGAME},
 	{"centerview", IN_CenterView, 0},
 	{"tcmd", CG_TargetCommand_f, CMD_INGAME},
 	{"tell_target", CG_TellTarget_f, CMD_INGAME},

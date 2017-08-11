@@ -118,6 +118,7 @@ static void CG_ClipMoveToEntities(const vec3_t start, const vec3_t mins, const v
 
 		if (ent->collisionType == CT_SUBMODEL) {
 			cmodel = trap_CM_InlineModel(ent->modelindex);
+
 			VectorCopy(cent->lerpAngles, angles);
 			BG_EvaluateTrajectory(&cent->currentState.pos, cg.physicsTime, origin);
 		} else if (ent->collisionType == CT_CAPSULE) {

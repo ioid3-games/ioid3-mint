@@ -356,7 +356,7 @@ static void CG_ConfigStringModified(void) {
 		Q_strncpyz(cgs.voteString, str, sizeof(cgs.voteString));
 #ifdef MISSIONPACK
 		trap_S_StartLocalSound(cgs.media.voteNow, CHAN_ANNOUNCER);
-#endif //MISSIONPACK
+#endif // MISSIONPACK
 	} else if (num >= CS_TEAMVOTE_TIME && num <= CS_TEAMVOTE_TIME + 1) {
 		cgs.teamVoteTime[num-CS_TEAMVOTE_TIME] = atoi(str);
 		cgs.teamVoteModified[num-CS_TEAMVOTE_TIME] = qtrue;
@@ -938,7 +938,7 @@ void CG_PlayVoiceChat(bufferedVoiceChat_t *vchat) {
 
 /*
 =======================================================================================================================================
-CG_PlayBufferedVoieChats
+CG_PlayBufferedVoiceChats
 =======================================================================================================================================
 */
 void CG_PlayBufferedVoiceChats(void) {
@@ -1153,7 +1153,7 @@ static void CG_ServerCommand(void) {
 		start++;
 		cmd = CG_Argv(start);
 	// Commands for specific player begin "lc# "
-	} else if (cmd[0] == 'l' && cmd[1] =='c' && isdigit(cmd[2])) {
+	} else if (cmd[0] == 'l' && cmd[1] == 'c' && isdigit(cmd[2])) {
 		int num = atoi(&cmd[2]);
 
 		if (num > CG_MaxSplitView()) {
@@ -1168,7 +1168,7 @@ static void CG_ServerCommand(void) {
 
 	if (!strcmp(cmd, "cp")) {
 		// print to console as a single line
-		Q_strncpyz(text, CG_Argv(start+1), sizeof(text));
+		Q_strncpyz(text, CG_Argv(start + 1), sizeof(text));
 
 		if (strlen(text) > 1 && text[strlen(text) - 1] == '\n') {
 			text[strlen(text) - 1] = '\0';

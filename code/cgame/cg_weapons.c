@@ -295,7 +295,6 @@ void CG_RailTrail(playerInfo_t *pi, vec3_t start, vec3_t end) {
 			re->reType = RT_SPRITE;
 			re->radius = 1.1f;
 			re->customShader = cgs.media.railRingsShader;
-
 			re->shaderRGBA[0] = pi->color2[0] * 255;
 			re->shaderRGBA[1] = pi->color2[1] * 255;
 			re->shaderRGBA[2] = pi->color2[2] * 255;
@@ -1565,7 +1564,7 @@ void CG_WeaponToggle_f(int localPlayerNum) {
 
 	num = atoi(CG_Argv(1));
 
-	if (num < 1 || num > MAX_WEAPONS-1) {
+	if (num < 1 || num > MAX_WEAPONS - 1) {
 		return;
 	}
 
@@ -1580,7 +1579,7 @@ void CG_WeaponToggle_f(int localPlayerNum) {
 	}
 
 	if (!(ps->stats[STAT_WEAPONS] &(1 << weapon))) {
-		return;	 // don't have the weapon
+		return; // don't have the weapon
 	}
 
 	player->weaponSelect = weapon;
@@ -1607,7 +1606,7 @@ void CG_OutOfAmmoChange(int localPlayerNum) {
 	ps = &cg.snap->pss[localPlayerNum];
 	player->weaponSelectTime = cg.time;
 
-	for (i = MAX_WEAPONS-1; i > 0; i--) {
+	for (i = MAX_WEAPONS - 1; i > 0; i--) {
 		if (CG_WeaponSelectable(ps, i)) {
 			player->weaponSelect = i;
 			break;
@@ -1879,7 +1878,7 @@ void CG_MissileHitWall(int weapon, int playerNum, vec3_t origin, vec3_t dir, imp
 
 		CG_ImpactMark(mark, origin, dir, random() *360, color[0], color[1], color[2],1, alphaFade, radius, qfalse);
 	} else {
-		CG_ImpactMark(mark, origin, dir, random() *360, 1, 1, 1, 1, alphaFade, radius, qfalse);
+		CG_ImpactMark(mark, origin, dir, random() * 360, 1, 1, 1, 1, alphaFade, radius, qfalse);
 	}
 }
 
