@@ -203,7 +203,7 @@ typedef struct {
 	int numfiles;					// number of files in pk3
 	qboolean referenced;			// is pk3 referenced?
 	pakType_t pakType;				// is it a commercial pak?
-	int hashSize;					// hash table size(power of 2)
+	int hashSize;					// hash table size (power of 2)
 	fileInPack_t **hashTable;		// hash table
 	fileInPack_t *buildBuffer;	// buffer with the filenames etc.
 } pack_t;
@@ -211,9 +211,9 @@ typedef struct {
 typedef struct {
 	char fullpath[MAX_OSPATH];		// c:\quake3\baseq3
 									// c:\quake3\baseq3\mypak.pk3dir
-									// c:\quake3(with qpath "fonts")
+									// c:\quake3 (with qpath "fonts")
 	char gamedir[MAX_OSPATH];		// baseq3 or blank for fonts
-	char qpath[MAX_OSPATH];			// restrict looking for files that starts with path(i.e., "fonts")
+	char qpath[MAX_OSPATH];			// restrict looking for files that starts with path (i.e., "fonts")
 	qboolean virtualDir; 			// if true, don't treat as a base game directory because it's a .pk3dir or something.
 } directory_t;
 
@@ -762,7 +762,7 @@ long FS_SV_FOpenFileRead(const char *filename, fileHandle_t *fp) {
 	ospath = FS_BuildOSPath(fs_homepath->string, NULL, filename);
 
 	if (fs_debug->integer) {
-		Com_Printf("FS_SV_FOpenFileRead(fs_homepath): %s\n", ospath);
+		Com_Printf("FS_SV_FOpenFileRead (fs_homepath): %s\n", ospath);
 	}
 
 	fsh[f].handleFiles.file.o = Sys_FOpen(ospath, "rb");
@@ -1281,7 +1281,7 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 				if (!FS_FilenameCompare(pakFile->name, filename)) {
 					// found it!
 					// mark the pak as having been referenced
-					// shaders, txt, and arena files by themselves do not count as a reference as these are loaded from all pk3s from every pk3 file..
+					// shaders, txt, and arena files by themselves do not count as a reference as these are loaded from all pk3s from every pk3 file.
 					len = strlen(filename);
 
 					if (!pak->referenced) {
@@ -2964,7 +2964,6 @@ int FS_GetModList(char *listbuf, int bufsize) {
 
 			Sys_FreeFileList(pDirs);
 		}
-
 		// if there was a game pk3 or .pk3dir, add mod to list
 		if (nPaks > 0 || nPakDirs > 0) {
 			nLen = strlen(name) + 1;
@@ -3531,13 +3530,13 @@ qboolean FS_ComparePaks(char *neededpaks, int len, qboolean dlstring) {
 		if (pakType == PAK_NO_DOWNLOAD && dlstring) {
 			continue;
 		}
-		// Make sure the server cannot make us write to non-quake3 directories.
+		// make sure the server cannot make us write to non-quake3 directories.
 		if (FS_CheckDirTraversal(fs_serverReferencedPakNames[i])) {
 			Com_Printf("WARNING: Invalid download name %s\n", fs_serverReferencedPakNames[i]);
 			continue;
 		}
 
-		if (fs_serverReferencedPakNames[i] && *fs_serverReferencedPakNames[i]) { 
+		if (fs_serverReferencedPakNames[i] && *fs_serverReferencedPakNames[i]) {
 			// don't got it
 			if (dlstring) {
 				// We need this to make sure we won't hit the end of the buffer or the server could
@@ -3562,7 +3561,7 @@ qboolean FS_ComparePaks(char *neededpaks, int len, qboolean dlstring) {
 					Q_strcat(neededpaks, len, fs_serverReferencedPakNames[i]);
 					Q_strcat(neededpaks, len, ".pk3");
 				}
-				// Find out whether it might have overflowed the buffer and don't add this file to the list if that is the case.
+				// find out whether it might have overflowed the buffer and don't add this file to the list if that is the case.
 				if (strlen(origpos) + (origpos - neededpaks) >= len - 1) {
 					*origpos = '\0';
 					break;
@@ -4063,7 +4062,7 @@ void FS_AddDirectory(const char *qpath) {
 		FS_AddQPathDirectory(fs_basepath->string, qpath);
 	}
 #ifdef __APPLE__
-	// Make MacOSX also include the base path included with the .app bundle
+	// make MacOSX also include the base path included with the .app bundle
 	if (fs_apppath->string[0]) {
 		FS_AddQPathDirectory(fs_apppath->string, qpath);
 	}
@@ -4090,7 +4089,7 @@ static void FS_AddGame(const char *gameName) {
 		FS_AddGameDirectory(fs_basepath->string, gameName);
 	}
 #ifdef __APPLE__
-	// Make MacOSX also include the base path included with the .app bundle
+	// make MacOSX also include the base path included with the .app bundle
 	if (fs_apppath->string[0]) {
 		FS_AddGameDirectory(fs_apppath->string, gameName);
 	}
@@ -4162,7 +4161,7 @@ static void FS_Startup(qboolean quiet) {
 		// put fs_game at the head of list
 		FS_UnstashSearchPath();
 	}
-	// Add fonts at the end of the search path.
+	// add fonts at the end of the search path.
 
 	// hide game paths
 	FS_StashSearchPath();
@@ -4213,8 +4212,9 @@ void FS_DetectCommercialPaks(void) {
 	int i;
 
 	for (path = fs_searchpaths; path; path = path->next) {
-		if (!path->pack)
+		if (!path->pack) {
 			continue;
+		}
 
 		for (i = 0; i < numCommercialPaks; ++i) {
 			if (Q_stricmp(path->pack->pakGamename, commercialPaks[i].gamename) == 0 && Q_stricmp(path->pack->pakBasename, commercialPaks[i].basename) == 0) {
@@ -4264,7 +4264,7 @@ void FS_ClearPakChecksums(void) {
 =======================================================================================================================================
 FS_ParsePakChecksums
 
-Load checksums for pk3 files in gamedir
+Load checksums for pk3 files in gamedir.
 =======================================================================================================================================
 */
 void FS_ParsePakChecksums(char **text, const char *path, const char *gameDir) {
@@ -4400,7 +4400,7 @@ static void FS_ReorderPaksumsPaks(void) {
 =======================================================================================================================================
 FS_CheckPaks
 
-Checks that default pk3s are present and their checksums are correct
+Checks that default pk3s are present and their checksums are correct.
 =======================================================================================================================================
 */
 static void FS_CheckPaks(qboolean quiet) {
@@ -4950,6 +4950,7 @@ int FS_FOpenFileByMode(const char *qpath, fileHandle_t *f, fsMode_t mode) {
 			if (!f) {
 				return -1;
 			}
+
 			*f = FS_FOpenFileWrite(qpath);
 			r = 0;
 
@@ -4964,6 +4965,7 @@ int FS_FOpenFileByMode(const char *qpath, fileHandle_t *f, fsMode_t mode) {
 			if (!f) {
 				return -1;
 			}
+
 			*f = FS_FOpenFileAppend(qpath);
 			r = 0;
 
