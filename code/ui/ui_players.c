@@ -31,6 +31,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define UI_TIMER_ATTACK 500
 #define UI_TIMER_MUZZLE_FLASH 20
 #define UI_TIMER_WEAPON_DELAY 250
+
 #define JUMP_HEIGHT 56
 #define SWINGSPEED 0.3f
 #define SPIN_SPEED 0.9f
@@ -39,7 +40,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 static int dp_realtime;
 static float jumpHeight;
 sfxHandle_t weaponChangeSound;
-
 
 /*
 =======================================================================================================================================
@@ -74,7 +74,6 @@ tryagain:
 		}
 
 		weaponNum = WP_MACHINEGUN;
-
 		goto tryagain;
 	}
 
@@ -84,6 +83,7 @@ tryagain:
 
 	COM_StripExtension(item->world_model[0], path, sizeof(path));
 	Q_strcat(path, sizeof(path), "_flash.md3");
+
 	pi->flashModel = trap_R_RegisterModel(path);
 
 	switch (weaponNum) {
@@ -141,7 +141,7 @@ UI_ForceLegsAnim
 */
 static void UI_ForceLegsAnim(uiPlayerInfo_t *pi, int anim) {
 
-	pi->legsAnim = ((pi->legsAnim & ANIM_TOGGLEBIT)^ ANIM_TOGGLEBIT)|anim;
+	pi->legsAnim = ((pi->legsAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
 
 	if (anim == LEGS_JUMP) {
 		pi->legsAnimationTimer = UI_TIMER_JUMP;
@@ -170,7 +170,7 @@ UI_ForceTorsoAnim
 */
 static void UI_ForceTorsoAnim(uiPlayerInfo_t *pi, int anim) {
 
-	pi->torsoAnim = ((pi->torsoAnim & ANIM_TOGGLEBIT)^ ANIM_TOGGLEBIT)|anim;
+	pi->torsoAnim = ((pi->torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
 
 	if (anim == TORSO_GESTURE) {
 		pi->torsoAnimationTimer = UI_TIMER_GESTURE;
@@ -290,7 +290,7 @@ static qboolean UI_PositionEntityOnTag(refEntity_t *entity, const refEntity_t *p
 		VectorMA(entity->origin, lerped.origin[i], parent->axis[i], entity->origin);
 	}
 	// cast away const because of compiler problems
-	MatrixMultiply(lerped.axis, ((refEntity_t*)parent)->axis, entity->axis);
+	MatrixMultiply(lerped.axis, ((refEntity_t *)parent)->axis, entity->axis);
 	entity->backlerp = parent->backlerp;
 
 	return returnValue;
@@ -660,7 +660,7 @@ float UI_MachinegunSpinAngle(uiPlayerInfo_t *pi) {
 		angle = pi->barrelAngle + delta * speed;
 	}
 
-	torsoAnim = pi->torsoAnim  & ~ANIM_TOGGLEBIT;
+	torsoAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
 
 	if (torsoAnim == TORSO_ATTACK2) {
 		torsoAnim = TORSO_ATTACK;
@@ -753,13 +753,12 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	origin[0] = len / tan(DEG2RAD(refdef.fov_x) * 0.5);
 	origin[1] = 0.5 * (mins[1] + maxs[1]);
 	origin[2] = -0.5 * (mins[2] + maxs[2]);
-
 	refdef.time = dp_realtime;
 
 	trap_R_ClearScene();
 	// get the rotation information
 	UI_PlayerAngles(pi, legs.axis, torso.axis, head.axis);
-	// get the animation state(after rotation, to allow feet shuffle)
+	// get the animation state (after rotation, to allow feet shuffle)
 	UI_PlayerAnimation(pi, &legs.oldframe, &legs.frame, &legs.backlerp, &torso.oldframe, &torso.frame, &torso.backlerp);
 
 	renderfx = RF_LIGHTING_ORIGIN|RF_NOSHADOW;
@@ -892,7 +891,7 @@ static qboolean UI_FileExists(const char *filename) {
 
 	len = trap_FS_FOpenFile(filename, NULL, FS_READ);
 
-	if (len>0) {
+	if (len > 0) {
 		return qtrue;
 	}
 
@@ -1029,7 +1028,6 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 	// parse the text
 	text_p = text;
 	skip = 0; // quite the compiler warning
-
 	// read optional parameters
 	while (1) {
 		prev = text_p; // so we can unget
@@ -1072,7 +1070,7 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 		}
 		// if it is a number, start parsing animations
 		if (token[0] >= '0' && token[0] <= '9') {
-			text_p = prev;	// unget the token
+			text_p = prev; // unget the token
 			break;
 		}
 
@@ -1114,6 +1112,7 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 		}
 
 		animations[i].numFrames = atoi(token);
+
 		token = COM_Parse(&text_p);
 
 		if (!token[0]) {
@@ -1121,6 +1120,7 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 		}
 
 		animations[i].loopFrames = atoi(token);
+
 		token = COM_Parse(&text_p);
 
 		if (!token[0]) {
@@ -1166,6 +1166,7 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 	}
 
 	Q_strncpyz(modelName, modelSkinName, sizeof(modelName));
+
 	slash = strchr(modelName, '/');
 
 	if (!slash) {
@@ -1317,6 +1318,7 @@ void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3
 			pi->lastWeapon = weaponNumber;
 			pi->pendingWeapon = WP_NUM_WEAPONS;
 			pi->weaponTimer = 0;
+
 			UI_PlayerInfo_SetWeapon(pi, pi->weapon);
 		}
 
@@ -1325,11 +1327,9 @@ void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3
 	// weapon
 	if (weaponNumber == WP_NUM_WEAPONS) {
 		pi->pendingWeapon = WP_NUM_WEAPONS;
-
 		pi->weaponTimer = 0;
 	} else if (weaponNumber != WP_NONE) {
 		pi->pendingWeapon = weaponNumber;
-
 		pi->weaponTimer = dp_realtime + UI_TIMER_WEAPON_DELAY;
 	}
 
@@ -1391,6 +1391,7 @@ void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3
 		pi->pendingTorsoAnim = torsoAnim;
 	} else if (torsoAnim != currentAnim) {
 		pi->pendingTorsoAnim = 0;
+
 		UI_ForceTorsoAnim(pi, torsoAnim);
 	}
 }

@@ -638,6 +638,7 @@ CG_DrawPlayerStatus
 =======================================================================================================================================
 */
 static void CG_DrawPlayerStatus(rectDef_t *rect) {
+
 	playerInfo_t *pi = &cgs.playerinfo[cg.cur_ps->playerNum];
 
 	if (pi) {
@@ -693,6 +694,7 @@ CG_DrawPlayerLocation
 =======================================================================================================================================
 */
 static void CG_DrawPlayerLocation(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
+
 	playerInfo_t *pi = &cgs.playerinfo[cg.cur_ps->playerNum];
 
 	if (pi) {
@@ -933,7 +935,7 @@ FIXME: team name support.
 =======================================================================================================================================
 */
 static void CG_DrawRedName(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
-	CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cg_redTeamName.string , 0, 0, textStyle);
+	CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cg_redTeamName.string, 0, 0, textStyle);
 }
 
 /*
@@ -956,7 +958,7 @@ static void CG_DrawBlueFlagName(rectDef_t *rect, float scale, vec4_t color, int 
 	int i;
 
 	for (i = 0; i < cgs.maxplayers; i++) {
-		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_RED  && cgs.playerinfo[i].powerups &(1 << PW_BLUEFLAG)) {
+		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_RED && cgs.playerinfo[i].powerups &(1 << PW_BLUEFLAG)) {
 			CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cgs.playerinfo[i].name, 0, 0, textStyle);
 			return;
 		}
@@ -1012,14 +1014,14 @@ static void CG_DrawBlueFlagHead(rectDef_t *rect) {
 	int i;
 
 	for (i = 0; i < cgs.maxplayers; i++) {
-		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_RED  && cgs.playerinfo[i].powerups &(1<< PW_BLUEFLAG)) {
+		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_RED && cgs.playerinfo[i].powerups &(1 << PW_BLUEFLAG)) {
 			vec3_t angles;
 
 			VectorClear(angles);
 
-			angles[YAW] = 180 + 20 * sin(cg.time / 650.0);;
+			angles[YAW] = 180 + 20 * sin(cg.time / 650.0);
 
-			CG_DrawHead(rect->x, rect->y, rect->w, rect->h, 0,angles);
+			CG_DrawHead(rect->x, rect->y, rect->w, rect->h, 0, angles);
 			return;
 		}
 	}
@@ -1034,7 +1036,7 @@ static void CG_DrawRedFlagName(rectDef_t *rect, float scale, vec4_t color, int t
 	int i;
 
 	for (i = 0; i < cgs.maxplayers; i++) {
-		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_BLUE  && cgs.playerinfo[i].powerups &(1<< PW_REDFLAG)) {
+		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_BLUE && cgs.playerinfo[i].powerups &(1 << PW_REDFLAG)) {
 			CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, cgs.playerinfo[i].name, 0, 0, textStyle);
 			return;
 		}
@@ -1090,14 +1092,14 @@ static void CG_DrawRedFlagHead(rectDef_t *rect) {
 	int i;
 
 	for (i = 0; i < cgs.maxplayers; i++) {
-		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_BLUE  && cgs.playerinfo[i].powerups &(1<< PW_REDFLAG)) {
+		if (cgs.playerinfo[i].infoValid && cgs.playerinfo[i].team == TEAM_BLUE && cgs.playerinfo[i].powerups &(1 << PW_REDFLAG)) {
 			vec3_t angles;
 
 			VectorClear(angles);
 
-			angles[YAW] = 180 + 20 * sin(cg.time / 650.0);;
+			angles[YAW] = 180 + 20 * sin(cg.time / 650.0);
 
-			CG_DrawHead(rect->x, rect->y, rect->w, rect->h, 0,angles);
+			CG_DrawHead(rect->x, rect->y, rect->w, rect->h, 0, angles);
 			return;
 		}
 	}
@@ -1524,6 +1526,7 @@ qboolean CG_OwnerDrawVisible(int flags) {
 	}
 
 	if (flags &CG_SHOW_DURINGINCOMINGVOICE) {
+
 	}
 
 	if (flags &CG_SHOW_IF_PLAYER_HAS_FLAG) {
@@ -1567,7 +1570,7 @@ CG_DrawAreaTeamChat
 =======================================================================================================================================
 */
 static void CG_DrawAreaTeamChat(rectDef_t *rect, float scale, vec4_t color, qhandle_t shader) {
-	CG_Text_Paint(rect->x, rect->y + rect->h, scale, color,teamChat1, 0, 0, 0);
+	CG_Text_Paint(rect->x, rect->y + rect->h, scale, color, teamChat1, 0, 0, 0);
 }
 
 /*
@@ -1607,7 +1610,6 @@ static void CG_DrawKiller(rectDef_t *rect, float scale, vec4_t color, qhandle_t 
 
 		CG_Text_Paint(x - CG_Text_Width(CG_GetKillerText(), scale, 0) / 2, rect->y + rect->h, scale, color, CG_GetKillerText(), 0, 0, textStyle);
 	}
-	
 }
 
 /*
@@ -1618,7 +1620,7 @@ CG_DrawCapFragLimit
 static void CG_DrawCapFragLimit(rectDef_t *rect, float scale, vec4_t color, qhandle_t shader, int textStyle) {
 	int limit = (cgs.gametype >= GT_CTF) ? cgs.capturelimit : cgs.fraglimit;
 
-	CG_Text_Paint(rect->x, rect->y, scale, color, va("%2i", limit),0, 0, textStyle);
+	CG_Text_Paint(rect->x, rect->y, scale, color, va("%2i", limit), 0, 0, textStyle);
 }
 
 /*
@@ -1629,7 +1631,7 @@ CG_Draw1stPlace
 static void CG_Draw1stPlace(rectDef_t *rect, float scale, vec4_t color, qhandle_t shader, int textStyle) {
 
 	if (cgs.scores1 != SCORE_NOT_PRESENT) {
-		CG_Text_Paint(rect->x, rect->y, scale, color, va("%2i", cgs.scores1),0, 0, textStyle);
+		CG_Text_Paint(rect->x, rect->y, scale, color, va("%2i", cgs.scores1), 0, 0, textStyle);
 	}
 }
 
@@ -1641,7 +1643,7 @@ CG_Draw2ndPlace
 static void CG_Draw2ndPlace(rectDef_t *rect, float scale, vec4_t color, qhandle_t shader, int textStyle) {
 
 	if (cgs.scores2 != SCORE_NOT_PRESENT) {
-		CG_Text_Paint(rect->x, rect->y, scale, color, va("%2i", cgs.scores2),0, 0, textStyle);
+		CG_Text_Paint(rect->x, rect->y, scale, color, va("%2i", cgs.scores2), 0, 0, textStyle);
 	}
 }
 
@@ -1655,7 +1657,7 @@ const char *CG_GetGameStatusText(void) {
 
 	if (cgs.gametype < GT_TEAM) {
 		if (cg.cur_ps && cg.cur_ps->persistant[PERS_TEAM] != TEAM_SPECTATOR) {
-			s = va("%s place with %i",CG_PlaceString(cg.cur_ps->persistant[PERS_RANK] + 1),cg.cur_ps->persistant[PERS_SCORE]);
+			s = va("%s place with %i", CG_PlaceString(cg.cur_ps->persistant[PERS_RANK] + 1), cg.cur_ps->persistant[PERS_SCORE]);
 		}
 	} else {
 		if (cg.teamScores[0] == cg.teamScores[1]) {
@@ -1718,7 +1720,7 @@ void CG_DrawNewTeamInfo(rectDef_t *rect, float text_x, float text_y, float scale
 	team = cg.cur_ps->persistant[PERS_TEAM];
 
 	if (cg.time - sortedTeamPlayersTime[team] > 5000) {
-		// Info is too out of date.
+		// info is too out of date.
 		return;
 	}
 	// max player name width
@@ -1775,7 +1777,8 @@ void CG_DrawNewTeamInfo(rectDef_t *rect, float text_x, float text_y, float scale
 			CG_GetColorForHealth(pi->health, pi->armor, hcolor);
 			trap_R_SetColor(hcolor);
 			CG_DrawPic(xx, y + 1, PIC_WIDTH - 2, PIC_WIDTH - 2, cgs.media.heartShader);
-			//Com_sprintf(st, sizeof(st), "%3i %3i", pi->health,	pi->armor);
+
+			//Com_sprintf(st, sizeof(st), "%3i %3i", pi->health, pi->armor);
 			//CG_Text_Paint(xx, y + text_y, scale, hcolor, st, 0, 0);
 			// draw weapon icon
 			xx += PIC_WIDTH + 1;
@@ -1791,7 +1794,7 @@ void CG_DrawNewTeamInfo(rectDef_t *rect, float text_x, float text_y, float scale
 
 			if (cg.cur_lc->orderPending) {
 				// blink the icon
-				if (cg.time > cg.cur_lc->orderTime - 2500 && (cg.time >> 9)& 1) {
+				if (cg.time > cg.cur_lc->orderTime - 2500 && (cg.time >> 9) &1) {
 					h = 0;
 				} else {
 					h = CG_StatusHandle(cg.cur_lc->currentOrder);
@@ -1821,6 +1824,7 @@ void CG_DrawNewTeamInfo(rectDef_t *rect, float text_x, float text_y, float scale
 			maxx = rect->w - 4;
 
 			CG_Text_Paint_Limit(&maxx, xx, y + text_y, scale, color, p, 0, 0);
+
 			y += text_y + 2;
 
 			if (y + text_y + 2 > rect->y + rect->h) {
@@ -1923,18 +1927,16 @@ void CG_DrawMedal(int ownerDraw, rectDef_t *rect, float scale, vec4_t color, qha
 	}
 
 	trap_R_SetColor(color);
-
 	CG_DrawPic(rect->x, rect->y, rect->w, rect->h, shader);
 
 	if (text) {
 		color[3] = 1.0;
-
 		value = CG_Text_Width(text, scale, 0);
-		CG_Text_Paint(rect->x + (rect->w - value) / 2, rect->y + rect->h + 10 , scale, color, text, 0, 0, 0);
+
+		CG_Text_Paint(rect->x + (rect->w - value) / 2, rect->y + rect->h + 10, scale, color, text, 0, 0, 0);
 	}
 
 	trap_R_SetColor(NULL);
-
 }
 
 /*
@@ -1948,7 +1950,8 @@ void CG_OwnerDraw(float x, float y, float w, float h, float text_x, float text_y
 	if (cg_drawStatus.integer == 0) {
 		return;
 	}
-	// if(ownerDrawFlags != 0 && !CG_OwnerDrawVisible(ownerDrawFlags)) {
+
+	//if (ownerDrawFlags != 0 && !CG_OwnerDrawVisible(ownerDrawFlags)) {
 	//	return;
 	//}
 

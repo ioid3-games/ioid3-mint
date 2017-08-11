@@ -604,7 +604,6 @@ qboolean Asset_Parse(int handle) {
 			uiInfo.uiDC.Assets.shadowFadeClamp = uiInfo.uiDC.Assets.shadowColor[3];
 			continue;
 		}
-
 	}
 
 	return qfalse;
@@ -632,6 +631,7 @@ UI_Report
 =======================================================================================================================================
 */
 void UI_Report(void) {
+
 	String_Report();
 	//Font_Report();
 }
@@ -660,7 +660,7 @@ void UI_ParseMenu(const char *menuFile) {
 			break;
 		}
 		//if (Q_stricmp(token, "{")) {
-		//	Com_Printf("Missing {in menu file\n");
+		//	Com_Printf("Missing { in menu file\n");
 		//	break;
 		//}
 		//if (uiInfo.uiDC.menuCount == MAX_MENUS) {
@@ -816,7 +816,6 @@ void UI_Load(void) {
 #endif
 	UI_LoadMenus(menuSet, qtrue);
 	UI_LoadMenus("ui/ingame.txt", qfalse);
-
 	Menus_CloseAll();
 
 	if (lastName[0]) {
@@ -972,7 +971,6 @@ static int UI_TeamIndexFromName(const char *name) {
 	}
 
 	return 0;
-
 }
 
 /*
@@ -1010,10 +1008,9 @@ static void UI_DrawClanCinematic(rectDef_t *rect, float scale, vec4_t color) {
 	i = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_teamName"));
 
 	if (i >= 0 && i < uiInfo.teamCount) {
-
 		if (uiInfo.teamList[i].cinematic >= -2) {
 			if (uiInfo.teamList[i].cinematic == -1) {
-				uiInfo.teamList[i].cinematic = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.teamList[i].imageName), 0, 0, 0, 0, (CIN_loop | CIN_silent));
+				uiInfo.teamList[i].cinematic = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.teamList[i].imageName), 0, 0, 0, 0, (CIN_loop|CIN_silent));
 			}
 
 			if (uiInfo.teamList[i].cinematic >= 0) {
@@ -1041,7 +1038,7 @@ UI_DrawPreviewCinematic
 static void UI_DrawPreviewCinematic(rectDef_t *rect, float scale, vec4_t color) {
 
 	if (uiInfo.previewMovie > -2) {
-		uiInfo.previewMovie = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.movieList[uiInfo.movieIndex]), 0, 0, 0, 0, (CIN_loop | CIN_silent));
+		uiInfo.previewMovie = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.movieList[uiInfo.movieIndex]), 0, 0, 0, 0, (CIN_loop|CIN_silent));
 
 		if (uiInfo.previewMovie >= 0) {
 			trap_CIN_RunCinematic(uiInfo.previewMovie);
@@ -1080,7 +1077,7 @@ static void UI_DrawTeamName(rectDef_t *rect, float scale, vec4_t color, qboolean
 	i = UI_TeamIndexFromName(CG_Cvar_VariableString((blue) ? "ui_blueTeam" : "ui_redTeam"));
 
 	if (i >= 0 && i < uiInfo.teamCount) {
-		UI_Text_Paint(rect->x, rect->y, scale, color, va("%s: %s", (blue) ? "Blue" : "Red", uiInfo.teamList[i].teamName),0, 0, textStyle);
+		UI_Text_Paint(rect->x, rect->y, scale, color, va("%s: %s", (blue) ? "Blue" : "Red", uiInfo.teamList[i].teamName), 0, 0, textStyle);
 	}
 }
 
@@ -1192,12 +1189,11 @@ UI_DrawMapCinematic
 =======================================================================================================================================
 */
 static void UI_DrawMapCinematic(rectDef_t *rect, float scale, vec4_t color, qboolean net) {
-
 	int map = (net) ? ui_currentNetMap.integer : ui_currentMap.integer;
 
 	if (uiInfo.mapList[map].cinematic >= -1) {
 		if (uiInfo.mapList[map].cinematic == -1) {
-			uiInfo.mapList[map].cinematic = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.mapList[map].mapLoadName), 0, 0, 0, 0, (CIN_loop | CIN_silent));
+			uiInfo.mapList[map].cinematic = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.mapList[map].mapLoadName), 0, 0, 0, 0, (CIN_loop|CIN_silent));
 		}
 
 		if (uiInfo.mapList[map].cinematic >= 0) {
@@ -1261,6 +1257,7 @@ static void UI_DrawPlayerModel(rectDef_t *rect) {
 		UI_PlayerInfo_SetModel(&info, model, head, team);
 		UI_PlayerInfo_SetInfo(&info, LEGS_IDLE, TORSO_STAND, viewangles, vec3_origin, WP_MACHINEGUN, qfalse);
 //		UI_RegisterPlayerModelname(&info, model, head, team);
+
 		updateModel = qfalse;
 		updateModelColor = qfalse; // playerinfo setinfo calls updatecolor
 	}
@@ -1271,7 +1268,6 @@ static void UI_DrawPlayerModel(rectDef_t *rect) {
 	}
 
 	UI_DrawPlayer(rect->x, rect->y, rect->w, rect->h, &info, uiInfo.uiDC.realTime / 2);
-
 }
 
 /*
@@ -1411,6 +1407,7 @@ UI_DrawTierGameType
 */
 static void UI_DrawTierGameType(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
 	int i, j;
+
 	i = trap_Cvar_VariableValue("ui_currentTier");
 
 	if (i < 0 || i >= uiInfo.tierCount) {
@@ -1450,12 +1447,12 @@ static const char *UI_AIFromName(const char *name) {
 	return name;
 }
 
+static qboolean updateOpponentModel = qtrue;
 /*
 =======================================================================================================================================
 UI_DrawOpponent
 =======================================================================================================================================
 */
-static qboolean updateOpponentModel = qtrue;
 static void UI_DrawOpponent(rectDef_t *rect) {
 	static uiPlayerInfo_t info2;
 	char model[MAX_QPATH];
@@ -1463,7 +1460,7 @@ static void UI_DrawOpponent(rectDef_t *rect) {
 	char team[256];
 	vec3_t viewangles;
 	vec3_t moveangles;
-	
+
 	if (updateOpponentModel) {
 		Q_strncpyz(model, CG_Cvar_VariableString("ui_opponentModel"), sizeof(model));
 		Q_strncpyz(headmodel, CG_Cvar_VariableString("ui_opponentModel"), sizeof(headmodel));
@@ -1486,7 +1483,6 @@ static void UI_DrawOpponent(rectDef_t *rect) {
 	}
 
 	UI_DrawPlayer(rect->x, rect->y, rect->w, rect->h, &info2, uiInfo.uiDC.realTime / 2);
-
 }
 
 /*
@@ -1523,6 +1519,7 @@ UI_PriorOpponent
 static void UI_PriorOpponent(void) {
 	int i = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_opponentName"));
 	int j = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_teamName"));
+
 	i--;
 
 	if (i < 0) {
@@ -1688,41 +1685,41 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale) {
 
 	switch (ownerDraw) {
 		case UI_HANDICAP:
-				h = Com_Clamp(5, 100, trap_Cvar_VariableValue("handicap"));
-				i = 20 - h / 5;
-				s = handicapValues[i];
-				break;
+			h = Com_Clamp(5, 100, trap_Cvar_VariableValue("handicap"));
+			i = 20 - h / 5;
+			s = handicapValues[i];
+			break;
 		case UI_CLANNAME:
-				s = CG_Cvar_VariableString("ui_teamName");
-				break;
+			s = CG_Cvar_VariableString("ui_teamName");
+			break;
 		case UI_GAMETYPE:
-				s = uiInfo.gameTypes[ui_gameType.integer].gameType;
-				break;
+			s = uiInfo.gameTypes[ui_gameType.integer].gameType;
+			break;
 		case UI_SKILL:
-				i = trap_Cvar_VariableValue("g_spSkill");
+			i = trap_Cvar_VariableValue("g_spSkill");
 
-				if (i < 1 || i > numSkillLevels) {
-					i = 1;
-				}
+			if (i < 1 || i > numSkillLevels) {
+				i = 1;
+			}
 
-				s = skillLevels[i - 1];
-				break;
+			s = skillLevels[i - 1];
+			break;
 		case UI_BLUETEAMNAME:
-				i = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_blueTeam"));
+			i = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_blueTeam"));
 
-				if (i >= 0 && i < uiInfo.teamCount) {
-					s = va("%s: %s", "Blue", uiInfo.teamList[i].teamName);
-				}
+			if (i >= 0 && i < uiInfo.teamCount) {
+				s = va("%s: %s", "Blue", uiInfo.teamList[i].teamName);
+			}
 
 			break;
 		case UI_REDTEAMNAME:
-				i = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_redTeam"));
+			i = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_redTeam"));
 
-				if (i >= 0 && i < uiInfo.teamCount) {
-					s = va("%s: %s", "Red", uiInfo.teamList[i].teamName);
-				}
+			if (i >= 0 && i < uiInfo.teamCount) {
+				s = va("%s: %s", "Red", uiInfo.teamList[i].teamName);
+			}
 
-				break;
+			break;
 		case UI_BLUETEAM1:
 		case UI_BLUETEAM2:
 		case UI_BLUETEAM3:
@@ -1865,6 +1862,7 @@ UI_DrawCrosshair
 =======================================================================================================================================
 */
 static void UI_DrawCrosshair(rectDef_t *rect, float scale, vec4_t color) {
+
 	trap_R_SetColor(color);
 
 	if (uiInfo.currentCrosshair < 0 || uiInfo.currentCrosshair >= NUM_CROSSHAIRS) {
@@ -1895,9 +1893,13 @@ static void UI_BuildPlayerList(void) {
 	uiInfo.playerNumber = cg.snap->pss[0].playerNum;
 
 	trap_GetConfigString(CS_PLAYERS + uiInfo.playerNumber, info, MAX_INFO_STRING);
+
 	uiInfo.teamLeader = atoi(Info_ValueForKey(info, "tl"));
+
 	team = atoi(Info_ValueForKey(info, "t"));
+
 	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
+
 	count = atoi(Info_ValueForKey(info, "sv_maxclients"));
 	playerTeamNumber = 0;
 
@@ -1914,6 +1916,7 @@ static void UI_BuildPlayerList(void) {
 			if (team2 == team) {
 				Q_strncpyz(uiInfo.teamPlayerNames[uiInfo.myTeamCount], Info_ValueForKey(info, "n"), MAX_NAME_LENGTH);
 				Q_CleanStr(uiInfo.teamPlayerNames[uiInfo.myTeamCount]);
+
 				uiInfo.teamPlayerNums[uiInfo.myTeamCount] = n;
 
 				if (uiInfo.playerNumber == n) {
@@ -2036,8 +2039,8 @@ static void UI_DrawGLInfo(rectDef_t *rect, float scale, vec4_t color, int textSt
 	int y, numLines, i;
 
 	UI_Text_Paint(rect->x + 2, rect->y, scale, color, va("VENDOR: %s", cgs.glconfig.vendor_string), 0, 30, textStyle);
-	UI_Text_Paint(rect->x + 2, rect->y + 15, scale, color, va("VERSION: %s: %s", cgs.glconfig.version_string,cgs.glconfig.renderer_string), 0, 30, textStyle);
-	UI_Text_Paint(rect->x + 2, rect->y + 30, scale, color, va ("PIXELFORMAT: color(%d-bits) Z(%d-bits) stencil(%d-bits)", cgs.glconfig.colorBits, cgs.glconfig.depthBits, cgs.glconfig.stencilBits), 0, 30, textStyle);
+	UI_Text_Paint(rect->x + 2, rect->y + 15, scale, color, va("VERSION: %s: %s", cgs.glconfig.version_string, cgs.glconfig.renderer_string), 0, 30, textStyle);
+	UI_Text_Paint(rect->x + 2, rect->y + 30, scale, color, va("PIXELFORMAT: color(%d-bits) Z(%d-bits) stencil(%d-bits)", cgs.glconfig.colorBits, cgs.glconfig.depthBits, cgs.glconfig.stencilBits), 0, 30, textStyle);
 	// build null terminated extension strings
 	// TTimo: https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=399
 	// in Team Arena this was not directly crashing, but displaying a nasty broken shader right in the middle
@@ -2123,8 +2126,8 @@ static void UI_OwnerDraw(float x, float y, float w, float h, float text_x, float
 			UI_DrawNetGameType(&rect, scale, color, textStyle);
 			break;
 		case UI_JOINGAMETYPE:
-		UI_DrawJoinGameType(&rect, scale, color, textStyle);
-		break;
+			UI_DrawJoinGameType(&rect, scale, color, textStyle);
+			break;
 		case UI_MAPPREVIEW:
 			UI_DrawMapPreview(&rect, scale, color, qtrue);
 			break;
@@ -2261,7 +2264,6 @@ static qboolean UI_OwnerDrawVisible(int flags) {
 	qboolean vis = qtrue;
 
 	while (flags) {
-
 		if (flags & UI_SHOW_FFA) {
 			if (trap_Cvar_VariableValue("g_gametype") != GT_FFA) {
 				vis = qfalse;
@@ -2509,7 +2511,7 @@ static qboolean UI_GameType_HandleKey(int flags, float *special, int key, qboole
 				ui_gameType.integer = 3;
 			}
 		}
-		
+
 		if (uiInfo.gameTypes[ui_gameType.integer].gtEnum < GT_TEAM) {
 			trap_Cvar_SetValue("ui_Q3Model", 1);
 		} else {
@@ -2690,7 +2692,7 @@ static qboolean UI_NetSource_HandleKey(int flags, float *special, int key) {
 
 		if (ui_netSource.integer >= UIAS_GLOBAL1 && ui_netSource.integer <= UIAS_GLOBAL5) {
 			char masterstr[2], cvarname[sizeof("sv_master1")];
-		
+
 			while (ui_netSource.integer >= UIAS_GLOBAL1 && ui_netSource.integer <= UIAS_GLOBAL5) {
 				Com_sprintf(cvarname, sizeof(cvarname), "sv_master%d", ui_netSource.integer);
 				trap_Cvar_VariableStringBuffer(cvarname, masterstr, sizeof(masterstr));
@@ -2994,7 +2996,7 @@ UI_ServersQsortCompare
 =======================================================================================================================================
 */
 static int QDECL UI_ServersQsortCompare(const void *arg1, const void *arg2) {
-	return trap_LAN_CompareServers(UI_SourceForLAN(), uiInfo.serverStatus.sortKey, uiInfo.serverStatus.sortDir, *(int*)arg1, *(int*)arg2);
+	return trap_LAN_CompareServers(UI_SourceForLAN(), uiInfo.serverStatus.sortKey, uiInfo.serverStatus.sortDir, *(int *)arg1, *(int *)arg2);
 }
 
 /*
@@ -3049,7 +3051,7 @@ UI_StartSinglePlayer
 */
 /*
 static void UI_StartSinglePlayer(void) {
-	int i,j, k, skill;
+	int i, j, k, skill;
 	char buff[1024];
 
 	i = trap_Cvar_VariableValue("ui_currentTier");
@@ -3075,12 +3077,14 @@ static void UI_StartSinglePlayer(void) {
 		Com_sprintf(buff, sizeof(buff), "wait; addbot %s %i %s 250 %s\n", UI_AIFromName(teamList[k].teamMembers[0]), skill, "", teamList[k].teamMembers[0]);
 	} else {
 		k = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_opponentName"));
+
 		for (i = 0; i < PLAYERS_PER_TEAM; i++) {
 			Com_sprintf(buff, sizeof(buff), "wait; addbot %s %i %s 250 %s\n", UI_AIFromName(teamList[k].teamMembers[i]), skill, "Blue", teamList[k].teamMembers[i]);
 			trap_Cmd_ExecuteText(EXEC_APPEND, buff);
 		}
 
 		k = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_teamName"));
+
 		for (i = 1; i < PLAYERS_PER_TEAM; i++) {
 			Com_sprintf(buff, sizeof(buff), "wait; addbot %s %i %s 250 %s\n", UI_AIFromName(teamList[k].teamMembers[i]), skill, "Red", teamList[k].teamMembers[i]);
 			trap_Cmd_ExecuteText(EXEC_APPEND, buff);
@@ -3105,7 +3109,7 @@ static void UI_LoadMods(void) {
 
 	uiInfo.modCount = 0;
 	numdirs = trap_FS_GetFileList("$modlist", "", dirlist, sizeof(dirlist));
-	dirptr  = dirlist;
+	dirptr = dirlist;
 
 	for (i = 0; i < numdirs; i++) {
 		dirlen = strlen(dirptr) + 1;
@@ -3135,6 +3139,7 @@ static void UI_LoadTeams(void) {
 
 	if (count) {
 		teamName = teamList;
+
 		for (i = 0; i < count; i++) {
 			len = strlen(teamName);
 			UI_ParseTeamInfo(teamName);
@@ -3164,7 +3169,9 @@ static void UI_LoadMovies(void) {
 
 		for (i = 0; i < uiInfo.movieCount; i++) {
 			len = strlen(moviename);
+
 			COM_StripExtension(moviename, moviename, len);
+
 			uiInfo.movieList[i] = String_Alloc(moviename);
 			moviename += len + 1;
 		}
@@ -3172,7 +3179,6 @@ static void UI_LoadMovies(void) {
 }
 
 #define NAMEBUFSIZE (MAX_DEMOS * 32)
-
 /*
 =======================================================================================================================================
 UI_LoadDemos
@@ -3306,7 +3312,7 @@ static void UI_StartSkirmish(qboolean next) {
 
 		trap_Cvar_SetValue("sv_maxClients", temp);
 
-		for (i =0; i < uiInfo.mapList[ui_currentMap.integer].teamMembers; i++) {
+		for (i = 0; i < uiInfo.mapList[ui_currentMap.integer].teamMembers; i++) {
 			Com_sprintf(buff, sizeof(buff), "addbot %s %f %s %i %s\n", UI_AIFromName(uiInfo.teamList[k].teamMembers[i]), skill, (g == GT_FFA) ? "" : "Blue", delay, uiInfo.teamList[k].teamMembers[i]);
 			trap_Cmd_ExecuteText(EXEC_APPEND, buff);
 			delay += 500;
@@ -3314,7 +3320,7 @@ static void UI_StartSkirmish(qboolean next) {
 
 		k = UI_TeamIndexFromName(CG_Cvar_VariableString("ui_teamName"));
 
-		for (i =0; i < uiInfo.mapList[ui_currentMap.integer].teamMembers - 1; i++) {
+		for (i = 0; i < uiInfo.mapList[ui_currentMap.integer].teamMembers - 1; i++) {
 			Com_sprintf(buff, sizeof(buff), "addbot %s %f %s %i %s\n", UI_AIFromName(uiInfo.teamList[k].teamMembers[i]), skill, (g == GT_FFA) ? "" : "Red", delay, uiInfo.teamList[k].teamMembers[i]);
 			trap_Cmd_ExecuteText(EXEC_APPEND, buff);
 			delay += 500;
@@ -3344,10 +3350,10 @@ static void UI_Update(const char *name) {
 			trap_Cvar_SetValue("cl_packetdup", 1);
 		} else if (rate >= 4000) {
 			trap_Cvar_SetValue("cl_maxpackets", 15);
-			trap_Cvar_SetValue("cl_packetdup", 2);		// favor less prediction errors when there's packet loss
+			trap_Cvar_SetValue("cl_packetdup", 2); // favor less prediction errors when there's packet loss
 		} else {
 			trap_Cvar_SetValue("cl_maxpackets", 15);
-			trap_Cvar_SetValue("cl_packetdup", 1);		// favor lower bandwidth
+			trap_Cvar_SetValue("cl_packetdup", 1); // favor lower bandwidth
 		}
 	} else if (Q_stricmp(name, "ui_GetName") == 0) {
 		trap_Cvar_Set("ui_Name", CG_Cvar_VariableString("name"));
@@ -3504,13 +3510,13 @@ static void UI_RunMenuScript(char **args) {
 			clients = 0;
 
 			for (i = 0; i < PLAYERS_PER_TEAM; i++) {
-				int bot = trap_Cvar_VariableValue(va("ui_blueteam%i", i+1));
+				int bot = trap_Cvar_VariableValue(va("ui_blueteam%i", i + 1));
 
 				if (bot >= 0) {
 					clients++;
 				}
 
-				bot = trap_Cvar_VariableValue(va("ui_redteam%i", i+1));
+				bot = trap_Cvar_VariableValue(va("ui_redteam%i", i + 1));
 
 				if (bot >= 0) {
 					clients++;
@@ -3520,7 +3526,7 @@ static void UI_RunMenuScript(char **args) {
 			if (clients == 0) {
 				clients = 8;
 			}
-			
+
 			if (oldclients > clients) {
 				clients = oldclients;
 			}
@@ -3528,7 +3534,7 @@ static void UI_RunMenuScript(char **args) {
 			trap_Cvar_SetValue("sv_maxClients", clients);
 
 			for (i = 0; i < PLAYERS_PER_TEAM; i++) {
-				int bot = trap_Cvar_VariableValue(va("ui_blueteam%i", i+1));
+				int bot = trap_Cvar_VariableValue(va("ui_blueteam%i", i + 1));
 
 				if (bot > 1) {
 					if (ui_actualNetGameType.integer >= GT_TEAM) {
@@ -3540,7 +3546,7 @@ static void UI_RunMenuScript(char **args) {
 					trap_Cmd_ExecuteText(EXEC_APPEND, buff);
 				}
 
-				bot = trap_Cvar_VariableValue(va("ui_redteam%i", i+1));
+				bot = trap_Cvar_VariableValue(va("ui_redteam%i", i + 1));
 
 				if (bot > 1) {
 					if (ui_actualNetGameType.integer >= GT_TEAM) {
@@ -3692,7 +3698,7 @@ static void UI_RunMenuScript(char **args) {
 		} else if (Q_stricmp(name, "closeingame") == 0) {
 			UI_ForceMenuOff();
 		} else if (Q_stricmp(name, "voteMap") == 0) {
-			if (ui_currentNetMap.integer >=0 && ui_currentNetMap.integer < uiInfo.mapCount) {
+			if (ui_currentNetMap.integer >= 0 && ui_currentNetMap.integer < uiInfo.mapCount) {
 				trap_Cmd_ExecuteText(EXEC_APPEND, va("callvote map %s\n",uiInfo.mapList[ui_currentNetMap.integer].mapLoadName));
 			}
 		} else if (Q_stricmp(name, "voteKick") == 0) {
@@ -3709,9 +3715,9 @@ static void UI_RunMenuScript(char **args) {
 			}
 		} else if (Q_stricmp(name, "addBot") == 0) {
 			if (trap_Cvar_VariableValue("g_gametype") >= GT_TEAM) {
-				trap_Cmd_ExecuteText(EXEC_APPEND, va("addbot %s %i %s\n", uiInfo.characterList[uiInfo.botIndex].name, uiInfo.skillIndex+1, (uiInfo.redBlue == 0) ? "Red" : "Blue"));
+				trap_Cmd_ExecuteText(EXEC_APPEND, va("addbot %s %i %s\n", uiInfo.characterList[uiInfo.botIndex].name, uiInfo.skillIndex + 1, (uiInfo.redBlue == 0) ? "Red" : "Blue"));
 			} else {
-				trap_Cmd_ExecuteText(EXEC_APPEND, va("addbot %s %i %s\n", UI_GetBotNameByNumber(uiInfo.botIndex), uiInfo.skillIndex+1, (uiInfo.redBlue == 0) ? "Red" : "Blue"));
+				trap_Cmd_ExecuteText(EXEC_APPEND, va("addbot %s %i %s\n", UI_GetBotNameByNumber(uiInfo.botIndex), uiInfo.skillIndex + 1, (uiInfo.redBlue == 0) ? "Red" : "Blue"));
 			}
 		} else if (Q_stricmp(name, "addFavorite") == 0) {
 			if (ui_netSource.integer != UIAS_FAVORITES) {
@@ -3723,11 +3729,12 @@ static void UI_RunMenuScript(char **args) {
 
 				name[0] = addr[0] = '\0';
 
-				Q_strncpyz(name, Info_ValueForKey(buff, "hostname"), sizeof (name));
-				Q_strncpyz(addr, Info_ValueForKey(buff, "addr"), sizeof (addr));
+				Q_strncpyz(name, Info_ValueForKey(buff, "hostname"), sizeof(name));
+				Q_strncpyz(addr, Info_ValueForKey(buff, "addr"), sizeof(addr));
 
 				if (strlen(name) > 0 && strlen(addr) > 0) {
 					res = trap_LAN_AddServer(AS_FAVORITES, name, addr);
+
 					if (res == 0) {
 						// server already in the list
 						Com_Printf("Favorite already in list\n");
@@ -3748,7 +3755,7 @@ static void UI_RunMenuScript(char **args) {
 
 				addr[0] = '\0';
 
-				Q_strncpyz(addr, Info_ValueForKey(buff, "addr"), sizeof (addr));
+				Q_strncpyz(addr, Info_ValueForKey(buff, "addr"), sizeof(addr));
 
 				if (strlen(addr) > 0) {
 					trap_LAN_RemoveServer(AS_FAVORITES, addr);
@@ -3761,8 +3768,8 @@ static void UI_RunMenuScript(char **args) {
 
 			name[0] = addr[0] = '\0';
 
-			Q_strncpyz(name, CG_Cvar_VariableString("ui_favoriteName"), sizeof (name));
-			Q_strncpyz(addr, CG_Cvar_VariableString("ui_favoriteAddress"), sizeof (addr));
+			Q_strncpyz(name, CG_Cvar_VariableString("ui_favoriteName"), sizeof(name));
+			Q_strncpyz(addr, CG_Cvar_VariableString("ui_favoriteAddress"), sizeof(addr));
 
 			if (strlen(name) > 0 && strlen(addr) > 0) {
 				res = trap_LAN_AddServer(AS_FAVORITES, name, addr);
@@ -3790,6 +3797,7 @@ static void UI_RunMenuScript(char **args) {
 					trap_Cmd_ExecuteText(EXEC_APPEND, "\n");
 				} else {
 					int i;
+
 					for (i = 0; i < uiInfo.myTeamCount; i++) {
 						if (uiInfo.playerNumber == uiInfo.teamPlayerNums[i]) {
 							continue;
@@ -3873,9 +3881,9 @@ static int UI_MapCountByGameType(qboolean singlePlayer) {
 	for (i = 0; i < uiInfo.mapCount; i++) {
 		uiInfo.mapList[i].active = qfalse;
 
-		if (uiInfo.mapList[i].typeBits & (1 << game)) {
+		if (uiInfo.mapList[i].typeBits &(1 << game)) {
 			if (singlePlayer) {
-				if (!(uiInfo.mapList[i].typeBits & (1 << GT_SINGLE_PLAYER))) {
+				if (!(uiInfo.mapList[i].typeBits &(1 << GT_SINGLE_PLAYER))) {
 					continue;
 				}
 			}
@@ -3895,7 +3903,7 @@ UI_hasSkinForBase
 */
 qboolean UI_hasSkinForBase(const char *base, const char *team) {
 	char test[MAX_QPATH];
-	
+
 	Com_sprintf(test, sizeof(test), "models/players/%s/%s/lower_default.skin", base, team);
 
 	if (trap_FS_FOpenFile(test, NULL, FS_READ)) {
@@ -3922,7 +3930,7 @@ static int UI_HeadCountByTeam(void) {
 
 			for (j = 0; j < uiInfo.teamCount; j++) {
 				if (UI_hasSkinForBase(uiInfo.characterList[i].base, uiInfo.teamList[j].teamName)) {
-					uiInfo.characterList[i].reference |= (1<<j);
+					uiInfo.characterList[i].reference |= (1 << j);
 				}
 			}
 		}
@@ -3937,7 +3945,7 @@ static int UI_HeadCountByTeam(void) {
 
 		for (j = 0; j < TEAM_MEMBERS; j++) {
 			if (uiInfo.teamList[tIndex].teamMembers[j] != NULL) {
-				if (uiInfo.characterList[i].reference&(1 << tIndex)) { // && Q_stricmp(uiInfo.teamList[tIndex].teamMembers[j], uiInfo.characterList[i].name)==0) {
+				if (uiInfo.characterList[i].reference&(1 << tIndex)) { // && Q_stricmp(uiInfo.teamList[tIndex].teamMembers[j], uiInfo.characterList[i].name) == 0) {
 					uiInfo.characterList[i].active = qtrue;
 					c++;
 					break;
@@ -3949,7 +3957,7 @@ static int UI_HeadCountByTeam(void) {
 	for (j = 0; j < TEAM_MEMBERS; j++) {
 		for (k = 0; k < uiInfo.aliasCount; k++) {
 			if (uiInfo.aliasList[k].name != NULL) {
-				if (Q_stricmp(uiInfo.teamList[tIndex].teamMembers[j], uiInfo.aliasList[k].name)==0) {
+				if (Q_stricmp(uiInfo.teamList[tIndex].teamMembers[j], uiInfo.aliasList[k].name) == 0) {
 					for (i = 0; i < uiInfo.characterCount; i++) {
 						if (uiInfo.characterList[i].headImage != -1 && uiInfo.characterList[i].reference&(1 << tIndex) && Q_stricmp(uiInfo.aliasList[k].ai, uiInfo.characterList[i].name) == 0) {
 							if (uiInfo.characterList[i].active == qfalse) {
@@ -4030,10 +4038,10 @@ static void UI_BinaryServerInsertion(int num) {
 
 	while (mid > 0) {
 		mid = len >> 1;
-		res = trap_LAN_CompareServers(UI_SourceForLAN(), uiInfo.serverStatus.sortKey, uiInfo.serverStatus.sortDir, num, uiInfo.serverStatus.displayServers[offset+mid]);
+		res = trap_LAN_CompareServers(UI_SourceForLAN(), uiInfo.serverStatus.sortKey, uiInfo.serverStatus.sortDir, num, uiInfo.serverStatus.displayServers[offset + mid]);
 		// if equal
 		if (res == 0) {
-			UI_InsertServerIntoDisplayList(num, offset+mid);
+			UI_InsertServerIntoDisplayList(num, offset + mid);
 			return;
 		// if larger
 		} else if (res == 1) {
@@ -4115,8 +4123,7 @@ static void UI_BuildServerDisplayList(int force) {
 		ping = trap_LAN_GetServerPing(lanSource, i);
 
 		if (ping > 0 || ui_netSource.integer == UIAS_FAVORITES) {
-			// Remove favorite servers so they do not appear multiple times or appear when the cached server info was not filtered out
-			// but the new server info is filtered out.
+			// remove favorite servers so they do not appear multiple times or appear when the cached server info was not filtered out but the new server info is filtered out.
 			if (ui_netSource.integer == UIAS_FAVORITES) {
 				UI_RemoveServerFromDisplayList(i);
 			}
@@ -4232,6 +4239,7 @@ static void UI_SortServerStatusInfo(serverStatusInfo_t *info) {
 				// swap lines
 				tmp1 = info->lines[index][0];
 				tmp2 = info->lines[index][3];
+
 				info->lines[index][0] = info->lines[j][0];
 				info->lines[index][3] = info->lines[j][3];
 				info->lines[j][0] = tmp1;
@@ -4271,7 +4279,9 @@ static int UI_GetServerStatusInfo(const char *serverAddress, serverStatusInfo_t 
 
 	if (trap_LAN_ServerStatus(serverAddress, info->text, sizeof(info->text))) {
 		Q_strncpyz(info->address, serverAddress, sizeof(info->address));
+
 		p = info->text;
+
 		info->numLines = 0;
 		info->lines[info->numLines][0] = "Address";
 		info->lines[info->numLines][1] = "";
@@ -4308,7 +4318,6 @@ static int UI_GetServerStatusInfo(const char *serverAddress, serverStatusInfo_t 
 			if (info->numLines >= MAX_SERVERSTATUS_LINES) {
 				break;
 			}
-
 		}
 		// get the player list
 		if (info->numLines < MAX_SERVERSTATUS_LINES - 3) {
@@ -4354,7 +4363,9 @@ static int UI_GetServerStatusInfo(const char *serverAddress, serverStatusInfo_t 
 				Com_sprintf(&info->pings[len], sizeof(info->pings) - len, "%d", i);
 
 				info->lines[info->numLines][0] = &info->pings[len];
+
 				len += strlen(&info->pings[len]) + 1;
+
 				info->lines[info->numLines][1] = score;
 				info->lines[info->numLines][2] = ping;
 				info->lines[info->numLines][3] = name;
@@ -4491,8 +4502,7 @@ static void UI_BuildFindPlayerList(qboolean force) {
 			}
 		}
 		// if empty pending slot or timed out
-		if (!uiInfo.pendingServerStatus.server[i].valid ||
-			uiInfo.pendingServerStatus.server[i].startTime < uiInfo.uiDC.realTime - ui_serverStatusTimeOut.integer) {
+		if (!uiInfo.pendingServerStatus.server[i].valid || uiInfo.pendingServerStatus.server[i].startTime < uiInfo.uiDC.realTime - ui_serverStatusTimeOut.integer) {
 			if (uiInfo.pendingServerStatus.server[i].valid) {
 				numTimeOuts++;
 			}
@@ -4504,11 +4514,15 @@ static void UI_BuildFindPlayerList(qboolean force) {
 			if (uiInfo.pendingServerStatus.num < uiInfo.serverStatus.numDisplayServers) {
 				uiInfo.pendingServerStatus.server[i].startTime = uiInfo.uiDC.realTime;
 				lanSource = UI_SourceForLAN();
+
 				trap_LAN_GetServerAddressString(lanSource, uiInfo.serverStatus.displayServers[uiInfo.pendingServerStatus.num], uiInfo.pendingServerStatus.server[i].adrstr, sizeof(uiInfo.pendingServerStatus.server[i].adrstr));
 				trap_LAN_GetServerInfo(lanSource, uiInfo.serverStatus.displayServers[uiInfo.pendingServerStatus.num], infoString, sizeof(infoString));
+
 				Q_strncpyz(uiInfo.pendingServerStatus.server[i].name, Info_ValueForKey(infoString, "hostname"), sizeof(uiInfo.pendingServerStatus.server[0].name));
+
 				uiInfo.pendingServerStatus.server[i].valid = qtrue;
 				uiInfo.pendingServerStatus.num++;
+
 				Com_sprintf(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1], sizeof(uiInfo.foundPlayerServerNames[uiInfo.numFoundPlayerServers - 1]), "searching %d/%d...", uiInfo.pendingServerStatus.num, numFound);
 			}
 		}
@@ -4553,6 +4567,7 @@ static void UI_BuildServerStatus(qboolean force) {
 		}
 	} else {
 		Menu_SetFeederSelection(NULL, FEEDER_SERVERSTATUS, 0, NULL);
+
 		uiInfo.serverStatusInfo.numLines = 0;
 		// reset all server status requests
 		trap_LAN_ServerStatus(NULL, NULL, 0);
@@ -4679,10 +4694,12 @@ static int UI_GetIndexFromSelection(int actual) {
 			if (i == actual) {
 				return c;
 			}
-				c++;
+
+			c++;
 		}
 	}
-  return 0;
+
+	return 0;
 }
 
 /*
@@ -4693,9 +4710,9 @@ UI_UpdatePendingPings
 static void UI_UpdatePendingPings(void) {
 
 	trap_LAN_ResetPings(UI_SourceForLAN());
+
 	uiInfo.serverStatus.refreshActive = qtrue;
 	uiInfo.serverStatus.refreshtime = uiInfo.uiDC.realTime + 1000;
-
 }
 
 /*
@@ -4736,7 +4753,7 @@ static const char *UI_FeederItemText(float feederID, int index, int column, qhan
 
 			if (ping == -1) {
 				// if we ever see a ping that is out of date, do a server refresh
-				// UI_UpdatePendingPings();
+				//UI_UpdatePendingPings();
 			}
 
 			switch (column) {
@@ -4876,16 +4893,17 @@ static void UI_FeederSelection(float feederID, int index) {
 	static char info[MAX_STRING_CHARS];
 
 	if (feederID == FEEDER_HEADS) {
-	int actual;
-	UI_SelectedHead(index, &actual);
-	index = actual;
+		int actual;
 
-	if (index >= 0 && index < uiInfo.characterCount) {
-		trap_Cvar_Set("team_model", uiInfo.characterList[index].base);
-		trap_Cvar_Set("team_headmodel", va("*%s", uiInfo.characterList[index].name));
-		updateModel = qtrue;
-	}
+		UI_SelectedHead(index, &actual);
 
+		index = actual;
+
+		if (index >= 0 && index < uiInfo.characterCount) {
+			trap_Cvar_Set("team_model", uiInfo.characterList[index].base);
+			trap_Cvar_Set("team_headmodel", va("*%s", uiInfo.characterList[index].name));
+			updateModel = qtrue;
+		}
 	} else if (feederID == FEEDER_Q3HEADS) {
 		if (index >= 0 && index < uiInfo.q3HeadCount) {
 			trap_Cvar_Set("model", uiInfo.q3HeadNames[index]);
@@ -4903,26 +4921,30 @@ static void UI_FeederSelection(float feederID, int index) {
 		}
 
 		UI_SelectedMap(index, &actual);
+
 		trap_Cvar_SetValue("ui_mapIndex", index);
+
 		ui_mapIndex.integer = index;
 
 		if (feederID == FEEDER_MAPS) {
 			ui_currentMap.integer = actual;
 			trap_Cvar_SetValue("ui_currentMap", actual);
-			uiInfo.mapList[ui_currentMap.integer].cinematic = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.mapList[ui_currentMap.integer].mapLoadName), 0, 0, 0, 0, (CIN_loop | CIN_silent));
+			uiInfo.mapList[ui_currentMap.integer].cinematic = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.mapList[ui_currentMap.integer].mapLoadName), 0, 0, 0, 0, (CIN_loop|CIN_silent));
 			UI_LoadBestScores(uiInfo.mapList[ui_currentMap.integer].mapLoadName, uiInfo.gameTypes[ui_gameType.integer].gtEnum);
 			trap_Cvar_Set("ui_opponentModel", uiInfo.mapList[ui_currentMap.integer].opponentName);
 			updateOpponentModel = qtrue;
 		} else {
 			ui_currentNetMap.integer = actual;
 			trap_Cvar_SetValue("ui_currentNetMap", actual);
-			uiInfo.mapList[ui_currentNetMap.integer].cinematic = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.mapList[ui_currentNetMap.integer].mapLoadName), 0, 0, 0, 0, (CIN_loop | CIN_silent));
+			uiInfo.mapList[ui_currentNetMap.integer].cinematic = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.mapList[ui_currentNetMap.integer].mapLoadName), 0, 0, 0, 0, (CIN_loop|CIN_silent));
 		}
 	} else if (feederID == FEEDER_SERVERS) {
 		const char *mapName = NULL;
 
 		uiInfo.serverStatus.currentServer = index;
+
 		trap_LAN_GetServerInfo(UI_SourceForLAN(), uiInfo.serverStatus.displayServers[index], info, MAX_STRING_CHARS);
+
 		uiInfo.serverStatus.currentServerPreview = trap_R_RegisterShaderNoMip(va("levelshots/%s", Info_ValueForKey(info, "mapname")));
 
 		if (uiInfo.serverStatus.currentServerCinematic >= 0) {
@@ -4933,7 +4955,7 @@ static void UI_FeederSelection(float feederID, int index) {
 		mapName = Info_ValueForKey(info, "mapname");
 
 		if (mapName && *mapName) {
-			uiInfo.serverStatus.currentServerCinematic = trap_CIN_PlayCinematic(va("%s.roq", mapName), 0, 0, 0, 0, (CIN_loop | CIN_silent));
+			uiInfo.serverStatus.currentServerCinematic = trap_CIN_PlayCinematic(va("%s.roq", mapName), 0, 0, 0, 0, (CIN_loop|CIN_silent));
 		}
 	} else if (feederID == FEEDER_SERVERSTATUS) {
 
@@ -4945,8 +4967,7 @@ static void UI_FeederSelection(float feederID, int index) {
 			Q_strncpyz(uiInfo.serverStatusAddress, uiInfo.foundPlayerServerAddresses[uiInfo.currentFoundPlayerServer], sizeof(uiInfo.serverStatusAddress));
 			Menu_SetFeederSelection(NULL, FEEDER_SERVERSTATUS, 0, NULL);
 			UI_BuildServerStatus(qtrue);
-	}
-
+		}
 	} else if (feederID == FEEDER_PLAYER_LIST) {
 		uiInfo.playerIndex = index;
 	} else if (feederID == FEEDER_TEAM_LIST) {
@@ -5002,10 +5023,10 @@ static qboolean Team_Parse(char **p) {
 			if (!String_Parse(p, &uiInfo.teamList[uiInfo.teamCount].teamName) || !String_Parse(p, &tempStr)) {
 				return qfalse;
 			}
-	
+
 			uiInfo.teamList[uiInfo.teamCount].imageName = tempStr;
 			uiInfo.teamList[uiInfo.teamCount].teamIcon = trap_R_RegisterShaderNoMip(uiInfo.teamList[uiInfo.teamCount].imageName);
-			uiInfo.teamList[uiInfo.teamCount].teamIcon_Metal = trap_R_RegisterShaderNoMip(va("%s_metal",uiInfo.teamList[uiInfo.teamCount].imageName));
+			uiInfo.teamList[uiInfo.teamCount].teamIcon_Metal = trap_R_RegisterShaderNoMip(va("%s_metal", uiInfo.teamList[uiInfo.teamCount].imageName));
 			uiInfo.teamList[uiInfo.teamCount].teamIcon_Name = trap_R_RegisterShaderNoMip(va("%s_name", uiInfo.teamList[uiInfo.teamCount].imageName));
 			uiInfo.teamList[uiInfo.teamCount].cinematic = -1;
 
@@ -5018,8 +5039,8 @@ static qboolean Team_Parse(char **p) {
 			}
 
 			Com_DPrintf("Loaded team %s with team icon %s.\n", uiInfo.teamList[uiInfo.teamCount].teamName, tempStr);
-			uiInfo.teamCount++;
 
+			uiInfo.teamCount++;
 			token = COM_ParseExt(p, qtrue);
 
 			if (token[0] != '}') {
@@ -5079,8 +5100,8 @@ static qboolean Character_Parse(char **p) {
 			}
 
 			Com_DPrintf("Loaded %s character %s.\n", uiInfo.characterList[uiInfo.characterCount].base, uiInfo.characterList[uiInfo.characterCount].name);
-			uiInfo.characterCount++;
 
+			uiInfo.characterCount++;
 			token = COM_ParseExt(p, qtrue);
 
 			if (token[0] != '}') {
@@ -5128,8 +5149,8 @@ static qboolean Alias_Parse(char **p) {
 			}
 
 			Com_DPrintf("Loaded character alias %s using character ai %s.\n", uiInfo.aliasList[uiInfo.aliasCount].name, uiInfo.aliasList[uiInfo.aliasCount].ai);
-			uiInfo.aliasCount++;
 
+			uiInfo.aliasCount++;
 			token = COM_ParseExt(p, qtrue);
 
 			if (token[0] != '}') {
@@ -5145,10 +5166,10 @@ static qboolean Alias_Parse(char **p) {
 =======================================================================================================================================
 UI_ParseTeamInfo
 
- mode:
-  0 - high level parsing
-  1 - team parsing
-  2 - character parsing
+mode
+0 - high level parsing
+1 - team parsing
+2 - character parsing
 =======================================================================================================================================
 */
 static void UI_ParseTeamInfo(const char *teamFile) {
@@ -5306,7 +5327,7 @@ static qboolean MapList_Parse(char **p) {
 		}
 
 		if (token[0] == '{') {
-			if (!String_Parse(p, &uiInfo.mapList[uiInfo.mapCount].mapName) || !String_Parse(p, &uiInfo.mapList[uiInfo.mapCount].mapLoadName) ||!Int_Parse(p, &uiInfo.mapList[uiInfo.mapCount].teamMembers)) {
+			if (!String_Parse(p, &uiInfo.mapList[uiInfo.mapCount].mapName) || !String_Parse(p, &uiInfo.mapList[uiInfo.mapCount].mapLoadName) || !Int_Parse(p, &uiInfo.mapList[uiInfo.mapCount].teamMembers)) {
 				return qfalse;
 			}
 
@@ -5321,6 +5342,7 @@ static qboolean MapList_Parse(char **p) {
 
 				if (token[0] >= '0' && token[0] <= '9') {
 					uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << (token[0] - 0x030));
+
 					if (!Int_Parse(p, &uiInfo.mapList[uiInfo.mapCount].timeToBeat[token[0] - 0x30])) {
 						return qfalse;
 					}
@@ -5328,10 +5350,12 @@ static qboolean MapList_Parse(char **p) {
 					break;
 				}
 			}
+
 			//mapList[mapCount].imageName = String_Alloc(va("levelshots/%s", mapList[mapCount].mapLoadName));
+
 			//if (uiInfo.mapCount == 0) {
-			// only load the first cinematic, selection loads the others
-			//uiInfo.mapList[uiInfo.mapCount].cinematic = trap_CIN_PlayCinematic(va("%s.roq",uiInfo.mapList[uiInfo.mapCount].mapLoadName), qfalse, qfalse, qtrue, 0, 0, 0, 0);
+				// only load the first cinematic, selection loads the others
+				//uiInfo.mapList[uiInfo.mapCount].cinematic = trap_CIN_PlayCinematic(va("%s.roq", uiInfo.mapList[uiInfo.mapCount].mapLoadName), qfalse, qfalse, qtrue, 0, 0, 0, 0);
 			//}
 			uiInfo.mapList[uiInfo.mapCount].cinematic = -1;
 			uiInfo.mapList[uiInfo.mapCount].levelShot = trap_R_RegisterShaderNoMip(va("levelshots/%s_small", uiInfo.mapList[uiInfo.mapCount].mapLoadName));
@@ -5427,7 +5451,7 @@ UI_PlayCinematic
 static int UI_PlayCinematic(const char *name, float x, float y, float w, float h) {
 
 	CG_AdjustFrom640(&x, &y, &w, &h);
-	return trap_CIN_PlayCinematic(name, x, y, w, h, (CIN_loop | CIN_silent));
+	return trap_CIN_PlayCinematic(name, x, y, w, h, (CIN_loop|CIN_silent));
 }
 
 /*
@@ -5508,16 +5532,16 @@ static void UI_BuildQ3Model_List(void) {
 	uiInfo.q3HeadCount = 0;
 	// iterate directory of all player models
 	numdirs = trap_FS_GetFileList("models/players", "/", dirlist, 2048);
-	dirptr  = dirlist;
+	dirptr = dirlist;
 
 	for (i = 0; i < numdirs && uiInfo.q3HeadCount < MAX_PLAYERMODELS; i++, dirptr += dirlen + 1) {
 		dirlen = strlen(dirptr);
-		
+
 		if (dirlen && dirptr[dirlen - 1] == '/') {
-			dirptr[dirlen - 1] ='\0';
+			dirptr[dirlen - 1] = '\0';
 		}
 
-		if (!strcmp(dirptr,".") || !strcmp(dirptr,".."))
+		if (!strcmp(dirptr, ".") || !strcmp(dirptr, "..")) {
 			continue;
 		}
 		// iterate all skin files in directory
@@ -5529,7 +5553,7 @@ static void UI_BuildQ3Model_List(void) {
 
 			COM_StripExtension(fileptr, skinname, sizeof(skinname));
 			// look for icon_????
-			if (Q_stricmpn(skinname, "icon_", 5) == 0 && !(Q_stricmp(skinname,"icon_blue") == 0 || Q_stricmp(skinname,"icon_red") == 0)) {
+			if (Q_stricmpn(skinname, "icon_", 5) == 0 && !(Q_stricmp(skinname, "icon_blue") == 0 || Q_stricmp(skinname, "icon_red") == 0)) {
 				if (Q_stricmp(skinname, "icon_default") == 0) {
 					Com_sprintf(scratch, sizeof(scratch), "%s", dirptr);
 				} else {
@@ -5653,7 +5677,7 @@ void UI_Init(qboolean inGameLoad, int maxSplitView) {
 	} else {
 
 	}
-#else 
+#else
 	UI_LoadMenus(menuSet, qtrue);
 	UI_LoadMenus("ui/ingame.txt", qfalse);
 #endif
@@ -5705,8 +5729,9 @@ void UI_KeyEvent(int key, qboolean down) {
 			UI_ForceMenuOff();
 		}
 	}
+
 	//if ((s > 0) && (s != menu_null_sound)) {
-	// trap_S_StartLocalSound(s, CHAN_LOCAL_SOUND);
+	//	trap_S_StartLocalSound(s, CHAN_LOCAL_SOUND);
 	//}
 }
 
@@ -6045,12 +6070,13 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 	UI_Text_PaintCenter(centerPoint, yStart + 248, scale, colorWhite, xferText, 0);
 
 	if (downloadSize > 0) {
-		s = va("%s (%d%%)", downloadName, (int)((float)downloadCount * 100.0f / downloadSize));
+		s = va("%s(%d%%)", downloadName, (int)((float)downloadCount * 100.0f / downloadSize));
 	} else {
 		s = downloadName;
 	}
 
 	UI_Text_PaintCenter(centerPoint, yStart + 136, scale, colorWhite, s, 0);
+
 	UI_ReadableSize(dlSizeBuf, sizeof dlSizeBuf, downloadCount);
 	UI_ReadableSize(totalSizeBuf, sizeof totalSizeBuf, downloadSize);
 
@@ -6071,6 +6097,7 @@ static void UI_DisplayDownloadInfo(const char *downloadName, float centerPoint, 
 
 			// We do it in K (/1024) because we'd overflow around 4MB
 			UI_PrintTime(dlTimeBuf, sizeof dlTimeBuf, (n - (((downloadCount / 1024) * n) / (downloadSize / 1024))) * 1000);
+
 			UI_Text_PaintCenter(leftWidth, yStart + 216, scale, colorWhite, dlTimeBuf, 0);
 			UI_Text_PaintCenter(leftWidth, yStart + 160, scale, colorWhite, va("(%s of %s copied)", dlSizeBuf, totalSizeBuf), 0);
 		} else {
@@ -6130,11 +6157,11 @@ void UI_DrawConnectScreen(qboolean overlay) {
 		UI_Text_PaintCenter(centerPoint, yStart + 48, scale, colorWhite, "Starting up...", ITEM_TEXTSTYLE_SHADOWEDMORE);
 	} else {
 		Com_sprintf(text, sizeof(text), "Connecting to %s", cstate.servername);
-		UI_Text_PaintCenter(centerPoint, yStart + 48, scale, colorWhite,text, ITEM_TEXTSTYLE_SHADOWEDMORE);
+		UI_Text_PaintCenter(centerPoint, yStart + 48, scale, colorWhite, text, ITEM_TEXTSTYLE_SHADOWEDMORE);
 	}
 	// display global MOTD at bottom
 	UI_Text_PaintCenter(centerPoint, 600, scale, colorWhite, Info_ValueForKey(cstate.updateInfoString, "motd"), 0);
-	// print any server info (server full, bad version, etc)
+	// print any server info (server full, bad version, etc.)
 	if (cstate.connState < CA_CONNECTED) {
 		UI_Text_PaintCenter_AutoWrapped(centerPoint, yStart + 176, 630, 20, scale, colorWhite, cstate.messageString, 0);
 	}

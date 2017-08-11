@@ -64,8 +64,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define WINDOW_POPUP			0x00200000 // popup
 #define WINDOW_BACKCOLORSET		0x00400000 // backcolor was explicitly set
 #define WINDOW_TIMEDVISIBLE		0x00800000 // visibility timing(NOT implemented)
-
-
 // CGAME cursor type bits
 #define CURSOR_NONE		0x00000001
 #define CURSOR_ARROW	0x00000002
@@ -167,6 +165,7 @@ typedef struct {
 // many of the vars are re-used for different item types, as such they are not always named appropriately
 // the benefits of c++ in DOOM will greatly help crap like this
 // FIXME: need to put a type ptr that points to specific type info per type
+
 #define MAX_LB_COLUMNS 16
 
 typedef struct columnInfo_s {

@@ -28,6 +28,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "ui_local.h"
 
+
+/*
+=======================================================================================================================================
+UI_SetBestScores
+=======================================================================================================================================
+*/
 void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 
 	trap_Cvar_Set("ui_scoreAccuracy", va("%i%%", newInfo->accuracy));
