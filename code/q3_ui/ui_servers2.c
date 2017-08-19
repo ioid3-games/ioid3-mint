@@ -460,8 +460,8 @@ static void ArenaServers_UpdateMenu(void) {
 		// servers found
 		if (g_arenaservers.refreshservers && (g_arenaservers.currentping <= g_arenaservers.numqueriedservers)) {
 			// show progress
-			Com_sprintf(g_arenaservers.status.string, MAX_STATUSLENGTH, "%d of %d Arena Servers.", g_arenaservers.currentping, g_arenaservers.numqueriedservers);
-			g_arenaservers.statusbar.string = "Press SPACE to stop";
+			Com_sprintf(g_arenaservers.status.string, MAX_STATUSLENGTH, "Pinged %d of %d Servers.", g_arenaservers.currentping, g_arenaservers.numqueriedservers);
+			g_arenaservers.statusbar.string = "Press SPACE to Stop";
 			qsort(g_arenaservers.serverlist, *g_arenaservers.numservers, sizeof(servernode_t), ArenaServers_Compare);
 		} else {
 			// all servers pinged - enable controls
@@ -485,7 +485,7 @@ static void ArenaServers_UpdateMenu(void) {
 		// no servers found
 		if (g_arenaservers.refreshservers) {
 			strcpy(g_arenaservers.status.string, "Scanning For Servers.");
-			g_arenaservers.statusbar.string = "Press SPACE to stop";
+			g_arenaservers.statusbar.string = "Press SPACE to Stop";
 			// disable controls during refresh
 			g_arenaservers.game.generic.flags |= QMF_GRAYED;
 			g_arenaservers.gametype.generic.flags |= QMF_GRAYED;
@@ -650,11 +650,6 @@ static void ArenaServers_Insert(char *adrstr, char *info, int pingtime) {
 	char *s;
 	int i;
 
-	if ((pingtime >= ArenaServers_MaxPing()) && (g_servertype != UIAS_FAVORITES)) {
-		// slow global or local servers do not get entered
-		return;
-	}
-
 	if (*g_arenaservers.numservers >= g_arenaservers.maxservers) {
 		// list full;
 		servernodeptr = g_arenaservers.serverlist + (*g_arenaservers.numservers) - 1;
@@ -667,7 +662,6 @@ static void ArenaServers_Insert(char *adrstr, char *info, int pingtime) {
 	Q_strncpyz(servernodeptr->adrstr, adrstr, MAX_ADDRESSLENGTH);
 	Q_strncpyz(servernodeptr->hostname, Info_ValueForKey(info, "hostname"), MAX_HOSTNAMELENGTH);
 	Q_CleanStr(servernodeptr->hostname);
-	Q_strupr(servernodeptr->hostname);
 	Q_strncpyz(servernodeptr->mapname, Info_ValueForKey(info, "mapname"), MAX_MAPNAMELENGTH);
 	Q_CleanStr(servernodeptr->mapname);
 
@@ -879,11 +873,9 @@ static void ArenaServers_DoRefresh(void) {
 				// stale it out
 				info[0] = '\0';
 				time = maxPing;
-				// set hostname for nonresponsive favorite server
-				if (g_servertype == UIAS_FAVORITES) {
-					Info_SetValueForKey(info, "hostname", adrstr);
-					Info_SetValueForKey(info, "game", "???");
-				}
+				// set hostname for nonresponsive server
+				Info_SetValueForKey(info, "hostname", adrstr);
+				Info_SetValueForKey(info, "game", "???");
 			} else {
 				trap_LAN_GetPingInfo(i, info, MAX_INFO_STRING);
 			}
@@ -1054,16 +1046,23 @@ int ArenaServers_SetType(int type) {
 
 	if (type >= UIAS_GLOBAL1 && type <= UIAS_GLOBAL5) {
 		char masterstr[2], cvarname[sizeof("sv_master1")];
+		int select;
 
-		while (type <= UIAS_GLOBAL5) {
+		if (type < g_servertype) {
+			select = -1;
+		} else {
+			select = 1;
+		}
+
+		while (type >= UIAS_GLOBAL1 && type <= UIAS_GLOBAL5) {
 			Com_sprintf(cvarname, sizeof(cvarname), "sv_master%d", type - UIAS_GLOBAL0);
 			trap_Cvar_VariableStringBuffer(cvarname, masterstr, sizeof(masterstr));
 
 			if (*masterstr) {
 				break;
 			}
-
-			type++;
+			
+			type += select;
 		}
 	}
 
@@ -1104,7 +1103,7 @@ int ArenaServers_SetType(int type) {
 		g_arenaservers.numqueriedservers = *g_arenaservers.numservers;
 
 		ArenaServers_UpdateMenu();
-		strcpy(g_arenaservers.status.string, "hit refresh to update");
+		strcpy(g_arenaservers.status.string, "Hit Refresh to Update.");
 	}
 
 	return type;
@@ -1250,12 +1249,12 @@ void ArenaServers_DrawServerList(int x, int y, int item, int style, float *color
 	servernodeptr = tableptr->servernode;
 
 	w = 24 * charWidth;
-	CG_SetClipRegion(x, y, w, SMALLCHAR_HEIGHT);
+	CG_SetClipRegion(x, y, w, SMALLCHAR_HEIGHT + 2);
 	UI_DrawString(x, y, servernodeptr->hostname, style, color);
 	x += w + charWidth;
 
 	w = 12 * charWidth;
-	CG_SetClipRegion(x, y, w, SMALLCHAR_HEIGHT);
+	CG_SetClipRegion(x, y, w, SMALLCHAR_HEIGHT + 2);
 	UI_DrawString(x, y, servernodeptr->mapname, style, color);
 	x += w + charWidth;
 
@@ -1265,17 +1264,19 @@ void ArenaServers_DrawServerList(int x, int y, int item, int style, float *color
 	x += w + charWidth;
 
 	w = 8 * charWidth;
-	CG_SetClipRegion(x, y, w, SMALLCHAR_HEIGHT);
+	CG_SetClipRegion(x, y, w, SMALLCHAR_HEIGHT + 2);
 	UI_DrawString(x, y, servernodeptr->gametypeName, style, color);
 	x += w + charWidth;
 
-	w = 3 * charWidth;
-	CG_SetClipRegion(x, y, w, SMALLCHAR_HEIGHT);
+	w = 5 * charWidth;
+	CG_ClearClipRegion();
 	UI_DrawString(x, y, netnames[servernodeptr->nettype], style, color);
 	x += w + charWidth;
 
+	w = 3 * charWidth;
 	CG_ClearClipRegion();
-	UI_DrawString(x, y, va("%s%d", tableptr->pingColor, servernodeptr->pingtime), style, color);
+	UI_DrawString(x + w, y, va("%s%d",tableptr->pingColor,servernodeptr->pingtime), (style & ~UI_FORMATMASK)|UI_RIGHT, color);
+	x += w + charWidth;
 }
 
 /*

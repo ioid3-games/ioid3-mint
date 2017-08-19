@@ -73,6 +73,7 @@ qboolean CG_PositionEntityOnTag(refEntity_t *entity, const refEntity_t *parent, 
 	MatrixMultiply(lerped.axis, ((refEntity_t *)parent)->axis, entity->axis);
 
 	entity->backlerp = parent->backlerp;
+
 	return returnValue;
 }
 

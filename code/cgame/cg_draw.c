@@ -1754,7 +1754,6 @@ static void CG_DrawGlobalCenterString(void) {
 	}
 
 	CG_SetScreenPlacement(PLACE_CENTER, PLACE_CENTER);
-
 	CG_DrawStringAutoWrap(SCREEN_WIDTH / 2, cg.centerPrintY, cg.centerPrint, UI_CENTER|UI_VA_CENTER|UI_DROPSHADOW|UI_GIANTFONT|UI_NOSCALE, color, cg.centerPrintCharScale, 0, 0, cgs.screenFakeWidth - 64);
 }
 

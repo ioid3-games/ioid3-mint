@@ -21,24 +21,26 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-// bg_misc.c -- both games misc functions, all completely stateless
+
+/**************************************************************************************************************************************
+ Both games misc functions, all completely stateless.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
 
-/*QUAKED item_*****(0 0 0)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_***** (0 0 0) (-16 -16 -16) (16 16 16) suspended
 DO NOT USE THIS CLASS, IT JUST HOLDS GENERAL INFORMATION.
 The suspended flag will allow items to hang in the air, otherwise they are dropped to the next surface.
 
 If an item is the target of another entity, it will not spawn in until fired.
 
-An item fires all of its targets when it is picked up.  If the toucher can't carry it, the targets won't be fired.
+An item fires all of its targets when it is picked up. If the toucher can't carry it, the targets won't be fired.
 
 "notfree" if set to 1, don't spawn in free for all games
 "notteam" if set to 1, don't spawn in team games
 "notsingle" if set to 1, don't spawn in single player games
-"wait"	override the default wait before respawning. -1 = never respawn automatically, which can be used with targeted spawning.
+"wait" override the default wait before respawning. -1 = never respawn automatically, which can be used with targeted spawning.
 "random" random number of plus or minus seconds varied from the respawn time
 "count" override quantity or duration on most items.
 */
@@ -57,13 +59,13 @@ gitem_t bg_itemlist[] =
 		0,
 		0,
 /* sounds */ ""
-	},	// leave index 0 alone
+	}, // leave index 0 alone
 
 
 	// ARMOR
 	//
 
-/*QUAKED item_armor_shard(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_armor_shard (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_armor_shard", 
@@ -78,7 +80,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED item_armor_combat(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_armor_combat(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_armor_combat", 
@@ -93,10 +95,10 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED item_armor_body(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_armor_body(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_body", 
+		"item_armor_body",
 		"sound/misc/ar2_pkup.wav",
         {"models/powerups/armor/armor_red.md3",
 		NULL, NULL, NULL},
@@ -111,7 +113,7 @@ gitem_t bg_itemlist[] =
 
 	// health
 	//
-/*QUAKED item_health_small(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_health_small(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_health_small",
@@ -127,7 +129,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED item_health(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_health(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_health",
@@ -143,7 +145,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED item_health_large(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_health_large(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_health_large",
@@ -159,7 +161,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED item_health_mega(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_health_mega(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_health_mega",
@@ -180,7 +182,7 @@ gitem_t bg_itemlist[] =
 	// WEAPONS 
 	//
 
-/*QUAKED weapon_gauntlet(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_gauntlet(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_gauntlet", 
@@ -195,7 +197,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED weapon_shotgun(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_shotgun(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_shotgun", 
@@ -210,7 +212,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED weapon_machinegun(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_machinegun(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_machinegun", 
@@ -225,7 +227,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED weapon_grenadelauncher(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_grenadelauncher(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_grenadelauncher",
@@ -240,7 +242,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/weapons/grenade/hgrenb1a.wav sound/weapons/grenade/hgrenb2a.wav"
 	},
 
-/*QUAKED weapon_rocketlauncher(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_rocketlauncher(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_rocketlauncher",
@@ -255,7 +257,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED weapon_lightning(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_lightning(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_lightning", 
@@ -270,7 +272,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED weapon_railgun(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_railgun(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_railgun", 
@@ -285,7 +287,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED weapon_plasmagun(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_plasmagun(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_plasmagun", 
@@ -300,7 +302,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED weapon_bfg(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_bfg(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_bfg",
@@ -315,7 +317,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED weapon_grapplinghook(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_grapplinghook(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_grapplinghook",
@@ -334,7 +336,7 @@ gitem_t bg_itemlist[] =
 	// AMMO ITEMS
 	//
 
-/*QUAKED ammo_shells(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_shells(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_shells",
@@ -349,7 +351,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED ammo_bullets(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_bullets(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_bullets",
@@ -364,7 +366,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED ammo_grenades(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_grenades(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_grenades",
@@ -379,7 +381,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED ammo_cells(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_cells(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_cells",
@@ -394,7 +396,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED ammo_lightning(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_lightning(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_lightning",
@@ -409,7 +411,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED ammo_rockets(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_rockets(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_rockets",
@@ -424,7 +426,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED ammo_slugs(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_slugs(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_slugs",
@@ -439,7 +441,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED ammo_bfg(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_bfg(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_bfg",
@@ -457,7 +459,7 @@ gitem_t bg_itemlist[] =
 
 	// HOLDABLE ITEMS
 	//
-/*QUAKED holdable_teleporter(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED holdable_teleporter(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"holdable_teleporter", 
@@ -471,7 +473,7 @@ gitem_t bg_itemlist[] =
 		HI_TELEPORTER,
 /* sounds */ ""
 	},
-/*QUAKED holdable_medkit(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED holdable_medkit(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"holdable_medkit", 
@@ -490,7 +492,7 @@ gitem_t bg_itemlist[] =
 
 	// POWERUP ITEMS
 	//
-/*QUAKED item_quad(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_quad(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_quad", 
@@ -506,7 +508,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/damage2.wav sound/items/damage3.wav"
 	},
 
-/*QUAKED item_enviro(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_enviro(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_enviro",
@@ -522,7 +524,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/airout.wav sound/items/protect3.wav"
 	},
 
-/*QUAKED item_haste(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_haste(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_haste",
@@ -538,7 +540,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED item_invis(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_invis(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_invis",
@@ -554,7 +556,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ ""
 	},
 
-/*QUAKED item_regen(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_regen(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_regen",
@@ -570,7 +572,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/regen.wav"
 	},
 
-/*QUAKED item_flight(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED item_flight(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"item_flight",
@@ -586,7 +588,7 @@ gitem_t bg_itemlist[] =
 /* sounds */ "sound/items/flight.wav"
 	},
 
-/*QUAKED team_CTF_redflag(1 0 0)(-16 -16 -16)(16 16 16)
+/*QUAKED team_CTF_redflag(1 0 0) (-16 -16 -16) (16 16 16)
 Only in CTF games
 */
 	{
@@ -602,7 +604,7 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-/*QUAKED team_CTF_blueflag(0 0 1)(-16 -16 -16)(16 16 16)
+/*QUAKED team_CTF_blueflag(0 0 1) (-16 -16 -16) (16 16 16)
 Only in CTF games
 */
 	{
@@ -619,7 +621,7 @@ Only in CTF games
 	},
 
 #ifdef MISSIONPACK
-/*QUAKED holdable_kamikaze(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED holdable_kamikaze(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"holdable_kamikaze", 
@@ -634,7 +636,7 @@ Only in CTF games
 /* sounds */ "sound/items/kamikazerespawn.wav"
 	},
 
-/*QUAKED holdable_portal(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED holdable_portal(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"holdable_portal", 
@@ -649,7 +651,7 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-/*QUAKED holdable_invulnerability(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED holdable_invulnerability(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"holdable_invulnerability", 
@@ -664,7 +666,7 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-/*QUAKED ammo_nails(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_nails(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_nails",
@@ -679,7 +681,7 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-/*QUAKED ammo_mines(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_mines(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_mines",
@@ -694,7 +696,7 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-/*QUAKED ammo_belt(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED ammo_belt(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"ammo_belt",
@@ -712,7 +714,7 @@ Only in CTF games
 
 	// PERSISTANT POWERUP ITEMS
 	//
-/*QUAKED item_scout(.3 .3 1)(-16 -16 -16)(16 16 16)suspended redTeam blueTeam
+/*QUAKED item_scout(.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
 */
 	{
 		"item_scout",
@@ -727,7 +729,7 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-/*QUAKED item_guard(.3 .3 1)(-16 -16 -16)(16 16 16)suspended redTeam blueTeam
+/*QUAKED item_guard(.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
 */
 	{
 		"item_guard",
@@ -742,7 +744,7 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-/*QUAKED item_doubler(.3 .3 1)(-16 -16 -16)(16 16 16)suspended redTeam blueTeam
+/*QUAKED item_doubler(.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
 */
 	{
 		"item_doubler",
@@ -757,7 +759,7 @@ Only in CTF games
 /* sounds */ ""
 	},
 
-/*QUAKED item_doubler(.3 .3 1)(-16 -16 -16)(16 16 16)suspended redTeam blueTeam
+/*QUAKED item_doubler(.3 .3 1) (-16 -16 -16) (16 16 16) suspended redTeam blueTeam
 */
 	{
 		"item_ammoregen",
@@ -771,7 +773,7 @@ Only in CTF games
 		PW_AMMOREGEN,
 /* sounds */ ""
 	},
-	/*QUAKED team_CTF_neutralflag(0 0 1)(-16 -16 -16)(16 16 16)
+	/*QUAKED team_CTF_neutralflag(0 0 1) (-16 -16 -16) (16 16 16)
 Only in One Flag CTF games
 */
 	{
@@ -810,7 +812,7 @@ Only in One Flag CTF games
 		0,
 /* sounds */ ""
 	},
-/*QUAKED weapon_nailgun(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_nailgun(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_nailgun", 
@@ -825,7 +827,7 @@ Only in One Flag CTF games
 /* sounds */ ""
 	},
 
-/*QUAKED weapon_prox_launcher(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_prox_launcher(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_prox_launcher", 
@@ -845,7 +847,7 @@ Only in One Flag CTF games
 			"sound/weapons/proxmine/wstbactv.wav"
 	},
 
-/*QUAKED weapon_chaingun(.3 .3 1)(-16 -16 -16)(16 16 16)suspended
+/*QUAKED weapon_chaingun(.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
 		"weapon_chaingun", 
@@ -868,8 +870,8 @@ Only in One Flag CTF games
 int bg_numItems = ARRAY_LEN(bg_itemlist) - 1;
 
 // entityState_t fields
-#define NETF(x)(size_t)&((entityState_t*)0)->x, 1
-#define NETA(x)(size_t)&((entityState_t*)0)->x, ARRAY_LEN(((entityState_t*)0)->x)
+#define NETF(x) (size_t)&((entityState_t*)0)->x, 1
+#define NETA(x) (size_t)&((entityState_t*)0)->x, ARRAY_LEN(((entityState_t*)0)->x)
 
 vmNetField_t bg_entityStateFields[] = 
 {
@@ -939,8 +941,8 @@ vmNetField_t bg_entityStateFields[] =
 int bg_numEntityStateFields = ARRAY_LEN(bg_entityStateFields);
 
 // playerState_t fields
-#define PSF(x)(size_t)&((playerState_t*)0)->x, 1
-#define PSA(x)(size_t)&((playerState_t*)0)->x, ARRAY_LEN(((playerState_t*)0)->x)
+#define PSF(x) (size_t)&((playerState_t*)0)->x, 1
+#define PSA(x) (size_t)&((playerState_t*)0)->x, ARRAY_LEN(((playerState_t*)0)->x)
 
 vmNetField_t bg_playerStateFields[] = 
 {
@@ -1716,17 +1718,13 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 		}
 
 		seq = ps->entityEventSequence &(MAX_PS_EVENTS-1);
-
 		s->event = ps->events[seq] |((ps->entityEventSequence & 3) << 8);
-
 		s->eventParm = ps->eventParms[seq];
-
 		ps->entityEventSequence++;
 	}
 
 	s->weapon = ps->weapon;
 	s->groundEntityNum = ps->groundEntityNum;
-
 	s->powerups = 0;
 
 	for (i = 0; i < MAX_POWERUPS; i++) {
@@ -1739,7 +1737,6 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 	s->loopSound = ps->loopSound;
 	s->tokens = ps->tokens;
 	s->team = ps->persistant[PERS_TEAM];
-
 	s->collisionType = ps->collisionType;
 
 	VectorCopy(ps->mins, s->mins);
@@ -1755,8 +1752,7 @@ void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean s
 =======================================================================================================================================
 BG_PlayerStateToEntityStateExtraPolate
 
-This is done after each set of usercmd_t on the server,
-and after local prediction on the client
+This is done after each set of usercmd_t on the server, and after local prediction on the client
 =======================================================================================================================================
 */
 void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s, int time, qboolean snap) {
@@ -1805,7 +1801,6 @@ void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s,
 
 	if (ps->externalEvent) {
 		s->event = ps->externalEvent;
-
 		s->eventParm = ps->externalEventParm;
 	} else if (ps->entityEventSequence < ps->eventSequence) {
 		int seq;
@@ -1815,17 +1810,13 @@ void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s,
 		}
 
 		seq = ps->entityEventSequence &(MAX_PS_EVENTS-1);
-
 		s->event = ps->events[seq] |((ps->entityEventSequence & 3) << 8);
-
 		s->eventParm = ps->eventParms[seq];
-
 		ps->entityEventSequence++;
 	}
 
 	s->weapon = ps->weapon;
 	s->groundEntityNum = ps->groundEntityNum;
-
 	s->powerups = 0;
 
 	for (i = 0; i < MAX_POWERUPS; i++) {
@@ -2275,7 +2266,7 @@ qboolean PC_ReadStructure(int source, structdef_t *def, void *structure) {
 			num = 1;
 		}
 
-		p = (void *)((byte*)structure + fd->offset);
+		p = (void *) ((byte*)structure + fd->offset);
 
 		while (num-- > 0) {
 			if (fd->type & FT_ARRAY) {
