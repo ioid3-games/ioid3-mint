@@ -741,7 +741,6 @@ int main(int argc, char **argv) {
 	}
 #endif
 	while (1) {
-		IN_Frame();
 		Com_Frame();
 	}
 

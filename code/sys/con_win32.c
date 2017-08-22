@@ -287,7 +287,7 @@ void CON_Init(void) {
 	qconsole_attrib = info.wAttributes;
 	qconsole_backgroundAttrib = qconsole_attrib &(BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED|BACKGROUND_INTENSITY);
 
-	Com_sprintf(consoleTitle, sizeof(consoleTitle), "%s Dedicated Server Console", com_productName->string);
+	Com_sprintf(consoleTitle, sizeof(consoleTitle), "%s Dedicated Server Console", com_productName ? com_productName->string : PRODUCT_NAME);
 	SetConsoleTitle(consoleTitle);
 	// initialize history
 	for (i = 0; i < QCONSOLE_HISTORY; i++) {

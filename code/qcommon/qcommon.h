@@ -965,6 +965,11 @@ void SV_Frame(int msec);
 void SV_PacketEvent(netadr_t from, msg_t *msg);
 int SV_FrameMsec(void);
 int SV_SendQueuedPackets(void);
+// input interface
+void IN_Init(void *windowData);
+void IN_Frame(void);
+void IN_Shutdown(void);
+void IN_Restart(void);
 
 /*
 =======================================================================================================================================
