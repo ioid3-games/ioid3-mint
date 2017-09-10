@@ -258,12 +258,16 @@ vmCvar_t cg_fovAspectAdjust;
 vmCvar_t cg_fadeExplosions;
 vmCvar_t cg_skybox;
 vmCvar_t cg_drawScores;
+vmCvar_t cg_drawPickupItems;
 vmCvar_t cg_oldBubbles;
 vmCvar_t cg_smoothBodySink;
 vmCvar_t cg_antiLag;
 vmCvar_t cg_forceBitmapFonts;
 vmCvar_t cg_drawGrappleHook;
 vmCvar_t cg_drawBBox;
+vmCvar_t cg_consoleFont;
+vmCvar_t cg_hudFont;
+vmCvar_t cg_numberFont;
 vmCvar_t cg_introPlayed;
 vmCvar_t cg_joystickDebug;
 vmCvar_t ui_stretch;
@@ -460,7 +464,11 @@ static cvarTable_t cgameCvarTable[] = {
 	{&cg_fovAspectAdjust, "cg_fovAspectAdjust", "1", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_fadeExplosions, "cg_fadeExplosions", "0", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_skybox, "cg_skybox", "1", CVAR_ARCHIVE, RANGE_INT(0, 2)},
-	{&cg_drawScores, "cg_drawScores", "1", 0, RANGE_BOOL},
+	{&cg_consoleFont, "cg_consoleFont", "fonts/LiberationMono-Regular.ttf", CVAR_ARCHIVE|CVAR_LATCH, RANGE_ALL},
+	{&cg_hudFont, "cg_hudFont", "fonts/LiberationSans-Bold.ttf", CVAR_ARCHIVE|CVAR_LATCH, RANGE_ALL},
+	{&cg_numberFont, "cg_numberFont", "", CVAR_ARCHIVE|CVAR_LATCH, RANGE_ALL},
+	{&cg_drawScores, "cg_drawScores", "1", CVAR_ARCHIVE, RANGE_BOOL},
+	{&cg_drawPickupItems, "cg_drawPickupItems", "1", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_oldBubbles, "cg_oldBubbles", "1", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_smoothBodySink, "cg_smoothBodySink", "1", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_antiLag, "cg_antiLag", "0", CVAR_USERINFO_ALL|CVAR_ARCHIVE, RANGE_INT(0, 2)},
@@ -1836,6 +1844,13 @@ qboolean CG_Asset_Parse(int handle) {
 				return qfalse;
 			}
 
+			if (cg_hudFont.string[0]) {
+				if (CG_InitTrueTypeFont(cg_hudFont.string, pointSize, 0, &cgDC.Assets.textFont)) {
+					Com_DPrintf("Overriding HUD font '%s' with '%s'\n", tempStr, cg_hudFont.string);
+					continue;
+				}
+			}
+
 			if (!CG_InitTrueTypeFont(tempStr, pointSize, 0, &cgDC.Assets.textFont)) {
 				CG_InitBitmapFont(&cgDC.Assets.textFont, pointSize, pointSize / 2);
 			}
@@ -1849,6 +1864,13 @@ qboolean CG_Asset_Parse(int handle) {
 				return qfalse;
 			}
 
+			if (cg_hudFont.string[0]) {
+				if (CG_InitTrueTypeFont(cg_hudFont.string, pointSize, 0, &cgDC.Assets.smallFont)) {
+					Com_DPrintf("Overriding HUD smallFont '%s' with '%s'\n", tempStr, cg_hudFont.string);
+					continue;
+				}
+			}
+
 			if (!CG_InitTrueTypeFont(tempStr, pointSize, 0, &cgDC.Assets.smallFont)) {
 				CG_InitBitmapFont(&cgDC.Assets.smallFont, pointSize, pointSize / 2);
 			}
@@ -1860,6 +1882,19 @@ qboolean CG_Asset_Parse(int handle) {
 			int pointSize;
 			if (!PC_String_Parse(handle, &tempStr) || !PC_Int_Parse(handle, &pointSize)) {
 				return qfalse;
+			}
+
+			if (cg_hudFont.string[0]) {
+				// ZTM: HACK: Team Arena hud.menu list bigFont as 20 point but status numbers are drawn at 36 point.
+				if (!strcmp(tempStr, "fonts/bigfont") && pointSize == 20 && CG_InitTrueTypeFont(cg_hudFont.string, 36, 0, &cgDC.Assets.bigFont)) {
+					Com_DPrintf("Overriding HUD bigFont '%s' (%d pt) with '%s' (36 pt)\n", tempStr, pointSize, cg_hudFont.string);
+					continue;
+				}
+
+				if (CG_InitTrueTypeFont(cg_hudFont.string, pointSize, 0, &cgDC.Assets.bigFont)) {
+					Com_DPrintf("Overriding HUD bigFont '%s' with '%s'\n", tempStr, cg_hudFont.string);
+					continue;
+				}
 			}
 
 			if (!CG_InitTrueTypeFont(tempStr, pointSize, 0, &cgDC.Assets.bigFont)) {
@@ -2632,7 +2667,6 @@ void CG_Init(connstate_t state, int maxSplitView, int playVideo) {
 	cgs.media.nodrawShader = trap_R_RegisterShaderEx("nodraw", LIGHTMAP_NONE, qtrue);
 	cgs.media.whiteDynamicShader= trap_R_RegisterShaderEx("white", LIGHTMAP_NONE, qtrue);
 
-	CG_TextInit();
 	CG_ConsoleInit();
 
 	if (cg_dedicated.integer) {
@@ -2707,6 +2741,8 @@ void CG_Ingame_Init(int serverMessageNum, int serverCommandSequence, int maxSpli
 	if (strcmp(s, GAME_VERSION)) {
 		CG_Error("Client/Server game mismatch: %s/%s", GAME_VERSION, s);
 	}
+
+	CG_HudTextInit();
 
 	s = CG_ConfigString(CS_LEVEL_START_TIME);
 	cgs.levelStartTime = atoi(s);

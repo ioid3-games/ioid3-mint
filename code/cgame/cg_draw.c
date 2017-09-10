@@ -1218,6 +1218,12 @@ static void CG_DrawTeamInfo(void) {
 
 #define CHATLOC_Y 420 // bottom end
 #define CHATLOC_X 0
+	// make spectators use TEAM_SPECTATOR
+	team = cgs.playerinfo[cg.cur_lc->playerNum].team;
+
+	if (team < 0 || team >= TEAM_NUM_TEAMS) {
+		return;
+	}
 
 	if (cg_teamChatHeight.integer < TEAMCHAT_HEIGHT) {
 		chatHeight = cg_teamChatHeight.integer;
@@ -2693,7 +2699,7 @@ void CG_DrawTimedMenus(void) {
 CG_Draw2D
 =======================================================================================================================================
 */
-static void CG_Draw2D(stereoFrame_t stereoFrame) {
+static void CG_Draw2D(stereoFrame_t stereoFrame, qboolean *voiceMenuOpen) {
 #ifdef MISSIONPACK
 	if (cg.cur_lc->orderPending && cg.time > cg.cur_lc->orderTime) {
 		CG_CheckOrderPending(cg.cur_localPlayerNum);
@@ -2904,6 +2910,7 @@ Perform all drawing needed to completely fill the viewport.
 =======================================================================================================================================
 */
 void CG_DrawActive(stereoFrame_t stereoView) {
+	qboolean voiceMenuOpen = qfalse;
 
 	// optionally draw the info screen instead
 	if (!cg.snap) {
@@ -2931,8 +2938,8 @@ void CG_DrawActive(stereoFrame_t stereoView) {
 	// draw 3D view
 	trap_R_RenderScene(&cg.refdef);
 	// draw status bar and other floating elements
-	CG_Draw2D(stereoView);
-	CG_DrawNotify();
+	CG_Draw2D(stereoView, &voiceMenuOpen);
+	CG_DrawNotify(voiceMenuOpen);
 }
 
 /*
@@ -2973,10 +2980,11 @@ void CG_DrawMessageMode(void) {
 	if (!(Key_GetCatcher()& KEYCATCH_MESSAGE)) {
 		return;
 	}
+
+	CG_SetScreenPlacement(PLACE_LEFT, PLACE_CENTER);
 	// draw the chat line
 	CG_DrawString(8, 232, cg.messagePrompt, UI_DROPSHADOW|UI_BIGFONT, NULL);
-
-	MField_Draw(&cg.messageField, 8 + CG_DrawStrlen(cg.messagePrompt, UI_BIGFONT), 232, UI_DROPSHADOW|UI_BIGFONT, NULL, qtrue);
+	CG_MField_Draw(&cg.messageField, 8 + CG_DrawStrlen(cg.messagePrompt, UI_BIGFONT), 232, UI_DROPSHADOW|UI_BIGFONT, NULL, qtrue);
 }
 
 /*

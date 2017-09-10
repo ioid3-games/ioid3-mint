@@ -160,8 +160,8 @@ typedef struct aas_predictroute_s {
 	vec3_t endpos;			// position at the end of movement prediction
 	int endarea;			// area at end of movement prediction
 	int stopevent;			// event that made the prediction stop
-	int endcontents;		// contents at the end of movement prediction
-	int endtravelflags;		// end travel flags
-	int numareas;			// number of areas predicted ahead
-	int time;				// time predicted ahead(in hundreth of a sec)
+	int endcontents;	// contents at the end of movement prediction
+	int endtravelflags;	// end travel flags
+	int numareas;		// number of areas predicted ahead
+	int time;			// time predicted ahead (in hundreth of a sec.)
 } aas_predictroute_t;

@@ -466,6 +466,13 @@ qboolean Asset_Parse(int handle) {
 				return qfalse;
 			}
 
+			if (ui_menuFont.string[0]) {
+				if (CG_InitTrueTypeFont(ui_menuFont.string, pointSize, 0, &uiInfo.uiDC.Assets.textFont)) {
+					Com_DPrintf("Overriding UI font '%s' with '%s'\n", tempStr, ui_menuFont.string);
+					continue;
+				}
+			}
+
 			if (!CG_InitTrueTypeFont(tempStr, pointSize, 0, &uiInfo.uiDC.Assets.textFont)) {
 				CG_InitBitmapFont(&uiInfo.uiDC.Assets.textFont, pointSize, pointSize / 2);
 			}
@@ -481,6 +488,13 @@ qboolean Asset_Parse(int handle) {
 				return qfalse;
 			}
 
+			if (ui_menuFont.string[0]) {
+				if (CG_InitTrueTypeFont(ui_menuFont.string, pointSize, 0, &uiInfo.uiDC.Assets.smallFont)) {
+					Com_DPrintf("Overriding UI smallFont '%s' with '%s'\n", tempStr, ui_menuFont.string);
+					continue;
+				}
+			}
+
 			if (!CG_InitTrueTypeFont(tempStr, pointSize, 0, &uiInfo.uiDC.Assets.smallFont)) {
 				CG_InitBitmapFont(&uiInfo.uiDC.Assets.smallFont, pointSize, pointSize / 2);
 			}
@@ -493,6 +507,13 @@ qboolean Asset_Parse(int handle) {
 
 			if (!PC_String_Parse(handle, &tempStr) || !PC_Int_Parse(handle,&pointSize)) {
 				return qfalse;
+			}
+
+			if (ui_menuFont.string[0]) {
+				if (CG_InitTrueTypeFont(ui_menuFont.string, pointSize, 0, &uiInfo.uiDC.Assets.bigFont)) {
+					Com_DPrintf("Overriding UI bigFont '%s' with '%s'\n", tempStr, ui_menuFont.string);
+					continue;
+				}
 			}
 
 			if (!CG_InitTrueTypeFont(tempStr, pointSize, 0, &uiInfo.uiDC.Assets.bigFont)) {
@@ -1863,12 +1884,11 @@ UI_DrawCrosshair
 */
 static void UI_DrawCrosshair(rectDef_t *rect, float scale, vec4_t color) {
 
-	trap_R_SetColor(color);
-
-	if (uiInfo.currentCrosshair < 0 || uiInfo.currentCrosshair >= NUM_CROSSHAIRS) {
-		uiInfo.currentCrosshair = 0;
+	if (!uiInfo.currentCrosshair) {
+		return;
 	}
 
+	trap_R_SetColor(color);
 	CG_DrawPic(rect->x, rect->y - rect->h, rect->w, rect->h, uiInfo.uiDC.Assets.crosshairShader[uiInfo.currentCrosshair]);
 	trap_R_SetColor(NULL);
 }
@@ -5690,7 +5710,11 @@ void UI_Init(qboolean inGameLoad, int maxSplitView) {
 	UI_LoadBots();
 	// sets defaults for ui temp cvars
 	uiInfo.effectsColor = gamecodetoui[(int)trap_Cvar_VariableValue("color1") - 1];
-	uiInfo.currentCrosshair = (int)trap_Cvar_VariableValue("cg_drawCrosshair");
+	uiInfo.currentCrosshair = (int)trap_Cvar_VariableValue("cg_drawCrosshair") % NUM_CROSSHAIRS;
+
+	if (uiInfo.currentCrosshair < 0) {
+		uiInfo.currentCrosshair = 0;
+	}
 
 	trap_Cvar_SetValue("ui_mousePitch", (trap_Cvar_VariableValue("m_pitch") >= 0) ? 0 : 1);
 
@@ -6324,6 +6348,7 @@ vmCvar_t ui_realWarmUp;
 vmCvar_t ui_serverStatusTimeOut;
 vmCvar_t ui_defaultMaleTeamModel;
 vmCvar_t ui_defaultFemaleTeamModel;
+vmCvar_t ui_menuFont;
 
 static cvarTable_t cvarTable[] = {
 	{&ui_ffa_fraglimit, "ui_ffa_fraglimit", "20", CVAR_ARCHIVE},
@@ -6440,6 +6465,7 @@ static cvarTable_t cvarTable[] = {
 	{&ui_serverStatusTimeOut, "ui_serverStatusTimeOut", "7000", CVAR_ARCHIVE},
 	{&ui_defaultMaleTeamModel, "default_male_team_model", DEFAULT_TEAM_MODEL_MALE, CVAR_ARCHIVE},
 	{&ui_defaultFemaleTeamModel, "default_female_team_model", DEFAULT_TEAM_MODEL_FEMALE, CVAR_ARCHIVE},
+	{&ui_menuFont, "ui_menuFont", "fonts/LiberationSans-Bold.ttf", CVAR_ARCHIVE|CVAR_LATCH},
 };
 
 static int cvarTableSize = ARRAY_LEN(cvarTable);

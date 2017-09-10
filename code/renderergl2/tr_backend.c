@@ -925,16 +925,8 @@ const void* RB_Draw2dPolys( const void* data ) {
 	cmd = (const poly2dCommand_t* )data;
 
 	// FIXME: HUGE hack
-	if (glRefConfig.framebufferObject)
-	{
-		if (!tr.renderFbo || backEnd.framePostProcessed)
-		{
-			FBO_Bind(NULL);
-		}
-		else
-		{
-			FBO_Bind(tr.renderFbo);
-		}
+	if (glRefConfig.framebufferObject) {
+		FBO_Bind(backEnd.framePostProcessed ? NULL : tr.renderFbo);
 	}
 
 	RB_SetGL2D();
@@ -993,16 +985,8 @@ const void *RB_RotatedPic( const void *data ) {
 	cmd = (const stretchPicCommand_t *)data;
 
 	// FIXME: HUGE hack
-	if (glRefConfig.framebufferObject)
-	{
-		if (!tr.renderFbo || backEnd.framePostProcessed)
-		{
-			FBO_Bind(NULL);
-		}
-		else
-		{
-			FBO_Bind(tr.renderFbo);
-		}
+	if (glRefConfig.framebufferObject) {
+		FBO_Bind(backEnd.framePostProcessed ? NULL : tr.renderFbo);
 	}
 
 	RB_SetGL2D();
@@ -1089,16 +1073,8 @@ const void *RB_StretchPicGradient( const void *data ) {
 	cmd = (const stretchPicCommand_t *)data;
 
 	// FIXME: HUGE hack
-	if (glRefConfig.framebufferObject)
-	{
-		if (!tr.renderFbo || backEnd.framePostProcessed)
-		{
-			FBO_Bind(NULL);
-		}
-		else
-		{
-			FBO_Bind(tr.renderFbo);
-		}
+	if (glRefConfig.framebufferObject) {
+		FBO_Bind(backEnd.framePostProcessed ? NULL : tr.renderFbo);
 	}
 
 	RB_SetGL2D();
@@ -1454,7 +1430,7 @@ const void	*RB_DrawSurfs( const void *data ) {
 			qglClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 			qglClear( GL_COLOR_BUFFER_BIT );
 
-			if (glRefConfig.occlusionQuery)
+			if (glRefConfig.occlusionQuery && r_drawSunRaysOcclusionQuery->integer)
 			{
 				tr.sunFlareQueryActive[tr.sunFlareQueryIndex] = qtrue;
 				qglBeginQuery(GL_SAMPLES_PASSED, tr.sunFlareQuery[tr.sunFlareQueryIndex]);
@@ -1462,7 +1438,7 @@ const void	*RB_DrawSurfs( const void *data ) {
 
 			RB_DrawSun(scale * 0.2f + 0.2f, tr.sunFlareShader);
 
-			if (glRefConfig.occlusionQuery)
+			if (glRefConfig.occlusionQuery && r_drawSunRaysOcclusionQuery->integer)
 			{
 				qglEndQuery(GL_SAMPLES_PASSED);
 			}

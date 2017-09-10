@@ -32,7 +32,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 	*****************************************************************************/
 
 #include "../qcommon/q_shared.h"
-#include "../qcommon/surfaceflags.h" // for CONTENTS_* used by BOTMASK_SOLID
+#include "../qcommon/surfaceflags.h"
 #include "l_memory.h"
 #include "aasfile.h"
 #include "botlib.h"

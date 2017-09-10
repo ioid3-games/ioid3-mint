@@ -828,7 +828,12 @@ void SV_Shutdown(char *finalmsg) {
 
 	Cvar_Set("sv_running", "0");
 	Cvar_Set("ui_singlePlayerActive", "0");
+#ifndef DEDICATED
+	// [client] There isn't good single player and multiplayer separation so don't leave game public after hosting a public server.
+	// [dedicated] sv_public isn't cleared for dedicated servers because they call shutdown after 23 days uptime and would stop reporting
+	// to the master servers.
 	Cvar_Set("sv_public", "0");
+#endif
 
 	Com_Printf("---------------------------\n");
 	// when starting a demo while running a server, do not disconnect any local clients and free netfields

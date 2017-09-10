@@ -47,15 +47,15 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 #define TINYCHAR_WIDTH 8
-#define TINYCHAR_HEIGHT cgs.media.tinyFont.pointSize // default: 8
+#define TINYCHAR_HEIGHT 8
 #define SMALLCHAR_WIDTH 8
-#define SMALLCHAR_HEIGHT cgs.media.smallFont.pointSize // default: 16
+#define SMALLCHAR_HEIGHT 16
 #define BIGCHAR_WIDTH 16
-#define BIGCHAR_HEIGHT cgs.media.textFont.pointSize // default: 16
+#define BIGCHAR_HEIGHT 16
 #define GIANTCHAR_WIDTH 32
-#define GIANTCHAR_HEIGHT cgs.media.bigFont.pointSize // default: 48
+#define GIANTCHAR_HEIGHT 48
 #define CONCHAR_WIDTH 8
-#define CONCHAR_HEIGHT cgs.media.consoleFont.pointSize // default: 16
+#define CONCHAR_HEIGHT 16
 #define POWERUP_BLINKS 5
 #define POWERUP_BLINK_TIME 1000
 #define FADE_TIME 200
@@ -134,7 +134,7 @@ void MField_KeyDownEvent(mfield_t *edit, int key);
 void MField_CharEvent(mfield_t *edit, int ch);
 void MField_SetText(mfield_t *edit, const char *text);
 const char *MField_Buffer(mfield_t *edit);
-void MField_Draw(mfield_t *edit, int x, int y, int style, vec4_t color, qboolean drawCursor);
+void MField_Draw(mfield_t *edit, int x, int y, int style, const fontInfo_t *font, vec4_t color, qboolean drawCursor);
 
 /**************************************************************************************************************************************
 
@@ -1073,10 +1073,10 @@ typedef struct {
 	vec3_t inlineModelMidpoints[MAX_SUBMODELS];
 	playerInfo_t playerinfo[MAX_CLIENTS];
 	// teamchat width is *3 because of embedded color codes
-	char teamChatMsgs[TEAMCHAT_HEIGHT][TEAMCHAT_WIDTH * 3 + 1];
-	int teamChatMsgTimes[TEAMCHAT_HEIGHT];
-	int teamChatPos;
-	int teamLastChatPos;
+	char teamChatMsgs[TEAM_NUM_TEAMS][TEAMCHAT_HEIGHT][TEAMCHAT_WIDTH * 3 + 1];
+	int teamChatMsgTimes[TEAM_NUM_TEAMS][TEAMCHAT_HEIGHT];
+	int teamChatPos[TEAM_NUM_TEAMS];
+	int teamLastChatPos[TEAM_NUM_TEAMS];
 	int cursorX;
 	int cursorY;
 	qboolean eventHandling;
@@ -1339,19 +1339,20 @@ void CG_DrawNamedPic(float x, float y, float width, float height, const char *pi
 void CG_SetClipRegion(float x, float y, float w, float h);
 void CG_ClearClipRegion(void);
 void CG_LerpColor(const vec4_t a, const vec4_t b, vec4_t c, float t);
-void CG_DrawString(int x, int y, const char* str, int style, const vec4_t color);
-void CG_DrawStringWithCursor(int x, int y, const char* str, int style, const vec4_t color, int cursorPos, int cursorChar);
-void CG_DrawStringExt(int x, int y, const char* str, int style, const vec4_t color, float scale, int maxChars, float shadowOffset);
-void CG_DrawStringExtWithCursor(int x, int y, const char* str, int style, const vec4_t color, float scale, int maxChars, float shadowOffset, float gradient, int cursorPos, int cursorChar);
-void CG_DrawStringAutoWrap(int x, int y, const char* str, int style, const vec4_t color, float scale, float shadowOffset, float gradient, float wrapX);
-void CG_DrawStringDirect(int x, int y, const char* str, int style, const vec4_t color, float scale, int maxChars, float shadowOffset, float gradient, int cursorPos, int cursorChar, float wrapX);
+void CG_DrawString(int x, int y, const char *str, int style, const vec4_t color);
+void CG_DrawStringWithCursor(int x, int y, const char *str, int style, const fontInfo_t *font, const vec4_t color, int cursorPos, int cursorChar);
+void CG_DrawStringExt(int x, int y, const char *str, int style, const vec4_t color, float scale, int maxChars, float shadowOffset);
+void CG_DrawStringAutoWrap(int x, int y, const char *str, int style, const vec4_t color, float scale, float shadowOffset, float gradient, float wrapX);
+void CG_DrawStringCommon(int x, int y, const char *str, int style, const fontInfo_t *font, const vec4_t color, float scale, int maxChars, float shadowOffset, float gradient, int cursorPos, int cursorChar, float wrapX);
 void CG_DrawBigString(int x, int y, const char *s, float alpha);
 void CG_DrawBigStringColor(int x, int y, const char *s, vec4_t color);
 void CG_DrawSmallString(int x, int y, const char *s, float alpha);
 void CG_DrawSmallStringColor(int x, int y, const char *s, vec4_t color);
-float CG_DrawStrlenEx(const char *str, int style, int maxchars);
+float CG_DrawStrlenCommon(const char *str, int style, const fontInfo_t *font, int maxchars);
+float CG_DrawStrlenMaxChars(const char *str, int style, int maxchars);
 float CG_DrawStrlen(const char *str, int style);
 int CG_DrawStringLineHeight(int style);
+void CG_MField_Draw(mfield_t *edit, int x, int y, int style, vec4_t color, qboolean drawCursor);
 float *CG_FadeColor(int startMsec, int totalMsec);
 float *CG_TeamColor(int team);
 void CG_TileClear(void);
@@ -1409,7 +1410,7 @@ qboolean CG_AnyScoreboardShowing(void);
 #define GLYPH_OVERSTRIKE 11
 #define GLYPH_ARROW 13
 
-void CG_TextInit(void);
+void CG_HudTextInit(void);
 void CG_InitBitmapFont(fontInfo_t *font, int charHeight, int charWidth);
 void CG_InitBitmapNumberFont(fontInfo_t *font, int charHeight, int charWidth);
 qboolean CG_InitTrueTypeFont(const char *name, int pointSize, float borderWidth, fontInfo_t *font);
@@ -1417,11 +1418,10 @@ fontInfo_t *CG_FontForScale(float scale);
 const glyphInfo_t *Text_GetGlyph(const fontInfo_t *font, unsigned long index);
 float Text_Width(const char *text, const fontInfo_t *font, float scale, int limit);
 float Text_Height(const char *text, const fontInfo_t *font, float scale, int limit);
-void Text_PaintChar(float x, float y, float width, float height, float useScale, float s, float t, float s2, float t2, qhandle_t hShader);
-void Text_PaintGlyph(float x, float y, float useScale, const glyphInfo_t *glyph, float *gradientColor);
+void Text_PaintGlyph(float x, float y, float w, float h, const glyphInfo_t *glyph, float *gradientColor);
 void Text_Paint(float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor);
 void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor);
-void Text_Paint_Limit(float *maxX, float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char* text, float adjust, int limit);
+void Text_Paint_Limit(float *maxX, float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, float adjust, int limit);
 void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *str, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor, float xmax, float ystep, int style);
 void CG_Text_Paint(float x, float y, float scale, const vec4_t color, const char *text, float adjust, int limit, int textStyle);
 void CG_Text_PaintWithCursor(float x, float y, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, int limit, int textStyle);
