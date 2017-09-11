@@ -1053,7 +1053,7 @@ static void SV_ConSay_f(void) {
 	strcat(text, p);
 
 	Com_Printf("%s\n", text);
-	SV_SendServerCommand(NULL, -1, "chat \"%s\"", text);
+	SV_SendServerCommand(NULL, -1, "chat \"%s\" -1", text);
 }
 
 /*
@@ -1094,7 +1094,7 @@ static void SV_ConTell_f(void) {
 	strcat(text, p);
 
 	Com_Printf("%s\n", text);
-	SV_SendServerCommand(player->client, SV_LocalPlayerNum(player), "chat \"%s\"", text);
+	SV_SendServerCommand(player->client, SV_LocalPlayerNum(player), "tell \"%s\" -1", text);
 }
 
 /*
