@@ -57,7 +57,7 @@ typedef struct {
 	int starttime;
 	int scoreboardtime;
 	int serverId;
-	int playerNums[MAX_SCOREBOARD_PLAYERS];
+	int clientNums[MAX_SCOREBOARD_PLAYERS];
 	int ranks[MAX_SCOREBOARD_PLAYERS];
 	int scores[MAX_SCOREBOARD_PLAYERS];
 	char placeNames[3][64];
@@ -298,7 +298,7 @@ static void UI_SPPostgameMenu_MenuDrawScoreLine(int n, int y) {
 		rank &= ~RANK_TIED_FLAG;
 	}
 
-	trap_GetConfigString(CS_PLAYERS + postgameMenuInfo.playerNums[n], info, MAX_INFO_STRING);
+	trap_GetConfigString(CS_PLAYERS + postgameMenuInfo.clientNums[n], info, MAX_INFO_STRING);
 
 	Q_strncpyz(name, Info_ValueForKey(info, "n"), sizeof(name));
 	Q_CleanStr(name);
@@ -500,7 +500,7 @@ static void Prepname(int index) {
 	char name[64];
 	char info[MAX_INFO_STRING];
 
-	trap_GetConfigString(CS_PLAYERS + postgameMenuInfo.playerNums[index], info, MAX_INFO_STRING);
+	trap_GetConfigString(CS_PLAYERS + postgameMenuInfo.clientNums[index], info, MAX_INFO_STRING);
 
 	Q_strncpyz(name, Info_ValueForKey(info, "n"), sizeof(name));
 	Q_CleanStr(name);
@@ -522,7 +522,7 @@ UI_SPPostgameMenu_f
 */
 void UI_SPPostgameMenu_f(void) {
 	int playerGameRank;
-	int playerNum;
+	int clientNum;
 	int n;
 	int oldFrags, newFrags;
 	const char *arena;
@@ -550,7 +550,7 @@ void UI_SPPostgameMenu_f(void) {
 	postgameMenuInfo.level = atoi(Info_ValueForKey(arenainfo, "num"));
 	postgameMenuInfo.numPlayers = atoi(CG_Argv(1));
 
-	playerNum = atoi(CG_Argv(2));
+	clientNum = atoi(CG_Argv(2));
 	playerGameRank = 8; // in case they ended game as a spectator
 
 	if (postgameMenuInfo.numPlayers > MAX_SCOREBOARD_PLAYERS) {
@@ -558,11 +558,11 @@ void UI_SPPostgameMenu_f(void) {
 	}
 
 	for (n = 0; n < postgameMenuInfo.numPlayers; n++) {
-		postgameMenuInfo.playerNums[n] = atoi(CG_Argv(8 + n * 3 + 1));
+		postgameMenuInfo.clientNums[n] = atoi(CG_Argv(8 + n * 3 + 1));
 		postgameMenuInfo.scores[n] = atoi(CG_Argv(8 + n * 3 + 2));
 		postgameMenuInfo.ranks[n] = atoi(CG_Argv(8 + n * 3 + 3));
 
-		if (postgameMenuInfo.playerNums[n] == playerNum) {
+		if (postgameMenuInfo.clientNums[n] == clientNum) {
 			playerGameRank = (postgameMenuInfo.ranks[n] & ~RANK_TIED_FLAG) + 1;
 		}
 	}

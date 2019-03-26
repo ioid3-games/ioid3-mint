@@ -30,23 +30,23 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define BFL_ATTACKED		 2 // bot has attacked last ai frame
 #define BFL_ATTACKJUMPED	 4 // bot jumped during attack last frame
 #define BFL_AIMATENEMY		 8 // bot aimed at the enemy this frame
-#define BFL_AVOIDRIGHT		16 // avoid obstacles by going to the right
-#define BFL_IDEALVIEWSET	32 // bot has ideal view angles set
-#define BFL_FIGHTSUICIDAL	64 // bot is in a suicidal fight
+#define BFL_IDEALVIEWSET	16 // bot has ideal view angles set
+#define BFL_FIGHTSUICIDAL	32 // bot is in a suicidal fight
+#define BFL_AVOIDRIGHT		64 // avoid obstacles by going to the right
 // long term goal types
-#define LTG_TEAMHELP		 1 // help a team mate
-#define LTG_TEAMACCOMPANY	 2 // accompany a team mate
-#define LTG_DEFENDKEYAREA	 3 // defend a key area
-#define LTG_GETFLAG			 4 // get the enemy flag
+#define LTG_GETFLAG			 1 // get the enemy flag
+#define LTG_ATTACKENEMYBASE	 2 // attack the enemy base
+#define LTG_HARVEST			 3 // harvest skulls
+#define LTG_DEFENDKEYAREA	 4 // defend a key area
 #define LTG_RUSHBASE		 5 // rush to the base
 #define LTG_RETURNFLAG		 6 // return the flag
-#define LTG_CAMP			 7 // camp somewhere
-#define LTG_CAMPORDER		 8 // ordered to camp somewhere
-#define LTG_PATROL			 9 // patrol
-#define LTG_GETITEM			10 // get an item
-#define LTG_KILL			11 // kill someone
-#define LTG_HARVEST			12 // harvest skulls
-#define LTG_ATTACKENEMYBASE	13 // attack the enemy base
+#define LTG_TEAMHELP		 7 // help a team mate
+#define LTG_TEAMACCOMPANY	 8 // accompany a team mate
+#define LTG_CAMP			 9 // camp somewhere
+#define LTG_CAMPORDER		10 // ordered to camp somewhere
+#define LTG_PATROL			11 // patrol
+#define LTG_GETITEM			12 // get an item
+#define LTG_KILL			13 // kill someone
 // some goal dedication times
 #define TEAM_HELP_TIME				 60 // 1 minute teamplay help time
 #define TEAM_ACCOMPANY_TIME			600 // 10 minutes teamplay accompany time
@@ -108,12 +108,11 @@ typedef struct bot_activategoal_s {
 	bot_aienter_t aienter;				// function to call to return to AI node from before going to activate entity
 	struct bot_activategoal_s *next;	// next activate goal on stack
 } bot_activategoal_t;
-
 // bot state
 typedef struct bot_state_s {
-	int inuse;						// true if this state is used by a bot client
+	int inuse;								// true if this state is used by a bot client
 	int botthink_residual;					// residual for the bot thinks
-	int playernum;							// player number of the bot
+	int client;								// client number of the bot
 	int entitynum;							// entity number of the bot
 	playerState_t cur_ps;					// current player state
 	int last_eFlags;						// last ps flags
@@ -164,7 +163,6 @@ typedef struct bot_state_s {
 	float stand_time;						// time the bot is standing still
 	float lastchat_time;					// time the bot last selected a chat
 	float kamikaze_time;					// time to check for kamikaze usage
-	float invulnerability_time;				// time to check for invulnerability usage
 	float standfindenemy_time;				// time to find enemy while standing
 	float attackstrafe_time;				// time the bot is strafing in one dir
 	float attackcrouch_time;				// time the bot will stop crouching
@@ -273,12 +271,12 @@ typedef struct aas_entityinfo_s {
 	int groundent;			// ground entity
 	int solid;				// solid type
 	int modelindex;			// model used
-	int modelindex2;		// weapons, CTF flags, etc
+	int modelindex2;		// weapons, CTF flags, etc.
 	int frame;				// model frame number
-	int event;				// impulse events -- muzzle flashes, footsteps, etc
+	int event;				// impulse events -- muzzle flashes, footsteps, etc.
 	int eventParm;			// even parameter
 	int powerups;			// bit flags
-	int weapon;				// determines weapon and flash model, etc
+	int weapon;				// determines weapon and flash model, etc.
 	int legsAnim;			// mask off ANIM_TOGGLEBIT
 	int torsoAnim;			// mask off ANIM_TOGGLEBIT
 } aas_entityinfo_t;
@@ -299,9 +297,9 @@ extern float floattime;
 void QDECL BotAI_Print(int type, char *fmt, ...) __attribute__((format(printf, 2, 3)));
 void QDECL QDECL BotAI_BotInitialChat(bot_state_t *bs, char *type, ...);
 void BotAI_Trace(bsp_trace_t *bsptrace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask);
-int BotAI_GetPlayerState(int playernum, playerState_t *state);
-int BotAI_GetEntityState(int entitynum, entityState_t *state);
-int BotAI_GetSnapshotEntity(int playernum, int sequence, entityState_t *state);
+int BotAI_GetClientState(int clientNum, playerState_t *state);
+int BotAI_GetEntityState(int entityNum, entityState_t *state);
+int BotAI_GetSnapshotEntity(int clientNum, int sequence, entityState_t *state);
 int BotTeamLeader(bot_state_t *bs);
 
 extern vmCvar_t bot_developer;

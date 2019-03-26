@@ -344,7 +344,7 @@ static void UI_AddBotsMenu_Init(void) {
 	addBotsMenuInfo.team.generic.name = "Team:";
 	addBotsMenuInfo.team.generic.id = ID_TEAM;
 
-	if (gametype >= GT_TEAM) {
+	if (gametype > GT_TOURNAMENT) {
 		addBotsMenuInfo.team.itemnames = teamNames2;
 	} else {
 		addBotsMenuInfo.team.itemnames = teamNames1;

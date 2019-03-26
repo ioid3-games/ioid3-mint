@@ -22,7 +22,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-// string allocation/managment
+// string allocation/management
 
 #include "../cgame/cg_local.h"
 #include "ui_shared.h"
@@ -793,12 +793,13 @@ void Item_UpdatePosition(itemDef_t *item) {
 	Item_SetScreenCoords(item, x, y);
 }
 
+// menus
+
 /*
 =======================================================================================================================================
 Menu_UpdatePosition
 =======================================================================================================================================
 */
-// menus
 void Menu_UpdatePosition(menuDef_t *menu) {
 	int i;
 	float x, y;
@@ -1192,6 +1193,7 @@ static void Menu_RunCloseScript(menuDef_t *menu) {
 		itemDef_t item;
 
 		item.parent = menu;
+
 		Item_RunScript(&item, menu->onClose);
 	}
 }
@@ -1392,6 +1394,7 @@ void Menu_OrbitItemByName(menuDef_t *menu, const char *p, float x, float y, floa
 			item->window.rectEffects.y = cy;
 			item->window.rectClient.x = x;
 			item->window.rectClient.y = y;
+
 			Item_UpdatePosition(item);
 		}
 	}
@@ -1566,6 +1569,7 @@ void Item_RunScript(itemDef_t *item, const char *s) {
 
 		while (1) {
 			const char *command;
+
 			// expect command then arguments, ; ends command, NULL ends script
 			if (!String_Parse(&p, &command)) {
 				return;
@@ -1612,6 +1616,7 @@ qboolean Item_EnableShowViaCvar(itemDef_t *item, int flag) {
 
 		while (1) {
 			const char *val;
+
 			// expect value then; or NULL, NULL ends list
 			if (!String_Parse(&p, &val)) {
 				return (item->cvarFlags & flag) ? qfalse : qtrue;
@@ -2197,6 +2202,7 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 					}
 
 					item->cursorPos = listPtr->cursorPos;
+
 					DC->feederSelection(item->special, item->cursorPos);
 				} else {
 					listPtr->startPos--;
@@ -2226,6 +2232,7 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 					}
 
 					item->cursorPos = listPtr->cursorPos;
+
 					DC->feederSelection(item->special, item->cursorPos);
 				} else {
 					listPtr->startPos++;
@@ -2257,6 +2264,7 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 					}
 
 					item->cursorPos = listPtr->cursorPos;
+
 					DC->feederSelection(item->special, item->cursorPos);
 				} else {
 					listPtr->startPos--;
@@ -2286,6 +2294,7 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 					}
 
 					item->cursorPos = listPtr->cursorPos;
+
 					DC->feederSelection(item->special, item->cursorPos);
 				} else {
 					listPtr->startPos++;
@@ -2298,8 +2307,8 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 				return qtrue;
 			}
 		}
-		// use mouse wheel in vertical and horizontal menus.
-		// if scrolling 3 items would replace over half of the displayed items, only scroll 1 item at a time.
+		// use mouse wheel in vertical and horizontal menus
+		// if scrolling 3 items would replace over half of the displayed items, only scroll 1 item at a time
 		if (key == K_MWHEELUP) {
 			int scroll = viewmax < 6 ? 1 : 3;
 
@@ -2353,7 +2362,7 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 					listPtr->startPos = max;
 				}
 			} else if (item->window.flags & WINDOW_LB_THUMB) {
-				// Display_SetCaptureItem(item);
+				//Display_SetCaptureItem(item);
 			} else {
 				// select an item
 				if (DC->realTime < lastListBoxClickTime && listPtr->doubleClick) {
@@ -2364,6 +2373,7 @@ qboolean Item_ListBox_HandleKey(itemDef_t *item, int key, qboolean down, qboolea
 
 				if (item->cursorPos != listPtr->cursorPos) {
 					item->cursorPos = listPtr->cursorPos;
+
 					DC->feederSelection(item->special, item->cursorPos);
 				}
 			}
@@ -2637,6 +2647,7 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 			if (key == 'h' - 'a' + 1) { // ctrl-h is backspace
 				if (item->cursorPos > 0) {
 					memmove(&buff[item->cursorPos - 1], &buff[item->cursorPos], len + 1 - item->cursorPos);
+
 					item->cursorPos--;
 
 					if (item->cursorPos < editPtr->paintOffset) {
@@ -2685,6 +2696,7 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 			if (key == K_DEL || key == K_KP_DEL) {
 				if (item->cursorPos < len) {
 					memmove(buff + item->cursorPos, buff + item->cursorPos + 1, len - item->cursorPos);
+
 					DC->setCVar(item->cvar, buff);
 				}
 
@@ -2717,13 +2729,13 @@ qboolean Item_TextField_HandleKey(itemDef_t *item, int key) {
 				return qtrue;
 			}
 
-			if (key == K_HOME || key == K_KP_HOME) { //|| (tolower(key) == 'a' && trap_Key_IsDown(K_CTRL))) {
+			if (key == K_HOME || key == K_KP_HOME) { //|| (tolower(key) == 'a' && (trap_Key_IsDown(K_LEFTCTRL) || trap_Key_IsDown(K_RIGHTCTRL)))) {
 				item->cursorPos = 0;
 				editPtr->paintOffset = 0;
 				return qtrue;
 			}
 
-			if (key == K_END || key == K_KP_END) { //(tolower(key) == 'e' && trap_Key_IsDown(K_CTRL))) {
+			if (key == K_END || key == K_KP_END) { //(tolower(key) == 'e' && (trap_Key_IsDown(K_LEFTCTRL) || trap_Key_IsDown(K_RIGHTCTRL)))) {
 				item->cursorPos = len;
 
 				if (item->cursorPos > editPtr->maxPaintChars) {
@@ -2812,6 +2824,7 @@ static void Scroll_ListBox_ThumbFunc(void *p) {
 		r.y = si->item->window.rect.y + si->item->window.rect.h - SCROLLBAR_SIZE - 1;
 		r.h = SCROLLBAR_SIZE;
 		r.w = si->item->window.rect.w - (SCROLLBAR_SIZE * 2) - 2;
+
 		max = Item_ListBox_MaxScroll(si->item);
 		pos = (DC->cursorx - r.x - SCROLLBAR_SIZE / 2) * max / (r.w - SCROLLBAR_SIZE);
 
@@ -2828,6 +2841,7 @@ static void Scroll_ListBox_ThumbFunc(void *p) {
 		r.y = si->item->window.rect.y + SCROLLBAR_SIZE + 1;
 		r.h = si->item->window.rect.h - (SCROLLBAR_SIZE * 2) - 2;
 		r.w = SCROLLBAR_SIZE;
+
 		max = Item_ListBox_MaxScroll(si->item);
 		pos = (DC->cursory - r.y - SCROLLBAR_SIZE / 2) * max / (r.h - SCROLLBAR_SIZE);
 
@@ -3086,8 +3100,8 @@ qboolean Item_HandleKey(itemDef_t *item, int key, qboolean down) {
 			return Item_Slider_HandleKey(item, key, down);
 			break;
 		//case ITEM_TYPE_IMAGE:
-		//	Item_Image_Paint(item);
-		//	break;
+			//Item_Image_Paint(item);
+			//break;
 		default:
 			return qfalse;
 			break;
@@ -3237,7 +3251,7 @@ void Menus_Activate(menuDef_t *menu) {
 	}
 
 	if (menu->soundName && *menu->soundName) {
-//		DC->stopBackgroundTrack(); // you don't want to do this since it will reset s_rawend
+		//DC->stopBackgroundTrack(); // you don't want to do this since it will reset s_rawend
 		DC->startBackgroundTrack(menu->soundName, menu->soundName, 1.0f, 1.0f);
 	}
 
@@ -3251,6 +3265,7 @@ Display_VisibleMenuCount
 */
 int Display_VisibleMenuCount(void) {
 	int i, count;
+
 	count = 0;
 
 	for (i = 0; i < DC->menuCount; i++) {
@@ -3271,6 +3286,7 @@ void Menus_HandleOOBClick(menuDef_t *menu, int key, qboolean down) {
 
 	if (menu) {
 		int i;
+
 		// basically the behaviour we are looking for is if there are windows in the stack.. see if
 		// the cursor is within any of them.. if not close them otherwise activate them and pass the
 		// key on.. force a mouse move to activate focus and script stuff
@@ -3814,7 +3830,6 @@ void Item_Text_Paint(itemDef_t *item) {
 	}
 
 	Item_TextColor(item, &color);
-
 	// FIXME: this is a fucking mess
 /*
 	adjust = 0;
@@ -3846,13 +3861,14 @@ void Item_Text_Paint(itemDef_t *item) {
 	DC->drawText(item->textRect.x, item->textRect.y, item->textscale, color, textPtr, 0, 0, item->textStyle);
 }
 
+//float trap_Cvar_VariableValue(const char *var_name);
+//void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
+
 /*
 =======================================================================================================================================
 Item_TextField_Paint
 =======================================================================================================================================
 */
-//float trap_Cvar_VariableValue(const char *var_name);
-//void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 void Item_TextField_Paint(itemDef_t *item) {
 	char buff[1024];
 	vec4_t newColor, lowLight;
@@ -3963,16 +3979,10 @@ typedef struct {
 	int bind2;
 } bind_t;
 
-typedef struct {
-	char *name;
-	float defaultvalue;
-	float value;
-} configcvar_t;
-
 static bind_t g_bindings[] = {
 	{"+scores", K_TAB, -1, -1, -1},
 	{"+useitem", K_ENTER, -1, -1, -1},
-	{"+speed", K_SHIFT, -1, -1, -1},
+	{"+speed", K_LEFTSHIFT, K_RIGHTSHIFT, -1, -1},
 	{"+forward", K_UPARROW, -1, -1, -1},
 	{"+back", K_DOWNARROW, -1, -1, -1},
 	{"+moveleft", ',', -1, -1, -1},
@@ -3981,7 +3991,7 @@ static bind_t g_bindings[] = {
 	{"+movedown", 'c', -1, -1, -1},
 	{"+left", K_LEFTARROW, -1, -1, -1},
 	{"+right", K_RIGHTARROW, -1, -1, -1},
-	{"+strafe", K_ALT, -1, -1, -1},
+	{"+strafe", K_LEFTALT, K_RIGHTALT, -1, -1},
 	{"+lookup", K_PGDN, -1, -1, -1},
 	{"+lookdown", K_DEL, -1, -1, -1},
 	{"+mlook", '/', -1, -1, -1},
@@ -4000,7 +4010,7 @@ static bind_t g_bindings[] = {
 	{"weapon 11", -1, -1, -1, -1},
 	{"weapon 12", -1, -1, -1, -1},
 	{"weapon 13", -1, -1, -1, -1},
-	{"+attack", K_CTRL, -1, -1, -1},
+	{"+attack", K_LEFTCTRL, K_RIGHTCTRL, -1, -1},
 	{"weapprev", '[', -1, -1, -1},
 	{"weapnext", ']', -1, -1, -1},
 	{"+gesture", K_MOUSE3, -1, -1, -1},
@@ -4075,6 +4085,7 @@ void Controls_GetConfig(void) {
 		g_bindings[i].bind1 = twokeys[0];
 		g_bindings[i].bind2 = twokeys[1];
 	}
+
 	//s_controls.invertmouse.curvalue = DC->getCVarValue("m_pitch") < 0;
 	//s_controls.smoothmouse.curvalue = Com_Clamp(0, 1, Controls_GetCvarValue("m_filter"));
 	//s_controls.alwaysrun.curvalue = Com_Clamp(0, 1, Controls_GetCvarValue("cl_run"));
@@ -4332,8 +4343,15 @@ qboolean Item_Bind_HandleKey(itemDef_t *item, int key, qboolean down) {
 				id = BindingIDFromName(item->cvar);
 
 				if (id != -1) {
-					g_bindings[id].bind1 = -1;
-					g_bindings[id].bind2 = -1;
+					if (g_bindings[id].bind1 != -1) {
+						DC->setBinding(g_bindings[id].bind1, "");
+						g_bindings[id].bind1 = -1;
+					}
+
+					if (g_bindings[id].bind2 != -1) {
+						DC->setBinding(g_bindings[id].bind2, "");
+						g_bindings[id].bind2 = -1;
+					}
 				}
 
 				Controls_SetConfig(qtrue);
@@ -4365,11 +4383,13 @@ qboolean Item_Bind_HandleKey(itemDef_t *item, int key, qboolean down) {
 		if (key == -1) {
 			if (g_bindings[id].bind1 != -1) {
 				DC->setBinding(g_bindings[id].bind1, "");
+
 				g_bindings[id].bind1 = -1;
 			}
 
 			if (g_bindings[id].bind2 != -1) {
 				DC->setBinding(g_bindings[id].bind2, "");
+
 				g_bindings[id].bind2 = -1;
 			}
 		} else if (g_bindings[id].bind1 == -1) {
@@ -4379,6 +4399,7 @@ qboolean Item_Bind_HandleKey(itemDef_t *item, int key, qboolean down) {
 		} else {
 			DC->setBinding(g_bindings[id].bind1, "");
 			DC->setBinding(g_bindings[id].bind2, "");
+
 			g_bindings[id].bind1 = key;
 			g_bindings[id].bind2 = -1;
 		}
@@ -4419,7 +4440,7 @@ void Item_Model_Paint(itemDef_t *item) {
 	w = item->window.rect.w - 2;
 	h = item->window.rect.h - 2;
 
-	CG_AdjustFrom640(&x, &y, &w, &h);
+	DC->adjustFrom640(&x, &y, &w, &h);
 
 	refdef.x = x;
 	refdef.y = y;
@@ -4433,6 +4454,7 @@ void Item_Model_Paint(itemDef_t *item) {
 	// calculate distance so the model nearly fills the box
 	if (qtrue) {
 		float len = 0.5 * (maxs[2] - mins[2]);
+
 		origin[0] = len / 0.268; // len / tan(fov / 2)
 		//origin[0] = len / tan(w / 2);
 	} else {
@@ -4454,6 +4476,7 @@ void Item_Model_Paint(itemDef_t *item) {
 
 	//adjust = 5.0 * sin((float)uis.realtime / 500);
 	//adjust = 360 %(int)((float)uis.realtime / 1000);
+
 	//VectorSet(angles, 0, 0, 1);
 	// use item storage to track
 	if (modelPtr->rotationSpeed) {
@@ -4634,6 +4657,7 @@ void Item_ListBox_Paint(itemDef_t *item) {
 
 			for (i = listPtr->startPos; i < count; i++) {
 				const char *text;
+
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
 				if (listPtr->numColumns > 0) {
@@ -4768,8 +4792,10 @@ void Item_Paint(itemDef_t *item) {
 			// translate
 			w = item->window.rectClient.w / 2;
 			h = item->window.rectClient.h / 2;
+
 			rx = item->window.rectClient.x + w - item->window.rectEffects.x;
 			ry = item->window.rectClient.y + h - item->window.rectEffects.y;
+
 			a = 3 * M_PI / 180;
 			c = cos(a);
 			s = sin(a);
@@ -4896,7 +4922,7 @@ void Item_Paint(itemDef_t *item) {
 	if (!(item->window.flags & WINDOW_VISIBLE)) {
 		return;
 	}
-	// paint the rect first..
+	// paint the rect first...
 	Window_Paint(&item->window, parent->fadeAmount, parent->fadeClamp, parent->fadeCycle);
 
 	if (debugMode) {
@@ -4905,6 +4931,7 @@ void Item_Paint(itemDef_t *item) {
 
 		color[1] = color[3] = 1;
 		color[0] = color[2] = 0;
+
 		DC->drawRect(r->x, r->y, r->w, r->h, 1, color);
 	}
 
@@ -4932,8 +4959,8 @@ void Item_Paint(itemDef_t *item) {
 			Item_ListBox_Paint(item);
 			break;
 		//case ITEM_TYPE_IMAGE:
-		//	Item_Image_Paint(item);
-		//	break;
+			//Item_Image_Paint(item);
+			//break;
 		case ITEM_TYPE_MODEL:
 			Item_Model_Paint(item);
 			break;
@@ -5165,7 +5192,7 @@ void Menu_HandleMouseMove(menuDef_t *menu, float x, float y) {
 	for (pass = 0; pass < 2; pass++) {
 		for (i = 0; i < menu->itemCount; i++) {
 			// turn off focus each item
-			// menu->items[i].window.flags &= ~WINDOW_HASFOCUS;
+			//menu->items[i].window.flags &= ~WINDOW_HASFOCUS;
 
 			if (!(menu->items[i]->window.flags &(WINDOW_VISIBLE|WINDOW_FORCED))) {
 				continue;
@@ -5232,7 +5259,7 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint) {
 	}
 
 	if (menu->forceScreenPlacement) {
-		CG_SetScreenPlacement(menu->screenHPos, menu->screenVPos);
+		DC->setScreenPlacement(menu->screenHPos, menu->screenVPos);
 	}
 	// draw the background if necessary
 	if (menu->fullScreen) {
@@ -5241,7 +5268,7 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint) {
 		DC->drawHandlePic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, menu->window.background);
 	} else if (menu->window.background) {
 		// this allows a background shader without being full screen
-		//CG_DrawPic(menu->window.rect.x, menu->window.rect.y, menu->window.rect.w, menu->window.rect.h, menu->backgroundShader);
+		//DC->drawHandlePic(menu->window.rect.x, menu->window.rect.y, menu->window.rect.w, menu->window.rect.h, menu->backgroundShader);
 	}
 	// paint the background and or border
 	Window_Paint(&menu->window, menu->fadeAmount, menu->fadeClamp, menu->fadeCycle);
@@ -5255,11 +5282,12 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint) {
 
 		color[0] = color[2] = color[3] = 1;
 		color[1] = 0;
+
 		DC->drawRect(menu->window.rect.x, menu->window.rect.y, menu->window.rect.w, menu->window.rect.h, 1, color);
 	}
 
 	if (menu->forceScreenPlacement) {
-		CG_PopScreenPlacement();
+		DC->popScreenPlacement();
 	}
 }
 
@@ -5299,7 +5327,7 @@ void Item_ValidateTypeData(itemDef_t *item) {
 
 typedef struct keywordHash_s {
 	char *keyword;
-	qboolean(*func)(itemDef_t *item, int handle);
+	qboolean (*func)(itemDef_t *item, int handle);
 	struct keywordHash_s *next;
 } keywordHash_t;
 
@@ -5321,7 +5349,7 @@ int KeywordHash_Key(char *keyword) {
 		}
 	}
 
-	hash = (hash ^ (hash >> 10) ^ (hash >> 20)) &(KEYWORDHASH_SIZE - 1);
+	hash = (hash ^ (hash >> 10) ^ (hash >> 20)) & (KEYWORDHASH_SIZE - 1);
 	return hash;
 }
 
@@ -6628,9 +6656,10 @@ Hacks to fix issues with Team Arena menu scripts.
 */
 static void Item_ApplyHacks(itemDef_t *item) {
 
-	// Fix length of favorite address in createfavorite.menu
+	// fix length of favorite address in createfavorite.menu
 	if (item->type == ITEM_TYPE_EDITFIELD && item->cvar && !Q_stricmp(item->cvar, "ui_favoriteAddress")) {
 		editFieldDef_t *editField = (editFieldDef_t *)item->typeData;
+
 		// enough to hold an IPv6 address plus null
 		if (editField->maxChars < 48) {
 			Com_DPrintf("Extended create favorite address edit field length to hold an IPv6 address\n");
@@ -6640,6 +6669,7 @@ static void Item_ApplyHacks(itemDef_t *item) {
 
 	if (item->type == ITEM_TYPE_EDITFIELD && item->cvar && (!Q_stricmp(item->cvar, "ui_Name") || !Q_stricmp(item->cvar, "ui_findplayer"))) {
 		editFieldDef_t *editField = (editFieldDef_t *)item->typeData;
+
 		// enough to hold a full player name
 		if (editField->maxChars < MAX_NAME_LENGTH) {
 			if (editField->maxPaintChars > editField->maxChars) {
@@ -7478,6 +7508,7 @@ qboolean Display_MouseMove(void *p, int x, int y) {
 	} else {
 		menu->window.rect.x += x;
 		menu->window.rect.y += y;
+
 		Menu_UpdatePosition(menu);
 	}
 

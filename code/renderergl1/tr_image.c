@@ -206,7 +206,6 @@ void R_ImageList_f( void ) {
 				estSize *= 4;
 				break;
 			case GL_LUMINANCE8:
-			case GL_LUMINANCE16:
 			case GL_LUMINANCE:
 				format = "L    ";
 				// 1 byte per pixel?
@@ -219,7 +218,6 @@ void R_ImageList_f( void ) {
 				estSize *= 3;
 				break;
 			case GL_LUMINANCE8_ALPHA8:
-			case GL_LUMINANCE16_ALPHA16:
 			case GL_LUMINANCE_ALPHA:
 				format = "LA   ";
 				// 2 bytes per pixel?
@@ -618,7 +616,7 @@ static void Upload32( int numTexLevels, const textureLevel_t *pics,
 
 	// we may skip some textureLevels, if r_picmip is set
 	if ( picmip ) {
-		baseLevel = Com_Clamp( 0, numTexLevels - 1, r_picmip->integer );
+		baseLevel = Com_Clamp( 0, numTexLevels - 1, picmip );
 	} else {
 		baseLevel = 0;
 	}
@@ -666,7 +664,7 @@ static void Upload32( int numTexLevels, const textureLevel_t *pics,
 	//
 	// perform optional picmip operation
 	//
-	if ( picmip ) {
+	if ( picmip - baseLevel > 0 ) {
 		scaled_width >>= picmip - baseLevel;
 		scaled_height >>= picmip - baseLevel;
 	}
@@ -757,10 +755,8 @@ static void Upload32( int numTexLevels, const textureLevel_t *pics,
 		{
 			if(r_greyscale->integer)
 			{
-				if(r_texturebits->integer == 16)
+				if(r_texturebits->integer == 16 || r_texturebits->integer == 32)
 					internalFormat = GL_LUMINANCE8;
-				else if(r_texturebits->integer == 32)
-					internalFormat = GL_LUMINANCE16;
 				else
 					internalFormat = GL_LUMINANCE;
 			}
@@ -792,10 +788,8 @@ static void Upload32( int numTexLevels, const textureLevel_t *pics,
 		{
 			if(r_greyscale->integer)
 			{
-				if(r_texturebits->integer == 16)
+				if(r_texturebits->integer == 16 || r_texturebits->integer == 32)
 					internalFormat = GL_LUMINANCE8_ALPHA8;
-				else if(r_texturebits->integer == 32)
-					internalFormat = GL_LUMINANCE16_ALPHA16;
 				else
 					internalFormat = GL_LUMINANCE_ALPHA;
 			}
@@ -959,7 +953,7 @@ image_t *R_CreateImage2( const char *name, int numTexLevels, const textureLevel_
 	}
 
 	image = tr.images[tr.numImages] = ri.Hunk_Alloc( sizeof( image_t ), h_low );
-	image->texnum = 1024 + tr.numImages;
+	qglGenTextures(1, &image->texnum);
 	tr.numImages++;
 
 	image->type = type;
@@ -1048,7 +1042,7 @@ static int numImageLoaders = ARRAY_LEN( imageLoaders );
 =================
 R_LoadImage
 
-Loads any of the supported image types into a cannonical
+Loads any of the supported image types into a canonical
 32 bit format.
 =================
 */

@@ -28,14 +28,20 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "client.h"
 #include "../botlib/botlib.h"
+#include "../botlib/l_script.h"
+#include "../botlib/l_precomp.h"
 #ifdef USE_MUMBLE
 #include "libmumblelink.h"
 #endif
 
-extern botlib_export_t *botlib_export;
+define_t *cgame_globaldefines;
+
 extern qboolean loadCamera(const char *name);
 extern void startCamera(int time);
 extern qboolean getCameraInfo(int time, vec3_t *origin, vec3_t *angles);
+
+void CL_GameCommand(void);
+void CL_GameCompleteArgument(char *args, int argNum);
 
 /*
 =======================================================================================================================================
@@ -413,6 +419,7 @@ qboolean CL_GetServerCommand(int serverCommandNumber) {
 
 rescan:
 	Cmd_TokenizeString(s);
+
 	cmd = Cmd_Argv(0);
 	argc = Cmd_Argc();
 
@@ -1187,7 +1194,6 @@ void CL_ShutdownCGame(void) {
 
 	cls.cgameStarted = qfalse;
 	cls.printToCgame = qfalse;
-	cls.enteredMenu = qfalse;
 
 	if (!cgvm) {
 		return;
@@ -1199,6 +1205,10 @@ void CL_ShutdownCGame(void) {
 	cgvm = NULL;
 
 	Cmd_RemoveCommandsByFunc(CL_GameCommand);
+	//remove all global defines from the pre compiler
+	PC_RemoveAllGlobalDefines(&cgame_globaldefines);
+	// print any files still open
+	PC_CheckOpenSourceHandles();
 	BSP_Free(cls.cgameBsp);
 
 	cls.cgameBsp = NULL;
@@ -1247,6 +1257,9 @@ intptr_t CL_CgameSystemCalls(intptr_t *args) {
 		case CG_CVAR_LATCHED_VARIABLE_STRING_BUFFER:
 			Cvar_LatchedVariableStringBuffer(VMA(1), VMA(2), args[3]);
 			return 0;
+		case CG_CVAR_DEFAULT_VARIABLE_STRING_BUFFER:
+			Cvar_DefaultVariableStringBuffer(VMA(1), VMA(2), args[3]);
+			return 0;
 		case CG_CVAR_INFO_STRING_BUFFER:
 			Cvar_InfoStringBuffer(args[1], VMA(2), args[3]);
 			return 0;
@@ -1278,7 +1291,7 @@ intptr_t CL_CgameSystemCalls(intptr_t *args) {
 			FS_FCloseFile(args[1]);
 			return 0;
 		case CG_FS_GETFILELIST:
-			return FS_GetFileList(VMA(1), VMA(2), VMA(3), args[4]);
+			return FS_GetFileListBuffer(VMA(1), VMA(2), VMA(3), args[4]);
 		case CG_FS_DELETE:
 			return FS_Delete(VMA(1));
 		case CG_FS_RENAME:
@@ -1287,7 +1300,7 @@ intptr_t CL_CgameSystemCalls(intptr_t *args) {
 			Cbuf_ExecuteTextSafe(args[1], VMA(2));
 			return 0;
 		case CG_ADDCOMMAND:
-			Cmd_AddCommandSafe(VMA(1), CL_GameCommand);
+			Cmd_AddCommandSafe(VMA(1), CL_GameCommand, CL_GameCompleteArgument);
 			return 0;
 		case CG_REMOVECOMMAND:
 			Cmd_RemoveCommandSafe(VMA(1), CL_GameCommand);
@@ -1297,6 +1310,15 @@ intptr_t CL_CgameSystemCalls(intptr_t *args) {
 			return 0;
 		case CG_CMD_AUTOCOMPLETE:
 			CL_Cmd_AutoComplete(VMA(1), VMA(2), args[3]);
+			return 0;
+		case CG_FIELD_COMPLETEFILENAME:
+			Field_CompleteFilename(VMA(1), VMA(2), args[3], args[4]);
+			return 0;
+		case CG_FIELD_COMPLETECOMMAND:
+			Field_CompleteCommand(VMA(1), args[2], args[3]);
+			return 0;
+		case CG_FIELD_COMPLETELIST:
+			Field_CompleteList(VMA(1));
 			return 0;
 		case CG_SV_SHUTDOWN:
 			SV_Shutdown(VMA(1));
@@ -1389,6 +1411,9 @@ intptr_t CL_CgameSystemCalls(intptr_t *args) {
 			return S_GetStreamPlayCount(args[1]);
 		case CG_S_SETSTREAMVOLUME:
 			S_SetStreamVolume(args[1], VMF(2));
+			return 0;
+		case CG_S_STOPALLSOUNDS:
+			S_StopAllSounds();
 			return 0;
 		case CG_R_LOADWORLDMAP:
 			CL_LoadWorldMap(VMA(1));
@@ -1754,7 +1779,7 @@ void CL_InitCGame(void) {
 	Com_DPrintf("Loading CGame VM with API(%s %d.%d)\n", apiName, major, minor);
 	// sanity check
 	if (!strcmp(apiName, CG_API_NAME) && major == CG_API_MAJOR_VERSION && ((major > 0 && minor <= CG_API_MINOR_VERSION) || (major == 0 && minor == CG_API_MINOR_VERSION))) {
-		// Supported API
+		// supported API
 	} else {
 		// Free cgvm now, so CG_SHUTDOWN doesn't get called later.
 		VM_Free(cgvm);
@@ -1822,7 +1847,6 @@ void CL_InitCGame(void) {
 	}
 	// we will send a usercmd this frame, which will cause the server to send us the first snapshot
 	clc.state = CA_PRIMED;
-
 	t2 = Sys_Milliseconds();
 
 	Com_DPrintf("CL_InitCGame: %5.2f seconds\n", (t2 - t1) / 1000.0);
@@ -1850,6 +1874,22 @@ void CL_GameCommand(void) {
 	}
 
 	VM_Call(cgvm, CG_CONSOLE_COMMAND, clc.state, cls.realtime);
+}
+
+/*
+=======================================================================================================================================
+CL_GameCompleteArgument
+
+Pass the current console command to cgame.
+=======================================================================================================================================
+*/
+void CL_GameCompleteArgument(char *args, int argNum) {
+
+	if (!cgvm) {
+		return;
+	}
+
+	VM_Call(cgvm, CG_CONSOLE_COMPLETEARGUMENT, clc.state, cls.realtime, argNum);
 }
 
 /*
@@ -1892,7 +1932,6 @@ void CL_ShowMainMenu(void) {
 		return;
 	}
 
-	cls.enteredMenu = qtrue;
 	VM_Call(cgvm, CG_SET_ACTIVE_MENU, UIMENU_NONE);
 }
 
@@ -1960,7 +1999,7 @@ void CL_AdjustTimeDelta(void) {
 		// slow drift adjust, only move 1 or 2 msec
 
 		// if any of the frames between this and the previous snapshot had to be extrapolated, nudge our sense of time back a little
-		// the granularity of +1 / -2 is too high for timescale modified frametimes
+		// the granularity of +1/-2 is too high for timescale modified frametimes
 		if (com_timescale->value == 0 || com_timescale->value == 1) {
 			if (cl.extrapolatedSnapshot) {
 				cl.extrapolatedSnapshot = qfalse;
@@ -2094,8 +2133,7 @@ void CL_SetCGameTime(void) {
 	if (clc.demoplaying && cl_freezeDemo->integer) {
 		// cl_freezeDemo is used to lock a demo in place for single frame advances
 	} else {
-		// cl_timeNudge is a user adjustable cvar that allows more or less latency to be added in the interest of better
-		// smoothness or better responsiveness.
+		// cl_timeNudge is a user adjustable cvar that allows more or less latency to be added in the interest of better smoothness or better responsiveness
 		int tn;
 
 		tn = cl_timeNudge->integer;

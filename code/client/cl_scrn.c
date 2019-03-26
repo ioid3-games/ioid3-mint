@@ -83,7 +83,6 @@ DEBUG GRAPH
 
 static int current;
 static float values[1024];
-
 /*
 =======================================================================================================================================
 SCR_DebugGraph
@@ -181,7 +180,7 @@ void SCR_UpdateScreen(void) {
 	}
 
 	recursive = 1;
-	// if there is no VM, there are also no rendering commands issued. Stop the renderer in that case.
+	// if there is no VM, there are also no rendering commands issued. Stop the renderer in that case
 	if (cgvm || com_dedicated->integer) {
 		// XXX
 		int in_anaglyphMode = Cvar_VariableIntegerValue("r_anaglyphMode");

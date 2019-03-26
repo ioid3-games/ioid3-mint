@@ -52,30 +52,16 @@ static int TTY_erase;
 static int TTY_eof;
 static struct termios TTY_tc;
 static field_t TTY_con;
-// This is somewhat of aduplicate of the graphical console history but it's safer more modular to have our own here
+// this is somewhat of aduplicate of the graphical console history but it's safer more modular to have our own here
 #define CON_HISTORY 32
 static field_t ttyEditLines[CON_HISTORY];
 static int hist_current = -1, hist_count = 0;
 #ifndef DEDICATED
-// Don't use "]" as it would be the same as in-game console, this makes it clear where input came from.
+// don't use "]" as it would be the same as in-game console, this makes it clear where input came from
 #define TTY_CONSOLE_PROMPT "tty]"
 #else
 #define TTY_CONSOLE_PROMPT "]"
 #endif
-/*
-=======================================================================================================================================
-CON_FlushIn
-
-Flush stdin, I suspect some terminals are sending a LOT of shit.
-FIXME relevant?
-=======================================================================================================================================
-*/
-static void CON_FlushIn(void) {
-	char key;
-
-	while (read(STDIN_FILENO, &key, 1) != -1);
-}
-
 /*
 =======================================================================================================================================
 CON_Back
@@ -120,7 +106,7 @@ static void CON_Hide(void) {
 				CON_Back();
 			}
 		}
-		// Delete prompt
+		// delete prompt
 		for (i = strlen(TTY_CONSOLE_PROMPT); i > 0; i--) {
 			CON_Back();
 		}
@@ -147,6 +133,7 @@ static void CON_Show(void) {
 
 		if (ttycon_hide == 0) {
 			size_t UNUSED_VAR size;
+
 			size = write(STDOUT_FILENO, TTY_CONSOLE_PROMPT, strlen(TTY_CONSOLE_PROMPT));
 
 			if (TTY_con.cursor) {
@@ -171,7 +158,7 @@ void CON_Shutdown(void) {
 		CON_Hide();
 		tcsetattr(STDIN_FILENO, TCSADRAIN, &TTY_tc);
 	}
-	// Restore blocking to stdin reads
+	// restore blocking to stdin reads
 	fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL, 0) & ~O_NONBLOCK);
 }
 
@@ -183,7 +170,7 @@ Hist_Add
 void Hist_Add(field_t *field) {
 	int i;
 
-	// Don't save blank lines in history.
+	// don't save blank lines in history
 	if (!field->cursor) {
 		return;
 	}
@@ -218,6 +205,7 @@ field_t *Hist_Prev(void) {
 	assert(hist_count >= 0);
 	assert(hist_current >= -1);
 	assert(hist_current <= hist_count);
+
 	hist_prev = hist_current + 1;
 
 	if (hist_prev >= hist_count) {
@@ -273,12 +261,12 @@ Initialize the console input (tty mode if possible).
 void CON_Init(void) {
 	struct termios tc;
 
-	// If the process is backgrounded (running non interactively) then SIGTTIN or SIGTOU is emitted, if not caught, turns into a SIGSTP
+	// if the process is backgrounded (running non interactively) then SIGTTIN or SIGTOU is emitted, if not caught, turns into a SIGSTP
 	signal(SIGTTIN, SIG_IGN);
 	signal(SIGTTOU, SIG_IGN);
-	// If SIGCONT is received, reinitialize console
+	// if SIGCONT is received, reinitialize console
 	signal(SIGCONT, CON_SigCont);
-	// Make stdin reads non-blocking
+	// make stdin reads non-blocking
 	fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL, 0)|O_NONBLOCK);
 
 	if (!stdinIsATTY) {
@@ -314,7 +302,7 @@ void CON_Init(void) {
 	tcsetattr(STDIN_FILENO, TCSADRAIN, &tc);
 
 	ttycon_on = qtrue;
-	ttycon_hide = 1; // Mark as hidden, so prompt is shown in CON_Show
+	ttycon_hide = 1; // mark as hidden, so prompt is shown in CON_Show
 
 	CON_Show();
 }
@@ -338,7 +326,7 @@ char *CON_Input(void) {
 		if (avail != -1) {
 			// we have something
 			// backspace?
-			// NOTE TTimo testing a lot of values .. seems it's the only way to get it to work everywhere
+			// NOTE: testing a lot of values .. seems it's the only way to get it to work everywhere
 			if ((key == TTY_erase) || (key == 127) || (key == 8)) {
 				if (TTY_con.cursor > 0) {
 					TTY_con.cursor--;
@@ -413,7 +401,7 @@ char *CON_Input(void) {
 										CON_Show();
 									}
 
-									CON_FlushIn();
+									tcflush(STDIN_FILENO, TCIFLUSH);
 									return NULL;
 									break;
 								case 'B':
@@ -427,7 +415,7 @@ char *CON_Input(void) {
 									}
 
 									CON_Show();
-									CON_FlushIn();
+									tcflush(STDIN_FILENO, TCIFLUSH);
 									return NULL;
 									break;
 								case 'C':
@@ -440,7 +428,7 @@ char *CON_Input(void) {
 				}
 
 				Com_DPrintf("droping ISCTL sequence: %d, TTY_erase: %d\n", key, TTY_erase);
-				CON_FlushIn();
+				tcflush(STDIN_FILENO, TCIFLUSH);
 				return NULL;
 			}
 
@@ -509,19 +497,19 @@ void CON_Print(const char *msg) {
 	}
 
 	if (!ttycon_on) {
-		// CON_Hide didn't do anything.
+		// CON_Hide didn't do anything
 		return;
 	}
-	// Only print prompt when msg ends with a newline, otherwise the console might get garbled when output does not fit on one line.
+	// only print prompt when msg ends with a newline, otherwise the console might get garbled when output does not fit on one line
 	if (msg[strlen(msg) - 1] == '\n') {
 		CON_Show();
-		// Run CON_Show the number of times it was deferred.
+		// run CON_Show the number of times it was deferred.
 		while (ttycon_show_overdue > 0) {
 			CON_Show();
 			ttycon_show_overdue--;
 		}
 	} else {
-		// Defer calling CON_Show
+		// defer calling CON_Show
 		ttycon_show_overdue++;
 	}
 }

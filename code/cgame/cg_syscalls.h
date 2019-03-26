@@ -37,10 +37,10 @@ void trap_GetGlconfig(glconfig_t *glconfig);
 // force a screen update, only used during gamestate load
 void trap_UpdateScreen(void);
 int trap_MemoryRemaining(void);
-int trap_GetVoipTime(int playerNum);
-float trap_GetVoipPower(int playerNum);
-float trap_GetVoipGain(int playerNum);
-qboolean trap_GetVoipMute(int playerNum);
+int trap_GetVoipTime(int clientNum);
+float trap_GetVoipPower(int clientNum);
+float trap_GetVoipGain(int clientNum);
+qboolean trap_GetVoipMute(int clientNum);
 qboolean trap_GetVoipMuteAll(void);
 void trap_Cmd_AutoComplete(const char *in, char *out, int outSize);
 
@@ -55,7 +55,7 @@ void trap_GetGlconfig(glconfig_t *glconfig);
 void trap_GetGameState(gameState_t *gamestate);
 
 // cgame will poll each frame to see if a newer snapshot has arrived
-// that it is interested in.  The time is returned seperately so that
+// that it is interested in.  The time is returned separately so that
 // snapshot latency can be calculated.
 void trap_GetCurrentSnapshotNumber(int *snapshotNumber, int *serverTime);
 
@@ -226,6 +226,7 @@ void trap_S_StopStreamingSound(int stream);
 void trap_S_QueueStreamingSound(int stream, const char *filename, float volume);
 int trap_S_GetStreamPlayCount(int stream);
 void trap_S_SetStreamVolume(int stream, float volume);
+void trap_S_StopAllSounds(void);
 
 void trap_Key_KeynumToStringBuf(int keynum, char *buf, int buflen);
 void trap_Key_GetBindingBuf(int keynum, char *buf, int buflen);

@@ -335,7 +335,6 @@ typedef struct {
 	qboolean	soundRegistered;
 	qboolean	cgameStarted;
 
-	qboolean	enteredMenu;
 	qboolean	printToCgame;			// enabled after restoring console text to cgame
 	bspFile_t	*cgameBsp;
 
@@ -379,16 +378,18 @@ extern	qboolean	cl_oldGameSet;
 
 //=============================================================================
 
-#define DEMO_MAGIC "SPEARMINT_DEMO\0"
+// note: there is implicitly a '\0' byte added to the string literal
+#define DEMO_MAGIC "SPEARMINT_DEMO"
 
 typedef struct {
 	char	magic[15];
+	byte	padding; // align to 4-byte boundary, this in uninitialized data in older demos
 	int		headerSize;
 	int		protocol;
 
 	// treated as optional, assumed to exist based on headerSize
-	char	startTime[20]; // "YYYY-MM-DD HH:MM:SS\0"
-	char	endTime[20]; // "YYYY-MM-DD HH:MM:SS\0"
+	char	startTime[20]; // "YYYY-MM-DD HH:MM:SS" with null byte
+	char	endTime[20]; // "YYYY-MM-DD HH:MM:SS" with null byte
 	int		runTime; // Run time in milliseconds. Note: assumed to be directly after endTime when saving demo
 
 } demoHeader_t;
@@ -518,7 +519,8 @@ void CL_WritePacket( void );
 
 void CL_VerifyCode( void );
 
-int Key_StringToKeynum( char *str );
+#define KEYNUMS_PER_STRING 2
+qboolean Key_StringToKeynum( char *str, int keynums[KEYNUMS_PER_STRING] );
 char *Key_KeynumToString (int keynum);
 
 int Mouse_GetState( int localPlayerNum );
@@ -589,7 +591,6 @@ void CIN_CloseAllVideos(void);
 //
 void CL_InitCGame( void );
 void CL_ShutdownCGame( void );
-void CL_GameCommand( void );
 void CL_CGameRendering( stereoFrame_t stereo );
 void CL_ShowMainMenu( void );
 void CL_UpdateGlconfig( void );

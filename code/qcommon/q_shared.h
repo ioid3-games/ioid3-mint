@@ -76,6 +76,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #else
 #define Q_EXPORT
 #endif
+
 /**************************************************************************************************************************************
  VM Considerations
 
@@ -99,6 +100,7 @@ typedef int intptr_t;
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
@@ -114,12 +116,15 @@ typedef unsigned __int64 uint64_t;
 typedef unsigned __int32 uint32_t;
 typedef unsigned __int16 uint16_t;
 typedef unsigned __int8 uint8_t;
+#else
+#include <stdint.h>
+#endif
+#ifdef _WIN32
 // vsnprintf is ISO/IEC 9899:1999
 // abstracting this to make it portable
 int Q_vsnprintf(char *str, size_t size, const char *format, va_list ap);
 #define rint(x) (floor(x) + 0.5f)
 #else
-#include <stdint.h>
 #define Q_vsnprintf vsnprintf
 #endif
 #endif
@@ -200,6 +205,7 @@ typedef enum {
 	PRINT_WARNING,
 	PRINT_ERROR
 } printParm_t;
+
 #ifdef ERR_FATAL
 #undef ERR_FATAL // this is be defined in malloc.h
 #endif
@@ -208,7 +214,7 @@ typedef enum {
 	ERR_FATAL,				// exit the entire game with a popup window
 	ERR_DROP,				// print to console and disconnect from game
 	ERR_SERVERDISCONNECT,	// don't kill server
-	ERR_DISCONNECT,			// client disconnected from the server
+	ERR_DISCONNECT			// client disconnected from the server
 } errorParm_t;
 #if !defined(NDEBUG) && !defined(BSPC)
 #define ZONE_DEBUG
@@ -233,11 +239,11 @@ void *Hunk_Alloc(int size, ha_pref preference);
 #define Com_Memcpy memcpy
 void Com_Memcpy2(void *dst, int dstSize, const void *src, int srcSize);
 
-#define CIN_system	 1
-#define CIN_loop	 2
-#define CIN_hold	 4
-#define CIN_silent	 8
-#define CIN_shader	16
+#define CIN_system	0x00000001
+#define CIN_loop	0x00000002
+#define CIN_hold	0x00000004
+#define CIN_silent	0x00000008
+#define CIN_shader	0x00000010
 
 /*
 =======================================================================================================================================
@@ -292,14 +298,14 @@ extern vec4_t colorDkGrey;
 #define ColorIndexForNumber(c) ((c) & 0x07)
 #define ColorIndex(c) (ColorIndexForNumber((c) - '0'))
 
-#define S_COLOR_BLACK		"^0"
-#define S_COLOR_RED			"^1"
-#define S_COLOR_GREEN		"^2"
-#define S_COLOR_YELLOW		"^3"
-#define S_COLOR_BLUE		"^4"
-#define S_COLOR_CYAN		"^5"
-#define S_COLOR_MAGENTA		"^6"
-#define S_COLOR_WHITE		"^7"
+#define S_COLOR_BLACK	"^0"
+#define S_COLOR_RED		"^1"
+#define S_COLOR_GREEN	"^2"
+#define S_COLOR_YELLOW	"^3"
+#define S_COLOR_BLUE	"^4"
+#define S_COLOR_CYAN	"^5"
+#define S_COLOR_MAGENTA	"^6"
+#define S_COLOR_WHITE	"^7"
 
 extern vec4_t g_color_table[8];
 
@@ -375,7 +381,7 @@ static ID_INLINE float Q_rsqrt(float number) {
 	float x = 0.5f * number;
 	float y;
 #ifdef __GNUC__
-	asm("frsqrte %0,%1" : " = f" (y) : "f" (number));
+	asm("frsqrte %0,%1" : "=f"(y) : "f"(number));
 #else
 	y = __frsqrte(number);
 #endif
@@ -390,7 +396,7 @@ Q_fabs
 static ID_INLINE float Q_fabs(float x) {
 	float abs_x;
 
-	asm("fabs %0,%1" : " = f" (abs_x) : "f" (x));
+	asm("fabs %0,%1" : "=f"(abs_x) : "f"(x));
 	return abs_x;
 }
 #else
@@ -406,7 +412,7 @@ signed short ClampShort(int i);
 // this isn't a real cheap function to call!
 int DirToByte(vec3_t dir);
 void ByteToDir(int b, vec3_t dir);
-#if	1
+#if 1
 #define DotProduct(x, y) ((x)[0] * (y)[0] + (x)[1] * (y)[1] + (x)[2] * (y)[2])
 #define VectorSubtract(a, b, c) ((c)[0] = (a)[0] - (b)[0], (c)[1] = (a)[1] - (b)[1], (c)[2] = (a)[2] - (b)[2])
 #define VectorAdd(a, b, c) ((c)[0] = (a)[0] + (b)[0], (c)[1] = (a)[1] + (b)[1], (c)[2] = (a)[2] + (b)[2])
@@ -612,7 +618,6 @@ static ID_INLINE float IntAsFloat(int i) {
 #else
 int VectorEmpty(const vec3_t v);
 int VectorCompare(const vec3_t v1, const vec3_t v2);
-//VectorCompareEpsilon
 vec_t VectorLength(const vec3_t v);
 vec_t VectorLengthSquared(const vec3_t v);
 vec_t Distance(const vec3_t p1, const vec3_t p2);
@@ -635,7 +640,7 @@ float Q_crandom(int *seed);
 #define random() ((rand() & 0x7fff) / ((float)0x7fff))
 #define crandom() (2.0 * (random() - 0.5))
 
-void vectoangles(const vec3_t value1, vec3_t angles);
+void VectorToAngles(const vec3_t value1, vec3_t angles);
 void AnglesToAxis(const vec3_t angles, vec3_t axis[3]);
 void AxisClear(vec3_t axis[3]);
 void AxisCopy(vec3_t in[3], vec3_t out[3]);
@@ -798,7 +803,7 @@ void Parse1DMatrix(char **buf_p, int x, float *m);
 void Parse2DMatrix(char **buf_p, int y, int x, float *m);
 void Parse3DMatrix(char **buf_p, int z, int y, int x, float *m);
 int Com_HexStrToInt(const char *str);
-int QDECL Com_sprintf(char *dest, int size, const char *fmt, ...)__attribute__((format(printf, 3, 4)));
+int QDECL Com_sprintf(char *dest, int size, const char *fmt, ...) __attribute__((format(printf, 3, 4)));
 char *Com_SkipTokens(char *s, int numTokens, char *sep);
 char *Com_SkipCharset(char *s, char *sep);
 void Com_RandomBytes(byte *string, int len);
@@ -904,24 +909,24 @@ void QDECL Com_DPrintf(const char *msg, ...) __attribute__((format(printf, 1, 2)
 =======================================================================================================================================
 */
 
-#define CVAR_ARCHIVE			0x0001 // set to cause it to be saved to vars.rc, used for system variables, not for player specific configurations
-#define CVAR_USERINFO			0x0002 // sent to server on connect or change
-#define CVAR_SERVERINFO			0x0004 // sent in response to front end requests
-#define CVAR_SYSTEMINFO			0x0008 // these cvars will be duplicated on all clients
-#define CVAR_INIT				0x0010 // don't allow change from console at all, but can be set from the command line
-#define CVAR_LATCH				0x0020 // will only change when C code next does a Cvar_Get(), so it can't be changed without proper initialization. modified will be set, even though the value hasn't changed yet
-#define CVAR_ROM				0x0040 // display only, cannot be set by user at all
-#define CVAR_USER_CREATED		0x0080 // created by a set command
-#define CVAR_TEMP				0x0100 // can be set even when cheats are disabled, but is not archived
-#define CVAR_CHEAT				0x0200 // can not be changed if cheats are disabled
-#define CVAR_NORESTART			0x0400 // do not clear when a cvar_restart is issued
-#define CVAR_SERVER_CREATED		0x0800 // cvar was created by a server the client connected to.
-#define CVAR_VM_CREATED			0x1000 // cvar was created exclusively in one of the VMs.
-#define CVAR_PROTECTED			0x2000 // prevent modifying this var from VMs or the server
-#define CVAR_USERINFO2			0x4000 // userinfo for second local player
-#define CVAR_USERINFO3			0x8000 // userinfo for third local player
-#define CVAR_USERINFO4			0x10000 // userinfo for fourth local player
-#define CVAR_CUSTOM_RESET		0x20000 // uses a custom game-specific reset string
+#define CVAR_ARCHIVE		0x00000001 // set to cause it to be saved to vars.rc, used for system variables, not for player specific configurations
+#define CVAR_USERINFO		0x00000002 // sent to server on connect or change
+#define CVAR_SERVERINFO		0x00000004 // sent in response to front end requests
+#define CVAR_SYSTEMINFO		0x00000008 // these cvars will be duplicated on all clients
+#define CVAR_INIT			0x00000010 // don't allow change from console at all, but can be set from the command line
+#define CVAR_LATCH			0x00000020 // will only change when C code next does a Cvar_Get(), so it can't be changed without proper initialization. modified will be set, even though the value hasn't changed yet
+#define CVAR_ROM			0x00000040 // display only, cannot be set by user at all
+#define CVAR_USER_CREATED	0x00000080 // created by a set command
+#define CVAR_TEMP			0x00000100 // can be set even when cheats are disabled, but is not archived
+#define CVAR_CHEAT			0x00000200 // can not be changed if cheats are disabled
+#define CVAR_NORESTART		0x00000400 // do not clear when a cvar_restart is issued
+#define CVAR_SERVER_CREATED	0x00000800 // cvar was created by a server the client connected to.
+#define CVAR_VM_CREATED		0x00001000 // cvar was created exclusively in one of the VMs.
+#define CVAR_PROTECTED		0x00002000 // prevent modifying this var from VMs or the server
+#define CVAR_USERINFO2		0x00004000 // userinfo for second local player
+#define CVAR_USERINFO3		0x00008000 // userinfo for third local player
+#define CVAR_USERINFO4		0x00010000 // userinfo for fourth local player
+#define CVAR_CUSTOM_RESET	0x00020000 // uses a custom game-specific reset string
 // these flags are only returned by the Cvar_Flags() function
 #define CVAR_MODIFIED		0x40000000 // Cvar was modified
 #define CVAR_NONEXISTENT	0x80000000 // Cvar doesn't exist.
@@ -974,8 +979,8 @@ typedef struct {
 */
 
 // if you change the count of flags be sure to also change VOIP_FLAGNUM
-#define VOIP_SPATIAL	0x01 // spatialized voip message
-#define VOIP_DIRECT		0x02 // non-spatialized voip message
+#define VOIP_SPATIAL	0x00000001 // spatialized voip message
+#define VOIP_DIRECT		0x00000002 // non-spatialized voip message
 // number of flags voip knows. You will have to bump protocol version number if you change this.
 #define VOIP_FLAGCNT 2
 
@@ -989,11 +994,11 @@ typedef struct {
 
 // plane types are used to speed some tests
 // 0-2 are axial planes
-#define PLANE_X				0
-#define PLANE_Y				1
-#define PLANE_Z				2
-#define PLANE_NON_AXIAL		3
-#define PLANE_NON_PLANAR	4
+#define PLANE_X			0
+#define PLANE_Y			1
+#define PLANE_Z			2
+#define PLANE_NON_AXIAL	3
+#define PLANE_NON_PLANAR 4
 
 #define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : (x[0] == 0.f && x[1] == 0.f && x[2] == 0.f ? PLANE_NON_PLANAR : PLANE_NON_AXIAL))))
 // plane_t structure
@@ -1001,7 +1006,7 @@ typedef struct {
 typedef struct cplane_s {
 	vec3_t normal;
 	float dist;
-	byte type;		// for fast side tests: 0,1,2 = axial, 3 = nonaxial
+	byte type;		// for fast side tests: 0, 1, 2 = axial, 3 = nonaxial
 	byte signbits;	// signx + (signy << 1) + (signz << 2), used as lookup during collision
 	byte pad[2];
 } cplane_t;
@@ -1033,7 +1038,7 @@ typedef struct {
 	int entityNum;			// entity the contacted sirface is a part of
 	float lateralFraction;	// fraction of collision tangetially to the trace direction
 } trace_t;
-// trace->entityNum can also be 0 to(MAX_GENTITIES - 1) or ENTITYNUM_NONE, ENTITYNUM_WORLD
+// trace->entityNum can also be 0 to (MAX_GENTITIES - 1) or ENTITYNUM_NONE, ENTITYNUM_WORLD
 
 // markfragments are returned by R_MarkFragments()
 typedef struct {
@@ -1104,7 +1109,7 @@ typedef struct sharedPlayerState_s {
 	int commandTime;		// cmd->serverTime of last executed command
 	vec3_t origin;
 	qboolean linked;		// set by server
-	int playerNum;			// ranges from 0 to MAX_CLIENTS-1
+	int clientNum;			// ranges from 0 to MAX_CLIENTS-1
 	vec3_t viewangles;		// for fixed views
 	int viewheight;
 	int ping;				// server to game info for scoreboard
@@ -1141,8 +1146,8 @@ typedef struct sharedEntityState_s {
 
 typedef struct {
 	int offset;
-	int numElements; // 1 to 1024
-	int bits;		// 0 = float
+	int numElements;	// 1 to 1024
+	int bits;			// 0 = float
 } vmNetField_t;
 
 typedef enum {

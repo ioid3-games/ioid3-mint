@@ -29,8 +29,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 // major 0 means each minor is an API break.
 // major > 0 means each major is an API break and each minor extends API.
-#define CG_API_MAJOR_VERSION	0
-#define CG_API_MINOR_VERSION	37
+// ZTM: FIXME: There is no way for the VM to know what the engine support API is so there is no way to add more system calls.
+#define CG_API_MAJOR_VERSION 1
+#define CG_API_MINOR_VERSION 0
 
 
 #define CMD_BACKUP			64	
@@ -52,7 +53,7 @@ typedef struct {
 
 	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES];		// portalarea visibility bits
 
-	int playerNums[MAX_SPLITVIEW];
+	int clientNums[MAX_SPLITVIEW];
 	int numServerCommands;		// text based server commands to execute when this
 	int serverCommandSequence;	// snapshot becomes current
 
@@ -71,7 +72,7 @@ typedef struct {
 
 	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES];		// portalarea visibility bits
 
-	int playerNums[MAX_SPLITVIEW];
+	int clientNums[MAX_SPLITVIEW];
 	int numServerCommands;		// text based server commands to execute when this
 	int serverCommandSequence;	// snapshot becomes current
 
@@ -193,6 +194,7 @@ typedef enum {
 	CG_CVAR_VARIABLE_INTEGER_VALUE,
 	CG_CVAR_VARIABLE_STRING_BUFFER,
 	CG_CVAR_LATCHED_VARIABLE_STRING_BUFFER,
+	CG_CVAR_DEFAULT_VARIABLE_STRING_BUFFER,
 	CG_CVAR_INFO_STRING_BUFFER,
 	CG_CVAR_CHECK_RANGE,
 	CG_FS_FOPENFILE,
@@ -204,16 +206,21 @@ typedef enum {
 	CG_FS_GETFILELIST,
 	CG_FS_DELETE,
 	CG_FS_RENAME,
-	CG_PC_ADD_GLOBAL_DEFINE,
-	CG_PC_REMOVE_ALL_GLOBAL_DEFINES,
-	CG_PC_LOAD_SOURCE,
-	CG_PC_FREE_SOURCE,
-	CG_PC_READ_TOKEN,
-	CG_PC_UNREAD_TOKEN,
-	CG_PC_SOURCE_FILE_AND_LINE,
-	CG_HEAP_MALLOC,		//(int size);
-	CG_HEAP_AVAILABLE,	//(void);
-	CG_HEAP_FREE,		//(void *data);
+	CG_PC_ADD_GLOBAL_DEFINE, // (const char *define);
+	CG_PC_REMOVE_GLOBAL_DEFINE, // (const char *define);
+	CG_PC_REMOVE_ALL_GLOBAL_DEFINES, // (void);
+	CG_PC_LOAD_SOURCE, // (const char *filename, const char *basepath);
+	CG_PC_FREE_SOURCE, // (int handle);
+	CG_PC_ADD_DEFINE, // (int handle, const char *define);
+	CG_PC_READ_TOKEN, // (int handle, pc_token_t *pc_token);
+	CG_PC_UNREAD_TOKEN, // (int handle);
+	CG_PC_SOURCE_FILE_AND_LINE, // (int handle, char *filename, int *line);
+	CG_HEAP_MALLOC, //(int size);
+	CG_HEAP_AVAILABLE, //(void);
+	CG_HEAP_FREE, //(void *data);
+	CG_FIELD_COMPLETEFILENAME, // (const char *dir, const char *ext, qboolean stripExt, qboolean allowNonPureFilesOnDisk);
+	CG_FIELD_COMPLETECOMMAND, // (const char *cmd, qboolean doCommands, qboolean doCvars);
+	CG_FIELD_COMPLETELIST, // (const char *list);
 
 	//=========== client game specific functionality =============
 
@@ -319,6 +326,7 @@ typedef enum {
 	CG_S_QUEUESTREAMINGSOUND,
 	CG_S_GETSTREAMPLAYCOUNT,
 	CG_S_SETSTREAMVOLUME,
+	CG_S_STOPALLSOUNDS,
 	// note: these were not originally available in ui
 	CG_S_STARTSOUND = 450,
 	CG_S_CLEARLOOPINGSOUNDS,
@@ -400,7 +408,7 @@ typedef enum {
 	// playVideo = 2 means switched to a new game/mod and not connecting to a server
 
 	CG_INGAME_INIT,
-//	void CG_Init(int serverMessageNum, int serverCommandSequence, int maxSplitView, int playerNum0, int playerNum1, int playerNum2, int playerNum3)
+//	void CG_Init(int serverMessageNum, int serverCommandSequence, int maxSplitView, int clientNum0, int clientNum1, int clientNum2, int clientNum3)
 	// called when the level loads or when the renderer is restarted
 	// all media should be registered at this time
 	// cgame will display loading status by calling SCR_Update, which
@@ -410,7 +418,7 @@ typedef enum {
 
 	CG_SHUTDOWN,
 //	void (*CG_Shutdown)(void);
-	// oportunity to flush and close any open files
+	// opportunity to flush and close any open files
 
 	CG_CONSOLE_COMMAND,
 //	qboolean(*CG_ConsoleCommand)(connstate_t state, int realTime);
@@ -433,9 +441,9 @@ typedef enum {
 
 	CG_VOIP_STRING,
 // char *(*CG_VoIPString)(void);
-	// pass voip target token unknown by client to cgame to convert into playerNums
+	// pass voip target token unknown by client to cgame to convert into clientNums
 	// use Cmd_Argc() / Cmd_Argv()to read the target token, return a
-	// string of comma-delimited playerNums based on target token or
+	// string of comma-delimited clientNums based on target token or
 	// NULL if unknown token.
 
 	CG_KEY_EVENT, 
@@ -478,8 +486,11 @@ typedef enum {
 	CG_CREATE_USER_CMD,
 //	usercmd_t *CG_CreateUserCmd(int localPlayerNum, int frameTime, int frameMsec, float mx, float my, qboolean anykeydown);
 
-	CG_UPDATE_GLCONFIG
-//	void CG_UpdateGLConfig(void);
+	CG_UPDATE_GLCONFIG,
+//	void CG_UpdateGLConfig( void );
+
+	CG_CONSOLE_COMPLETEARGUMENT,
+//	qboolean (*CG_ConsoleCompleteArgument)(connstate_t state, int realTime, int completeArgument);
 
 } cgameExport_t;
 

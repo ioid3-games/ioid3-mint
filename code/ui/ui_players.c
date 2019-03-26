@@ -79,6 +79,7 @@ tryagain:
 
 	COM_StripExtension(item->world_model[0], path, sizeof(path));
 	Q_strcat(path, sizeof(path), "_barrel.md3");
+
 	pi->barrelModel = trap_R_RegisterModel(path);
 
 	COM_StripExtension(item->world_model[0], path, sizeof(path));
@@ -96,13 +97,13 @@ tryagain:
 		case WP_SHOTGUN:
 			MAKERGB(pi->flashDlightColor, 1, 1, 0);
 			break;
-		case WP_GRENADE_LAUNCHER:
+		case WP_GRENADELAUNCHER:
 			MAKERGB(pi->flashDlightColor, 1, 0.7f, 0.5f);
 			break;
-		case WP_ROCKET_LAUNCHER:
+		case WP_ROCKETLAUNCHER:
 			MAKERGB(pi->flashDlightColor, 1, 0.75f, 0);
 			break;
-		case WP_LIGHTNING:
+		case WP_BEAMGUN:
 			MAKERGB(pi->flashDlightColor, 0.6f, 0.6f, 1);
 			break;
 		case WP_RAILGUN:
@@ -121,7 +122,7 @@ tryagain:
 		case WP_NAILGUN:
 			MAKERGB(pi->flashDlightColor, 1, 0.75f, 0);
 			break;
-		case WP_PROX_LAUNCHER:
+		case WP_PROXLAUNCHER:
 			MAKERGB(pi->flashDlightColor, 1, 0.70f, 0);
 			break;
 		case WP_CHAINGUN:
@@ -291,6 +292,7 @@ static qboolean UI_PositionEntityOnTag(refEntity_t *entity, const refEntity_t *p
 	}
 	// cast away const because of compiler problems
 	MatrixMultiply(lerped.axis, ((refEntity_t *)parent)->axis, entity->axis);
+
 	entity->backlerp = parent->backlerp;
 
 	return returnValue;
@@ -571,7 +573,9 @@ static void UI_PlayerAngles(uiPlayerInfo_t *pi, vec3_t legs[3], vec3_t torso[3],
 	float adjust;
 
 	VectorCopy(pi->viewAngles, headAngles);
+
 	headAngles[YAW] = AngleMod(headAngles[YAW]);
+
 	VectorClear(legsAngles);
 	VectorClear(torsoAngles);
 
@@ -607,7 +611,7 @@ static void UI_PlayerAngles(uiPlayerInfo_t *pi, vec3_t legs[3], vec3_t torso[3],
 	UI_SwingAngles(dest, 15, 30, 0.1f, &pi->torso.pitchAngle, &pi->torso.pitching);
 
 	torsoAngles[PITCH] = pi->torso.pitchAngle;
-	// pull the angles back out of the hierarchial chain
+	// pull the angles back out of the hierarchical chain
 	AnglesSubtract(headAngles, torsoAngles, headAngles);
 	AnglesSubtract(torsoAngles, legsAngles, torsoAngles);
 	AnglesToAxis(legsAngles, legs);
@@ -1021,9 +1025,10 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 	}
 
 	trap_FS_Read(text, len, f);
-	text[len] = 0;
-	trap_FS_FCloseFile(f);
 
+	text[len] = 0;
+
+	trap_FS_FCloseFile(f);
 	COM_Compress(text);
 	// parse the text
 	text_p = text;
@@ -1178,6 +1183,7 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 	}
 
 	Q_strncpyz(headModelName, headModelSkinName, sizeof(headModelName));
+
 	slash = strchr(headModelName, '/');
 
 	if (!slash) {

@@ -38,6 +38,7 @@ Huff_putBit
 =======================================================================================================================================
 */
 void Huff_putBit(int bit, byte *fout, int *offset) {
+
 	bloc = *offset;
 
 	if ((bloc&7) == 0) {
@@ -374,7 +375,7 @@ int Huff_Receive(node_t *node, int *ch, byte *fin) {
 
 	if (!node) {
 		return 0;
-//		Com_Error(ERR_DROP, "Illegal tree!");
+		//Com_Error(ERR_DROP, "Illegal tree!");
 	}
 
 	return (*ch = node->symbol);
@@ -407,7 +408,7 @@ void Huff_offsetReceive(node_t *node, int *ch, byte *fin, int *offset, int maxof
 	if (!node) {
 		*ch = 0;
 		return;
-//		Com_Error(ERR_DROP, "Illegal tree!");
+		//Com_Error(ERR_DROP, "Illegal tree!");
 	}
 
 	*ch = node->symbol;
@@ -469,8 +470,11 @@ Huff_offsetTransmit
 =======================================================================================================================================
 */
 void Huff_offsetTransmit(huff_t *huff, int ch, byte *fout, int *offset, int maxoffset) {
+
 	bloc = *offset;
+
 	send(huff->loc[ch], NULL, fout, maxoffset);
+
 	*offset = bloc;
 }
 
@@ -493,7 +497,7 @@ void Huff_Decompress(msg_t *mbuf, int offset) {
 	}
 
 	Com_Memset(&huff, 0, sizeof(huff_t));
-	// Initialize the tree & list with the NYT node
+	// initialize the tree & list with the NYT node
 	huff.tree = huff.lhead = huff.ltail = huff.loc[NYT] = &(huff.nodeList[huff.blocNode++]);
 	huff.tree->symbol = NYT;
 	huff.tree->weight = 0;
@@ -511,15 +515,15 @@ void Huff_Decompress(msg_t *mbuf, int offset) {
 	for (j = 0; j < cch; j++) {
 		ch = 0;
 		// don't overflow reading from the messages
-		// FIXME: would it be better to have an overflow check in get_bit ?
+		// FIXME: would it be better to have an overflow check in get_bit?
 		if ((bloc >> 3) > size) {
 			seq[j] = 0;
 			break;
 		}
 
-		Huff_Receive(huff.tree, &ch, buffer); // Get a character
+		Huff_Receive(huff.tree, &ch, buffer); // get a character
 
-		if (ch == NYT) { // We got a NYT, get the symbol associated with it
+		if (ch == NYT) { // we got a NYT, get the symbol associated with it
 			ch = 0;
 
 			for (i = 0; i < 8; i++) {
@@ -527,9 +531,9 @@ void Huff_Decompress(msg_t *mbuf, int offset) {
 			}
 		}
 
-		seq[j] = ch; // Write symbol
+		seq[j] = ch; // write symbol
 
-		Huff_addRef(&huff, (byte)ch); // Increment node
+		Huff_addRef(&huff, (byte)ch); // increment node
 	}
 
 	mbuf->cursize = cch + offset;
@@ -551,14 +555,14 @@ void Huff_Compress(msg_t *mbuf, int offset) {
 	huff_t huff;
 
 	size = mbuf->cursize - offset;
-	buffer = mbuf->data + +offset;
+	buffer = mbuf->data + offset;
 
 	if (size <= 0) {
 		return;
 	}
 
 	Com_Memset(&huff, 0, sizeof(huff_t));
-	// Add the NYT (not yet transmitted) node into the tree/list
+	// add the NYT (not yet transmitted) node into the tree/list
 	huff.tree = huff.lhead = huff.loc[NYT] = &(huff.nodeList[huff.blocNode++]);
 	huff.tree->symbol = NYT;
 	huff.tree->weight = 0;
@@ -567,13 +571,13 @@ void Huff_Compress(msg_t *mbuf, int offset) {
 
 	seq[0] = (size >> 8);
 	seq[1] = size&0xff;
-
 	bloc = 16;
 
 	for (i = 0; i < size; i++) {
 		ch = buffer[i];
-		Huff_transmit(&huff, ch, seq, size << 3); // Transmit symbol
-		Huff_addRef(&huff, (byte)ch); // Do update
+
+		Huff_transmit(&huff, ch, seq, size << 3); // transmit symbol
+		Huff_addRef(&huff, (byte)ch); // do update
 	}
 
 	bloc += 8; // next byte
@@ -592,13 +596,13 @@ void Huff_Init(huffman_t *huff) {
 
 	Com_Memset(&huff->compressor, 0, sizeof(huff_t));
 	Com_Memset(&huff->decompressor, 0, sizeof(huff_t));
-	// Initialize the tree & list with the NYT node
+	// initialize the tree & list with the NYT node
 	huff->decompressor.tree = huff->decompressor.lhead = huff->decompressor.ltail = huff->decompressor.loc[NYT] = &(huff->decompressor.nodeList[huff->decompressor.blocNode++]);
 	huff->decompressor.tree->symbol = NYT;
 	huff->decompressor.tree->weight = 0;
 	huff->decompressor.lhead->next = huff->decompressor.lhead->prev = NULL;
 	huff->decompressor.tree->parent = huff->decompressor.tree->left = huff->decompressor.tree->right = NULL;
-	// Add the NYT (not yet transmitted) node into the tree/list
+	// add the NYT (not yet transmitted) node into the tree/list
 	huff->compressor.tree = huff->compressor.lhead = huff->compressor.loc[NYT] = &(huff->compressor.nodeList[huff->compressor.blocNode++]);
 	huff->compressor.tree->symbol = NYT;
 	huff->compressor.tree->weight = 0;

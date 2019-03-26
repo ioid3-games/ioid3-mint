@@ -110,6 +110,12 @@ Restart the input subsystem.
 =======================================================================================================================================
 */
 void Sys_In_Restart_f(void) {
+#ifndef DEDICATED
+	if (!SDL_WasInit(SDL_INIT_VIDEO)) {
+		Com_Printf("in_restart: Cannot restart input while video is shutdown\n");
+		return;
+	}
+#endif
 	IN_Restart();
 }
 
@@ -229,7 +235,7 @@ static qboolean Sys_WritePIDFile(const char *gamedir) {
 	if (pidFile == NULL) {
 		return qfalse;
 	}
-	// First, check if the pid file is already there
+	// first, check if the pid file is already there
 	if ((f = fopen(pidFile, "r")) != NULL) {
 		char pidBuffer[64] = {0};
 		int pid;
@@ -297,14 +303,12 @@ static __attribute__((noreturn)) void Sys_Exit(int exitCode) {
 	SDL_Quit();
 #endif
 	if (exitCode < 2 && com_fullyInitialized) {
-		// Normal exit
+		// normal exit
 		Sys_RemovePIDFile(FS_GetCurrentGameDir());
 	}
 
 	NET_Shutdown();
-
 	Sys_PlatformExit();
-
 	exit(exitCode);
 }
 
@@ -360,7 +364,6 @@ Sys_Init
 void Sys_Init(void) {
 
 	Cmd_AddCommand("in_restart", Sys_In_Restart_f);
-
 	Cvar_Set("arch", OS_STRING " " ARCH_STRING);
 	Cvar_Set("username", Sys_GetCurrentUser());
 }
@@ -388,7 +391,7 @@ void Sys_AnsiColorPrint(const char *msg) {
 
 	while (*msg) {
 		if (Q_IsColorString(msg) || *msg == '\n') {
-			// First empty the buffer
+			// first empty the buffer
 			if (length > 0) {
 				buffer[length] = '\0';
 				fputs(buffer, stderr);
@@ -396,11 +399,11 @@ void Sys_AnsiColorPrint(const char *msg) {
 			}
 
 			if (*msg == '\n') {
-				// Issue a reset and then the newline
+				// issue a reset and then the newline
 				fputs("\033[0m\n", stderr);
 				msg++;
 			} else {
-				// Print the color code
+				// print the color code
 				Com_sprintf(buffer, sizeof(buffer), "\033[%dm", q3ToAnsi[ColorIndex(*(msg + 1))]);
 				fputs(buffer, stderr);
 				msg += 2;
@@ -415,7 +418,7 @@ void Sys_AnsiColorPrint(const char *msg) {
 			msg++;
 		}
 	}
-	// Empty anything still left in the buffer
+	// empty anything still left in the buffer
 	if (length > 0) {
 		buffer[length] = '\0';
 		fputs(buffer, stderr);
@@ -445,7 +448,6 @@ void Sys_Error(const char *error, ...) {
 	va_start(argptr, error);
 	Q_vsnprintf(string, sizeof(string), error, argptr);
 	va_end(argptr);
-
 	Sys_ErrorDialog(string);
 	Sys_Exit(3);
 }
@@ -462,7 +464,6 @@ static __attribute__((format(printf, 1, 2))) void Sys_Warn(char *warning, ...) {
 	va_start(argptr, warning);
 	Q_vsnprintf(string, sizeof(string), warning, argptr);
 	va_end(argptr);
-
 	CON_Print(va("Warning: %s", string));
 }
 #endif
@@ -667,16 +668,17 @@ main
 int main(int argc, char **argv) {
 	int i;
 	char commandLine[MAX_STRING_CHARS] = {0};
-
 	extern void Sys_LaunchAutoupdater(int argc, char **argv);
+
 	Sys_LaunchAutoupdater(argc, argv);
 #ifndef DEDICATED
 	// SDL version check
-	// Compile time
+
+	// compile time
 #if !SDL_VERSION_ATLEAST (MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH)
 #error A more recent version of SDL is required
 #endif
-	// Run time
+	// run time
 	SDL_version ver;
 	SDL_GetVersion(&ver);
 #define MINSDL_VERSION \
@@ -692,10 +694,10 @@ int main(int argc, char **argv) {
 	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
 #endif
 	Sys_PlatformInit();
-	// Set the initial time base
+	// set the initial time base
 	Sys_Milliseconds();
 #ifdef __APPLE__
-	// This is passed if we are launched by double-clicking
+	// this is passed if we are launched by double-clicking
 	if (argc >= 2 && Q_strncmp(argv[1], "-psn", 4) == 0) {
 		argc = 1;
 	}
@@ -703,7 +705,7 @@ int main(int argc, char **argv) {
 	Sys_ParseArgs(argc, argv);
 	Sys_SetBinaryPath(Sys_Dirname(argv[0]));
 	Sys_SetDefaultInstallPath(DEFAULT_BASEDIR);
-	// Concatenate the command line for passing to Com_Init
+	// concatenate the command line for passing to Com_Init
 	for (i = 1; i < argc; i++) {
 		const qboolean containsSpaces = strchr(argv[i], ' ') != NULL;
 

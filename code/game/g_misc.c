@@ -50,7 +50,7 @@ void SP_info_notnull(gentity_t *self) {
 	G_SetOrigin(self, self->s.origin);
 }
 
-/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) linear
+/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) LINEAR
 Non-displayed light.
 "light" overrides the default 300 intensity.
 Linear checbox gives linear falloff instead of inverse square
@@ -61,14 +61,14 @@ void SP_light(gentity_t *self) {
 	G_FreeEntity(self);
 }
 
-/*QUAKED lightJunior(0 0.7 0.3)(-8 -8 -8)(8 8 8)nonlinear angle negative_spot negative_point
+/*QUAKED lightJunior (0 0.7 0.3) (-8 -8 -8) (8 8 8) NONLINEAR ANGLE NEGATIVE_SPOT NEGATIVE_POINT
 Non-displayed light that only affects dynamic game models, but does not contribute to lightmaps
 "light" overrides the default 300 intensity.
 Nonlinear checkbox gives inverse square falloff instead of linear
-Angle adds light:surface angle calculations(only valid for "Linear" lights)
+Angle adds light:surface angle calculations (only valid for "Linear" lights)
 Lights pointed at a target will be spotlights.
 "radius" overrides the default 64 unit radius of a spotlight at the target point.
-"fade" falloff/radius adjustment value. multiply the run of the slope by "fade"(1.0f default)(only valid for "Linear" lights)
+"fade" falloff/radius adjustment value. multiply the run of the slope by "fade" (1.0f default)(only valid for "linear" lights)
 */
 void SP_lightJunior(gentity_t *self) {
 	G_FreeEntity(self);
@@ -82,46 +82,51 @@ void SP_lightJunior(gentity_t *self) {
 =======================================================================================================================================
 */
 
+/*
+=======================================================================================================================================
+TeleportPlayer
+=======================================================================================================================================
+*/
 void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
 	gentity_t *tent;
 	qboolean noAngles;
 
 	noAngles = (angles[0] > 999999.0);
 	// use temp events at source and destination to prevent the effect from getting dropped by a second player event
-	if (player->player->sess.sessionTeam != TEAM_SPECTATOR) {
-		tent = G_TempEntity(player->player->ps.origin, EV_PLAYER_TELEPORT_OUT);
-		tent->s.playerNum = player->s.playerNum;
+	if (player->client->sess.sessionTeam != TEAM_SPECTATOR) {
+		tent = G_TempEntity(player->client->ps.origin, EV_PLAYER_TELEPORT_OUT);
+		tent->s.clientNum = player->s.clientNum;
 		tent = G_TempEntity(origin, EV_PLAYER_TELEPORT_IN);
-		tent->s.playerNum = player->s.playerNum;
+		tent->s.clientNum = player->s.clientNum;
 	}
 	// unlink to make sure it can't possibly interfere with G_KillBox
 	trap_UnlinkEntity(player);
-	VectorCopy(origin, player->player->ps.origin);
+	VectorCopy(origin, player->client->ps.origin);
 
-	player->player->ps.origin[2] += 1;
+	player->client->ps.origin[2] += 1;
 
 	if (!noAngles) {
 		// spit the player out
-		AngleVectors(angles, player->player->ps.velocity, NULL, NULL);
-		VectorScale(player->player->ps.velocity, 400, player->player->ps.velocity);
+		AngleVectors(angles, player->client->ps.velocity, NULL, NULL);
+		VectorScale(player->client->ps.velocity, 400, player->client->ps.velocity);
 
-		player->player->ps.pm_time = 160; // hold time
-		player->player->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+		player->client->ps.pm_time = 160; // hold time
+		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 		// set angles
 		SetPlayerViewAngle(player, angles);
 	}
 	// toggle the teleport bit so the client knows to not lerp
-	player->player->ps.eFlags ^= EF_TELEPORT_BIT;
+	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
 	// kill anything at the destination
-	if (player->player->sess.sessionTeam != TEAM_SPECTATOR) {
+	if (player->client->sess.sessionTeam != TEAM_SPECTATOR) {
 		G_KillBox(player);
 	}
 	// save results of pmove
 	BG_PlayerStateToEntityState(&player->player->ps, &player->s, qtrue);
 	// use the precise origin for linking
-	VectorCopy(player->player->ps.origin, player->r.currentOrigin);
+	VectorCopy(player->client->ps.origin, player->r.currentOrigin);
 
-	if (player->player->sess.sessionTeam != TEAM_SPECTATOR) {
+	if (player->client->sess.sessionTeam != TEAM_SPECTATOR) {
 		trap_LinkEntity(player);
 	}
 	// we don't want players being backward-reconciled back through teleporters
@@ -136,6 +141,14 @@ an info_notnull
 void SP_misc_teleporter_dest(gentity_t *ent) {
 
 }
+
+/*
+=======================================================================================================================================
+
+	MODELS
+
+=======================================================================================================================================
+*/
 
 /*QUAKED misc_model (1 0 0) (-16 -16 -16) (16 16 16)
 "model" arbitrary .md3 file to display
@@ -154,11 +167,11 @@ void SP_misc_model(gentity_t *ent) {
 #endif
 }
 
-/*QUAKED misc_gamemodel(1 0 0)(-16 -16 -16)(16 16 16)
-md3 placed in the game at runtime(rather than in the bsp)
+/*QUAKED misc_gamemodel (1 0 0) (-16 -16 -16) (16 16 16)
+md3 placed in the game at runtime (rather than in the bsp)
 "model" arbitrary .md3 file to display
-"modelscale" scale multiplier(defaults to 1x, and scales uniformly)
-"modelscale_vec" scale multiplier(defaults to 1 1 1, scales each axis as requested)
+"modelscale" scale multiplier (defaults to 1x, and scales uniformly)
+"modelscale_vec" scale multiplier (defaults to 1 1 1, scales each axis as requested)
 
 "modelscale_vec" - Set scale per-axis.  Overrides "modelscale", so if you have both, the "modelscale" is ignored
 */
@@ -180,69 +193,76 @@ void SP_props_skyportal(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-locateMaster
+LocateMaster
 =======================================================================================================================================
 */
-void locateMaster(gentity_t *ent) {
+void LocateMaster(gentity_t *ent) {
 
 	ent->target_ent = G_PickTarget(ent->target);
 
 	if (ent->target_ent) {
 		ent->r.visDummyNum = ent->target_ent->s.number;
 	} else {
-		G_Printf("Couldn't find target(%s)for misc_vis_dummy at %s\n", ent->target, vtos(ent->r.currentOrigin));
+		G_Printf("Couldn't find target (%s) for misc_vis_dummy at %s\n", ent->target, VectorToString(ent->r.currentOrigin));
 		G_FreeEntity(ent);
 	}
 }
 
-/*QUAKED misc_vis_dummy(1 .5 0)(-8 -8 -8)(8 8 8)
-If this entity is "visible"(in player's PVS)then it's target is forced to be active whether it is in the player's PVS or not.
+/*QUAKED misc_vis_dummy (1 .5 0) (-8 -8 -8) (8 8 8)
+If this entity is "visible" (in player's PVS) then it's target is forced to be active whether it is in the player's PVS or not.
 This entity itself is never visible or transmitted to clients.
-For safety, you should have each dummy only point at one entity(however, it's okay to have many dummies pointing at one entity)
+For safety, you should have each dummy only point at one entity (however, it's okay to have many dummies pointing at one entity)
 */
 void SP_misc_vis_dummy(gentity_t *ent) {
 
 	if (!ent->target) {
-		G_Printf("No target specified for misc_vis_dummy at %s\n", vtos(ent->r.currentOrigin));
-
+		G_Printf("No target specified for misc_vis_dummy at %s\n", VectorToString(ent->r.currentOrigin));
 		G_FreeEntity(ent);
 		return;
 	}
 
 	ent->r.svFlags |= SVF_VISDUMMY;
+
 	G_SetOrigin(ent, ent->s.origin);
 	trap_LinkEntity(ent);
 
-	ent->think = locateMaster;
+	ent->think = LocateMaster;
 	ent->nextthink = level.time + 1000;
-
 }
 
-/*QUAKED misc_vis_dummy_multiple(1 .5 0)(-8 -8 -8)(8 8 8)
-If this entity is "visible"(in player's PVS)then it's target is forced to be active whether it is in the player's PVS or not.
+/*QUAKED misc_vis_dummy_multiple (1 .5 0) (-8 -8 -8) (8 8 8)
+If this entity is "visible" (in player's PVS) then it's target is forced to be active whether it is in the player's PVS or not.
 This entity itself is never visible or transmitted to clients.
 This entity was created to have multiple speakers targeting it
 */
 void SP_misc_vis_dummy_multiple(gentity_t *ent) {
-	if (!ent->targetname) {
-		G_Printf("misc_vis_dummy_multiple needs a targetname at %s\n", vtos(ent->r.currentOrigin));
 
+	if (!ent->targetname) {
+		G_Printf("misc_vis_dummy_multiple needs a targetname at %s\n", VectorToString(ent->r.currentOrigin));
 		G_FreeEntity(ent);
 		return;
 	}
 
 	ent->r.svFlags |= SVF_VISDUMMY_MULTIPLE;
+
 	G_SetOrigin(ent, ent->s.origin);
 	trap_LinkEntity(ent);
-
 }
 
 /*
 =======================================================================================================================================
-locateCamera
+
+	PORTALS
+
 =======================================================================================================================================
 */
-void locateCamera(gentity_t *ent) {
+
+/*
+=======================================================================================================================================
+LocateCamera
+=======================================================================================================================================
+*/
+void LocateCamera(gentity_t *ent) {
 	vec3_t dir;
 	gentity_t *target;
 	gentity_t *owner;
@@ -264,13 +284,13 @@ void locateCamera(gentity_t *ent) {
 	}
 	// swing camera ?
 	if (owner->spawnflags & 4) {
+		ent->s.powerups = 1;
+	} else {
 		// set to 0 for no rotation at all
 		ent->s.powerups = 0;
-	} else {
-		ent->s.powerups = 1;
 	}
-	// playerNum holds the rotate offset
-	ent->s.playerNum = owner->s.playerNum;
+	// clientNum holds the rotate offset
+	ent->s.clientNum = owner->s.clientNum;
 
 	VectorCopy(owner->s.origin, ent->s.origin2);
 	// see if the portal_camera has a target
@@ -302,12 +322,12 @@ void SP_misc_portal_surface(gentity_t *ent) {
 	if (!ent->target) {
 		VectorCopy(ent->s.origin, ent->s.origin2);
 	} else {
-		ent->think = locateCamera;
+		ent->think = LocateCamera;
 		ent->nextthink = level.time + 100;
 	}
 }
 
-/*QUAKED misc_portal_camera (0 0 1) (-8 -8 -8) (8 8 8) slowrotate fastrotate noswing
+/*QUAKED misc_portal_camera (0 0 1) (-8 -8 -8) (8 8 8) SLOWROTATE FASTROTATE NOSWING
 The target for a misc_portal_director. You can set either angles or target another entity to determine the direction of view.
 "roll" an angle modifier to orient the camera around the target vector;
 */
@@ -319,7 +339,7 @@ void SP_misc_portal_camera(gentity_t *ent) {
 	trap_LinkEntity(ent);
 	G_SpawnFloat("roll", "0", &roll);
 
-	ent->s.playerNum = roll / 360.0 * 256;
+	ent->s.clientNum = roll / 360.0 * 256;
 }
 
 /*
@@ -352,18 +372,19 @@ void Use_Shooter(gentity_t *ent, gentity_t *other, gentity_t *activator) {
 	CrossProduct(up, dir, right);
 
 	deg = crandom() * ent->random;
+
 	VectorMA(dir, deg, up, dir);
 
 	deg = crandom() * ent->random;
-	VectorMA(dir, deg, right, dir);
 
+	VectorMA(dir, deg, right, dir);
 	VectorNormalize(dir);
 
 	switch (ent->s.weapon) {
-		case WP_GRENADE_LAUNCHER:
+		case WP_GRENADELAUNCHER:
 			fire_grenade(ent, ent->s.origin, dir);
 			break;
-		case WP_ROCKET_LAUNCHER:
+		case WP_ROCKETLAUNCHER:
 			fire_rocket(ent, ent->s.origin, dir);
 			break;
 		case WP_PLASMAGUN:
@@ -413,17 +434,17 @@ void InitShooter(gentity_t *ent, int weapon) {
 	trap_LinkEntity(ent);
 }
 
-/*QUAKED shooter_rocket (1 0 0)(-16 -16 -16) (16 16 16)
+/*QUAKED shooter_rocket (1 0 0) (-16 -16 -16) (16 16 16)
 Fires at either the target or the current direction.
-"random" the number of degrees of deviance from the taget. (1.0 default)
+"random" the number of degrees of deviance from the target (1.0 default).
 */
 void SP_shooter_rocket(gentity_t *ent) {
-	InitShooter(ent, WP_ROCKET_LAUNCHER);
+	InitShooter(ent, WP_ROCKETLAUNCHER);
 }
 
 /*QUAKED shooter_plasma (1 0 0) (-16 -16 -16) (16 16 16)
 Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
+"random" is the number of degrees of deviance from the target (1.0 default).
 */
 void SP_shooter_plasma(gentity_t *ent) {
 	InitShooter(ent, WP_PLASMAGUN);
@@ -431,15 +452,15 @@ void SP_shooter_plasma(gentity_t *ent) {
 
 /*QUAKED shooter_grenade (1 0 0) (-16 -16 -16) (16 16 16)
 Fires at either the target or the current direction.
-"random" is the number of degrees of deviance from the taget. (1.0 default)
+"random" is the number of degrees of deviance from the target (1.0 default).
 */
 void SP_shooter_grenade(gentity_t *ent) {
-	InitShooter(ent, WP_GRENADE_LAUNCHER);
+	InitShooter(ent, WP_GRENADELAUNCHER);
 }
 
 /*QUAKED corona (0 1 0) (-4 -4 -4) (4 4 4) START_OFF
-Use color picker to set color or key "color". Values are 0.0-1.0 for each color (rgb).
-"scale" will designate a multiplier to the default size. (so 2.0 is 2 x default size, 0.5 is half)
+Use color picker to set color or key "color". Values are 0.0 - 1.0 for each color (rgb).
+"scale" will designate a multiplier to the default size (so 2.0 is 2 x default size, 0.5 is half)
 */
 
 /*
@@ -450,6 +471,7 @@ So level designers can toggle them on/off.
 =======================================================================================================================================
 */
 void use_corona(gentity_t *ent, gentity_t *other, gentity_t *activator) {
+
 	if (ent->r.linked) {
 		trap_UnlinkEntity(ent);
 	} else {
@@ -466,8 +488,8 @@ void SP_corona(gentity_t *ent) {
 	float scale;
 
 	ent->s.eType = ET_CORONA;
-
-	if (ent->dl_color[0] <= 0 && ent->dl_color[1] <= 0 && ent->dl_color[2] <= 0) { // if it's black or has no color assigned
+	// if it's black or has no color assigned
+	if (ent->dl_color[0] <= 0 && ent->dl_color[1] <= 0 && ent->dl_color[2] <= 0) {
 		ent->dl_color[0] = ent->dl_color[1] = ent->dl_color[2] = 1; // set white
 	}
 
@@ -508,7 +530,6 @@ char *predef_lightstyles[] = {
 	"aaaaaaaaaaaaaaaazzzzzzzz"
 };
 
-
 /*
 =======================================================================================================================================
 dlight_finish_spawning
@@ -522,12 +543,12 @@ void dlight_finish_spawning(gentity_t *ent) {
 
 static int dlightstarttime = 0;
 
-/*QUAKED dlight(0 1 0)(-12 -12 -12)(12 12 12)FORCEACTIVE STARTOFF ONETIME
+/*QUAKED dlight (0 1 0) (-12 -12 -12) (12 12 12) FORCEACTIVE STARTOFF ONETIME
 "style": value is an int from 1-19 that contains a pre-defined 'flicker' string.
-"stylestring": set your own 'flicker' string.(ex. "klmnmlk"). NOTE: this should be all lowercase
+"stylestring": set your own 'flicker' string (ex. "klmnmlk"). NOTE: this should be all lowercase
 Stylestring characters run at 10 cps in the game.(meaning the alphabet, at 24 characters, would take 2.4 seconds to cycle)
-"offset": change the initial index in a style string.  So val of 3 in the above example would start this light at 'N'.(used to get dlights using the same style out of sync).
-"atten": offset from the alpha values of the stylestring.  stylestring of "ddeeffzz" with an atten of -1 would result in "ccddeeyy"
+"offset": change the initial index in a style string.  So val of 3 in the above example would start this light at 'N' (used to get dlights using the same style out of sync).
+"atten": offset from the alpha values of the stylestring. stylestring of "ddeeffzz" with an atten of -1 would result in "ccddeeyy"
 Use color picker to set color or key "color".  values are 0.0-1.0 for each color(rgb).
 FORCEACTIVE	- toggle makes sure this light stays alive in a map even if the user has r_dynamiclight set to 0.
 STARTOFF	- means the dlight doesn't spawn in until ent is triggered
@@ -557,7 +578,6 @@ styles:
 19 - "aaaaaaaaaaaaaaaazzzzzzzz"
 */
 
-
 /*
 =======================================================================================================================================
 shutoff_dlight
@@ -572,6 +592,7 @@ void shutoff_dlight(gentity_t *ent) {
 	}
 
 	trap_UnlinkEntity(ent);
+
 	ent->think = 0;
 	ent->nextthink = 0;
 }
@@ -641,8 +662,8 @@ void SP_dlight(gentity_t *ent) {
 	}
 
 	ent->nextthink = dlightstarttime;
-
-	if (ent->dl_color[0] <= 0 && ent->dl_color[1] <= 0 && ent->dl_color[2] <= 0) { // if it's black or has no color assigned, make it white
+	// if it's black or has no color assigned, make it white
+	if (ent->dl_color[0] <= 0 && ent->dl_color[1] <= 0 && ent->dl_color[2] <= 0) {
 		ent->dl_color[0] = ent->dl_color[1] = ent->dl_color[2] = 1;
 	}
 

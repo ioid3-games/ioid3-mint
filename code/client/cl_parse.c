@@ -262,14 +262,13 @@ void CL_ParseSnapshot(msg_t *msg) {
 	// get the reliable sequence acknowledge number
 	// NOTE: now sent with all server to client messages
 	//clc.reliableAcknowledge = MSG_ReadLong(msg);
-
 	// read in the new snapshot to a temporary buffer
 	// we will only copy to cl.snap if it is valid
 	Com_Memset(&newSnap, 0, sizeof(newSnap));
 	// we will have read any new server commands in this message before we got to svc_snapshot
 	newSnap.serverCommandNum = clc.serverCommandSequence;
 	newSnap.serverTime = MSG_ReadLong(msg);
-	// if we were just unpaused, we can only *now* really let the change come into effect or the client hangs.
+	// if we were just unpaused, we can only *now* really let the change come into effect or the client hangs
 	cl_paused->modified = 0;
 	newSnap.messageNum = clc.serverMessageSequence;
 	deltaNum = MSG_ReadByte(msg);
@@ -294,7 +293,7 @@ void CL_ParseSnapshot(msg_t *msg) {
 			// should never happen
 			Com_Printf("Delta from invalid frame (not supposed to happen!).\n");
 		} else if (old->messageNum != newSnap.deltaNum) {
-			// the frame that the server did the delta from is too old, so we can't reconstruct it properly.
+			// the frame that the server did the delta from is too old, so we can't reconstruct it properly
 			Com_Printf("Delta frame too old.\n");
 		} else if (cl.parseEntitiesNum - old->parseEntitiesNum > cl.parseEntities.maxElements - MAX_SNAPSHOT_ENTITIES * CL_MAX_SPLITVIEW) {
 			Com_Printf("Delta parseEntitiesNum too old.\n");
@@ -414,7 +413,9 @@ void CL_SystemInfoChanged(void) {
 	const char *s, *t;
 	char key[BIG_INFO_KEY];
 	char value[BIG_INFO_VALUE];
-	qboolean gameSet;
+	char gamedir[BIG_INFO_VALUE];
+	char *gameTitle;
+	char filename[MAX_QPATH];
 
 	systemInfo = cl.gameState.stringData + cl.gameState.stringOffsets[CS_SYSTEMINFO];
 	// NOTE TTimo:
@@ -426,6 +427,18 @@ void CL_SystemInfoChanged(void) {
 	s = Info_ValueForKey(systemInfo, "sv_voipProtocol");
 	clc.voipEnabled = !Q_stricmp(s, "opus");
 #endif
+	// set game directory
+	Q_strncpyz(gamedir, Info_ValueForKey(systemInfo, "fs_game"), sizeof(gamedir));
+
+	if (!*gamedir) {
+		Com_Error(ERR_DROP, "fs_game not set on server");
+	}
+
+	if (FS_InvalidGameDir(gamedir)) {
+		Com_Error(ERR_DROP, "Invalid fs_game value '%s' on server", gamedir);
+	}
+
+	Cvar_Server_Set("fs_game", gamedir);
 	// don't set any vars when playing a demo
 	if (clc.demoplaying) {
 		return;
@@ -445,8 +458,16 @@ void CL_SystemInfoChanged(void) {
 	s = Info_ValueForKey(systemInfo, "sv_referencedPaks");
 	t = Info_ValueForKey(systemInfo, "sv_referencedPakNames");
 	FS_PureServerSetReferencedPaks(s, t);
+	// create game title file if does not exist
+	gameTitle = Info_ValueForKey(systemInfo, "sv_gameTitle");
 
-	gameSet = qfalse;
+	Com_sprintf(filename, sizeof(filename), "%s/description.txt", gamedir);
+
+	if ((cl_allowDownload->integer & DLF_ENABLE) && *gameTitle && !FS_SV_RW_FileExists(filename)) {
+		fileHandle_t f = FS_SV_FOpenFileWrite(filename);
+		FS_Write(gameTitle, strlen(gameTitle), f);
+		FS_FCloseFile(f);
+	}
 	// scan through all the variables in the systeminfo and locally set cvars to match
 	s = systemInfo;
 
@@ -456,39 +477,12 @@ void CL_SystemInfoChanged(void) {
 		if (!key[0]) {
 			break;
 		}
-		// ehw!
+		// gamedir is already set
 		if (!Q_stricmp(key, "fs_game")) {
-			char filename[MAX_QPATH];
-			char *title;
-
-			if (gameSet) {
-				continue;
-			}
-
-			if (FS_CheckDirTraversal(value)) {
-				Com_Printf(S_COLOR_YELLOW "WARNING: Server sent invalid fs_game value %s\n", value);
-				continue;
-			}
-			// create game title file if does not exist
-			title = Info_ValueForKey(systemInfo, "sv_gameTitle");
-
-			Com_sprintf(filename, sizeof(filename), "%s/description.txt", value);
-
-			if ((cl_allowDownload->integer & DLF_ENABLE) && *title && !FS_SV_RW_FileExists(filename)) {
-				fileHandle_t f = FS_SV_FOpenFileWrite(filename);
-
-				FS_Write(s, strlen(title), f);
-				FS_FCloseFile(f);
-			}
-
-			gameSet = qtrue;
+			continue;
 		}
 
 		Cvar_Server_Set(key, value);
-	}
-	// game folder must be set
-	if (!gameSet) {
-		Com_Error(ERR_DROP, "fs_game not set on server");
 	}
 }
 
@@ -718,13 +712,13 @@ static qboolean CL_ShouldIgnoreVoipSender(int sender) {
 	int i;
 
 	if (!cl_voip->integer) {
-		return qtrue; // VoIP is disabled.
+		return qtrue; // VoIP is disabled
 	} else if (clc.voipMuteAll) {
-		return qtrue; // all channels are muted with extreme prejudice.
+		return qtrue; // all channels are muted with extreme prejudice
 	} else if (clc.voipIgnore[sender]) {
-		return qtrue; // just ignoring this guy.
+		return qtrue; // just ignoring this guy
 	} else if (clc.voipGain[sender] == 0.0f) {
-		return qtrue; // too quiet to play.
+		return qtrue; // too quiet to play
 	}
 
 	if (!clc.demoplaying) {
@@ -782,15 +776,15 @@ static void CL_ParseVoip(msg_t *msg, qboolean ignoreData) {
 	Com_DPrintf("VoIP: %d-byte packet from player %d\n", packetsize, sender);
 
 	if (sender < 0) {
-		return; // short/invalid packet, bail.
+		return; // short/invalid packet, bail
 	} else if (generation < 0) {
-		return; // short/invalid packet, bail.
+		return; // short/invalid packet, bail
 	} else if (sequence < 0) {
-		return; // short/invalid packet, bail.
+		return; // short/invalid packet, bail
 	} else if (frames < 0) {
-		return; // short/invalid packet, bail.
+		return; // short/invalid packet, bail
 	} else if (packetsize < 0) {
-		return; // short/invalid packet, bail.
+		return; // short/invalid packet, bail
 	}
 
 	if (packetsize > sizeof(encoded)) { // overlarge packet?
@@ -807,7 +801,7 @@ static void CL_ParseVoip(msg_t *msg, qboolean ignoreData) {
 			bytesleft -= br;
 		}
 
-		return; // overlarge packet, bail.
+		return; // overlarge packet, bail
 	}
 
 	MSG_ReadData(msg, encoded, packetsize);
@@ -817,24 +811,24 @@ static void CL_ParseVoip(msg_t *msg, qboolean ignoreData) {
 	} else if (!clc.voipCodecInitialized) {
 		return; // can't handle VoIP without libopus!
 	} else if (sender >= MAX_CLIENTS) {
-		return; // bogus sender.
+		return; // bogus sender
 	} else if (CL_ShouldIgnoreVoipSender(sender)) {
-		return; // channel is muted, bail.
+		return; // channel is muted, bail
 	}
 	// !!! FIXME: make sure data is narrowband? Does decoder handle this?
 	Com_DPrintf("VoIP: packet accepted!\n");
 
 	seqdiff = sequence - clc.voipIncomingSequence[sender];
-	// this is a new "generation" ... a new recording started, reset the bits.
+	// this is a new "generation" ... a new recording started, reset the bits
 	if (generation != clc.voipIncomingGeneration[sender]) {
 		Com_DPrintf("VoIP: new generation %d!\n", generation);
 		opus_decoder_ctl(clc.opusDecoder[sender], OPUS_RESET_STATE);
 		clc.voipIncomingGeneration[sender] = generation;
 		seqdiff = 0;
 	} else if (seqdiff < 0) { // we're ahead of the sequence?!
-		// this shouldn't happen unless the packet is corrupted or something.
+		// this shouldn't happen unless the packet is corrupted or something
 		Com_DPrintf("VoIP: misordered sequence! %d < %d!\n", sequence, clc.voipIncomingSequence[sender]);
-		// reset the decoder just in case.
+		// reset the decoder just in case
 		opus_decoder_ctl(clc.opusDecoder[sender], OPUS_RESET_STATE);
 		seqdiff = 0;
 	} else if (seqdiff * VOIP_MAX_PACKET_SAMPLES * 2 >= sizeof(decoded)) { // dropped more than we can handle?
@@ -890,7 +884,6 @@ static void CL_ParseVoip(msg_t *msg, qboolean ignoreData) {
 	}
 #endif
 	sampbuffer = (const int16_t *)decoded + written;
-
 	// calculate the "power" of this packet...
 	for (j = 0; j < numSamples; j++) {
 		const float flsamp = (float)sampbuffer[j];

@@ -1,18 +1,25 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com)
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com).
 
-This file is part of Quake III Arena source code.
+This file is part of Spearmint Source Code.
 
-Quake III Arena source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
-License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Quake III Arena source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Quake III Arena source code; if not, write to the Free
-Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
+
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
+
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -45,7 +52,7 @@ static void *S_CodecGetSound(const char *filename, snd_info_t *info) {
 		// look for the correct loader and use it
 		for (codec = codecs; codec; codec = codec->next) {
 			if (!Q_stricmp(ext, codec->ext)) {
-				// Load
+				// load
 				if (info) {
 					rtn = codec->load(localName, info);
 				} else {
@@ -110,6 +117,9 @@ void S_CodecInit() {
 #ifdef USE_CODEC_VORBIS
 	S_CodecRegister(&ogg_codec);
 #endif
+#ifdef USE_CODEC_MP3
+	S_CodecRegister(&mp3_codec);
+#endif
 	// register wav codec last so that it is always tried first when a file extension was not found
 	S_CodecRegister(&wav_codec);
 }
@@ -129,6 +139,7 @@ S_CodecRegister
 =======================================================================================================================================
 */
 void S_CodecRegister(snd_codec_t *codec) {
+
 	codec->next = codecs;
 	codecs = codec;
 }
@@ -172,7 +183,7 @@ int S_CodecReadStream(snd_stream_t *stream, int bytes, void *buffer) {
 /*
 =======================================================================================================================================
 
-	Util functions (used by codecs)
+	UTIL FUNCTIONS (used by codecs)
 
 =======================================================================================================================================
 */
@@ -216,5 +227,6 @@ void S_CodecUtilClose(snd_stream_t **stream) {
 
 	FS_FCloseFile((*stream)->file);
 	Z_Free(*stream);
+
 	*stream = NULL;
 }

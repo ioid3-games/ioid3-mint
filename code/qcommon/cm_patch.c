@@ -121,7 +121,7 @@ static int CM_SignbitsForNormal(vec3_t normal) {
 =======================================================================================================================================
 CM_PlaneFromPoints
 
-Returns false if the triangle is degenerate. The normal will point out of the clock for clockwise ordered points.
+Returns false if the triangle is degenerated. The normal will point out of the clock for clockwise ordered points.
 =======================================================================================================================================
 */
 static qboolean CM_PlaneFromPoints(vec4_t plane, vec3_t a, vec3_t b, vec3_t c) {
@@ -240,7 +240,6 @@ static void CM_TransposeGrid(cGrid_t *grid) {
 	l = grid->width;
 	grid->width = grid->height;
 	grid->height = l;
-
 	tempWrap = grid->wrapWidth;
 	grid->wrapWidth = grid->wrapHeight;
 	grid->wrapHeight = tempWrap;
@@ -431,6 +430,7 @@ int CM_PlaneEqual(patchPlane_t *p, float plane[4], int *flipped) {
 	}
 
 	VectorNegate(plane, invplane);
+
 	invplane[3] = -plane[3];
 
 	if (fabs(p->plane[0] - invplane[0]) < NORMAL_EPSILON && fabs(p->plane[1] - invplane[1]) < NORMAL_EPSILON && fabs(p->plane[2] - invplane[2]) < NORMAL_EPSILON && fabs(p->plane[3] - invplane[3]) < DIST_EPSILON) {
@@ -480,16 +480,14 @@ int CM_FindPlane2(float plane[4], int *flipped) {
 	}
 	// add a new plane
 	if (numPlanes == MAX_PATCH_PLANES) {
-		Com_Error(ERR_DROP, "MAX_PATCH_PLANES");
+		Com_Error(ERR_DROP, "CM_FindPlane2: MAX_PATCH_PLANES");
 	}
 
 	Vector4Copy(plane, planes[numPlanes].plane);
 
 	planes[numPlanes].signbits = CM_SignbitsForNormal(plane);
 	numPlanes++;
-
 	*flipped = qfalse;
-
 	return numPlanes - 1;
 }
 
@@ -541,7 +539,6 @@ static int CM_FindPlane(float *p1, float *p2, float *p3) {
 
 	planes[numPlanes].signbits = CM_SignbitsForNormal(plane);
 	numPlanes++;
-
 	return numPlanes - 1;
 }
 
@@ -896,6 +893,7 @@ void CM_AddFacetBevels(facet_t *facet) {
 	// test the non-axial plane edges
 	for (j = 0; j < w->numpoints; j++) {
 		k = (j + 1)%w->numpoints;
+
 		VectorSubtract(w->p[j], w->p[k], vec);
 		// if it's a degenerate edge
 		if (VectorNormalize(vec) < 0.5) {
@@ -998,7 +996,7 @@ void CM_AddFacetBevels(facet_t *facet) {
 
 					facet->numBorders++;
 					// already got a bevel
-//					break;
+					//break;
 				}
 			}
 		}
@@ -1277,7 +1275,6 @@ struct patchCollide_s *CM_GeneratePatchCollide(int width, int height, vec3_t *po
 	pf->bounds[0][0] -= 1;
 	pf->bounds[0][1] -= 1;
 	pf->bounds[0][2] -= 1;
-
 	pf->bounds[1][0] += 1;
 	pf->bounds[1][1] += 1;
 	pf->bounds[1][2] += 1;
@@ -2001,13 +1998,11 @@ void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *point
 		VectorCopy(debugBlockPoints[0], v[0]);
 		VectorCopy(debugBlockPoints[1], v[1]);
 		VectorCopy(debugBlockPoints[2], v[2]);
-
 		drawPoly(2, 3, v[0]);
 
 		VectorCopy(debugBlockPoints[2], v[0]);
 		VectorCopy(debugBlockPoints[3], v[1]);
 		VectorCopy(debugBlockPoints[0], v[2]);
-
 		drawPoly(2, 3, v[0]);
 	}
 #if 0

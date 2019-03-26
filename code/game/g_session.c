@@ -36,17 +36,17 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 /*
 =======================================================================================================================================
-G_WritePlayerSessionData
+G_WriteClientSessionData
 
 Called on game shutdown.
 =======================================================================================================================================
 */
-void G_WritePlayerSessionData(gplayer_t *player) {
+void G_WriteClientSessionData(gclient_t *client) {
 	const char *s;
 	const char *var;
 
-	s = va("%i %i %i %i %i %i %i", player->sess.sessionTeam, player->sess.spectatorNum, player->sess.spectatorState, player->sess.spectatorPlayer, player->sess.wins, player->sess.losses, player->sess.teamLeader);
-	var = va("session%i", (int)(player - level.players));
+	s = va("%i %i %i %i %i %i %i", client->sess.sessionTeam, client->sess.spectatorNum, client->sess.spectatorState, client->sess.spectatorClient, client->sess.wins, client->sess.losses, client->sess.teamLeader);
+	var = va("session%i", (int)(client - level.clients));
 
 	trap_Cvar_Set(var, s);
 }
@@ -58,21 +58,21 @@ G_ReadSessionData
 Called on a reconnect.
 =======================================================================================================================================
 */
-void G_ReadSessionData(gplayer_t *player) {
+void G_ReadSessionData(gclient_t *client) {
 	char s[MAX_STRING_CHARS];
 	const char *var;
 	int teamLeader;
 	int spectatorState;
 	int sessionTeam;
 
-	var = va("session%i", (int)(player - level.players));
+	var = va("session%i", (int)(client - level.clients));
+
 	trap_Cvar_VariableStringBuffer(var, s, sizeof(s));
+	sscanf(s, "%i %i %i %i %i %i %i", &sessionTeam, &client->sess.spectatorNum, &spectatorState, &client->sess.spectatorClient, &client->sess.wins, &client->sess.losses, &teamLeader);
 
-	sscanf(s, "%i %i %i %i %i %i %i", &sessionTeam, &player->sess.spectatorNum, &spectatorState, &player->sess.spectatorPlayer, &player->sess.wins, &player->sess.losses, &teamLeader);
-
-	player->sess.sessionTeam = (team_t)sessionTeam;
-	player->sess.spectatorState = (spectatorState_t)spectatorState;
-	player->sess.teamLeader = (qboolean)teamLeader;
+	client->sess.sessionTeam = (team_t)sessionTeam;
+	client->sess.spectatorState = (spectatorState_t)spectatorState;
+	client->sess.teamLeader = (qboolean)teamLeader;
 }
 
 /*
@@ -82,13 +82,13 @@ G_InitSessionData
 Called on a first-time connect.
 =======================================================================================================================================
 */
-void G_InitSessionData(gplayer_t *player, char *userinfo) {
-	playerSession_t *sess;
+void G_InitSessionData(gclient_t *client, char *userinfo) {
+	clientSession_t *sess;
 	const char *value;
 
-	sess = &player->sess;
+	sess = &client->sess;
 	// initial team determination
-	if (g_gametype.integer >= GT_TEAM) {
+	if (g_gametype.integer > GT_TOURNAMENT) {
 		// always spawn as spectator in team games
 		sess->sessionTeam = TEAM_SPECTATOR;
 		sess->spectatorState = SPECTATOR_FREE;
@@ -96,7 +96,7 @@ void G_InitSessionData(gplayer_t *player, char *userinfo) {
 		value = Info_ValueForKey(userinfo, "teampref");
 
 		if (value[0] || g_teamAutoJoin.integer) {
-			SetTeam(&g_entities[player - level.players], value);
+			SetTeam(&g_entities[client - level.clients], value);
 		}
 	} else {
 		value = Info_ValueForKey(userinfo, "teampref");
@@ -107,9 +107,9 @@ void G_InitSessionData(gplayer_t *player, char *userinfo) {
 		} else {
 			switch (g_gametype.integer) {
 				default:
-				case GT_FFA:
 				case GT_SINGLE_PLAYER:
-					if (g_maxGamePlayers.integer > 0 && level.numNonSpectatorPlayers >= g_maxGamePlayers.integer) {
+				case GT_FFA:
+					if (g_maxGameClients.integer > 0 && level.numNonSpectatorClients >= g_maxGameClients.integer) {
 						sess->sessionTeam = TEAM_SPECTATOR;
 					} else {
 						sess->sessionTeam = TEAM_FREE;
@@ -118,7 +118,7 @@ void G_InitSessionData(gplayer_t *player, char *userinfo) {
 					break;
 				case GT_TOURNAMENT:
 					// if the game is full, go into a waiting mode
-					if (level.numNonSpectatorPlayers >= 2) {
+					if (level.numNonSpectatorClients >= 2) {
 						sess->sessionTeam = TEAM_SPECTATOR;
 					} else {
 						sess->sessionTeam = TEAM_FREE;
@@ -131,8 +131,8 @@ void G_InitSessionData(gplayer_t *player, char *userinfo) {
 		sess->spectatorState = SPECTATOR_FREE;
 	}
 
-	AddTournamentQueue(player);
-	G_WritePlayerSessionData(player);
+	AddTournamentQueue(client);
+	G_WriteClientSessionData(client);
 }
 
 /*
@@ -145,8 +145,9 @@ void G_InitWorldSession(void) {
 	int gt;
 
 	trap_Cvar_VariableStringBuffer("session", s, sizeof(s));
+
 	gt = atoi(s);
-	// if the gametype changed since the last session, don't use any player sessions
+	// if the gametype changed since the last session, don't use any client sessions
 	if (g_gametype.integer != gt) {
 		level.newSession = qtrue;
 		G_Printf("Gametype changed, clearing session data.\n");
@@ -163,9 +164,9 @@ void G_WriteSessionData(void) {
 
 	trap_Cvar_SetValue("session", g_gametype.integer);
 
-	for (i = 0; i < level.maxplayers; i++) {
-		if (level.players[i].pers.connected == CON_CONNECTED) {
-			G_WritePlayerSessionData(&level.players[i]);
+	for (i = 0; i < level.maxclients; i++) {
+		if (level.clients[i].pers.connected == CON_CONNECTED) {
+			G_WriteClientSessionData(&level.clients[i]);
 		}
 	}
 }

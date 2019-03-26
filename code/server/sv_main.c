@@ -124,7 +124,7 @@ static int SV_ReplacePendingServerCommands(client_t *client, const char *cmd) {
 				Q_strncpyz(client->reliableCommands[index], cmd, sizeof(client->reliableCommands[index]));
 				/*
 				if (client->netchan.remoteAddress.type != NA_BOT) {
-					Com_Printf("WARNING: client %i removed double pending config string %i: %s\n", client-svs.clients, csnum1, cmd);
+					Com_Printf("WARNING: client %i removed double pending config string %i: %s\n", client - svs.clients, csnum1, cmd);
 				}
 				*/
 				return qtrue;
@@ -145,8 +145,7 @@ The given command will be transmitted to the client, and is guaranteed to not ha
 void SV_AddServerCommand(client_t *client, int localPlayerNum, const char *cmd) {
 	int index, i;
 
-	// this is very ugly but it's also a waste to for instance send multiple config string updates
-	// for the same config string index in one snapshot
+	// this is very ugly but it's also a waste to for instance send multiple config string updates for the same config string index in one snapshot
 //	if (SV_ReplacePendingServerCommands(client, cmd)) {
 //		return;
 //	}
@@ -157,8 +156,7 @@ void SV_AddServerCommand(client_t *client, int localPlayerNum, const char *cmd) 
 
 	client->reliableSequence++;
 	// if we would be losing an old command that hasn't been acknowledged, we must drop the connection
-	// we check == instead of >= so a broadcast print added by SV_DropClient()
-	// doesn't cause a recursive drop client
+	// we check == instead of >= so a broadcast print added by SV_DropClient() doesn't cause a recursive drop client
 	if (client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS + 1) {
 		Com_Printf("===== pending server commands =====\n");
 
@@ -202,11 +200,9 @@ void QDECL SV_SendServerCommand(client_t *cl, int localPlayerNum, const char *fm
 	va_start(argptr, fmt);
 	Q_vsnprintf((char *)message, sizeof(message), fmt, argptr);
 	va_end(argptr);
-	// Fix to http://aluigi.altervista.org/adv/q3msgboom-adv.txt
-	// The actual cause of the bug is probably further downstream and should maybe be addressed later, but this certainly
-	// fixes the problem for now
-	if (strlen((char *)message) > 1022) {
-		Com_DPrintf(S_COLOR_YELLOW "WARNING: Dropped long reliable command for client %d: %s\n", (int)(cl - svs.clients), message);
+	// reserve 4 bytes for splitscreen prefix: "lc%d "
+	if (strlen((char *)message) >= sizeof(((client_t*)NULL)->reliableCommands[0] ) - 4) {
+		Com_Printf(S_COLOR_YELLOW "WARNING: Dropped long reliable command for client %d: %s\n", (int)(cl - svs.clients), message);
 		return;
 	}
 
@@ -250,7 +246,7 @@ void SV_MasterHeartbeat(const char *message) {
 	int res;
 	int netenabled;
 
-	// do not send heartbeats in single player.
+	// do not send heartbeats in single player
 	if (Com_GameIsSinglePlayer()) {
 		return;
 	}
@@ -599,14 +595,13 @@ static void SVC_Status(netadr_t from) {
 		Com_DPrintf("SVC_Status: rate limit exceeded, dropping request\n");
 		return;
 	}
-	// a maximum challenge length of 128 should be more than plenty.
+	// a maximum challenge length of 128 should be more than plenty
 	if (strlen(Cmd_Argv(1)) > 128) {
 		return;
 	}
 
 	strcpy(infostring, Cvar_InfoString(CVAR_SERVERINFO));
-	// echo back the parameter to status. so master servers can use it as a challenge to prevent timed spoofed reply packets
-	// that add ghost servers
+	// echo back the parameter to status. so master servers can use it as a challenge to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1));
 
 	status[0] = 0;
@@ -685,13 +680,13 @@ void SVC_Info(netadr_t from) {
 		}
 	}
 	// check whether Cmd_Argv(1) has a sane length. This was not done in the original Quake3 version which led to the Infostring bug
-	// discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory.
+	// discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory
 
-	// a maximum challenge length of 128 should be more than plenty.
+	// a maximum challenge length of 128 should be more than plenty
 	if (strlen(Cmd_Argv(1)) > 128) {
 		return;
 	}
-	// don't count privateclients
+	// don't count private clients
 	count = humans = 0;
 
 	for (i = sv_privateClients->integer; i < sv_maxclients->integer; i++) {
@@ -705,8 +700,7 @@ void SVC_Info(netadr_t from) {
 	}
 
 	infostring[0] = 0;
-	// echo back the parameter to status. so servers can use it as a challenge to prevent timed spoofed reply packets that add
-	// ghost servers
+	// echo back the parameter to status. so servers can use it as a challenge to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1));
 	Info_SetValueForKey(infostring, "gamename", com_gamename->string);
 #ifdef LEGACY_PROTOCOL
@@ -770,7 +764,7 @@ static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 	qboolean valid;
 	char remaining[1024];
 
-	// TTimo - scaled down to accumulate, but not overflow anything network wise, print wise etc.
+	// scaled down to accumulate, but not overflow anything network wise, print wise etc.
 	// (OOB messages are the bottleneck here)
 #define SV_OUTPUTBUF_LENGTH (1024 - 16)
 	char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
@@ -828,7 +822,6 @@ static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 		}
 
 		Q_strcat(remaining, sizeof(remaining), cmd_aux);
-
 		Cmd_ExecuteString(remaining);
 	}
 
@@ -855,9 +848,11 @@ static void SV_ConnectionlessPacket(netadr_t from, msg_t *msg) {
 	}
 
 	s = MSG_ReadStringLine(msg);
+
 	Cmd_TokenizeString(s);
 
 	c = Cmd_Argv(0);
+
 	Com_DPrintf("SV packet %s : %s\n", NET_AdrToString(from), c);
 
 	if (!Q_stricmp(c, "getstatus")) {
@@ -996,7 +991,7 @@ static void SV_CalcPings(void) {
 =======================================================================================================================================
 SV_CheckTimeouts
 
-If a packet has not been received from a client for timeout->integer seconds, drop the conneciton. Server time is used instead of
+If a packet has not been received from a client for timeout->integer seconds, drop the connection. Server time is used instead of
 realtime to avoid dropping the local client while debugging.
 
 When a client is normally dropped, the client_t goes into a zombie state for a few seconds to make sure any final reliable message gets
@@ -1112,7 +1107,7 @@ void SV_Frame(int msec) {
 
 	// the menu kills the server with this cvar
 	if (sv_killserver->integer) {
-		SV_Shutdown("Server was killed");
+		SV_Shutdown("Server was killed.");
 		Cvar_Set("sv_killserver", "0");
 		return;
 	}
@@ -1147,7 +1142,7 @@ void SV_Frame(int msec) {
 		SV_BotFrame(sv.time + sv.timeResidual);
 	}
 	// if time is about to hit the 32nd bit, kick all clients and clear sv.time, rather than checking for negative
-	// time wraparound everywhere.
+	// time wraparound everywhere
 	// 2giga-milliseconds = 23 days, so it won't be too often
 	if (svs.time > 0x70000000) {
 		SV_Shutdown("Restarting server due to time wrapping");

@@ -41,10 +41,10 @@ static void swapfunc(char *, char *, int, int);
 // Qsort routine from Bentley & McIlroy's "Engineering a Sort Function".
 #define swapcode(TYPE, parmi, parmj, n) {		\
 	long i = (n) / sizeof(TYPE);			\
-	register TYPE *pi = (TYPE *) (parmi);		\
-	register TYPE *pj = (TYPE *) (parmj);		\
+	register TYPE *pi = (TYPE *)(parmi);		\
+	register TYPE *pj = (TYPE *)(parmj);		\
 	do {						\
-		register TYPE	t = *pi;		\
+		register TYPE t = *pi;		\
 		*pi++ = *pj;				\
 		*pj++ = t;				\
 	} while (--i > 0);				\
@@ -61,7 +61,8 @@ swapfunc
 static void swapfunc(a, b, n, swaptype)
 	char *a, *b;
 	int n, swaptype;
-{
+	{
+
 	if (swaptype <= 1) {
 		swapcode(long, a, b, n)
 	} else {
@@ -87,7 +88,8 @@ med3
 static char *med3(a, b, c, cmp)
 	char *a, *b, *c;
 	cmp_t *cmp;
-{
+	{
+
 	return cmp(a, b) < 0 ? (cmp(b, c) < 0 ? b : (cmp(a, c) < 0 ? c : a)) : (cmp(b, c) > 0 ? b : (cmp(a, c) < 0 ? a : c));
 }
 
@@ -100,7 +102,8 @@ void qsort(a, n, es, cmp)
 	void *a;
 	size_t n, es;
 	cmp_t *cmp;
-{
+	{
+
 	char *pa, *pb, *pc, *pd, *pl, *pm, *pn;
 	int d, r, swaptype, swap_cnt;
 
@@ -134,6 +137,7 @@ loop: SWAPINIT(a, es);
 	}
 
 	swap(a, pm);
+
 	pa = pb = (char *)a + es;
 	pc = pd = (char *)a + (n - 1) * es;
 
@@ -168,7 +172,7 @@ loop: SWAPINIT(a, es);
 		pc -= es;
 	}
 
-	if (swap_cnt == 0) { // Switch to insertion sort
+	if (swap_cnt == 0) { // switch to insertion sort
 		for (pm = (char *)a + es; pm < (char *)a + n * es; pm += es) {
 			for (pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0; pl -= es) {
 				swap(pl, pl - es);
@@ -180,8 +184,11 @@ loop: SWAPINIT(a, es);
 
 	pn = (char *)a + n * es;
 	r = MIN(pa - (char *)a, pb - pa);
+
 	vecswap(a, pb - r, r);
+
 	r = MIN(pd - pc, pn - pd - es);
+
 	vecswap(pb, pn - r, r);
 
 	if ((r = pb - pa) > es) {
@@ -189,7 +196,7 @@ loop: SWAPINIT(a, es);
 	}
 
 	if ((r = pd - pc) > es) {
-		// Iterate rather than recurse to save stack space
+		// iterate rather than recurse to save stack space
 		a = pn - r;
 		n = r / es;
 		goto loop;
@@ -320,6 +327,7 @@ strstr
 =======================================================================================================================================
 */
 char *strstr(const char *string, const char *strCharSet) {
+
 	while (*string) {
 		int i;
 
@@ -675,6 +683,7 @@ void create_acostable(void) {
 	float a;
 
 	fp = fopen("c:\\acostable.txt", "w");
+
 	fprintf(fp, "float acostable[] = {");
 
 	for (i = 0; i < 1024; i++) {
@@ -683,7 +692,8 @@ void create_acostable(void) {
 		}
 
 		a = acos((float) - 1 + i / 512);
-		fprintf(fp, "%1.8f,", a);
+
+		fprintf(fp, "%1.8f, ", a);
 	}
 
 	fprintf(fp, "\n}\n");
@@ -938,9 +948,7 @@ static double powN(double base, int exp) {
 
 	if (exp >= 0) {
 		double result = 1.0;
-		// calculate x, x ^ 2, x ^ 4, ... by repeated squaring
-		// and multiply together the ones corresponding to the
-		// binary digits of the exponent
+		// calculate x, x ^ 2, x ^ 4, ... by repeated squaring and multiply together the ones corresponding to the binary digits of the exponent
 		// e.g. x ^ 73 = x ^ (1 + 8 + 64) = x * x ^ 8 * x ^ 64
 		while (exp > 0) {
 			if (exp % 2 == 1) {
@@ -962,7 +970,6 @@ static double powN(double base, int exp) {
 }
 
 static int randSeed = 0;
-
 /*
 =======================================================================================================================================
 srand
@@ -1178,6 +1185,7 @@ double strtod(const char *nptr, char **endptr) {
 
 	if (Q_stricmpn(nptr, "inf", 3) == 0) {
 		floatint_t inf;
+
 		inf.ui = 0x7f800000;
 
 		if (endptr == NULL) {
@@ -1204,6 +1212,7 @@ double strtod(const char *nptr, char **endptr) {
 	if (Q_stricmpn(nptr, "0x", 2) == 0) {
 		// track if we use any digits
 		const char *s = &nptr[1], *end = s;
+
 		nptr += 2;
 		res = 0;
 
@@ -1225,6 +1234,7 @@ double strtod(const char *nptr, char **endptr) {
 
 		if (*nptr == '.') {
 			float place;
+
 			nptr++;
 			// 1.0 / 16.0 == 0.0625
 			// I don't expect the float accuracy to hold out for very long but since we need to know the length of
@@ -1249,6 +1259,7 @@ double strtod(const char *nptr, char **endptr) {
 		// exponents are only valid if we encountered at least one digit already (and have therefore set end to something)
 		if (end != s && tolower(*nptr) == 'p') {
 			int exp;
+
 			// apparently (confusingly) the exponent should be decimal
 			exp = strtol(&nptr[1], (char **)&end, 10);
 
@@ -1273,6 +1284,7 @@ double strtod(const char *nptr, char **endptr) {
 	} else {
 		// track if we find any digits
 		const char *end = nptr, *p = nptr;
+
 		// this is most of the work
 		for (res = 0; isdigit(*nptr); res = 10 * res + *nptr++ - '0');
 		// if nptr moved, we read something
@@ -1283,6 +1295,7 @@ double strtod(const char *nptr, char **endptr) {
 		if (*nptr == '.') {
 			// fractional part
 			float place;
+
 			nptr++;
 
 			for (place = 0.1; isdigit(*nptr); place /= 10.0) {
@@ -1542,6 +1555,15 @@ double fabs(double x) {
 
 /*
 =======================================================================================================================================
+fabsf
+=======================================================================================================================================
+*/
+float fabsf(float x) {
+	return x < 0 ? -x : x;
+}
+
+/*
+=======================================================================================================================================
 _hextoi
 =======================================================================================================================================
 */
@@ -1621,7 +1643,7 @@ unsigned int _hextoi(const char **stringPtr) {
  *    probably requires libm on most operating systems. Don't yet
  *    support the exponent (e, E) and sigfig (g, G). Also, fmtint()
  *    was pretty badly broken, it just wasn't being exercised in ways
- *    which showed it, so that's been fixed. Also, formated the code
+ *    which showed it, so that's been fixed. Also, formatted the code
  *    to mutt conventions, and removed dead code left over from the
  *    original. Also, there is now a builtin-test, just compile with:
  *           gcc -DTEST_SNPRINTF -o snprintf snprintf.c -lm
@@ -1657,13 +1679,13 @@ unsigned int _hextoi(const char **stringPtr) {
 // BDR 2002-01-13 %e and %g were being ignored. Now do something, if not necessarily correctly
 
 #if (SIZEOF_LONG_DOUBLE > 0)
-// #ifdef HAVE_LONG_DOUBLE
+//#ifdef HAVE_LONG_DOUBLE
 #define LDOUBLE long double
 #else
 #define LDOUBLE double
 #endif
 #if (SIZEOF_LONG_LONG > 0)
-// #ifdef HAVE_LONG_LONG
+//#ifdef HAVE_LONG_LONG
 #define LLONG long long
 #else
 #define LLONG long
@@ -1867,8 +1889,8 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
 						flags |= DP_F_UNSIGNED;
 
 						if (cflags == DP_C_SHORT) {
-							//value = (unsigned short int) va_arg(args, unsigned short int); // Thilo: This does not work because the rcc compiler cannot do that cast correctly.
-							value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1); // Using this workaround instead.
+							//value = (unsigned short int) va_arg(args, unsigned short int); // this does not work because the rcc compiler cannot do that cast correctly
+							value = va_arg(args, unsigned int) & ((1 << sizeof(unsigned short int) * 8) - 1); // using this workaround instead
 						} else if (cflags == DP_C_LONG) {
 							value = va_arg(args, unsigned long int);
 						} else if (cflags == DP_C_LLONG) {
@@ -1910,7 +1932,6 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
 						}
 
 						total += fmtint(buffer, &currlen, maxlen, value, 16, min, max, flags);
-
 						break;
 					case 'f':
 						if (cflags == DP_C_LDOUBLE) {
@@ -1988,7 +2009,7 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
 						ch = *format++;
 						break;
 					default:
-						// Unknown, skip
+						// unknown, skip
 						break;
 				}
 
@@ -2039,7 +2060,7 @@ static int fmtstr(char *buffer, size_t *currlen, size_t maxlen, char *value, int
 	}
 
 	if (flags & DP_F_MINUS) {
-		padlen = -padlen; // Left Justify
+		padlen = -padlen; // left justify
 	}
 
 	while (padlen > 0) {
@@ -2087,7 +2108,7 @@ static int fmtint(char *buffer, size_t *currlen, size_t maxlen, LLONG value, int
 		if (value < 0) {
 			signvalue = '-';
 			uvalue = -value;
-		} else if (flags & DP_F_PLUS) { // Do a sign (+/i)
+		} else if (flags & DP_F_PLUS) { // do a sign (+/i)
 			signvalue = '+';
 		} else if (flags & DP_F_SPACE) {
 			signvalue = ' ';
@@ -2095,7 +2116,7 @@ static int fmtint(char *buffer, size_t *currlen, size_t maxlen, LLONG value, int
 	}
 
 	if (flags & DP_F_UP) {
-		// Should characters be upper case?
+		// should characters be upper case?
 		digits = "0123456789ABCDEF";
 	} else {
 		digits = "0123456789abcdef";
@@ -2111,7 +2132,6 @@ static int fmtint(char *buffer, size_t *currlen, size_t maxlen, LLONG value, int
 	}
 
 	convert[place] = 0;
-
 	zpadlen = max - place;
 	spadlen = min - MAX(max, place) - (signvalue ? 1 : 0);
 
@@ -2129,32 +2149,32 @@ static int fmtint(char *buffer, size_t *currlen, size_t maxlen, LLONG value, int
 	}
 
 	if (flags & DP_F_MINUS) {
-		spadlen = -spadlen; // Left Justifty
+		spadlen = -spadlen; // left justifty
 	}
 #ifdef DEBUG_SNPRINTF
 	dprint(1, (debugfile, "zpad: %d, spad: %d, min: %d, max: %d, place: %d\n", zpadlen, spadlen, min, max, place));
 #endif
-	// Spaces
+	// spaces
 	while (spadlen > 0) {
 		total += dopr_outch(buffer, currlen, maxlen, ' ');
 		--spadlen;
 	}
-	// Sign
+	// sign
 	if (signvalue) {
 		total += dopr_outch(buffer, currlen, maxlen, signvalue);
 	}
-	// Zeros
+	// zeros
 	if (zpadlen > 0) {
 		while (zpadlen > 0) {
 			total += dopr_outch(buffer, currlen, maxlen, '0');
 			--zpadlen;
 		}
 	}
-	// Digits
+	// digits
 	while (place > 0) {
 		total += dopr_outch(buffer, currlen, maxlen, convert[--place]);
 	}
-	// Left Justified spaces
+	// left justified spaces
 	while (spadlen < 0) {
 		total += dopr_outch(buffer, currlen, maxlen, ' ');
 		++spadlen;
@@ -2224,22 +2244,22 @@ static int fmtfp(char *buffer, size_t *currlen, size_t maxlen, LDOUBLE fvalue, i
 
 	if (fvalue < 0) {
 		signvalue = '-';
-	} else if (flags & DP_F_PLUS) { // Do a sign (+/i)
+	} else if (flags & DP_F_PLUS) { // do a sign (+/i)
 		signvalue = '+';
 	} else if (flags & DP_F_SPACE) {
 		signvalue = ' ';
 	}
 #if 0
 	if (flags & DP_F_UP) {
-		caps = 1; // Should characters be upper case?
+		caps = 1; // should characters be upper case?
 	}
 #endif
 	intpart = ufvalue;
-	// Sorry, we only support 9 digits past the decimal because of our conversion method
+	// sorry, we only support 9 digits past the decimal because of our conversion method
 	if (max > 9) {
 		max = 9;
 	}
-	// We "cheat" by converting the fractional part to integer by multiplying by a factor of 10
+	// we "cheat" by converting the fractional part to integer by multiplying by a factor of 10
 	fracpart = round((powN(10, max)) * (ufvalue - intpart));
 
 	if (fracpart >= powN(10, max)) {
@@ -2247,11 +2267,11 @@ static int fmtfp(char *buffer, size_t *currlen, size_t maxlen, LDOUBLE fvalue, i
 		fracpart -= powN(10, max);
 	}
 #ifdef DEBUG_SNPRINTF
-	dprint(1, (debugfile, "fmtfp: %f =? %d.%d\n", fvalue, intpart, fracpart));
+	dprint(1, (debugfile, "fmtfp: %f = ? %d.%d\n", fvalue, intpart, fracpart));
 #endif
-	// Convert integer part
+	// convert integer part
 	do {
-		iconvert[iplace++] = (caps ? "0123456789ABCDEF":"0123456789abcdef")[intpart % 10];
+		iconvert[iplace++] = (caps ? "0123456789ABCDEF" : "0123456789abcdef")[intpart % 10];
 		intpart = (intpart / 10);
 	} while (intpart && (iplace < 20));
 
@@ -2260,9 +2280,9 @@ static int fmtfp(char *buffer, size_t *currlen, size_t maxlen, LDOUBLE fvalue, i
 	}
 
 	iconvert[iplace] = 0;
-	// Convert fractional part
+	// convert fractional part
 	do {
-		fconvert[fplace++] = (caps ? "0123456789ABCDEF":"0123456789abcdef")[fracpart % 10];
+		fconvert[fplace++] = (caps ? "0123456789ABCDEF" : "0123456789abcdef")[fracpart % 10];
 		fracpart = (fracpart / 10);
 	} while (fracpart && (fplace < 20));
 
@@ -2271,7 +2291,7 @@ static int fmtfp(char *buffer, size_t *currlen, size_t maxlen, LDOUBLE fvalue, i
 	}
 
 	fconvert[fplace] = 0;
-	// Remove trailing zeros from fractional part
+	// remove trailing zeros from fractional part
 	if (flags & DP_F_STRIP_TRAILING_ZEROS) {
 		int i;
 
@@ -2303,7 +2323,7 @@ static int fmtfp(char *buffer, size_t *currlen, size_t maxlen, LDOUBLE fvalue, i
 	}
 
 	if (flags & DP_F_MINUS) {
-		padlen = -padlen; // Left Justifty
+		padlen = -padlen; // left justifty
 	}
 
 	if ((flags & DP_F_ZERO) && (padlen > 0)) {
@@ -2331,7 +2351,7 @@ static int fmtfp(char *buffer, size_t *currlen, size_t maxlen, LDOUBLE fvalue, i
 	while (iplace > 0) {
 		total += dopr_outch(buffer, currlen, maxlen, iconvert[--iplace]);
 	}
-	// Decimal point. This should probably use locale to find the correct char to print out.
+	// decimal point. This should probably use locale to find the correct char to print out
 	if (max > 0) {
 		total += dopr_outch(buffer, currlen, maxlen, '.');
 
@@ -2383,12 +2403,13 @@ This is really crappy.
 =======================================================================================================================================
 */
 int sscanf(const char *buffer, const char *fmt, ...) {
-	int cmd;
+	int cmd, type;
 	va_list ap;
 	int count;
 	size_t len;
 
 	va_start(ap, fmt);
+
 	count = 0;
 
 	while (*fmt) {
@@ -2408,17 +2429,76 @@ int sscanf(const char *buffer, const char *fmt, ...) {
 			fmt++;
 		}
 
+		if (cmd == 'h' || cmd == 'l' || cmd == 'L') {
+			type = cmd;
+			cmd = *fmt;
+			fmt++;
+
+			if (cmd == 'l' && type == 'l') {
+				type = 'L';
+				cmd = *fmt;
+				fmt++;
+			}
+
+			if (!cmd) {
+				Com_Printf("WARNING: bg_lib.c's sscanf doesn't support format %%%c\n", type);
+				break;
+			}
+		} else {
+			type = 0;
+		}
+
 		switch (cmd) {
 			case 'i':
 			case 'd':
+				if (type == 'L') {
+					*(va_arg (ap, long long *)) = _atoi(&buffer);
+				} else if (type == 'l') {
+					*(va_arg (ap, long *)) = _atoi(&buffer);
+				} else if (type == 'h') {
+					*(va_arg (ap, short *)) = _atoi(&buffer);
+				} else {
+					*(va_arg (ap, int *)) = _atoi(&buffer);
+				}
+
+				break;
 			case 'u':
-				*(va_arg(ap, int *)) = _atoi(&buffer);
+				if (type == 'L') {
+					*(va_arg (ap, unsigned long long *)) = _atoi(&buffer);
+				} else if (type == 'l') {
+					*(va_arg (ap, unsigned long *)) = _atoi(&buffer);
+				} else if (type == 'h') {
+					*(va_arg (ap, unsigned short *)) = _atoi(&buffer);
+				} else {
+					*(va_arg (ap, unsigned int *)) = _atoi(&buffer);
+				}
+
 				break;
 			case 'f':
-				*(va_arg(ap, float *)) = _atof(&buffer);
+			case 'F':
+			case 'g':
+			case 'G':
+				if (type == 'L') {
+					*(va_arg (ap, long double *)) = _atof(&buffer);
+				} else if (type == 'l') {
+					*(va_arg (ap, double *)) = _atof(&buffer);
+				} else {
+					*(va_arg (ap, float *)) = _atof(&buffer);
+				}
+
 				break;
 			case 'x':
-				*(va_arg(ap, unsigned int *)) = _hextoi(&buffer);
+			case 'X':
+				if (type == 'L') {
+				*(va_arg (ap, unsigned long long *)) = _hextoi(&buffer);
+				} else if (type == 'l') {
+				*(va_arg (ap, unsigned long *)) = _hextoi(&buffer);
+				} else if (type == 'h') {
+					*(va_arg (ap, unsigned short *)) = _hextoi(&buffer);
+				} else {
+					*(va_arg (ap, unsigned int *)) = _hextoi(&buffer);
+				}
+
 				break;
 			case 's':
 			{
@@ -2439,7 +2519,6 @@ int sscanf(const char *buffer, const char *fmt, ...) {
 			default:
 				Com_Printf("WARNING: bg_lib.c's sscanf doesn't support format %%%c\n", cmd);
 				break;
-			}
 		}
 	}
 

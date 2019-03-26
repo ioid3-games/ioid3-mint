@@ -61,29 +61,16 @@ void CG_BubbleTrail(vec3_t start, vec3_t end, float spacing) {
 
 		le = CG_AllocLocalEntity();
 		le->leFlags = LEF_PUFF_DONT_SCALE;
-
-		if (cg_oldBubbles.integer) {
-			le->leType = LE_MOVE_SCALE_FADE;
-			le->endTime = cg.time + 1000 + random() * 250;
-		} else {
-			le->leType = LE_BUBBLE;
-			le->endTime = cg.time + 8000 + random() * 250;
-		}
-
+		le->leType = LE_BUBBLE;
 		le->startTime = cg.time;
+		le->endTime = cg.time + 8000 + random() * 250;
 		le->lifeRate = 1.0 / (le->endTime - le->startTime);
 
 		re = &le->refEntity;
 		re->shaderTime = cg.time;
 		re->reType = RT_SPRITE;
 		re->rotation = 0;
-
-		if (cg_oldBubbles.integer) {
-			re->radius = 3;
-		} else {
-			re->radius = 2 + random() * 2;
-		}
-
+		re->radius = 2 + random() * 2;
 		re->customShader = cgs.media.waterBubbleShader;
 		re->shaderRGBA[0] = 0xff;
 		re->shaderRGBA[1] = 0xff;
@@ -98,15 +85,9 @@ void CG_BubbleTrail(vec3_t start, vec3_t end, float spacing) {
 
 		le->pos.trDelta[0] = crandom() * 5;
 		le->pos.trDelta[1] = crandom() * 5;
+		le->pos.trDelta[2] = 85 + random() * 10;
 
-		if (cg_oldBubbles.integer) {
-			le->pos.trDelta[2] = crandom() * 5 + 6;
-		} else {
-			le->pos.trDelta[2] = 85 + random() * 10;
-
-			VectorCopy(move, re->origin);
-		}
-
+		VectorCopy(move, re->origin);
 		VectorAdd(move, vec, move);
 	}
 }
@@ -120,10 +101,6 @@ int CG_SpawnBubbles(localEntity_t **bubbles, vec3_t origin, float baseSize, int 
 	int i;
 	float rnd;
 	qboolean spawnedLarge;
-
-	if (cg_oldBubbles.integer) {
-		return 0;
-	}
 
 	spawnedLarge = qfalse;
 
@@ -173,9 +150,9 @@ int CG_SpawnBubbles(localEntity_t **bubbles, vec3_t origin, float baseSize, int 
 		le->pos.trBase[0] += crandom() * baseSize;
 		le->pos.trBase[1] += crandom() * baseSize;
 		le->pos.trBase[2] += crandom() * baseSize;
-		le->pos.trDelta[0] = baseSize * crandom() *5;
-		le->pos.trDelta[1] = baseSize * crandom() *5;
-		le->pos.trDelta[2] = 85 + random() *10;
+		le->pos.trDelta[0] = baseSize * crandom() * 5;
+		le->pos.trDelta[1] = baseSize * crandom() * 5;
+		le->pos.trDelta[2] = 85 + random() * 10;
 	}
 
 	return numBubbles;
@@ -238,12 +215,12 @@ localEntity_t *CG_SmokePuff(const vec3_t p, const vec3_t vel, float radius, floa
 
 /*
 =======================================================================================================================================
-CG_SpawnEffect
+CG_SpawnEffectSmall
 
-Player teleporting in or out.
+Small teleportation effect.
 =======================================================================================================================================
 */
-void CG_SpawnEffect(vec3_t org) {
+void CG_SpawnEffectSmall(vec3_t org) {
 	localEntity_t *le;
 	refEntity_t *re;
 
@@ -258,26 +235,53 @@ void CG_SpawnEffect(vec3_t org) {
 	re = &le->refEntity;
 	re->reType = RT_MODEL;
 	re->shaderTime = cg.time;
-#ifndef MISSIONPACK
 	re->customShader = cgs.media.teleportEffectShader;
-#endif
 	re->hModel = cgs.media.teleportEffectModel;
 
 	AxisClear(re->axis);
 	VectorCopy(org, re->origin);
-#ifdef MISSIONPACK
-	re->origin[2] += 16;
-#else
-	re->origin[2] -= 24;
-#endif
+	VectorScale(re->axis[2], 0.45, re->axis[2]); // Tobias HACK: decrease the size of the models until we have a models looking similar like the one from Alien Arena item respawn...
+
+	re->origin[2] -= 4;
 }
-#ifdef MISSIONPACK
+
 /*
 =======================================================================================================================================
-CG_LightningBoltBeam
+CG_SpawnEffectDefault
+
+Player teleporting in or out.
 =======================================================================================================================================
 */
-void CG_LightningBoltBeam(vec3_t start, vec3_t end) {
+void CG_SpawnEffectDefault(vec3_t org) {
+	localEntity_t *le;
+	refEntity_t *re;
+
+	le = CG_AllocLocalEntity();
+	le->leFlags = 0;
+	le->leType = LE_FADE_RGB;
+	le->startTime = cg.time;
+	le->endTime = cg.time + 500;
+	le->lifeRate = 1.0 / (le->endTime - le->startTime);
+	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
+
+	re = &le->refEntity;
+	re->reType = RT_MODEL;
+	re->shaderTime = cg.time;
+	re->customShader = cgs.media.teleportEffectShader;
+	re->hModel = cgs.media.teleportEffectModel;
+
+	AxisClear(re->axis);
+	VectorCopy(org, re->origin);
+
+	re->origin[2] -= 4;
+}
+
+/*
+=======================================================================================================================================
+CG_LightningBolt
+=======================================================================================================================================
+*/
+void CG_LightningBolt(vec3_t start, vec3_t end) {
 	localEntity_t *le;
 	refEntity_t *beam;
 
@@ -310,7 +314,7 @@ void CG_KamikazeEffect(vec3_t org) {
 	le->leFlags = 0;
 	le->leType = LE_KAMIKAZE;
 	le->startTime = cg.time;
-	le->endTime = cg.time + 3000; // 2250
+	le->endTime = cg.time + 3000; //2250
 	le->lifeRate = 1.0 / (le->endTime - le->startTime);
 	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
 
@@ -365,85 +369,15 @@ void CG_ObeliskPain(vec3_t org) {
 		sfx = cgs.media.obeliskHitSound3;
 	}
 
-	trap_S_StartSound(org, ENTITYNUM_NONE, CHAN_BODY, sfx);
+	trap_S_StartSound(org, ENTITYNUM_NONE, CHAN_BODY, sfx, 64);
 }
 
-/*
-=======================================================================================================================================
-CG_InvulnerabilityImpact
-=======================================================================================================================================
-*/
-void CG_InvulnerabilityImpact(vec3_t org, vec3_t angles) {
-	localEntity_t *le;
-	refEntity_t *re;
-	int r;
-	sfxHandle_t sfx;
-
-	le = CG_AllocLocalEntity();
-	le->leFlags = 0;
-	le->leType = LE_INVULIMPACT;
-	le->startTime = cg.time;
-	le->endTime = cg.time + 1000;
-	le->lifeRate = 1.0 / (le->endTime - le->startTime);
-	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
-
-	re = &le->refEntity;
-	re->reType = RT_MODEL;
-	re->shaderTime = cg.time;
-	re->hModel = cgs.media.invulnerabilityImpactModel;
-
-	VectorCopy(org, re->origin);
-	AnglesToAxis(angles, re->axis);
-
-	r = rand() & 3;
-
-	if (r < 2) {
-		sfx = cgs.media.invulnerabilityImpactSound1;
-	} else if (r == 2) {
-		sfx = cgs.media.invulnerabilityImpactSound2;
-	} else {
-		sfx = cgs.media.invulnerabilityImpactSound3;
-	}
-
-	trap_S_StartSound(org, ENTITYNUM_NONE, CHAN_BODY, sfx);
-}
-
-/*
-=======================================================================================================================================
-CG_InvulnerabilityJuiced
-=======================================================================================================================================
-*/
-void CG_InvulnerabilityJuiced(vec3_t org) {
-	localEntity_t *le;
-	refEntity_t *re;
-	vec3_t angles;
-
-	le = CG_AllocLocalEntity();
-	le->leFlags = 0;
-	le->leType = LE_INVULJUICED;
-	le->startTime = cg.time;
-	le->endTime = cg.time + 10000;
-	le->lifeRate = 1.0 / (le->endTime - le->startTime);
-	le->color[0] = le->color[1] = le->color[2] = le->color[3] = 1.0;
-
-	re = &le->refEntity;
-	re->reType = RT_MODEL;
-	re->shaderTime = cg.time;
-	re->hModel = cgs.media.invulnerabilityJuicedModel;
-
-	VectorCopy(org, re->origin);
-	VectorClear(angles);
-	AnglesToAxis(angles, re->axis);
-
-	trap_S_StartSound(org, ENTITYNUM_NONE, CHAN_BODY, cgs.media.invulnerabilityJuicedSound);
-}
-#endif
 /*
 =======================================================================================================================================
 CG_ScorePlum
 =======================================================================================================================================
 */
-void CG_ScorePlum(int playerNum, vec3_t org, int score) {
+void CG_ScorePlum(int clientNum, vec3_t org, int score) {
 	localEntity_t *le;
 	refEntity_t *re;
 	vec3_t angles;
@@ -456,7 +390,7 @@ void CG_ScorePlum(int playerNum, vec3_t org, int score) {
 	le = CG_AllocLocalEntity();
 	// only visualize for the player that scored
 	le->defaultViewFlags = LEVF_NO_DRAW;
-	le->playerEffects[0].playerNum = playerNum;
+	le->playerEffects[0].clientNum = clientNum;
 	le->playerEffects[0].viewFlags = 0;
 	le->numPlayerEffects = 1;
 	le->leFlags = 0;
@@ -474,7 +408,6 @@ void CG_ScorePlum(int playerNum, vec3_t org, int score) {
 	}
 
 	//CG_Printf("Plum origin %i %i %i -- %i\n", (int)org[0], (int)org[1], (int)org[2], (int)Distance(org, lastPos));
-
 	VectorCopy(org, lastPos);
 
 	re = &le->refEntity;
@@ -563,7 +496,7 @@ void CG_Bleed(vec3_t origin, int entityNum) {
 	ex->refEntity.customShader = cgs.media.bloodExplosionShader;
 	// don't show player's own blood in first person view
 	ex->defaultViewFlags = 0;
-	ex->playerEffects[0].playerNum = entityNum;
+	ex->playerEffects[0].clientNum = entityNum;
 	ex->playerEffects[0].viewFlags = LEVF_FIRST_PERSON_MIRROR;
 	ex->numPlayerEffects = 1;
 }
@@ -582,6 +515,7 @@ void CG_LaunchGib(vec3_t origin, vec3_t velocity, qhandle_t hModel) {
 	re = &le->refEntity;
 
 	le->leType = LE_FRAGMENT;
+	le->leFlags = LEF_GIBS;
 	le->startTime = cg.time;
 	le->endTime = le->startTime + 5000 + random() * 3000;
 
@@ -613,11 +547,11 @@ Generated a bunch of gibs launching out from the bodies location.
 void CG_GibPlayer(vec3_t playerOrigin) {
 	vec3_t origin, velocity;
 
-	if (CG_PointContents(playerOrigin, -1)&(CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
+	if (CG_PointContents(playerOrigin, -1) & (CONTENTS_WATER|CONTENTS_SLIME)) {
 		CG_SpawnBubbles(NULL, playerOrigin, 3, 5 + random() * 5);
 	}
 
-	if (!cg_blood.integer || !cg_gibs.integer) {
+	if (!cg_blood.integer) {
 		return;
 	}
 
@@ -630,6 +564,10 @@ void CG_GibPlayer(vec3_t playerOrigin) {
 		CG_LaunchGib(origin, velocity, cgs.media.gibSkull);
 	} else {
 		CG_LaunchGib(origin, velocity, cgs.media.gibBrain);
+	}
+	// allow gibs to be turned off for speed
+	if (!cg_gibs.integer) {
+		return;
 	}
 
 	VectorCopy(playerOrigin, origin);
@@ -729,6 +667,10 @@ CG_BigExplode
 */
 void CG_BigExplode(vec3_t playerOrigin) {
 	vec3_t origin, velocity;
+
+	if (!cg_blood.integer) {
+		return;
+	}
 
 	VectorCopy(playerOrigin, origin);
 	velocity[0] = crandom() * EXP_VELOCITY;

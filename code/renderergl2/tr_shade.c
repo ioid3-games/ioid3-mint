@@ -30,9 +30,6 @@ Suite 120, Rockville, Maryland 20850 USA.
 // tr_shade.c
 
 #include "tr_local.h" 
-#if idppc_altivec && !defined(__APPLE__)
-#include <altivec.h>
-#endif
 
 /*
 
@@ -49,7 +46,7 @@ R_DrawElements
 ==================
 */
 
-void R_DrawElements( int numIndexes, glIndex_t firstIndex)
+void R_DrawElements( int numIndexes, int firstIndex )
 {
 	qglDrawElements(GL_TRIANGLES, numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET(firstIndex * sizeof(glIndex_t)));
 }
@@ -356,7 +353,7 @@ static void ProjectDlightTexture( void ) {
 		vec4_t vector;
 
 		if ( !( tess.dlightBits & ( 1 << l ) ) ) {
-			continue;	// this surface definately doesn't have any of this light
+			continue;	// this surface definitely doesn't have any of this light
 		}
 
 		dl = &backEnd.refdef.dlights[l];
@@ -430,9 +427,6 @@ static void ProjectDlightTexture( void ) {
 		vector[3] = scale;
 		GLSL_SetUniformVec4(sp, UNIFORM_DLIGHTINFO, vector);
 
-		GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_EQUAL);
-		GLSL_SetUniformFloat(sp, UNIFORM_ALPHATESTREF, 0.0f);
-		
 		GLSL_SetUniformFloat(sp, UNIFORM_INTENSITY, intensity);
 
 		if ( dl->dlshader ) {
@@ -443,6 +437,35 @@ static void ProjectDlightTexture( void ) {
 				shaderStage_t *stage = dls->stages[i];
 				R_BindAnimatedImageToTMU( &dls->stages[i]->bundle[0], TB_COLORMAP );
 				GL_State( stage->stateBits | GLS_DEPTHFUNC_EQUAL );
+
+				// alpha test function
+				switch ( stage->stateBits & GLS_ATEST_FUNC_BITS )
+				{
+					case GLS_ATEST_GREATER:
+						GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_GREATER);
+						break;
+					case GLS_ATEST_LESS:
+						GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_LESS);
+						break;
+					case GLS_ATEST_GREATEREQUAL:
+						GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_GREATEREQUAL);
+						break;
+					case GLS_ATEST_LESSEQUAL:
+						GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_LESSEQUAL);
+						break;
+					case GLS_ATEST_EQUAL:
+						GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_EQUAL);
+						break;
+					case GLS_ATEST_NOTEQUAL:
+						GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_NOTEQUAL);
+						break;
+					default:
+						GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_NONE);
+						break;
+				}
+
+				// alpha test reference value
+				GLSL_SetUniformFloat(sp, UNIFORM_ALPHATESTREF, ( ( stage->stateBits & GLS_ATEST_REF_BITS ) >> GLS_ATEST_REF_SHIFT ) / 100.0f);
 
 				R_DrawElements(tess.numIndexes, tess.firstIndex);
 
@@ -464,6 +487,35 @@ static void ProjectDlightTexture( void ) {
 			else {
 				GL_State( GLS_ATEST_GT_0 | GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ONE | GLS_DEPTHFUNC_EQUAL );
 			}
+
+			// alpha test function
+			switch ( glState.glStateBits & GLS_ATEST_FUNC_BITS )
+			{
+				case GLS_ATEST_GREATER:
+					GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_GREATER);
+					break;
+				case GLS_ATEST_LESS:
+					GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_LESS);
+					break;
+				case GLS_ATEST_GREATEREQUAL:
+					GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_GREATEREQUAL);
+					break;
+				case GLS_ATEST_LESSEQUAL:
+					GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_LESSEQUAL);
+					break;
+				case GLS_ATEST_EQUAL:
+					GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_EQUAL);
+					break;
+				case GLS_ATEST_NOTEQUAL:
+					GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_NOTEQUAL);
+					break;
+				default:
+					GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_NONE);
+					break;
+			}
+
+			// alpha test reference value
+			GLSL_SetUniformFloat(sp, UNIFORM_ALPHATESTREF, ( ( glState.glStateBits & GLS_ATEST_REF_BITS ) >> GLS_ATEST_REF_SHIFT ) / 100.0f);
 
 			R_DrawElements(tess.numIndexes, tess.firstIndex);
 
@@ -832,7 +884,7 @@ static void ForwardDlight( void ) {
 		vec4_t texOffTurb;
 
 		if ( !( tess.dlightBits & ( 1 << l ) ) ) {
-			continue;	// this surface definately doesn't have any of this light
+			continue;	// this surface definitely doesn't have any of this light
 		}
 
 		dl = &backEnd.refdef.dlights[l];
@@ -1042,7 +1094,7 @@ static void ProjectPshadowVBOGLSL( void ) {
 		vec4_t vector;
 
 		if ( !( tess.pshadowBits & ( 1 << l ) ) ) {
-			continue;	// this surface definately doesn't have any of this shadow
+			continue;	// this surface definitely doesn't have any of this shadow
 		}
 
 		ps = &backEnd.refdef.pshadows[l];
@@ -1157,6 +1209,8 @@ static void RB_FogPass( void ) {
 
 		if (glState.vertexAnimation)
 			index |= FOGDEF_USE_VERTEX_ANIMATION;
+		else if (glState.boneAnimation)
+			index |= FOGDEF_USE_BONE_ANIMATION;
 		
 		sp = &tr.fogShader[index];
 	}
@@ -1168,6 +1222,11 @@ static void RB_FogPass( void ) {
 	GLSL_SetUniformMat4(sp, UNIFORM_MODELVIEWPROJECTIONMATRIX, glState.modelviewProjection);
 
 	GLSL_SetUniformFloat(sp, UNIFORM_VERTEXLERP, glState.vertexAttribsInterpolation);
+
+	if (glState.boneAnimation)
+	{
+		GLSL_SetUniformMat4BoneMatrix(sp, UNIFORM_BONEMATRIX, glState.boneMatrix, glState.boneAnimation);
+	}
 	
 	GLSL_SetUniformInt(sp, UNIFORM_DEFORMGEN, deformGen);
 	if (deformGen != DGEN_NONE)
@@ -1311,7 +1370,14 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 
 				if (backEnd.currentEntity && backEnd.currentEntity != &tr.worldEntity)
 				{
-					index |= LIGHTDEF_ENTITY;
+					if (glState.boneAnimation)
+					{
+						index |= LIGHTDEF_ENTITY_BONE_ANIMATION;
+					}
+					else
+					{
+						index |= LIGHTDEF_ENTITY_VERTEX_ANIMATION;
+					}
 				}
 
 				if (pStage->stateBits & GLS_ATEST_BITS)
@@ -1334,6 +1400,10 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 				{
 					shaderAttribs |= GENERICDEF_USE_VERTEX_ANIMATION;
 				}
+				else if (glState.boneAnimation)
+				{
+					shaderAttribs |= GENERICDEF_USE_BONE_ANIMATION;
+				}
 
 				if (pStage->stateBits & GLS_ATEST_BITS)
 				{
@@ -1349,7 +1419,14 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 
 			if (backEnd.currentEntity && backEnd.currentEntity != &tr.worldEntity)
 			{
-				index |= LIGHTDEF_ENTITY;
+				if (glState.boneAnimation)
+				{
+					index |= LIGHTDEF_ENTITY_BONE_ANIMATION;
+				}
+				else
+				{
+					index |= LIGHTDEF_ENTITY_VERTEX_ANIMATION;
+				}
 			}
 
 			if (r_sunlightMode->integer && (backEnd.viewParms.flags & VPF_USESUNLIGHT) && (index & LIGHTDEF_LIGHTTYPE_MASK))
@@ -1382,6 +1459,11 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 		GLSL_SetUniformVec3(sp, UNIFORM_LOCALVIEWORIGIN, backEnd.or.viewOrigin);
 
 		GLSL_SetUniformFloat(sp, UNIFORM_VERTEXLERP, glState.vertexAttribsInterpolation);
+
+		if (glState.boneAnimation)
+		{
+			GLSL_SetUniformMat4BoneMatrix(sp, UNIFORM_BONEMATRIX, glState.boneMatrix, glState.boneAnimation);
+		}
 
 		if ((deformGen != DGEN_NONE && tess.shader->deforms[0].deformationWave.frequency < 0 )
 			|| pStage->alphaGen == AGEN_NORMALZFADE)
@@ -1770,7 +1852,16 @@ static void RB_RenderShadowmap( shaderCommands_t *input )
 	ComputeDeformValues(&deformGen, deformParams);
 
 	{
-		shaderProgram_t *sp = &tr.shadowmapShader;
+		shaderProgram_t *sp = &tr.shadowmapShader[0];
+
+		if (glState.vertexAnimation)
+		{
+			sp = &tr.shadowmapShader[SHADOWMAPDEF_USE_VERTEX_ANIMATION];
+		}
+		else if (glState.boneAnimation)
+		{
+			sp = &tr.shadowmapShader[SHADOWMAPDEF_USE_BONE_ANIMATION];
+		}
 
 		vec4_t vector;
 
@@ -1781,6 +1872,11 @@ static void RB_RenderShadowmap( shaderCommands_t *input )
 		GLSL_SetUniformMat4(sp, UNIFORM_MODELMATRIX, backEnd.or.transformMatrix);
 
 		GLSL_SetUniformFloat(sp, UNIFORM_VERTEXLERP, glState.vertexAttribsInterpolation);
+
+		if (glState.boneAnimation)
+		{
+			GLSL_SetUniformMat4BoneMatrix(sp, UNIFORM_BONEMATRIX, glState.boneMatrix, glState.boneAnimation);
+		}
 
 		GLSL_SetUniformInt(sp, UNIFORM_DEFORMGEN, deformGen);
 		if (deformGen != DGEN_NONE)

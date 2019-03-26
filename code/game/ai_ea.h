@@ -70,32 +70,32 @@ typedef struct bot_input_s {
 } bot_input_t;
 
 // ClientCommand elementary actions
-void EA_Say(int playerNum, char *str);
-void EA_SayTeam(int playerNum, char *str);
-void EA_Command(int playerNum, char *command);
-void EA_Action(int playerNum, int action);
-void EA_Crouch(int playerNum);
-void EA_MoveUp(int playerNum);
-void EA_MoveDown(int playerNum);
-void EA_MoveForward(int playerNum);
-void EA_MoveBack(int playerNum);
-void EA_MoveLeft(int playerNum);
-void EA_MoveRight(int playerNum);
-void EA_Attack(int playerNum);
-void EA_Respawn(int playerNum);
-void EA_Talk(int playerNum);
-void EA_Gesture(int playerNum);
-void EA_Use(int playerNum);
+void EA_Say(int clientNum, char *str);
+void EA_SayTeam(int clientNum, char *str);
+void EA_Command(int clientNum, char *command);
+void EA_Action(int clientNum, int action);
+void EA_Crouch(int clientNum);
+void EA_MoveUp(int clientNum);
+void EA_MoveDown(int clientNum);
+void EA_MoveForward(int clientNum);
+void EA_MoveBack(int clientNum);
+void EA_MoveLeft(int clientNum);
+void EA_MoveRight(int clientNum);
+void EA_Attack(int clientNum);
+void EA_Respawn(int clientNum);
+void EA_Talk(int clientNum);
+void EA_Gesture(int clientNum);
+void EA_Use(int clientNum);
 // regular elementary actions
-void EA_SelectWeapon(int playerNum, int weapon);
-void EA_Jump(int playerNum);
-void EA_DelayedJump(int playerNum);
-void EA_Move(int playerNum, vec3_t dir, float speed);
-void EA_View(int playerNum, vec3_t viewangles);
+void EA_SelectWeapon(int clientNum, int weapon);
+void EA_Jump(int clientNum);
+void EA_DelayedJump(int clientNum);
+void EA_Move(int clientNum, vec3_t dir, float speed);
+void EA_View(int clientNum, vec3_t viewangles);
 // send regular input to the server
-void EA_EndRegular(int playerNum, float thinktime);
-void EA_GetInput(int playerNum, float thinktime, bot_input_t *input);
-void EA_ResetInput(int playerNum);
+void EA_EndRegular(int clientNum, float thinktime);
+void EA_GetInput(int clientNum, float thinktime, bot_input_t *input);
+void EA_ResetInput(int clientNum);
 // setup and shutdown routines
 int EA_Setup(void);
 void EA_Shutdown(void);

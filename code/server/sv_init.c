@@ -36,7 +36,7 @@ static void SV_SendConfigstring(client_t *client, int index) {
 	int len;
 
 	if (sv.configstrings[index].restricted && Com_ClientListContains(&sv.configstrings[index].clientList, client - svs.clients)) {
-		// Send a blank config string for this client if it's listed
+		// send a blank config string for this client if it's listed
 		SV_SendServerCommand(client, -1, "cs %i \"\"\n", index);
 		return;
 	}
@@ -290,13 +290,13 @@ static void SV_Startup(void) {
 	}
 
 	svs.initialized = qtrue;
-	// Don't respect sv_killserver unless a server is actually running
+	// don't respect sv_killserver unless a server is actually running
 	if (sv_killserver->integer) {
 		Cvar_Set("sv_killserver", "0");
 	}
 
 	Cvar_Set("sv_running", "1");
-	// Join the ipv6 multicast group now that a map is running so clients can scan for us on the local network.
+	// join the ipv6 multicast group now that a map is running so clients can scan for us on the local network.
 	NET_JoinMulticast6();
 }
 
@@ -311,7 +311,7 @@ void SV_ChangeMaxClients(void) {
 	client_t *oldClients;
 	player_t *oldPlayers;
 	int count;
-	int playerNum;
+	int clientNum;
 
 	// get the highest client or player number in use
 	count = 0;
@@ -343,10 +343,10 @@ void SV_ChangeMaxClients(void) {
 
 			for (j = 0; j < MAX_SPLITVIEW; j++) {
 				if (svs.clients[i].localPlayers[j]) {
-					playerNum = (int)(svs.clients[i].localPlayers[j] - svs.players);
-					oldClients[i].localPlayers[j] = &oldPlayers[playerNum];
-					oldPlayers[playerNum] = svs.players[playerNum];
-					oldPlayers[playerNum].client = NULL;
+					clientNum = (int)(svs.clients[i].localPlayers[j] - svs.players);
+					oldClients[i].localPlayers[j] = &oldPlayers[clientNum];
+					oldPlayers[clientNum] = svs.players[clientNum];
+					oldPlayers[clientNum].client = NULL;
 				}
 			}
 		} else {
@@ -371,10 +371,10 @@ void SV_ChangeMaxClients(void) {
 
 			for (j = 0; j < MAX_SPLITVIEW; j++) {
 				if (oldClients[i].localPlayers[j]) {
-					playerNum = (int)(oldClients[i].localPlayers[j] - oldPlayers);
-					svs.clients[i].localPlayers[j] = &svs.players[playerNum];
-					svs.players[playerNum] = oldPlayers[playerNum];
-					svs.players[playerNum].client = &svs.clients[i];
+					clientNum = (int)(oldClients[i].localPlayers[j] - oldPlayers);
+					svs.clients[i].localPlayers[j] = &svs.players[clientNum];
+					svs.players[clientNum] = oldPlayers[clientNum];
+					svs.players[clientNum].client = &svs.clients[i];
 				}
 			}
 		}
@@ -414,8 +414,6 @@ static void SV_ClearServer(void) {
 /*
 =======================================================================================================================================
 SV_TouchCGame
-
-Touch the cgame.vm so that a pure client can load it if it's in a separate pk3.
 =======================================================================================================================================
 */
 static void SV_TouchCGame(void) {
@@ -464,7 +462,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 
 	Com_Printf("Loading level %s...\n", server);
 	Com_DPrintf("------ Server Initialization ------\n");
-	Com_DPrintf("Server: %s\n",server);
+	Com_DPrintf("Server: %s\n", server);
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
 	CL_MapLoading();
@@ -528,6 +526,9 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	SV_ClearWorld();
 	// media configstring setting should be done during the loading stage, so connected clients don't have to load during actual gameplay
 	sv.state = SS_LOADING;
+	// update latched bot cvars
+	SV_BotInitCvars();
+	SV_BotInitBotLib();
 	// load and spawn all other entities
 	SV_InitGameProgs();
 	// allocate the snapshot entities on the hunk
@@ -577,7 +578,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 
 				if (denied && player != NULL) {
 					// this generally shouldn't happen, because the client was connected before the level change
-					SV_DropPlayer(player, denied);
+					SV_DropPlayer(player, denied, qtrue);
 				}
 			}
 			// check if client was dropped
@@ -625,10 +626,9 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 		Cvar_Set("sv_paks", "");
 		Cvar_Set("sv_pakNames", "");
 	}
-	// if a dedicated pure server we need to touch the cgame because it could be in a seperate pk3 file and the client will need to load the latest cgame.qvm
-	if (com_dedicated->integer) {
-		SV_TouchCGame();
-	}
+	// we need to touch the cgame because it could be in a separate pk3 file and it needs to be referenced for the
+	// client to download the latest cgame or use it if pure server is enabled
+	SV_TouchCGame();
 	// the server sends these to the clients so they can figure out which pk3s should be auto-downloaded
 	p = FS_ReferencedPakChecksums();
 	Cvar_Set("sv_referencedPaks", p);
@@ -713,7 +713,7 @@ void SV_Init(void) {
 	// server vars
 	sv_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
 	sv_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
-	sv_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
+	sv_fps = Cvar_Get("sv_fps", "60", CVAR_TEMP);
 	sv_timeout = Cvar_Get("sv_timeout", "200", CVAR_TEMP);
 	sv_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
 	Cvar_Get("nextmap", "", CVAR_TEMP);
@@ -738,8 +738,6 @@ void SV_Init(void) {
 	Cvar_CheckRange(sv_public, -2, 1, qtrue);
 	// initialize bot cvars so they are listed and can be set before loading the botlib
 	SV_BotInitCvars();
-	// init the botlib here because we need the pre-compiler in the UI
-	SV_BotInitBotLib();
 	// load saved bans
 	Cbuf_AddText("rehashbans\n");
 }

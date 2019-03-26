@@ -140,7 +140,7 @@ void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
 	}
 
 	if (cg_horizontalPlacement == PLACE_STRETCH) {
-		// scale for screen sizes(not aspect correct in wide screen)
+		// scale for screen sizes (not aspect correct in wide screen)
 		if (w != NULL) {
 			*w *= cgs.screenXScaleStretch;
 		}
@@ -156,14 +156,14 @@ void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
 
 		if (x != NULL) {
 			*x *= cgs.screenXScale;
-			// Screen Placement
+			// screen Placement
 			if (cg_horizontalPlacement == PLACE_CENTER) {
 				*x += cgs.screenXBias;
 			} else if (cg_horizontalPlacement == PLACE_RIGHT) {
-				*x += cgs.screenXBias*2;
+				*x += cgs.screenXBias * 2;
 			}
-			// Offset for widescreen
-			*x += cgs.screenXBias*(viewXBias);
+			// offset for widescreen
+			*x += cgs.screenXBias * (viewXBias);
 		}
 	}
 
@@ -186,10 +186,10 @@ void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
 			if (cg_verticalPlacement == PLACE_CENTER) {
 				*y += cgs.screenYBias;
 			} else if (cg_verticalPlacement == PLACE_BOTTOM) {
-				*y += cgs.screenYBias*2;
+				*y += cgs.screenYBias * 2;
 			}
-			// Offset for narrow-screen
-			*y += cgs.screenYBias*(viewYBias);
+			// offset for narrow-screen
+			*y += cgs.screenYBias * (viewYBias);
 		}
 	}
 }
@@ -571,7 +571,7 @@ void CG_DrawStringCommon(int x, int y, const char *str, int style, const fontInf
 				break;
 		}
 	}
-	// This function expects that y is top of line, text_paint expects at baseline
+	// this function expects that y is top of line, text_paint expects at baseline
 	decent = -font->glyphs[(int)'g'].top + font->glyphs[(int)'g'].height;
 	y = y + charh - decent * scale * font->glyphScale;
 
@@ -581,11 +581,11 @@ void CG_DrawStringCommon(int x, int y, const char *str, int style, const fontInf
 	}
 
 	if (cursorChar >= 0) {
-		Text_PaintWithCursor(x, y, font, scale, drawcolor, str, cursorPos, cursorChar, 0, maxChars, shadowOffset, gradient, !!(style & UI_FORCECOLOR));
+		Text_PaintWithCursor(x, y, font, scale, drawcolor, str, cursorPos, cursorChar, 0, maxChars, shadowOffset, gradient, !!(style & UI_FORCECOLOR), !!(style & UI_INMOTION));
 	} else if (wrapX > 0) {
 		// replace 'char height' in line height with our scaled charh
 		// ZTM: TODO: This text gap handling is kind of messy. Passing scale to CG_DrawStringLineHeight might make cleaner code here.
-		int gap = CG_DrawStringLineHeight(style) - font->pointSize;
+		int gap = CG_DrawStringLineHeight(style|UI_NOSCALE) - font->pointSize;
 
 		if (!(style & UI_NOSCALE) && cg.cur_lc) {
 			if (cg.numViewports != 1) {
@@ -595,9 +595,9 @@ void CG_DrawStringCommon(int x, int y, const char *str, int style, const fontInf
 			}
 		}
 
-		Text_Paint_AutoWrapped(x, y, font, scale, drawcolor, str, 0, maxChars, shadowOffset, gradient, !!(style & UI_FORCECOLOR), wrapX, charh + gap, style);
+		Text_Paint_AutoWrapped(x, y, font, scale, drawcolor, str, 0, maxChars, shadowOffset, gradient, !!(style & UI_FORCECOLOR), !!(style & UI_INMOTION), wrapX, charh + gap, style);
 	} else {
-		Text_Paint(x, y, font, scale, drawcolor, str, 0, maxChars, shadowOffset, gradient, !!(style & UI_FORCECOLOR));
+		Text_Paint(x, y, font, scale, drawcolor, str, 0, maxChars, shadowOffset, gradient, !!(style & UI_FORCECOLOR), !!(style & UI_INMOTION));
 	}
 }
 
@@ -611,6 +611,7 @@ void CG_DrawBigString(int x, int y, const char *s, float alpha) {
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
+
 	CG_DrawString(x, y, s, UI_DROPSHADOW|UI_BIGFONT, color);
 }
 
@@ -633,6 +634,7 @@ void CG_DrawSmallString(int x, int y, const char *s, float alpha) {
 
 	color[0] = color[1] = color[2] = 1.0;
 	color[3] = alpha;
+
 	CG_DrawString(x, y, s, UI_SMALLFONT, color);
 }
 
@@ -728,7 +730,15 @@ int CG_DrawStringLineHeight(int style) {
 
 		case UI_CONSOLEFONT:
 			font = &cgs.media.consoleFont;
-			gap = 2;
+
+			if (font->pointSize >= 16) {
+				gap = 2;
+			} else if (font->pointSize >= 12) {
+				gap = 1;
+			} else {
+				gap = 0;
+			}
+
 			break;
 	}
 
@@ -769,6 +779,7 @@ static void CG_TileClearBox(int x, int y, int w, int h, qhandle_t hShader) {
 	t1 = y / 64.0;
 	s2 = (x + w) / 64.0;
 	t2 = (y + h) / 64.0;
+
 	trap_R_DrawStretchPic(x, y, w, h, s1, t1, s2, t2, hShader);
 }
 
@@ -783,7 +794,7 @@ void CG_TileClear(void) {
 	int top, bottom, left, right;
 	float x, y, w, h;
 
-	if (cg.cur_ps->pm_type == PM_INTERMISSION || cg_viewsize.integer >= 100) {
+	if (cg.snap->ps.pm_type == PM_INTERMISSION || cg_viewsize.integer >= 100) {
 		return; // full screen rendering
 	}
 	// viewport coords
@@ -793,7 +804,7 @@ void CG_TileClear(void) {
 	h = cg.viewportHeight;
 	// view screen coords
 	top = cg.refdef.y;
-	bottom = top + cg.refdef.heigh t- 1;
+	bottom = top + cg.refdef.height - 1;
 	left = cg.refdef.x;
 	right = left + cg.refdef.width - 1;
 	// clear above view screen
@@ -909,7 +920,7 @@ CG_ColorForHealth
 =======================================================================================================================================
 */
 void CG_ColorForHealth(vec4_t hcolor) {
-	CG_GetColorForHealth(cg.cur_ps->stats[STAT_HEALTH], cg.cur_ps->stats[STAT_ARMOR], hcolor);
+	CG_GetColorForHealth(cg.snap->ps.stats[STAT_HEALTH], cg.snap->ps.stats[STAT_ARMOR], hcolor);
 }
 
 /*

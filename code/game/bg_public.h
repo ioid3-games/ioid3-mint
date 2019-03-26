@@ -38,9 +38,13 @@ Suite 120, Rockville, Maryland 20850 USA.
 #else
 #define MODDIR "baseq3"
 #endif
+#define PRODUCT_NAME				MODDIR
+// Keep this in-sync with VERSION in Makefile.
+#ifndef PRODUCT_VERSION
+#define PRODUCT_VERSION			"1.0.1"
 #endif
-// because games can change separately from the main system version, we need a second version that must match between game and cgame
-#define GAME_VERSION MODDIR "-4"
+// because games can change separately from the main system protocol, we need a second protocol that must match between game and cgame
+#define	GAME_PROTOCOL		MODDIR "-4"
 // used for switching fs_game
 #ifndef BASEQ3
 #define BASEQ3 "baseq3"
@@ -73,7 +77,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define DEFAULT_SHOTGUN_SPREAD 700
 #define DEFAULT_SHOTGUN_COUNT 11
 #define ITEM_RADIUS 15 // item sizes are needed for client side pickup detection
-#define LIGHTNING_RANGE 768
+#define BEAMGUN_RANGE 768
 #define SCORE_NOT_PRESENT -9999 // for the CS_SCORES[12] when only one player is present
 #define VOTE_TIME 30000 // 30 seconds before vote times out
 #define MINS_Z -24
@@ -104,7 +108,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define CS_TEAMVOTE_STRING		14
 #define CS_TEAMVOTE_YES			16
 #define CS_TEAMVOTE_NO			18
-#define CS_GAME_VERSION			20
+#define	CS_GAME_PROTOCOL		20
 #define CS_LEVEL_START_TIME		21 // so the timer only shows the current level
 #define CS_INTERMISSION			22 // when 1, fraglimit/timelimit has been hit and intermission will start in a second or two
 #define CS_FLAGSTATUS			23 // string indicating flag status in CTF
@@ -212,7 +216,7 @@ typedef struct entityState_s {
 	int dl_intensity;	// used for coronas
 	int loopSound;		// constantly loop this sound
 	int modelindex2;
-	int playerNum;		// 0 to (MAX_CLIENTS - 1), for players and corpses
+	int clientNum;		// 0 to (MAX_CLIENTS - 1), for players and corpses
 	int frame;
 	int event;			// impulse events -- muzzle flashes, footsteps, etc
 	int eventParm;
@@ -253,7 +257,7 @@ typedef struct playerState_s {
 	int commandTime;	// cmd->serverTime of last executed command
 	vec3_t origin;
 	qboolean linked;			// set by server
-	int playerNum;		// ranges from 0 to MAX_CLIENTS-1
+	int clientNum;		// ranges from 0 to MAX_CLIENTS-1
 	vec3_t viewangles;		// for fixed views
 	int viewheight;
 	// ping is not communicated over the net at all
@@ -293,7 +297,7 @@ typedef struct playerState_s {
 	int eventParms[MAX_PS_EVENTS];
 	int externalEvent;	// events set on player from another source
 	int externalEventParm;
-	//int playerNum;		// ranges from 0 to MAX_CLIENTS-1
+	//int clientNum;		// ranges from 0 to MAX_CLIENTS-1
 	int weapon;			// copied to entityState_t->weapon
 	int weaponstate;
 	//vec3_t viewangles;		// for fixed views
@@ -441,7 +445,7 @@ typedef enum {
 	STAT_WEAPONS,		// 16 bit fields
 	STAT_ARMOR,				
 	STAT_DEAD_YAW,		// look this direction when dead (FIXME: get rid of?)
-	STAT_MAX_HEALTH,	// health/armor limit, changable by handicap
+	STAT_MAX_HEALTH,	// health / armor limit, changeable by handicap
 //#ifdef MISSIONPACK
 	STAT_PERSISTANT_POWERUP
 //#endif
@@ -457,7 +461,7 @@ typedef enum {
 	PERS_TEAM,					// player team
 	PERS_SPAWN_COUNT,			// incremented every respawn
 	PERS_PLAYEREVENTS,			// 16 bits that can be flipped for events
-	PERS_ATTACKER,				// playerNum of last damage inflicter
+	PERS_ATTACKER,				// clientNum of last damage inflicter
 	PERS_ATTACKEE_ARMOR,		// health/armor of last person we attacked
 	PERS_KILLED,				// count of the number of times you died
 	// player awards tracking
@@ -533,16 +537,16 @@ typedef enum {
 	WP_GAUNTLET,
 	WP_MACHINEGUN,
 	WP_SHOTGUN,
-	WP_GRENADE_LAUNCHER,
-	WP_ROCKET_LAUNCHER,
-	WP_LIGHTNING,
+	WP_GRENADELAUNCHER,
+	WP_ROCKETLAUNCHER,
+	WP_BEAMGUN,
 	WP_RAILGUN,
 	WP_PLASMAGUN,
 	WP_BFG,
 	WP_GRAPPLING_HOOK,
 #ifdef MISSIONPACK
 	WP_NAILGUN,
-	WP_PROX_LAUNCHER,
+	WP_PROXLAUNCHER,
 	WP_CHAINGUN,
 #endif
 	WP_NUM_WEAPONS
@@ -642,7 +646,7 @@ typedef enum {
 	EV_OBELISKPAIN,			// obelisk is in pain
 	EV_INVUL_IMPACT,		// invulnerability sphere impact
 	EV_JUICED,				// invulnerability juiced effect
-	EV_LIGHTNINGBOLT,		// lightning bolt bounced of invulnerability sphere
+	EV_BEAMGUNBOLT,		// lightning bolt bounced of invulnerability sphere
 //#endif
 	EV_DEBUG_LINE,
 	EV_STOPLOOPINGSOUND,
@@ -847,7 +851,7 @@ typedef enum {
 	MOD_PLASMA,
 	MOD_PLASMA_SPLASH,
 	MOD_RAILGUN,
-	MOD_LIGHTNING,
+	MOD_BEAMGUN,
 	MOD_BFG,
 	MOD_BFG_SPLASH,
 	MOD_WATER,
@@ -960,6 +964,7 @@ void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s,
 qboolean BG_PlayerTouchesItem(playerState_t *ps, entityState_t *item, int atTime);
 int BG_ComposeUserCmdValue(int weapon);
 void BG_DecomposeUserCmdValue(int value, int *weapon);
+void BG_AddStringToList(char *list, size_t listSize, int *listLength, char *name);
 void SnapVectorTowards(vec3_t v, vec3_t to);
 
 #define ARENAS_PER_TIER 4
@@ -1028,6 +1033,7 @@ void SnapVectorTowards(vec3_t v, vec3_t to);
 #define UI_FORCECOLOR	0x00010000
 #define UI_GRADIENT		0x00020000
 #define UI_NOSCALE		0x00040000 // fixed size with other UI elements, don't change it's scale
+#define UI_INMOTION		0x00080000 // use for scrolling/moving text to fix uneven scrolling caused by aligning to pixel boundary
 
 typedef struct {
 	const char *name;
@@ -1137,6 +1143,7 @@ float	trap_Cvar_VariableValue(const char *var_name);
 void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 void trap_Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 void trap_Cvar_InfoStringBuffer(int bit, char *buffer, int bufsize);
+void trap_Cvar_DefaultVariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 void trap_Cvar_CheckRange(const char *var_name, float min, float max, qboolean integral);
 // filesystem access
 // returns length of file
@@ -1149,13 +1156,19 @@ void trap_FS_FCloseFile(fileHandle_t f);
 int trap_FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize);
 int trap_FS_Delete(const char *path);
 int trap_FS_Rename(const char *from, const char *to);
-int trap_PC_AddGlobalDefine(char *define);
+int trap_PC_AddGlobalDefine(const char *define);
+int trap_PC_RemoveGlobalDefine(const char *define);
 void trap_PC_RemoveAllGlobalDefines(void);
 int trap_PC_LoadSource(const char *filename, const char *basepath);
 int trap_PC_FreeSource(int handle);
+int trap_PC_AddDefine(int handle, const char *define);
 int trap_PC_ReadToken(int handle, pc_token_t *pc_token);
 void trap_PC_UnreadToken(int handle);
 int trap_PC_SourceFileAndLine(int handle, char *filename, int *line);
 void *trap_HeapMalloc(int size);
 int trap_HeapAvailable(void);
 void trap_HeapFree(void *data);
+// functions for console command argument completion
+void trap_Field_CompleteFilename(const char *dir, const char *ext, qboolean stripExt, qboolean allowNonPureFilesOnDisk);
+void trap_Field_CompleteCommand(const char *cmd, qboolean doCommands, qboolean doCvars);
+void trap_Field_CompleteList(const char *list);

@@ -83,7 +83,7 @@ void VM_Init(void) {
 	Cvar_Get("vm_game", "0", CVAR_ARCHIVE);
 
 	vm_cgameHeapMegs = Cvar_Get("vm_cgameHeapMegs", "2", CVAR_ARCHIVE);
-	vm_gameHeapMegs = Cvar_Get("vm_gameHeapMegs", "8", CVAR_ARCHIVE);
+	vm_gameHeapMegs = Cvar_Get("vm_gameHeapMegs", "24", CVAR_ARCHIVE)
 
 	Cvar_CheckRange(vm_cgameHeapMegs, 0, 128, qtrue);
 	Cvar_CheckRange(vm_gameHeapMegs, 0, 128, qtrue);
@@ -305,12 +305,14 @@ void VM_LoadSymbols(vm_t *vm) {
 		}
 
 		sym->symValue = value;
+
 		Q_strncpyz(sym->symName, token, chars + 1);
 
 		count++;
 	}
 
 	vm->numSymbols = count;
+
 	Com_Printf("%i symbols parsed from %s\n", count, symbols);
 	FS_FreeFile(mapfile.v);
 }
@@ -514,7 +516,6 @@ vmHeader_t *VM_LoadQVM(vm_t *vm, qboolean alloc, qboolean unpure, int heapReques
 		if (vm->dataAlloc != hunkLength + 4) {
 			VM_Free(vm);
 			FS_FreeFile(header.v);
-
 			Com_Printf(S_COLOR_YELLOW "Warning: Data region size of %s not matching after VM_Restart()\n", filename);
 			return NULL;
 		}
@@ -533,6 +534,7 @@ vmHeader_t *VM_LoadQVM(vm_t *vm, qboolean alloc, qboolean unpure, int heapReques
 
 		header.h->jtrgLength &= ~0x03;
 		vm->numJumpTableTargets = header.h->jtrgLength >> 2;
+
 		Com_DPrintf("Loading %d jump table targets\n", vm->numJumpTableTargets);
 
 		if (alloc) {
@@ -570,7 +572,7 @@ argument.
 vm_t *VM_Restart(vm_t *vm, qboolean unpure) {
 	vmHeader_t *header;
 
-	Com_Printf("VM_Restart()\n");
+	Com_DPrintf("VM_Restart()\n");
 
 	if (vm->dllHandle) {
 		Sys_UnloadDll(vm->dllHandle);
@@ -869,7 +871,7 @@ intptr_t QDECL VM_Call(vm_t *vm, int callnum, ...) {
 	int i;
 
 	if (!vm || !vm->name[0]) {
-		Com_Error(ERR_FATAL, "VM_Call with NULL vm(callnum is %d)", callnum);
+		Com_Error(ERR_FATAL, "VM_Call with NULL vm (callnum is %d).", callnum);
 	}
 
 	oldVM = currentVM;
@@ -883,10 +885,10 @@ intptr_t QDECL VM_Call(vm_t *vm, int callnum, ...) {
 	++vm->callLevel;
 	// if we have a dll loaded, call it directly
 	if (vm->entryPoint) {
-		// rcg010207 - see dissertation at top of VM_DllSyscall() in this file.
+		// rcg010207 - see dissertation at top of VM_DllSyscall() in this file
 		int args[MAX_VMMAIN_ARGS - 1];
-
 		va_list ap;
+
 		va_start(ap, callnum);
 
 		for (i = 0; i < ARRAY_LEN(args); i++) {
@@ -1082,7 +1084,6 @@ void VM_VmProfile_f(void) {
 	}
 
 	Com_Printf("    %9.0f total\n", total);
-
 	Z_Free(sorted);
 }
 

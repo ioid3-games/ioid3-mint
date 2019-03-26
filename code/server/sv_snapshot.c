@@ -63,7 +63,7 @@ sharedPlayerState_t *SV_SnapshotPlayer(clientSnapshot_t *snap, int num) {
 	1	areaBytes
 	<areabytes>
 	1   number of player states
-	8	localPlayerIndex and playerNum for each of MAX_SPLITVIEW
+	8	localPlayerIndex and clientNum for each of MAX_SPLITVIEW
 	<playerstates>
 	<packetentities>
 
@@ -111,7 +111,7 @@ static void SV_EmitPacketEntities(clientSnapshot_t *from, clientSnapshot_t *to, 
 		}
 
 		if (newnum == oldnum) {
-			// delta update from old position because the force parm is qfalse, this will not result in any bytes being emited if the entity has not changed at all
+			// delta update from old position because the force parm is qfalse, this will not result in any bytes being emitted if the entity has not changed at all
 			MSG_WriteDeltaEntity(msg, oldent, newent, qfalse);
 			oldindex++;
 			newindex++;
@@ -176,10 +176,9 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 	}
 
 	MSG_WriteByte(msg, svc_snapshot);
-	// NOTE, MRE: now sent at the start of every message from server to client
+	// NOTE: now sent at the start of every message from server to client
 	// let the client know which reliable clientCommands we have received
 	//MSG_WriteLong(msg, client->lastClientCommand);
-
 	// send over the current server time so the client can drift its view of time to try to match
 	if (client->oldServerTime) {
 		// the server has not yet got an acknowledgement of the new gamestate from this client, so continue to send it
@@ -213,7 +212,7 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 
 	for (i = 0; i < MAX_SPLITVIEW; i++) {
 		MSG_WriteByte(msg, frame->localPlayerIndex[i]);
-		MSG_WriteByte(msg, frame->playerNums[i]);
+		MSG_WriteByte(msg, frame->clientNums[i]);
 		// send over the areabits
 		MSG_WriteByte(msg, frame->areabytes[i]);
 		MSG_WriteData(msg, frame->areabits[i], frame->areabytes[i]);
@@ -298,7 +297,7 @@ void SV_WriteBaselineToClient(client_t *client, msg_t *msg) {
 typedef struct {
 	int numSnapshotEntities;
 	int maxSnapshotEntities;
-	int snapshotEntities[MAX_SNAPSHOT_ENTITIES * MAX_SPLITVIEW];	
+	int snapshotEntities[MAX_SNAPSHOT_ENTITIES * MAX_SPLITVIEW];
 } snapshotEntityNumbers_t;
 
 /*
@@ -343,7 +342,7 @@ static void SV_AddEntToSnapshot(clientSnapshot_t *frame, svEntity_t *svEnt, shar
 	}
 	// check if game wants to send entity to one of these clients
 	for (i = 0; i < frame->numPSs; i++) {
-		if ((qboolean)VM_Call(gvm, GAME_SNAPSHOT_CALLBACK, gEnt->s.number, SV_SnapshotPlayer(frame, i)->playerNum)) {
+		if ((qboolean)VM_Call(gvm, GAME_SNAPSHOT_CALLBACK, gEnt->s.number, SV_SnapshotPlayer(frame, i)->clientNum)) {
 			break;
 		}
 	}
@@ -361,7 +360,7 @@ static void SV_AddEntToSnapshot(clientSnapshot_t *frame, svEntity_t *svEnt, shar
 SV_AddEntitiesVisibleFromPoint
 =======================================================================================================================================
 */
-static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t origin, clientSnapshot_t *frame, snapshotEntityNumbers_t *eNums, qboolean portal) {
+static void SV_AddEntitiesVisibleFromPoint(int psIndex, int clientNum, vec3_t origin, clientSnapshot_t *frame, snapshotEntityNumbers_t *eNums, qboolean portal) {
 	int e, i;
 	sharedEntity_t *ent;
 	svEntity_t *svEnt;
@@ -401,7 +400,7 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 		}
 		// entities can be flagged to be sent to a given mask of clients
 		if (ent->r.svFlags & SVF_PLAYERMASK) {
-			if (!Com_ClientListContains(&ent->r.sendPlayers, playerNum)) {
+			if (!Com_ClientListContains(&ent->r.sendPlayers, clientNum)) {
 				continue;
 			}
 		}
@@ -542,7 +541,7 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 				}
 			}
 
-			SV_AddEntitiesVisibleFromPoint(psIndex, playerNum, ent->s.origin2, frame, eNums, qtrue);
+			SV_AddEntitiesVisibleFromPoint(psIndex, clientNum, ent->s.origin2, frame, eNums, qtrue);
 		}
 	}
 }
@@ -564,7 +563,7 @@ static void SV_BuildClientSnapshot(client_t *client) {
 	int psIndex;
 	sharedEntityState_t *state;
 	svEntity_t *svEnt;
-	int playerNum;
+	int clientNum;
 	sharedPlayerState_t *ps;
 
 	// bump the counter used to prevent double adding
@@ -591,12 +590,12 @@ static void SV_BuildClientSnapshot(client_t *client) {
 	for (i = 0, frame->numPSs = 0; i < MAX_SPLITVIEW; i++) {
 		if (!client->localPlayers[i] || !client->localPlayers[i]->gentity) {
 			frame->localPlayerIndex[i] = -1;
-			frame->playerNums[i] = -1;
+			frame->clientNums[i] = -1;
 			continue;
 		}
 
-		frame->playerNums[i] = client->localPlayers[i] - svs.players;
-		ps = SV_GamePlayerNum(frame->playerNums[i]);
+		frame->clientNums[i] = client->localPlayers[i] - svs.players;
+		ps = SV_GamePlayerNum(frame->clientNums[i]);
 
 		DA_SetElement(&frame->playerStates, frame->numPSs, ps);
 
@@ -609,13 +608,13 @@ static void SV_BuildClientSnapshot(client_t *client) {
 	}
 	// never send player's own entity, because it can be regenerated from the playerstate
 	for (i = 0; i < frame->numPSs; i++) {
-		playerNum = SV_SnapshotPlayer(frame, i)->playerNum;
+		clientNum = SV_SnapshotPlayer(frame, i)->clientNum;
 
-		if (playerNum < 0 || playerNum >= MAX_GENTITIES) {
+		if (clientNum < 0 || clientNum >= MAX_GENTITIES) {
 			Com_Error(ERR_DROP, "SV_SvEntityForGentity: bad gEnt");
 		}
 
-		svEnt = &sv.svEntities[playerNum];
+		svEnt = &sv.svEntities[clientNum];
 		svEnt->snapshotCounter = sv.snapshotCounter;
 	}
 	// Now that local players have been marked as no send, add visible entities.
@@ -627,7 +626,7 @@ static void SV_BuildClientSnapshot(client_t *client) {
 		// allow MAX_SNAPSHOT_ENTITIES to be added for this view point
 		entityNumbers.maxSnapshotEntities = entityNumbers.numSnapshotEntities + MAX_SNAPSHOT_ENTITIES;
 		// add all the entities directly visible to the eye, which may include portal entities that merge other viewpoints
-		SV_AddEntitiesVisibleFromPoint(i, SV_SnapshotPlayer(frame, i)->playerNum, org, frame, &entityNumbers, qfalse);
+		SV_AddEntitiesVisibleFromPoint(i, SV_SnapshotPlayer(frame, i)->clientNum, org, frame, &entityNumbers, qfalse);
 	}
 	// if there were portals visible, there may be out of order entities in the list which will need to be resorted for the delta compression
 	// to work correctly. This also catches the error condition of an entity being included twice.
@@ -670,7 +669,7 @@ static void SV_WriteVoipToClient(client_t *cl, msg_t *msg) {
 	voipServerPacket_t *packet;
 
 	if (cl->queuedVoipPackets) {
-		// Write as many VoIP packets as we reasonably can...
+		// write as many VoIP packets as we reasonably can...
 		for (i = 0; i < cl->queuedVoipPackets; i++) {
 			packet = cl->voipPacket[(i + cl->queuedVoipIndex) % ARRAY_LEN(cl->voipPacket)];
 
@@ -738,13 +737,14 @@ void SV_SendClientSnapshot(client_t *client) {
 	MSG_Init(&msg, msg_buf, sizeof(msg_buf));
 
 	msg.allowoverflow = qtrue;
-	// NOTE, MRE: all server->client messages now acknowledge
+	// NOTE: all server->client messages now acknowledge
 	// let the client know which reliable clientCommands we have received
 	MSG_WriteLong(&msg, client->lastClientCommand);
 	// (re)send any reliable server commands
 	SV_UpdateServerCommandsToClient(client, &msg);
-	// client is awaiting gamestate(or downloading a pk3), hold off sending snapshot as it can't be loaded until after cgame is loaded
-	if (client->state != CS_ACTIVE) {
+	// if client is awaiting gamestate (or downloading a pk3), hold off sending snapshot as it can't be loaded until after cgame is loaded
+	// must send snapshot to kicked (zombie) clients for them to process disconnect
+	if (client->state != CS_ACTIVE && client->state != CS_ZOMBIE) {
 		client->needBaseline = qtrue;
 	} else {
 		// entities delta baseline
@@ -781,23 +781,23 @@ void SV_SendClientMessages(void) {
 			continue; // not connected
 		}
 
+		if (svs.time - c->lastSnapshotTime < c->snapshotMsec * com_timescale->value) {
+			continue; // it's not time yet
+		}
+
 		if (*c->downloadName) {
-			continue; // Client is downloading, don't send snapshots
+			continue; // client is downloading, don't send snapshots
 		}
 
 		if (c->netchan.unsentFragments || c->netchan_start_queue) {
 			c->rateDelayed = qtrue;
-			continue; // Drop this snapshot if the packet queue is still full or delta compression will break
+			continue; // drop this snapshot if the packet queue is still full or delta compression will break
 		}
 
 		if (!(c->netchan.remoteAddress.type == NA_LOOPBACK || (sv_lanForceRate->integer && Sys_IsLANAddress(c->netchan.remoteAddress)))) {
 			// rate control for clients not on LAN
-			if (svs.time - c->lastSnapshotTime < c->snapshotMsec * com_timescale->value) {
-				continue; // It's not time yet
-			}
-
 			if (SV_RateMsec(c) > 0) {
-				// Not enough time since last packet passed through the line
+				// not enough time since last packet passed through the line
 				c->rateDelayed = qtrue;
 				continue;
 			}

@@ -46,8 +46,8 @@ byte cmd_text_buf[MAX_CMD_BUFFER];
 =======================================================================================================================================
 Cmd_Wait_f
 
-Causes execution of the remainder of the command buffer to be delayed until next frame. This allows commands like:
-bind g "cmd use rocket; +attack; wait; -attack; cmd use blaster".
+Causes execution of the remainder of the command buffer to be delayed until next frame.
+This allows commands like: bind g "cmd use rocket; +attack; wait; -attack; cmd use blaster".
 =======================================================================================================================================
 */
 void Cmd_Wait_f(void) {
@@ -189,8 +189,8 @@ void Cbuf_Execute(void) {
 	char line[MAX_CMD_LINE];
 	int quotes;
 
-	// This will keep // style comments all on one line by not breaking on a semicolon. It will keep /* ... */ style comments all on
-	// one line by not breaking it for semicolon or newline.
+	// this will keep // style comments all on one line by not breaking on a semicolon. It will keep /* ... */ style comments all on
+	// one line by not breaking it for semicolon or newline
 	qboolean in_star_comment = qfalse;
 	qboolean in_slash_comment = qfalse;
 
@@ -217,8 +217,8 @@ void Cbuf_Execute(void) {
 						in_star_comment = qtrue;
 					} else if (in_star_comment && text[i] == '*' && text[i + 1] == '/') {
 						in_star_comment = qfalse;
-						// If we are in a star comment, then the part after it is valid
-						// Note: This will cause it to NUL out the terminating '/' but ExecuteString doesn't require it anyway.
+						// if we are in a star comment, then the part after it is valid
+						// NOTE: this will cause it to NULL out the terminating '/' but ExecuteString doesn't require it anyway
 						i++;
 						break;
 					}
@@ -249,6 +249,7 @@ void Cbuf_Execute(void) {
 		} else {
 			i++;
 			cmd_text.cursize -= i;
+
 			memmove(text, text + i, cmd_text.cursize);
 		}
 		// execute the command line
@@ -299,7 +300,6 @@ void Cmd_Exec_f(void) {
 	}
 
 	Cbuf_InsertText(f.c);
-
 	FS_FreeFile(f.v);
 }
 
@@ -319,6 +319,7 @@ void Cmd_Vstr_f(void) {
 	}
 
 	v = Cvar_VariableString(Cmd_Argv(1));
+
 	Cbuf_InsertText(va("%s\n", v));
 }
 
@@ -352,7 +353,7 @@ typedef struct cmdContext_s {
 	int argc;
 	char *argv[MAX_STRING_TOKENS]; // points into cmd.tokenized
 	char tokenized[BIG_INFO_STRING + MAX_STRING_TOKENS]; // will have 0 bytes inserted
-	char cmd[BIG_INFO_STRING]; // the original command we received(no token processing)
+	char cmd[BIG_INFO_STRING]; // the original command we received (no token processing)
 } cmdContext_t;
 
 static cmdContext_t cmd;
@@ -498,34 +499,6 @@ char *Cmd_Cmd(void) {
 }
 
 /*
-   Replace command separators with space to prevent interpretation
-   This is a hack to protect buggy qvms
-   https://bugzilla.icculus.org/show_bug.cgi?id=3593
-   https://bugzilla.icculus.org/show_bug.cgi?id=4769
-*/
-/*
-=======================================================================================================================================
-Cmd_Args_Sanitize
-=======================================================================================================================================
-*/
-void Cmd_Args_Sanitize(void) {
-	int i;
-
-	for (i = 1; i < cmd.argc; i++) {
-		char *c = cmd.argv[i];
-
-		if (strlen(c) > MAX_CVAR_VALUE_STRING - 1) {
-			c[MAX_CVAR_VALUE_STRING - 1] = '\0';
-		}
-
-		while ((c = strpbrk(c, "\n\r;"))) {
-			*c = ' ';
-			++c;
-		}
-	}
-}
-
-/*
 =======================================================================================================================================
 Cmd_TokenizeString2
 
@@ -589,7 +562,7 @@ static void Cmd_TokenizeString2(const char *text_in, qboolean ignoreQuotes) {
 			}
 		}
 		// handle quoted strings
-		// NOTE TTimo this doesn't handle \" escaping
+		// NOTE: this doesn't handle \" escaping
 		if (!ignoreQuotes && *text == '"') {
 			cmd.argv[cmd.argc] = textOut;
 			cmd.argc++;
@@ -673,10 +646,10 @@ cmd_function_t *Cmd_FindCommand(const char *cmd_name) {
 
 /*
 =======================================================================================================================================
-Cmd_AddCommand
+Cmd_AddCommandWithCompletion
 =======================================================================================================================================
 */
-void Cmd_AddCommand(const char *cmd_name, xcommand_t function) {
+void Cmd_AddCommandWithCompletion(const char *cmd_name, xcommand_t function, completionFunc_t complete) {
 	cmd_function_t *cmd;
 
 	// fail if the command already exists
@@ -688,9 +661,18 @@ void Cmd_AddCommand(const char *cmd_name, xcommand_t function) {
 	cmd = S_Malloc(sizeof(cmd_function_t));
 	cmd->name = CopyString(cmd_name);
 	cmd->function = function;
-	cmd->complete = NULL;
+	cmd->complete = complete;
 	cmd->next = cmd_functions;
 	cmd_functions = cmd;
+}
+
+/*
+=======================================================================================================================================
+Cmd_AddCommand
+=======================================================================================================================================
+*/
+void Cmd_AddCommand(const char *cmd_name, xcommand_t function) {
+	Cmd_AddCommandWithCompletion(cmd_name, function, NULL);
 }
 
 /*
@@ -700,14 +682,14 @@ Cmd_AddCommandSafe
 Only add command if there isn't a system cvar with the same name.
 =======================================================================================================================================
 */
-void Cmd_AddCommandSafe(const char *cmd_name, xcommand_t function) {
+void Cmd_AddCommandSafe(const char *cmd_name, xcommand_t function, completionFunc_t complete) {
 
 	if (!(Cvar_Flags(cmd_name)&(CVAR_NONEXISTENT|CVAR_VM_CREATED|CVAR_USER_CREATED))) {
 		Com_Error(ERR_DROP, "Restricted source tried to override system cvar \"%s\" with a command", cmd_name);
 		return;
 	}
 
-	Cmd_AddCommand(cmd_name, function);
+	Cmd_AddCommandWithCompletion(cmd_name, function, complete);
 }
 
 /*
@@ -747,10 +729,7 @@ void Cmd_RemoveCommand(const char *cmd_name) {
 		if (!strcmp(cmd_name, cmd->name)) {
 			*back = cmd->next;
 
-			if (cmd->name) {
-				Z_Free(cmd->name);
-			}
-
+			Z_Free(cmd->name);
 			Z_Free(cmd);
 			return;
 		}

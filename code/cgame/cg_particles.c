@@ -29,9 +29,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "cg_local.h"
 
 //#define WOLF_PARTICLES
-#define BLOODRED 2
-#define EMISIVEFADE 3
-#define GREY75 4
+#define BLOODRED	2
+#define EMISIVEFADE	3
+#define GREY75		4
 
 typedef struct particle_s {
 	struct particle_s *next;
@@ -196,7 +196,9 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 			if (p->type == P_BUBBLE || p->type == P_BUBBLE_TURBULENT) {
 				if (org[2] > p->end) {
 					p->time = cg.time;
+
 					VectorCopy(org, p->org); // fixes rare snow flakes that flicker on the ground
+
 					p->org[2] = (p->start + crandom() * 4);
 
 					if (p->type == P_BUBBLE_TURBULENT) {
@@ -207,6 +209,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 			} else {
 				if (org[2] < p->end) {
 					p->time = cg.time;
+
 					VectorCopy(org, p->org); // fixes rare snow flakes that flicker on the ground
 
 					while (p->org[2] < p->end) {
@@ -227,7 +230,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 			p->alpha = 1;
 		}
 		// had to do this or MAX_POLYS is being exceeded in village1.bsp
-		if (Distance(cg.cur_ps->origin, org) > 1024) {
+		if (Distance(cg.snap->ps.origin, org) > 1024) {
 			return;
 		}
 
@@ -313,12 +316,11 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		time = cg.time - p->time;
 		time2 = p->endtime - p->time;
 		ratio = time / time2;
-
 		width = p->width + (ratio * (p->endwidth - p->width));
 		height = p->height + (ratio * (p->endheight - p->height));
 
 		if (p->roll) {
-			vectoangles(cg.refdef.viewaxis[0], rotate_ang);
+			VectorToAngles(cg.refdef.viewaxis[0], rotate_ang);
 			rotate_ang[ROLL] += p->roll;
 			AngleVectors(rotate_ang, NULL, rr, ru);
 		}
@@ -381,7 +383,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		verts[3].modulate[2] = 255;
 		verts[3].modulate[3] = 255;
 	} else if (p->type == P_SMOKE || p->type == P_SMOKE_IMPACT) { // create a front rotating facing polygon
-		if (p->type == P_SMOKE_IMPACT && Distance(cg.cur_ps->origin, org) > 1024) {
+		if (p->type == P_SMOKE_IMPACT && Distance(cg.snap->ps.origin, org) > 1024) {
 			return;
 		}
 
@@ -392,7 +394,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 			float greyit;
 			float val;
 
-			len = Distance(cg.cur_ps->origin, org);
+			len = Distance(cg.snap->ps.origin, org);
 
 			if (!len) {
 				len = 1;
@@ -444,7 +446,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		if (p->type != P_SMOKE_IMPACT) {
 			vec3_t temp;
 
-			vectoangles(rforward, temp);
+			VectorToAngles(rforward, temp);
 			p->accumroll += p->roll;
 			temp[ROLL] += p->accumroll * 0.1;
 			AngleVectors(temp, NULL, rright2, rup2);
@@ -524,7 +526,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		alpha = p->alpha;
 
 		if (p->roll) {
-			vectoangles(cg.refdef.viewaxis[0], rotate_ang);
+			VectorToAngles(cg.refdef.viewaxis[0], rotate_ang);
 			rotate_ang[ROLL] += p->roll;
 			AngleVectors(rotate_ang, NULL, rr, ru);
 		} else {
@@ -583,7 +585,6 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		time = cg.time - p->time;
 		time2 = p->endtime - p->time;
 		ratio = time / time2;
-
 		width = p->width + (ratio * (p->endwidth - p->width));
 		height = p->height + (ratio * (p->endheight - p->height));
 
@@ -693,7 +694,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		width = p->width + (ratio * (p->endwidth - p->width));
 		height = p->height + (ratio * (p->endheight - p->height));
 		// if we are "inside" this sprite, don't draw
-		if (Distance(cg.cur_ps->origin, org) < width / 1.5) {
+		if (Distance(cg.snap->ps.origin, org) < width / 1.5) {
 			return;
 		}
 
@@ -702,7 +703,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		p->pshader = shaderAnims[i][j];
 
 		if (p->roll) {
-			vectoangles(cg.refdef.viewaxis[0], rotate_ang);
+			VectorToAngles(cg.refdef.viewaxis[0], rotate_ang);
 			rotate_ang[ROLL] += p->roll;
 			AngleVectors(rotate_ang, NULL, rr, ru);
 		}
@@ -767,8 +768,8 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 	}
 
 	if (!p->pshader) {
-	// temp commented out for DM
-//		CG_Printf("CG_AddParticleToScene type %d p->pshader == ZERO\n", p->type);
+		// temp commented out for DM
+		//CG_Printf("CG_AddParticleToScene type %d p->pshader == ZERO\n", p->type);
 		return;
 	}
 
@@ -781,7 +782,6 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 
 // made this static so it doesn't interfere with other files
 static float roll = 0.0;
-
 /*
 =======================================================================================================================================
 CG_AddParticles
@@ -802,10 +802,11 @@ void CG_AddParticles(void) {
 	VectorCopy(cg.refdef.viewaxis[0], vforward);
 	VectorCopy(cg.refdef.viewaxis[1], vright);
 	VectorCopy(cg.refdef.viewaxis[2], vup);
+	VectorToAngles(cg.refdef.viewaxis[0], rotate_ang);
 
-	vectoangles(cg.refdef.viewaxis[0], rotate_ang);
 	roll += ((cg.time - oldtime) * 0.1);
 	rotate_ang[ROLL] += (roll * 0.9);
+
 	AngleVectors(rotate_ang, rforward, rright, rup);
 
 	oldtime = cg.time;
@@ -913,9 +914,13 @@ void CG_ParticleSnowFlurry(qhandle_t pshader, centity_t *cent) {
 	}
 
 	p = free_particles;
+
 	free_particles = p->next;
+
 	p->next = active_particles;
+
 	active_particles = p;
+
 	p->time = cg.time;
 	p->color = 0;
 	p->alpha = 0.90f;
@@ -973,9 +978,13 @@ void CG_ParticleSnow(qhandle_t pshader, vec3_t origin, vec3_t origin2, int turb,
 	}
 
 	p = free_particles;
+
 	free_particles = p->next;
+
 	p->next = active_particles;
+
 	active_particles = p;
+
 	p->time = cg.time;
 	p->color = 0;
 	p->alpha = 0.40f;
@@ -1029,9 +1038,13 @@ void CG_ParticleBubble(qhandle_t pshader, vec3_t origin, vec3_t origin2, int tur
 	}
 
 	p = free_particles;
+
 	free_particles = p->next;
+
 	p->next = active_particles;
+
 	active_particles = p;
+
 	p->time = cg.time;
 	p->color = 0;
 	p->alpha = 0.40f;
@@ -1078,7 +1091,7 @@ CG_ParticleSmoke
 void CG_ParticleSmoke(qhandle_t pshader, centity_t *cent) {
 
 	// using cent->density = enttime
-	// cent->frame = startfade
+	//cent->frame = startfade
 	cparticle_t *p;
 
 	if (!pshader) {
@@ -1090,9 +1103,13 @@ void CG_ParticleSmoke(qhandle_t pshader, centity_t *cent) {
 	}
 
 	p = free_particles;
+
 	free_particles = p->next;
+
 	p->next = active_particles;
+
 	active_particles = p;
+
 	p->time = cg.time;
 	p->endtime = cg.time + cent->currentState.time;
 	p->startfade = cg.time + cent->currentState.time2;
@@ -1135,9 +1152,13 @@ void CG_ParticleBulletDebris(vec3_t org, vec3_t vel, int duration) {
 	}
 
 	p = free_particles;
+
 	free_particles = p->next;
+
 	p->next = active_particles;
+
 	active_particles = p;
+
 	p->time = cg.time;
 	p->endtime = cg.time + duration;
 	p->startfade = cg.time + duration / 2;
@@ -1190,9 +1211,13 @@ void CG_ParticleExplosion(char *animStr, vec3_t origin, vec3_t vel, int duration
 	}
 
 	p = free_particles;
+
 	free_particles = p->next;
+
 	p->next = active_particles;
+
 	active_particles = p;
+
 	p->time = cg.time;
 #ifdef WOLF_PARTICLES
 	p->alpha = 1.0;
@@ -1236,7 +1261,7 @@ CG_NewParticleArea
 =======================================================================================================================================
 */
 int CG_NewParticleArea(int num) {
-	// const char *str;
+	//const char *str;
 	char *str;
 	char *token;
 	int type;
@@ -1347,9 +1372,13 @@ void CG_ParticleImpactSmokePuff(qhandle_t pshader, vec3_t origin) {
 	}
 
 	p = free_particles;
+
 	free_particles = p->next;
+
 	p->next = active_particles;
+
 	active_particles = p;
+
 	p->time = cg.time;
 	p->alpha = 0.25;
 	p->alphavel = 0;
@@ -1583,13 +1612,13 @@ void CG_OilSlickRemove(centity_t *cent) {
 	}
 }
 
+#define EXTRUDE_DIST 0.5
 /*
 =======================================================================================================================================
 ValidBloodPool
 =======================================================================================================================================
 */
 qboolean ValidBloodPool(vec3_t start) {
-#define EXTRUDE_DIST 0.5
 	vec3_t angles;
 	vec3_t right, up;
 	vec3_t this_pos, x_pos, center_pos, end_pos;
@@ -1602,10 +1631,8 @@ qboolean ValidBloodPool(vec3_t start) {
 	fheight = 16;
 
 	VectorSet(normal, 0, 0, 1);
-
-	vectoangles(normal, angles);
+	VectorToAngles(normal, angles);
 	AngleVectors(angles, NULL, right, up);
-
 	VectorMA(start, EXTRUDE_DIST, normal, center_pos);
 
 	for (x = -fwidth / 2; x < fwidth; x += fwidth) {
@@ -1614,7 +1641,6 @@ qboolean ValidBloodPool(vec3_t start) {
 		for (y = -fheight / 2; y < fheight; y += fheight) {
 			VectorMA(x_pos, y, up, this_pos);
 			VectorMA(this_pos, -EXTRUDE_DIST * 2, normal, end_pos);
-
 			CG_Trace(&trace, this_pos, NULL, NULL, end_pos, -1, CONTENTS_SOLID);
 
 			if (trace.entityNum < ENTITYNUM_WORLD) { // may only land on world
@@ -1650,6 +1676,7 @@ void CG_BloodPool(localEntity_t *le, qhandle_t pshader, trace_t *tr) {
 	}
 
 	VectorCopy(tr->endpos, start);
+
 	legit = ValidBloodPool(start);
 
 	if (!legit) {
@@ -1657,9 +1684,13 @@ void CG_BloodPool(localEntity_t *le, qhandle_t pshader, trace_t *tr) {
 	}
 
 	p = free_particles;
+
 	free_particles = p->next;
+
 	p->next = active_particles;
+
 	active_particles = p;
+
 	p->time = cg.time;
 	p->endtime = cg.time + 3000;
 	p->startfade = p->endtime;
@@ -1692,7 +1723,6 @@ void CG_BloodPool(localEntity_t *le, qhandle_t pshader, trace_t *tr) {
 
 #define NORMALSIZE 16
 #define LARGESIZE 32
-
 /*
 =======================================================================================================================================
 CG_ParticleBloodCloud
@@ -1710,8 +1740,8 @@ void CG_ParticleBloodCloud(centity_t *cent, vec3_t origin, vec3_t dir) {
 	dist = 0;
 	length = VectorLength(dir);
 
-	vectoangles(dir, angles);
-	AngleVectors(angles, forward, NULL, NULL);
+	VectorToAngles(dir, angles);
+	AngleVectorsForward(angles, forward);
 
 	crittersize = LARGESIZE;
 
@@ -1833,9 +1863,11 @@ void CG_ParticleDust(centity_t *cent, vec3_t origin, vec3_t dir) {
 	dist = 0;
 
 	VectorNegate(dir, dir);
+
 	length = VectorLength(dir);
-	vectoangles(dir, angles);
-	AngleVectors(angles, forward, NULL, NULL);
+
+	VectorToAngles(dir, angles);
+	AngleVectorsForward(angles, forward);
 
 	crittersize = LARGESIZE;
 
@@ -1886,7 +1918,6 @@ void CG_ParticleDust(centity_t *cent, vec3_t origin, vec3_t dir) {
 		if (!length) {
 			p->width *= 0.2f;
 			p->height *= 0.2f;
-
 			p->endheight = NORMALSIZE;
 			p->endwidth = NORMALSIZE;
 		}

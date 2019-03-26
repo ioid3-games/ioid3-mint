@@ -203,8 +203,6 @@ int		max_polybuffers;
 */
 static void InitOpenGL( void )
 {
-	char renderer_buffer[1024];
-
 	//
 	// initialize OS specific portions of the renderer
 	//
@@ -220,10 +218,7 @@ static void InitOpenGL( void )
 	{
 		GLint		temp;
 		
-		GLimp_Init( qfalse );
-
-		strcpy( renderer_buffer, glConfig.renderer_string );
-		Q_strlwr( renderer_buffer );
+		GLimp_Init( qtrue );
 
 		// OpenGL driver constants
 		qglGetIntegerv( GL_MAX_TEXTURE_SIZE, &temp );
@@ -999,7 +994,21 @@ void GfxInfo_f( void )
 	ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
 	ri.Printf( PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
 	ri.Printf( PRINT_ALL, "GL_EXTENSIONS: " );
-	R_PrintLongString( glConfig.extensions_string );
+	if ( qglGetStringi )
+	{
+		GLint numExtensions;
+		int i;
+
+		qglGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
+		for ( i = 0; i < numExtensions; i++ )
+		{
+			ri.Printf( PRINT_ALL, "%s ", qglGetStringi( GL_EXTENSIONS, i ) );
+		}
+	}
+	else
+	{
+		R_PrintLongString( glConfig.extensions_string );
+	}
 	ri.Printf( PRINT_ALL, "\n" );
 	ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
 	ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_UNITS_ARB: %d\n", glConfig.numTextureUnits );
@@ -1122,7 +1131,7 @@ void R_Register( void )
 	r_greyscale = ri.Cvar_Get("r_greyscale", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	ri.Cvar_CheckRange(r_greyscale, 0, 1, qfalse);
 	r_dlightImageSize = ri.Cvar_Get( "r_dlightImageSize", "128", CVAR_ARCHIVE | CVAR_LATCH);
-	ri.Cvar_CheckRange(r_dlightImageSize, 16, 128, qfalse);
+	ri.Cvar_CheckRange(r_dlightImageSize, 16, 128, qtrue);
 
 	//
 	// temporary latched variables that can only change over a restart
@@ -1191,7 +1200,8 @@ void R_Register( void )
 	r_nocurves = ri.Cvar_Get ("r_nocurves", "0", CVAR_CHEAT );
 	r_drawworld = ri.Cvar_Get ("r_drawworld", "1", CVAR_CHEAT );
 	r_drawfoliage = ri.Cvar_Get( "r_drawfoliage", "1", CVAR_CHEAT );
-	r_lightmap = ri.Cvar_Get ("r_lightmap", "0", 0 );
+	r_lightmap = ri.Cvar_Get ("r_lightmap", "0", CVAR_CHEAT | CVAR_LATCH );
+	ri.Cvar_CheckRange(r_lightmap, 0, 3, qtrue);
 	r_portalOnly = ri.Cvar_Get ("r_portalOnly", "0", CVAR_CHEAT );
 
 	r_flareSize = ri.Cvar_Get ("r_flareSize", "40", CVAR_CHEAT);

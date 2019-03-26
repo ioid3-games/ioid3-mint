@@ -113,7 +113,7 @@ void CMod_LoadSubmodels(void) {
 	for (i = 0; i < count; i++, in++) {
 		out = &cm.cmodels[i];
 
-		for (j = 0; j < 3; j++) { // spread the mins / maxs by a pixel
+		for (j = 0; j < 3; j++) { // spread the mins/maxs by a pixel
 			out->mins[j] = LittleFloat(in->mins[j]) - 1;
 			out->maxs[j] = LittleFloat(in->maxs[j]) + 1;
 		}
@@ -892,7 +892,7 @@ cmodel_t *CM_ClipHandleToModel(clipHandle_t handle) {
 		return &box_model;
 	}
 
-	Com_Error(ERR_DROP, "CM_ClipHandleToModel: bad handle %i(max %d)", handle, cm.numSubModels);
+	Com_Error(ERR_DROP, "CM_ClipHandleToModel: bad handle %i (max %d)", handle, cm.numSubModels);
 	return NULL;
 }
 
@@ -1009,11 +1009,11 @@ void CM_InitBoxHull(void) {
 	box_brush = &cm.brushes[cm.numBrushes];
 	box_brush->numsides = 6;
 	box_brush->sides = cm.brushsides + cm.numBrushSides;
-	box_brush->contents = 0; // Will be set to CONTENTS_SOLID, CONTENTS_BODY, etc.
+	box_brush->contents = 0; // will be set to CONTENTS_SOLID, CONTENTS_BODY, etc.
 	box_brush->edges = (cbrushedge_t *)Hunk_Alloc(sizeof(cbrushedge_t) * 12, h_low);
 	box_brush->numEdges = 12;
 	box_model.leaf.numLeafBrushes = 1;
-//	box_model.leaf.firstLeafBrush = cm.numBrushes;
+	//box_model.leaf.firstLeafBrush = cm.numBrushes;
 	box_model.leaf.firstLeafBrush = cm.numLeafBrushes;
 
 	cm.leafbrushes[cm.numLeafBrushes] = cm.numBrushes;

@@ -1,19 +1,26 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com)
-Copyright (C) 2005-2006 Joerg Dietrich <dietrich_joerg@gmx.de>
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com).
+Copyright (C) 2005-2006 Joerg Dietrich <dietrich_joerg@gmx.de>.
 
-This file is part of Quake III Arena source code.
+This file is part of Spearmint Source Code.
 
-Quake III Arena source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
-License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Quake III Arena source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Quake III Arena source code; if not, write to the Free
-Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
+
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
+
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -63,7 +70,7 @@ int S_OggOpus_Callback_read(void *datasource, unsigned char *ptr, int size) {
 	}
 
 	if (!size) {
-		// It's not an error, caller just wants zero bytes!
+		// it's not an error, caller just wants zero bytes!
 		errno = 0;
 		return 0;
 	}
@@ -205,7 +212,6 @@ S_OggOpus_CodecOpenStream
 */
 snd_stream_t *S_OggOpus_CodecOpenStream(const char *filename) {
 	snd_stream_t *stream;
-
 	// Opus codec control structure
 	OggOpusFile *of;
 	// some variables used to get informations about the file
@@ -216,7 +222,7 @@ snd_stream_t *S_OggOpus_CodecOpenStream(const char *filename) {
 	if (!filename) {
 		return NULL;
 	}
-	// Open the stream
+	// open the stream
 	stream = S_CodecUtilOpen(filename, &opus_codec);
 
 	if (!stream) {
@@ -266,9 +272,9 @@ snd_stream_t *S_OggOpus_CodecOpenStream(const char *filename) {
 	stream->info.samples = numSamples;
 	stream->info.size = stream->info.samples * stream->info.channels * stream->info.width;
 	stream->info.dataofs = 0;
-	// We use stream->pos for the file pointer in the compressed ogg file
+	// we use stream->pos for the file pointer in the compressed ogg file
 	stream->pos = 0;
-	// We use the generic pointer in stream for the opus codec control structure
+	// we use the generic pointer in stream for the opus codec control structure
 	stream->ptr = of;
 
 	return stream;
@@ -384,6 +390,7 @@ void *S_OggOpus_CodecLoad(const char *filename, snd_info_t *info) {
 	}
 
 	S_OggOpus_CodecCloseStream(stream);
+
 	return buffer;
 }
 #endif // USE_CODEC_OPUS

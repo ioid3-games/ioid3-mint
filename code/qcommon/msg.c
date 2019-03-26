@@ -169,7 +169,7 @@ void MSG_WriteBits(msg_t *msg, int value, int bits) {
 	}
 
 	if (msg->oob) {
-		if (msg->cursize + (bits >> 3 ) > msg->maxsize) {
+		if (msg->cursize + (bits >> 3) > msg->maxsize) {
 			msg->overflowed = qtrue;
 			return;
 		}
@@ -275,7 +275,7 @@ int MSG_ReadBits(msg_t *msg, int bits) {
 			msg->readcount += 4;
 			msg->bit += 32;
 		} else {
-			Com_Error(ERR_DROP, "can't read %d bits", bits);
+			Com_Error(ERR_DROP, "Can't read %d bits.", bits);
 		}
 	} else {
 		nbits = 0;
@@ -301,7 +301,7 @@ int MSG_ReadBits(msg_t *msg, int bits) {
 			for (i = 0; i < bits; i += 8) {
 				Huff_offsetReceive(msgHuff.decompressor.tree, &get, msg->data, &msg->bit, msg->cursize << 3);
 //				fwrite(&get, 1, 1, fp);
-				value |= (get << (i + nbits));
+				value = (unsigned int)value|((unsigned int)get << (i + nbits));
 
 				if (msg->bit > msg->cursize << 3) {
 					msg->readcount = msg->cursize + 1;
@@ -425,7 +425,7 @@ void MSG_WriteString(msg_t *sb, const char *s) {
 		l = strlen(s);
 
 		if (l >= MAX_STRING_CHARS) {
-			Com_Printf("MSG_WriteString: MAX_STRING_CHARS");
+			Com_Printf("MSG_WriteString: MAX_STRING_CHARS size reached.\n");
 			MSG_WriteData(sb, "", 1);
 			return;
 		}
@@ -452,7 +452,7 @@ void MSG_WriteBigString(msg_t *sb, const char *s) {
 		l = strlen(s);
 
 		if (l >= BIG_INFO_STRING) {
-			Com_Printf("MSG_WriteString: BIG_INFO_STRING");
+			Com_Printf("MSG_WriteBigString: BIG_INFO_STRING size reached.\n");
 			MSG_WriteData(sb, "", 1);
 			return;
 		}
@@ -492,6 +492,8 @@ void MSG_WriteAngle16(msg_t *sb, float f) {
 /*
 =======================================================================================================================================
 MSG_ReadChar
+
+Returns -1 if no more characters are available.
 =======================================================================================================================================
 */
 int MSG_ReadChar(msg_t *msg) {
@@ -609,12 +611,15 @@ char *MSG_ReadString(msg_t *msg) {
 		if (c == -1 || c == 0) {
 			break;
 		}
+		// break only after reading all expected data from bitstream
+		if (l >= sizeof(string) - 1) {
+			break;
+		}
 
-		string[l] = c;
-		l++;
-	} while (l < sizeof(string) - 1);
+		string[l++] = c;
+	} while (1);
 
-	string[l] = 0;
+	string[l] = '\0';
 
 	return string;
 }
@@ -636,12 +641,15 @@ char *MSG_ReadBigString(msg_t *msg) {
 		if (c == -1 || c == 0) {
 			break;
 		}
+		// break only after reading all expected data from bitstream
+		if (l >= sizeof(string) - 1) {
+			break;
+		}
 
-		string[l] = c;
-		l++;
-	} while (l < sizeof(string) - 1);
+		string[l++] = c;
+	} while (1);
 
-	string[l] = 0;
+	string[l] = '\0';
 
 	return string;
 }
@@ -663,12 +671,15 @@ char *MSG_ReadStringLine(msg_t *msg) {
 		if (c == -1 || c == 0 || c == '\n') {
 			break;
 		}
+		// break only after reading all expected data from bitstream
+		if (l >= sizeof(string) - 1) {
+			break;
+		}
 
-		string[l] = c;
-		l++;
-	} while (l < sizeof(string) - 1);
+		string[l++] = c;
+	} while (1);
 
-	string[l] = 0;
+	string[l] = '\0';
 
 	return string;
 }
@@ -719,83 +730,9 @@ int MSG_HashKey(const char *string, int maxlen) {
 	return hash;
 }
 
-/*
-=======================================================================================================================================
-
-	Delta functions.
-
-=======================================================================================================================================
-*/
-
 extern cvar_t *cl_shownet;
 
 #define LOG(x) if (cl_shownet && cl_shownet->integer == 4) {Com_Printf("%s ", x);};
-
-/*
-=======================================================================================================================================
-MSG_WriteDelta
-=======================================================================================================================================
-*/
-void MSG_WriteDelta(msg_t *msg, int oldV, int newV, int bits) {
-
-	if (oldV == newV) {
-		MSG_WriteBits(msg, 0, 1);
-		return;
-	}
-
-	MSG_WriteBits(msg, 1, 1);
-	MSG_WriteBits(msg, newV, bits);
-}
-
-/*
-=======================================================================================================================================
-MSG_ReadDelta
-=======================================================================================================================================
-*/
-int MSG_ReadDelta(msg_t *msg, int oldV, int bits) {
-
-	if (MSG_ReadBits(msg, 1)) {
-		return MSG_ReadBits(msg, bits);
-	}
-
-	return oldV;
-}
-
-/*
-=======================================================================================================================================
-MSG_WriteDeltaFloat
-=======================================================================================================================================
-*/
-void MSG_WriteDeltaFloat(msg_t *msg, float oldV, float newV) {
-	floatint_t fi;
-
-	if (oldV == newV) {
-		MSG_WriteBits(msg, 0, 1);
-		return;
-	}
-
-	fi.f = newV;
-
-	MSG_WriteBits(msg, 1, 1);
-	MSG_WriteBits(msg, fi.i, 32);
-}
-
-/*
-=======================================================================================================================================
-MSG_ReadDeltaFloat
-=======================================================================================================================================
-*/
-float MSG_ReadDeltaFloat(msg_t *msg, float oldV) {
-
-	if (MSG_ReadBits(msg, 1)) {
-		floatint_t fi;
-
-		fi.i = MSG_ReadBits(msg, 32);
-		return fi.f;
-	}
-
-	return oldV;
-}
 
 /*
 =======================================================================================================================================
@@ -943,7 +880,7 @@ void MSG_ReadDeltaUsercmdKey(msg_t *msg, int key, usercmd_t *from, usercmd_t *to
 		to->angles[1] = MSG_ReadDeltaKey(msg, key, from->angles[1], 16);
 		to->angles[2] = MSG_ReadDeltaKey(msg, key, from->angles[2], 16);
 		to->forwardmove = MSG_ReadDeltaKey(msg, key, from->forwardmove, 8);
-
+		// disallow moves of -128 (speedhack)
 		if (to->forwardmove == -128) {
 			to->forwardmove = -127;
 		}
@@ -1641,7 +1578,7 @@ void MSG_ReadDeltaPlayerstate(msg_t *msg, sharedPlayerState_t *from, sharedPlaye
 
 	MSG_ReadDeltaNetFields(msg, from, to, &msg_playerStateFields, lc, startBit, print);
 }
-
+// predefined set of nodes for Huffman compression
 int msg_hData[256] = {
 	250315,	// 0
 	41193,	// 1

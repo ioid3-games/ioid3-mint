@@ -21,13 +21,17 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-// This file must be identical in the quake and utils directories
 
-// contents flags are seperate bits
-// a given brush can contribute multiple content bits
+/**************************************************************************************************************************************
+ This file must be identical in the Quake and utils directories!
+ Contents flags are separate bits. A given brush can contribute multiple content bits.
+**************************************************************************************************************************************/
 
-// these definitions also need to be in q_shared.h!
+/*
+=======================================================================================================================================
+	CONTENTS
+=======================================================================================================================================
+*/
 
 #define CONTENTS_SOLID			1		// an eye is never valid in a solid
 #define CONTENTS_LAVA			8

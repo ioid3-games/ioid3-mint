@@ -25,28 +25,27 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "g_local.h"
 #include "../botlib/botlib.h"
 #include "../botlib/be_aas.h"
-#include "ai_char.h"
-#include "ai_chat_sys.h"
-#include "ai_ea.h"
-#include "ai_gen.h"
-#include "ai_goal.h"
-#include "ai_move.h"
-#include "ai_weap.h"
-#include "ai_weight.h"
+#include "../botlib/be_ea.h"
+#include "../botlib/be_ai_char.h"
+#include "../botlib/be_ai_chat.h"
+#include "../botlib/be_ai_gen.h"
+#include "../botlib/be_ai_goal.h"
+#include "../botlib/be_ai_move.h"
+#include "../botlib/be_ai_weap.h"
+#include "../botlib/be_ai_weight.h"
 #include "ai_main.h"
 #include "ai_dmq3.h"
 #include "ai_chat.h"
 #include "ai_cmd.h"
-#include "ai_vcmd.h"
 #include "ai_dmnet.h"
 #include "ai_team.h"
+#include "ai_vcmd.h"
 #include "chars.h" // characteristics
 #include "inv.h" // indexes into the inventory
 #include "syn.h" // synonyms
 #include "match.h" // string matching types and vars
-// for the voice chats
-#include "../../ui/menudef.h"
-// ctf task preferences for a player
+#include "../../ui/menudef.h" // for the voice chats
+// ctf task preferences for a client
 typedef struct bot_ctftaskpreference_s {
 	char name[36];
 	int preference;
@@ -65,7 +64,7 @@ int BotValidTeamLeader(bot_state_t *bs) {
 		return qfalse;
 	}
 
-	if (PlayerFromName(bs->teamleader) == -1) {
+	if (ClientFromName(bs->teamleader) == -1) {
 		return qfalse;
 	}
 
@@ -83,7 +82,7 @@ int BotNumTeamMates(bot_state_t *bs) {
 
 	numplayers = 0;
 
-	for (i = 0; i < level.maxplayers; i++) {
+	for (i = 0; i < level.maxclients; i++) {
 		trap_GetConfigstring(CS_PLAYERS + i, buf, sizeof(buf));
 		// if no config string or no name
 		if (!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) {
@@ -93,7 +92,7 @@ int BotNumTeamMates(bot_state_t *bs) {
 		if (atoi(Info_ValueForKey(buf, "t")) == TEAM_SPECTATOR) {
 			continue;
 		}
-
+		// if on the same team
 		if (BotSameTeam(bs, i)) {
 			numplayers++;
 		}
@@ -104,14 +103,14 @@ int BotNumTeamMates(bot_state_t *bs) {
 
 /*
 =======================================================================================================================================
-BotPlayerTravelTimeToGoal
+BotClientTravelTimeToGoal
 =======================================================================================================================================
 */
-int BotPlayerTravelTimeToGoal(int playernum, bot_goal_t *goal) {
+int BotClientTravelTimeToGoal(int client, bot_goal_t *goal) {
 	playerState_t ps;
 	int areanum;
 
-	if (BotAI_GetPlayerState(playernum, &ps)) {
+	if (BotAI_GetClientState(client, &ps)) {
 		areanum = BotPointAreaNum(ps.origin);
 	} else {
 		areanum = 0;
@@ -134,30 +133,24 @@ int BotSortTeamMatesByBaseTravelTime(bot_state_t *bs, int *teammates, int maxtea
 	char buf[MAX_INFO_STRING];
 	int traveltimes[MAX_CLIENTS];
 	bot_goal_t *goal = NULL;
-#ifdef MISSIONPACK
-	if (gametype == GT_CTF || gametype == GT_1FCTF)
-#else
-	if (gametype == GT_CTF)
-#endif
-	{
+
+	if (gametype == GT_CTF || gametype == GT_1FCTF) {
 		if (BotTeam(bs) == TEAM_RED) {
 			goal = &ctf_redflag;
 		} else {
 			goal = &ctf_blueflag;
 		}
-	}
-#ifdef MISSIONPACK
-	else if (gametype == GT_OBELISK || gametype == GT_HARVESTER) {
-		if (BotTeam(bs) == TEAM_RED)
+	} else if (gametype == GT_OBELISK || gametype == GT_HARVESTER) {
+		if (BotTeam(bs) == TEAM_RED) {
 			goal = &redobelisk;
 		} else {
 			goal = &blueobelisk;
 		}
 	}
-#endif
+
 	numteammates = 0;
 
-	for (i = 0; i < level.maxplayers; i++) {
+	for (i = 0; i < level.maxclients; i++) {
 		trap_GetConfigstring(CS_PLAYERS + i, buf, sizeof(buf));
 		// if no config string or no name
 		if (!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) {
@@ -167,9 +160,9 @@ int BotSortTeamMatesByBaseTravelTime(bot_state_t *bs, int *teammates, int maxtea
 		if (atoi(Info_ValueForKey(buf, "t")) == TEAM_SPECTATOR) {
 			continue;
 		}
-
+		// if on the same team
 		if (BotSameTeam(bs, i) && goal) {
-			traveltime = BotPlayerTravelTimeToGoal(i, goal);
+			traveltime = BotClientTravelTimeToGoal(i, goal);
 
 			for (j = 0; j < numteammates; j++) {
 				if (traveltime < traveltimes[j]) {
@@ -204,7 +197,7 @@ void BotSetTeamMateTaskPreference(bot_state_t *bs, int teammate, int preference)
 	char teammatename[MAX_NETNAME];
 
 	ctftaskpreferences[teammate].preference = preference;
-	PlayerName(teammate, teammatename, sizeof(teammatename));
+	ClientName(teammate, teammatename, sizeof(teammatename));
 	strcpy(ctftaskpreferences[teammate].name, teammatename);
 }
 
@@ -220,7 +213,7 @@ int BotGetTeamMateTaskPreference(bot_state_t *bs, int teammate) {
 		return 0;
 	}
 
-	PlayerName(teammate, teammatename, sizeof(teammatename));
+	ClientName(teammate, teammatename, sizeof(teammatename));
 
 	if (Q_stricmp(teammatename, ctftaskpreferences[teammate].name)) {
 		return 0;
@@ -272,20 +265,20 @@ int BotSortTeamMatesByTaskPreference(bot_state_t *bs, int *teammates, int numtea
 BotSayTeamOrderAlways
 =======================================================================================================================================
 */
-void BotSayTeamOrderAlways(bot_state_t *bs, int toPlayer) {
+void BotSayTeamOrderAlways(bot_state_t *bs, int toclient) {
 	char teamchat[MAX_MESSAGE_SIZE];
 	char buf[MAX_MESSAGE_SIZE];
 	char name[MAX_NETNAME];
 
 	// if the bot is talking to itself
-	if (bs->playernum == toPlayer) {
+	if (bs->client == toclient) {
 		// don't show the message just put it in the console message queue
-		BotGetChatMessage(bs->cs, buf, sizeof(buf));
-		PlayerName(bs->playernum, name, sizeof(name));
+		trap_BotGetChatMessage(bs->cs, buf, sizeof(buf));
+		ClientName(bs->client, name, sizeof(name));
 		Com_sprintf(teamchat, sizeof(teamchat), EC"(%s"EC")"EC": %s", name, buf);
-		BotQueueConsoleMessage(bs->cs, CMS_CHAT, teamchat);
+		trap_BotQueueConsoleMessage(bs->cs, CMS_CHAT, teamchat);
 	} else {
-		BotEnterChat(bs->cs, toPlayer, CHAT_TELL);
+		trap_BotEnterChat(bs->cs, toclient, CHAT_TELL);
 	}
 }
 
@@ -294,15 +287,11 @@ void BotSayTeamOrderAlways(bot_state_t *bs, int toPlayer) {
 BotSayTeamOrder
 =======================================================================================================================================
 */
-void BotSayTeamOrder(bot_state_t *bs, int toPlayer) {
-#ifdef MISSIONPACK
+void BotSayTeamOrder(bot_state_t *bs, int toclient) {
 	// voice chats only
 	char buf[MAX_MESSAGE_SIZE];
 
-	BotGetChatMessage(bs->cs, buf, sizeof(buf));
-#else
-	BotSayTeamOrderAlways(bs, toPlayer);
-#endif
+	trap_BotGetChatMessage(bs->cs, buf, sizeof(buf));
 }
 
 /*
@@ -310,16 +299,15 @@ void BotSayTeamOrder(bot_state_t *bs, int toPlayer) {
 BotVoiceChat
 =======================================================================================================================================
 */
-void BotVoiceChat(bot_state_t *bs, int toPlayer, char *voicechat) {
-#ifdef MISSIONPACK
-	if (toPlayer == -1) {
+void BotVoiceChat(bot_state_t *bs, int toclient, char *voicechat) {
+
+	if (toclient == -1) {
 		// voice only say team
-		EA_Command(bs->playernum, va("vsay_team %s", voicechat));
+		trap_EA_Command(bs->client, va("vsay_team %s", voicechat));
 	} else {
 		// voice only tell single player
-		EA_Command(bs->playernum, va("vtell %d %s", toPlayer, voicechat));
+		trap_EA_Command(bs->client, va("vtell %d %s", toclient, voicechat));
 	}
-#endif
 }
 
 /*
@@ -327,16 +315,15 @@ void BotVoiceChat(bot_state_t *bs, int toPlayer, char *voicechat) {
 BotVoiceChatOnly
 =======================================================================================================================================
 */
-void BotVoiceChatOnly(bot_state_t *bs, int toPlayer, char *voicechat) {
-#ifdef MISSIONPACK
-	if (toPlayer == -1) {
+void BotVoiceChatOnly(bot_state_t *bs, int toclient, char *voicechat) {
+
+	if (toclient == -1) {
 		// voice only say team
-		EA_Command(bs->playernum, va("vosay_team %s", voicechat));
+		trap_EA_Command(bs->client, va("vosay_team %s", voicechat));
 	} else {
 		// voice only tell single player
-		EA_Command(bs->playernum, va("votell %d %s", toPlayer, voicechat));
+		trap_EA_Command(bs->client, va("votell %d %s", toclient, voicechat));
 	}
-#endif
 }
 
 /*
@@ -344,11 +331,1128 @@ void BotVoiceChatOnly(bot_state_t *bs, int toPlayer, char *voicechat) {
 BotSayVoiceTeamOrder
 =======================================================================================================================================
 */
-void BotSayVoiceTeamOrder(bot_state_t *bs, int toPlayer, char *voicechat) {
-#ifdef MISSIONPACK
-	BotVoiceChat(bs, toPlayer, voicechat);
-#endif
+void BotSayVoiceTeamOrder(bot_state_t *bs, int toclient, char *voicechat) {
+	BotVoiceChat(bs, toclient, voicechat);
 }
+
+/*
+=======================================================================================================================================
+
+	HARVESTER
+
+=======================================================================================================================================
+*/
+
+/*
+=======================================================================================================================================
+BotHarvesterOrders
+
+X% defend the base, Y% harvest.
+=======================================================================================================================================
+*/
+void BotHarvesterOrders(bot_state_t *bs) {
+	int numteammates, defenders, attackers, i;
+	int teammates[MAX_CLIENTS] = {0};
+	char name[MAX_NETNAME];
+
+	// sort team mates by travel time to base
+	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
+	// sort team mates by CTF preference
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	// passive strategy
+	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the other will harvest
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
+				break;
+			}
+			case 3:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the one second closest to the base also defends the base
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
+				// the other one goes harvesting
+				ClientName(teammates[2], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
+				BotSayTeamOrder(bs, teammates[2]);
+				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_OFFENSE);
+				break;
+			}
+			default:
+			{
+				// 50% defend the base
+				defenders = (int)(float)numteammates * 0.5 + 0.5;
+
+				if (defenders > 5) {
+					defenders = 5;
+				}
+				// 40% goes harvesting
+				attackers = (int)(float)numteammates * 0.4 + 0.5;
+
+				if (attackers > 4) {
+					attackers = 4;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				for (i = 0; i < attackers; i++) {
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
+					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
+				}
+
+				break;
+			}
+		}
+	} else {
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the other will harvest
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
+				break;
+			}
+			case 3:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the others go harvesting
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
+
+				ClientName(teammates[2], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
+				BotSayTeamOrder(bs, teammates[2]);
+				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_OFFENSE);
+				break;
+			}
+			default:
+			{
+				// 30% defend the base
+				defenders = (int)(float)numteammates * 0.3 + 0.5;
+
+				if (defenders > 3) {
+					defenders = 3;
+				}
+				// 70% go harvesting
+				attackers = (int)(float)numteammates * 0.7 + 0.5;
+
+				if (attackers > 7) {
+					attackers = 7;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				for (i = 0; i < attackers; i++) {
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
+					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
+				}
+
+				break;
+			}
+		}
+	}
+}
+
+/*
+=======================================================================================================================================
+
+	OBELISK
+
+=======================================================================================================================================
+*/
+
+/*
+=======================================================================================================================================
+BotObeliskOrders
+
+X% in defence Y% in offence.
+=======================================================================================================================================
+*/
+void BotObeliskOrders(bot_state_t *bs) {
+	int numteammates, defenders, attackers, i;
+	int teammates[MAX_CLIENTS];
+	char name[MAX_NETNAME];
+
+	// sort team mates by travel time to base
+	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
+	// sort team mates by CTF preference
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	// passive strategy
+	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the other will attack the enemy base
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
+				break;
+			}
+			case 3:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the one second closest to the base also defends the base
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
+				// the other one attacks the enemy base
+				ClientName(teammates[2], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
+				BotSayTeamOrder(bs, teammates[2]);
+				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_OFFENSE);
+				break;
+			}
+			default:
+			{
+				// 50% defend the base
+				defenders = (int)(float)numteammates * 0.5 + 0.5;
+
+				if (defenders > 5) {
+					defenders = 5;
+				}
+				// 40% attack the enemy base
+				attackers = (int)(float)numteammates * 0.4 + 0.5;
+
+				if (attackers > 4) {
+					attackers = 4;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				for (i = 0; i < attackers; i++) {
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
+					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
+				}
+
+				break;
+			}
+		}
+	} else {
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the other will attack the enemy base
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
+				break;
+			}
+			case 3:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the others attack the enemy base
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
+
+				ClientName(teammates[2], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
+				BotSayTeamOrder(bs, teammates[2]);
+				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_OFFENSE);
+				break;
+			}
+			default:
+			{
+				// 30% defend the base
+				defenders = (int)(float)numteammates * 0.3 + 0.5;
+
+				if (defenders > 3) {
+					defenders = 3;
+				}
+				// 70% attack the enemy base
+				attackers = (int)(float)numteammates * 0.7 + 0.5;
+
+				if (attackers > 7) {
+					attackers = 7;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				for (i = 0; i < attackers; i++) {
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
+					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
+				}
+
+				break;
+			}
+		}
+	}
+}
+
+/*
+=======================================================================================================================================
+
+	ONEFLAG CTF
+
+=======================================================================================================================================
+*/
+
+/*
+=======================================================================================================================================
+Bot1FCTFOrders_FlagAtCenter
+
+X% defend the base, Y% get the flag.
+=======================================================================================================================================
+*/
+void Bot1FCTFOrders_FlagAtCenter(bot_state_t *bs) {
+	int numteammates, defenders, attackers, i;
+	int teammates[MAX_CLIENTS];
+	char name[MAX_NETNAME];
+
+	// sort team mates by travel time to base
+	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
+	// sort team mates by CTF preference
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	// passive strategy
+	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the other will get the flag
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
+				break;
+			}
+			case 3:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the second one closest to the base will defend the base
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the other will get the flag
+				ClientName(teammates[2], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[2]);
+				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
+				break;
+			}
+			default:
+			{
+				// 50% defend the base
+				defenders = (int)(float)numteammates * 0.5 + 0.5;
+
+				if (defenders > 5) {
+					defenders = 5;
+				}
+				// 40% get the flag
+				attackers = (int)(float)numteammates * 0.4 + 0.5;
+
+				if (attackers > 4) {
+					attackers = 4;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				for (i = 0; i < attackers; i++) {
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
+				}
+
+				break;
+			}
+		}
+	} else { // aggressive
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the other will get the flag
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
+				break;
+			}
+			case 3:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the others should go for the enemy flag
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
+
+				ClientName(teammates[2], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[2]);
+				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
+				break;
+			}
+			default:
+			{
+				// 30% defend the base
+				defenders = (int)(float)numteammates * 0.3 + 0.5;
+
+				if (defenders > 3) {
+					defenders = 3;
+				}
+				// 60% get the flag
+				attackers = (int)(float)numteammates * 0.6 + 0.5;
+
+				if (attackers > 6) {
+					attackers = 6;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				for (i = 0; i < attackers; i++) {
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
+				}
+
+				break;
+			}
+		}
+	}
+}
+
+/*
+=======================================================================================================================================
+Bot1FCTFOrders_TeamHasFlag
+
+X% towards neutral flag, Y% go towards enemy base and accompany flag carrier if visible.
+=======================================================================================================================================
+*/
+void Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs) {
+	int numteammates, defenders, attackers, i, other;
+	int teammates[MAX_CLIENTS];
+	char name[MAX_NETNAME], carriername[MAX_NETNAME];
+
+	// sort team mates by travel time to base
+	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
+	// sort team mates by CTF preference
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	// passive strategy
+	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// tell the one not carrying the flag to defend the base
+				if (teammates[0] != bs->flagcarrier) {
+					other = teammates[0];
+				} else {
+					other = teammates[1];
+				}
+
+				ClientName(other, name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, other);
+				BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
+				break;
+			}
+			case 3:
+			{
+				// tell the one closest to the base not carrying the flag to defend the base
+				if (teammates[0] != bs->flagcarrier) {
+					other = teammates[0];
+				} else {
+					other = teammates[1];
+				}
+
+				ClientName(other, name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, other);
+				BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
+				// tell the one furthest from the base not carrying the flag to accompany the flag carrier
+				if (teammates[2] != bs->flagcarrier) {
+					other = teammates[2];
+				} else {
+					other = teammates[1];
+				}
+
+				ClientName(other, name, sizeof(name));
+
+				if (bs->flagcarrier != -1) {
+					ClientName(bs->flagcarrier, carriername, sizeof(carriername));
+
+					if (bs->flagcarrier == bs->client) {
+						BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
+						BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWME);
+					} else {
+						BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
+						BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWFLAGCARRIER);
+					}
+				} else {
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
+				}
+
+				BotSayTeamOrder(bs, other);
+				break;
+			}
+			default:
+			{
+				// 30% will defend the base
+				defenders = (int)(float)numteammates * 0.3 + 0.5;
+
+				if (defenders > 3) {
+					defenders = 3;
+				}
+				// 70% accompanies the flag carrier
+				attackers = (int)(float)numteammates * 0.7 + 0.5;
+
+				if (attackers > 7) {
+					attackers = 7;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					if (teammates[i] == bs->flagcarrier) {
+						continue;
+					}
+
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				if (bs->flagcarrier != -1) {
+					ClientName(bs->flagcarrier, carriername, sizeof(carriername));
+
+					for (i = 0; i < attackers; i++) {
+						if (teammates[numteammates - i - 1] == bs->flagcarrier) {
+							continue;
+						}
+
+						ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+
+						if (bs->flagcarrier == bs->client) {
+							BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
+							BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_FOLLOWME);
+						} else {
+							BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
+							BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_FOLLOWFLAGCARRIER);
+						}
+
+						BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					}
+				} else {
+					for (i = 0; i < attackers; i++) {
+						if (teammates[numteammates - i - 1] == bs->flagcarrier) {
+							continue;
+						}
+
+						ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+						BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+						BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+						BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
+					}
+				}
+
+				break;
+			}
+		}
+	} else { // aggressive
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// tell the one not carrying the flag to attack the enemy base
+				if (teammates[0] != bs->flagcarrier) {
+					other = teammates[0];
+				} else {
+					other = teammates[1];
+				}
+
+				ClientName(other, name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
+				BotSayTeamOrder(bs, other);
+				BotSayVoiceTeamOrder(bs, other, VOICECHAT_OFFENSE);
+				break;
+			}
+			case 3:
+			{
+				// tell the one closest to the base not carrying the flag to defend the base
+				if (teammates[0] != bs->flagcarrier) {
+					other = teammates[0];
+				} else {
+					other = teammates[1];
+				}
+
+				ClientName(other, name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, other);
+				BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
+				// tell the one furthest from the base not carrying the flag to accompany the flag carrier
+				if (teammates[2] != bs->flagcarrier) {
+					other = teammates[2];
+				} else {
+					other = teammates[1];
+				}
+
+				ClientName(other, name, sizeof(name));
+
+				if (bs->flagcarrier != -1) {
+					ClientName(bs->flagcarrier, carriername, sizeof(carriername));
+
+					if (bs->flagcarrier == bs->client) {
+						BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
+						BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWME);
+					} else {
+						BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
+						BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWFLAGCARRIER);
+					}
+				} else {
+					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+					BotSayVoiceTeamOrder(bs, other, VOICECHAT_GETFLAG);
+				}
+
+				BotSayTeamOrder(bs, other);
+				break;
+			}
+			default:
+			{
+				// 20% will defend the base
+				defenders = (int)(float)numteammates * 0.2 + 0.5;
+
+				if (defenders > 2) {
+					defenders = 2;
+				}
+				// 80% accompanies the flag carrier
+				attackers = (int)(float)numteammates * 0.8 + 0.5;
+
+				if (attackers > 8) {
+					attackers = 8;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					if (teammates[i] == bs->flagcarrier) {
+						continue;
+					}
+
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				if (bs->flagcarrier != -1) {
+					ClientName(bs->flagcarrier, carriername, sizeof(carriername));
+
+					for (i = 0; i < attackers; i++) {
+						if (teammates[numteammates - i - 1] == bs->flagcarrier) {
+							continue;
+						}
+
+						ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+
+						if (bs->flagcarrier == bs->client) {
+							BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
+							BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_FOLLOWME);
+						} else {
+							BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
+							BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_FOLLOWFLAGCARRIER);
+						}
+
+						BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					}
+				} else {
+					for (i = 0; i < attackers; i++) {
+						if (teammates[numteammates - i - 1] == bs->flagcarrier) {
+							continue;
+						}
+
+						ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+						BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+						BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+						BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
+					}
+				}
+
+				break;
+			}
+		}
+	}
+}
+
+/*
+=======================================================================================================================================
+Bot1FCTFOrders_EnemyHasFlag
+
+X% defend the base, Y% towards neutral flag.
+=======================================================================================================================================
+*/
+void Bot1FCTFOrders_EnemyHasFlag(bot_state_t *bs) {
+	int numteammates, defenders, attackers, i;
+	int teammates[MAX_CLIENTS];
+	char name[MAX_NETNAME];
+
+	// sort team mates by travel time to base
+	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
+	// sort team mates by CTF preference
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	// passive strategy
+	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// both defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
+				break;
+			}
+			case 3:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the second one closest to the base will defend the base
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
+				// the other will also defend the base
+				ClientName(teammates[2], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[2]);
+				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_DEFEND);
+				break;
+			}
+			default:
+			{
+				// 80% will defend the base
+				defenders = (int)(float)numteammates * 0.8 + 0.5;
+
+				if (defenders > 8) {
+					defenders = 8;
+				}
+				// 10% will try to return the flag
+				attackers = (int)(float)numteammates * 0.1 + 0.5;
+
+				if (attackers > 1) {
+					attackers = 1;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				for (i = 0; i < attackers; i++) {
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
+					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
+				}
+
+				break;
+			}
+		}
+	} else { // aggressive
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the other will get the flag
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
+				break;
+			}
+			case 3:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the others should go for the enemy flag
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
+
+				ClientName(teammates[2], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[2]);
+				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
+				break;
+			}
+			default:
+			{
+				// 70% defend the base
+				defenders = (int)(float)numteammates * 0.7 + 0.5;
+
+				if (defenders > 7) {
+					defenders = 7;
+				}
+				// 20% try to return the flag
+				attackers = (int)(float)numteammates * 0.2 + 0.5;
+
+				if (attackers > 2) {
+					attackers = 2;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				for (i = 0; i < attackers; i++) {
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
+					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
+				}
+
+				break;
+			}
+		}
+	}
+}
+
+/*
+=======================================================================================================================================
+Bot1FCTFOrders_EnemyDroppedFlag
+
+X% defend the base, Y% get the flag.
+=======================================================================================================================================
+*/
+void Bot1FCTFOrders_EnemyDroppedFlag(bot_state_t *bs) {
+	int numteammates, defenders, attackers, i;
+	int teammates[MAX_CLIENTS];
+	char name[MAX_NETNAME];
+
+	// sort team mates by travel time to base
+	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
+	// sort team mates by CTF preference
+	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
+	// passive strategy
+	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the other will get the flag
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
+				break;
+			}
+			case 3:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the second one closest to the base will defend the base
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
+				// the other will get the flag
+				ClientName(teammates[2], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[2]);
+				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
+				break;
+			}
+			default:
+			{
+				// 50% defend the base
+				defenders = (int)(float)numteammates * 0.5 + 0.5;
+
+				if (defenders > 5) {
+					defenders = 5;
+				}
+				// 40% get the flag
+				attackers = (int)(float)numteammates * 0.4 + 0.5;
+
+				if (attackers > 4) {
+					attackers = 4;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				for (i = 0; i < attackers; i++) {
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
+				}
+
+				break;
+			}
+		}
+	} else { // aggressive
+		// different orders based on the number of team mates
+		switch (numteammates) {
+			case 1:
+				break;
+			case 2:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the other will get the flag
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
+				break;
+			}
+			case 3:
+			{
+				// the one closest to the base will defend the base
+				ClientName(teammates[0], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+				BotSayTeamOrder(bs, teammates[0]);
+				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
+				// the others should go for the enemy flag
+				ClientName(teammates[1], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[1]);
+				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
+
+				ClientName(teammates[2], name, sizeof(name));
+				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+				BotSayTeamOrder(bs, teammates[2]);
+				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
+				break;
+			}
+			default:
+			{
+				// 30% defend the base
+				defenders = (int)(float)numteammates * 0.3 + 0.5;
+
+				if (defenders > 3) {
+					defenders = 3;
+				}
+				// 60% get the flag
+				attackers = (int)(float)numteammates * 0.6 + 0.5;
+
+				if (attackers > 6) {
+					attackers = 6;
+				}
+
+				for (i = 0; i < defenders; i++) {
+					ClientName(teammates[i], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
+					BotSayTeamOrder(bs, teammates[i]);
+					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
+				}
+
+				for (i = 0; i < attackers; i++) {
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
+					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
+					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
+					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
+				}
+
+				break;
+			}
+		}
+	}
+}
+
+/*
+=======================================================================================================================================
+Bot1FCTFOrders
+=======================================================================================================================================
+*/
+void Bot1FCTFOrders(bot_state_t *bs) {
+
+	switch (bs->neutralflagstatus) {
+		case 0:
+			Bot1FCTFOrders_FlagAtCenter(bs);
+			break;
+		case 1:
+			Bot1FCTFOrders_TeamHasFlag(bs);
+			break;
+		case 2:
+			Bot1FCTFOrders_EnemyHasFlag(bs);
+			break;
+		case 3:
+			Bot1FCTFOrders_EnemyDroppedFlag(bs);
+			break;
+	}
+}
+
+/*
+=======================================================================================================================================
+
+	CAPTURE THE FLAG
+
+=======================================================================================================================================
+*/
 
 /*
 =======================================================================================================================================
@@ -360,7 +1464,9 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS] = {0};
 	char name[MAX_NETNAME], carriername[MAX_NETNAME];
 
+	// sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
+	// sort team mates by CTF preference
 	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	// different orders based on the number of team mates
 	switch (numteammates) {
@@ -375,7 +1481,7 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 				other = teammates[1];
 			}
 
-			PlayerName(other, name, sizeof(name));
+			ClientName(other, name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, other);
 			BotSayVoiceTeamOrder(bs, other, VOICECHAT_GETFLAG);
@@ -390,12 +1496,12 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 				other = teammates[1];
 			}
 
-			PlayerName(other, name, sizeof(name));
+			ClientName(other, name, sizeof(name));
 
 			if (bs->flagcarrier != -1) {
-				PlayerName(bs->flagcarrier, carriername, sizeof(carriername));
+				ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 
-				if (bs->flagcarrier == bs->playernum) {
+				if (bs->flagcarrier == bs->client) {
 					BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
 					BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWME);
 				} else {
@@ -415,7 +1521,7 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 				other = teammates[1];
 			}
 
-			PlayerName(other, name, sizeof(name));
+			ClientName(other, name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 			BotSayTeamOrder(bs, other);
 			BotSayVoiceTeamOrder(bs, other, VOICECHAT_RETURNFLAG);
@@ -436,16 +1542,16 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 			}
 
 			if (bs->flagcarrier != -1) {
-				PlayerName(bs->flagcarrier, carriername, sizeof(carriername));
+				ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 
 				for (i = 0; i < defenders; i++) {
 					if (teammates[i] == bs->flagcarrier) {
 						continue;
 					}
 
-					PlayerName(teammates[i], name, sizeof(name));
+					ClientName(teammates[i], name, sizeof(name));
 
-					if (bs->flagcarrier == bs->playernum) {
+					if (bs->flagcarrier == bs->client) {
 						BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
 						BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_FOLLOWME);
 					} else {
@@ -461,7 +1567,7 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 						continue;
 					}
 
-					PlayerName(teammates[i], name, sizeof(name));
+					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
 					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_GETFLAG);
@@ -473,7 +1579,7 @@ void BotCTFOrders_BothFlagsNotAtBase(bot_state_t *bs) {
 					continue;
 				}
 
-				PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
+				ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 				BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_RETURNFLAG);
@@ -494,7 +1600,9 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME];
 
+	// sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
+	// sort team mates by CTF preference
 	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	// passive strategy
 	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
@@ -505,11 +1613,11 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 			case 2:
 			{
 				// keep one near the base for when the flag is returned
-				PlayerName(teammates[0], name, sizeof(name));
+				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				PlayerName(teammates[1], name, sizeof(name));
+				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
@@ -518,16 +1626,16 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 			case 3:
 			{
 				// keep one near the base for when the flag is returned
-				PlayerName(teammates[0], name, sizeof(name));
+				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
 				// the other two get the flag
-				PlayerName(teammates[1], name, sizeof(name));
+				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-				PlayerName(teammates[2], name, sizeof(name));
+				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
 				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
@@ -549,14 +1657,14 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 				}
 
 				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
+					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
 					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 				}
 
 				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
@@ -573,11 +1681,12 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 			case 2:
 			{
 				// both will go for the enemy flag
-				PlayerName(teammates[0], name, sizeof(name));
+				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_GETFLAG);
-				PlayerName(teammates[1], name, sizeof(name));
+
+				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
@@ -586,15 +1695,17 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 			case 3:
 			{
 				// everyone go for the flag
-				PlayerName(teammates[0], name, sizeof(name));
+				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_GETFLAG);
-				PlayerName(teammates[1], name, sizeof(name));
+
+				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-				PlayerName(teammates[2], name, sizeof(name));
+
+				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
 				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
@@ -616,14 +1727,14 @@ void BotCTFOrders_TeamFlagNotAtBase(bot_state_t *bs) {
 				}
 
 				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
+					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
 					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 				}
 
 				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
@@ -645,7 +1756,9 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 	int teammates[MAX_CLIENTS];
 	char name[MAX_NETNAME], carriername[MAX_NETNAME];
 
+	// sort team mates by travel time to base
 	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
+	// sort team mates by CTF preference
 	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
 	// different orders based on the number of team mates
 	switch (numteammates) {
@@ -660,7 +1773,7 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 				other = teammates[1];
 			}
 
-			PlayerName(other, name, sizeof(name));
+			ClientName(other, name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, other);
 			BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
@@ -675,7 +1788,7 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 				other = teammates[1];
 			}
 
-			PlayerName(other, name, sizeof(name));
+			ClientName(other, name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, other);
 			BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
@@ -686,7 +1799,7 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 				other = teammates[1];
 			}
 
-			PlayerName(other, name, sizeof(name));
+			ClientName(other, name, sizeof(name));
 			BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 			BotSayTeamOrder(bs, other);
 			BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
@@ -712,23 +1825,23 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 					continue;
 				}
 
-				PlayerName(teammates[i], name, sizeof(name));
+				ClientName(teammates[i], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[i]);
 				BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 			}
 			// if we have a flag carrier
 			if (bs->flagcarrier != -1) {
-				PlayerName(bs->flagcarrier, carriername, sizeof(carriername));
+				ClientName(bs->flagcarrier, carriername, sizeof(carriername));
 
 				for (i = 0; i < attackers; i++) {
 					if (teammates[numteammates - i - 1] == bs->flagcarrier) {
 						continue;
 					}
 
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 
-					if (bs->flagcarrier == bs->playernum) {
+					if (bs->flagcarrier == bs->client) {
 						BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
 						BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_FOLLOWME);
 					} else {
@@ -744,7 +1857,7 @@ void BotCTFOrders_EnemyFlagNotAtBase(bot_state_t *bs) {
 						continue;
 					}
 
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
@@ -779,12 +1892,12 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs) {
 			case 2:
 			{
 				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
+				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
 				// the other will get the flag
-				PlayerName(teammates[1], name, sizeof(name));
+				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
@@ -793,17 +1906,17 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs) {
 			case 3:
 			{
 				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
+				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
 				// the second one closest to the base will defend the base
-				PlayerName(teammates[1], name, sizeof(name));
+				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
 				// the other will get the flag
-				PlayerName(teammates[2], name, sizeof(name));
+				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
 				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
@@ -824,14 +1937,14 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs) {
 				}
 
 				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
+					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
 					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 				}
 
 				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
@@ -848,12 +1961,12 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs) {
 			case 2:
 			{
 				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
+				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
 				// the other will get the flag
-				PlayerName(teammates[1], name, sizeof(name));
+				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
@@ -862,17 +1975,17 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs) {
 			case 3:
 			{
 				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
+				ClientName(teammates[0], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 				BotSayTeamOrder(bs, teammates[0]);
 				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
 				// the others should go for the enemy flag
-				PlayerName(teammates[1], name, sizeof(name));
+				ClientName(teammates[1], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[1]);
 				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
 
-				PlayerName(teammates[2], name, sizeof(name));
+				ClientName(teammates[2], name, sizeof(name));
 				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 				BotSayTeamOrder(bs, teammates[2]);
 				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
@@ -893,14 +2006,14 @@ void BotCTFOrders_BothFlagsAtBase(bot_state_t *bs) {
 				}
 
 				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
+					ClientName(teammates[i], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
 					BotSayTeamOrder(bs, teammates[i]);
 					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
 				}
 
 				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
+					ClientName(teammates[numteammates - i - 1], name, sizeof(name));
 					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
 					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
 					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
@@ -944,6 +2057,14 @@ void BotCTFOrders(bot_state_t *bs) {
 
 /*
 =======================================================================================================================================
+
+	TEAM DEATHMATCH
+
+=======================================================================================================================================
+*/
+
+/*
+=======================================================================================================================================
 BotCreateGroup
 =======================================================================================================================================
 */
@@ -952,12 +2073,12 @@ void BotCreateGroup(bot_state_t *bs, int *teammates, int groupsize) {
 	int i;
 
 	// the others in the group will follow the teammates[0]
-	PlayerName(teammates[0], leadername, sizeof(leadername));
+	ClientName(teammates[0], leadername, sizeof(leadername));
 
 	for (i = 1; i < groupsize; i++) {
-		PlayerName(teammates[i], name, sizeof(name));
+		ClientName(teammates[i], name, sizeof(name));
 
-		if (teammates[0] == bs->playernum) {
+		if (teammates[0] == bs->client) {
 			BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
 		} else {
 			BotAI_BotInitialChat(bs, "cmd_accompany", name, leadername, NULL);
@@ -981,7 +2102,7 @@ void BotTeamOrders(bot_state_t *bs) {
 
 	numteammates = 0;
 
-	for (i = 0; i < level.maxplayers; i++) {
+	for (i = 0; i < level.maxclients; i++) {
 		trap_GetConfigstring(CS_PLAYERS + i, buf, sizeof(buf));
 		// if no config string or no name
 		if (!strlen(buf) || !strlen(Info_ValueForKey(buf, "n"))) {
@@ -991,7 +2112,7 @@ void BotTeamOrders(bot_state_t *bs) {
 		if (atoi(Info_ValueForKey(buf, "t")) == TEAM_SPECTATOR) {
 			continue;
 		}
-
+		// if on the same team
 		if (BotSameTeam(bs, i)) {
 			teammates[numteammates] = i;
 			numteammates++;
@@ -1036,1096 +2157,15 @@ void BotTeamOrders(bot_state_t *bs) {
 		}
 	}
 }
-#ifdef MISSIONPACK
-/*
-=======================================================================================================================================
-Bot1FCTFOrders_FlagAtCenter
-
-X% defend the base, Y% get the flag.
-=======================================================================================================================================
-*/
-void Bot1FCTFOrders_FlagAtCenter(bot_state_t *bs) {
-	int numteammates, defenders, attackers, i;
-	int teammates[MAX_CLIENTS];
-	char name[MAX_NETNAME];
-
-	// sort team mates by travel time to base
-	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	// sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
-	// passive strategy
-	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the other will get the flag
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-				break;
-			}
-
-			case 3:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the second one closest to the base will defend the base
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the other will get the flag
-				PlayerName(teammates[2], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[2]);
-				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
-				break;
-			}
-			default:
-			{
-				// 50% defend the base
-				defenders = (int)(float)numteammates * 0.5 + 0.5;
-
-				if (defenders > 5) {
-					defenders = 5;
-				}
-				// 40% get the flag
-				attackers = (int)(float)numteammates * 0.4 + 0.5;
-
-				if (attackers > 4) {
-					attackers = 4;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
-				}
-
-				break;
-			}
-		}
-	} else { // aggressive
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the other will get the flag
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-				break;
-			}
-			case 3:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the others should go for the enemy flag
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-
-				PlayerName(teammates[2], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[2]);
-				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
-				break;
-			}
-			default:
-			{
-				// 30% defend the base
-				defenders = (int)(float)numteammates * 0.3 + 0.5;
-
-				if (defenders > 3) {
-					defenders = 3;
-				}
-				// 60% get the flag
-				attackers = (int)(float)numteammates * 0.6 + 0.5;
-
-				if (attackers > 6) {
-					attackers = 6;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
-				}
-
-				break;
-			}
-		}
-	}
-}
 
 /*
 =======================================================================================================================================
-Bot1FCTFOrders_TeamHasFlag
 
-X% towards neutral flag, Y% go towards enemy base and accompany flag carrier if visible.
+	TEAM AI
+
 =======================================================================================================================================
 */
-void Bot1FCTFOrders_TeamHasFlag(bot_state_t *bs) {
-	int numteammates, defenders, attackers, i, other;
-	int teammates[MAX_CLIENTS];
-	char name[MAX_NETNAME], carriername[MAX_NETNAME];
 
-	// sort team mates by travel time to base
-	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	// sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
-	// passive strategy
-	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// tell the one not carrying the flag to defend the base
-				if (teammates[0] != bs->flagcarrier) {
-					other = teammates[0];
-				} else {
-					other = teammates[1];
-				}
-
-				PlayerName(other, name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, other);
-				BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
-				break;
-			}
-			case 3:
-			{
-				// tell the one closest to the base not carrying the flag to defend the base
-				if (teammates[0] != bs->flagcarrier) {
-					other = teammates[0];
-				} else {
-					other = teammates[1];
-				}
-
-				PlayerName(other, name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, other);
-				BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
-				// tell the one furthest from the base not carrying the flag to accompany the flag carrier
-				if (teammates[2] != bs->flagcarrier) {
-					other = teammates[2];
-				} else {
-					other = teammates[1];
-				}
-
-				PlayerName(other, name, sizeof(name));
-
-				if (bs->flagcarrier != -1) {
-					PlayerName(bs->flagcarrier, carriername, sizeof(carriername));
-
-					if (bs->flagcarrier == bs->playernum) {
-						BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
-						BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWME);
-					} else {
-						BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
-						BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWFLAGCARRIER);
-					}
-				} else {
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
-				}
-
-				BotSayTeamOrder(bs, other);
-				break;
-			}
-			default:
-			{
-				// 30% will defend the base
-				defenders = (int)(float)numteammates * 0.3 + 0.5;
-
-				if (defenders > 3) {
-					defenders = 3;
-				}
-				// 70% accompanies the flag carrier
-				attackers = (int)(float)numteammates * 0.7 + 0.5;
-
-				if (attackers > 7) {
-					attackers = 7;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					if (teammates[i] == bs->flagcarrier) {
-						continue;
-					}
-
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				if (bs->flagcarrier != -1) {
-					PlayerName(bs->flagcarrier, carriername, sizeof(carriername));
-
-					for (i = 0; i < attackers; i++) {
-						if (teammates[numteammates - i - 1] == bs->flagcarrier) {
-							continue;
-						}
-
-						PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-
-						if (bs->flagcarrier == bs->playernum) {
-							BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
-							BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_FOLLOWME);
-						} else {
-							BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
-							BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_FOLLOWFLAGCARRIER);
-						}
-
-						BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					}
-				} else {
-					for (i = 0; i < attackers; i++) {
-						if (teammates[numteammates - i - 1] == bs->flagcarrier) {
-							continue;
-						}
-
-						PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-						BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-						BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-						BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
-					}
-				}
-
-				break;
-			}
-		}
-	} else { // aggressive
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// tell the one not carrying the flag to attack the enemy base
-				if (teammates[0] != bs->flagcarrier) {
-					other = teammates[0];
-				} else {
-					other = teammates[1];
-				}
-
-				PlayerName(other, name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
-				BotSayTeamOrder(bs, other);
-				BotSayVoiceTeamOrder(bs, other, VOICECHAT_OFFENSE);
-				break;
-			}
-			case 3:
-			{
-				// tell the one closest to the base not carrying the flag to defend the base
-				if (teammates[0] != bs->flagcarrier) {
-					other = teammates[0];
-				} else {
-					other = teammates[1];
-				}
-
-				PlayerName(other, name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, other);
-				BotSayVoiceTeamOrder(bs, other, VOICECHAT_DEFEND);
-				// tell the one furthest from the base not carrying the flag to accompany the flag carrier
-				if (teammates[2] != bs->flagcarrier) {
-					other = teammates[2];
-				} else {
-					other = teammates[1];
-				}
-
-				PlayerName(other, name, sizeof(name));
-
-				if (bs->flagcarrier != -1) {
-					PlayerName(bs->flagcarrier, carriername, sizeof(carriername));
-
-					if (bs->flagcarrier == bs->playernum) {
-						BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
-						BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWME);
-					} else {
-						BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
-						BotSayVoiceTeamOrder(bs, other, VOICECHAT_FOLLOWFLAGCARRIER);
-					}
-				} else {
-					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-					BotSayVoiceTeamOrder(bs, other, VOICECHAT_GETFLAG);
-				}
-
-				BotSayTeamOrder(bs, other);
-				break;
-			}
-			default:
-			{
-				// 20% will defend the base
-				defenders = (int)(float)numteammates * 0.2 + 0.5;
-
-				if (defenders > 2) {
-					defenders = 2;
-				}
-				// 80% accompanies the flag carrier
-				attackers = (int)(float)numteammates * 0.8 + 0.5;
-
-				if (attackers > 8) {
-					attackers = 8;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					if (teammates[i] == bs->flagcarrier) {
-						continue;
-					}
-
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				if (bs->flagcarrier != -1) {
-					PlayerName(bs->flagcarrier, carriername, sizeof(carriername));
-
-					for (i = 0; i < attackers; i++) {
-						if (teammates[numteammates - i - 1] == bs->flagcarrier) {
-							continue;
-						}
-
-						PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-
-						if (bs->flagcarrier == bs->playernum) {
-							BotAI_BotInitialChat(bs, "cmd_accompanyme", name, NULL);
-							BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_FOLLOWME);
-						} else {
-							BotAI_BotInitialChat(bs, "cmd_accompany", name, carriername, NULL);
-							BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_FOLLOWFLAGCARRIER);
-						}
-
-						BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					}
-				} else {
-					for (i = 0; i < attackers; i++) {
-						if (teammates[numteammates - i - 1] == bs->flagcarrier) {
-							continue;
-						}
-
-						PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-						BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-						BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-						BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
-					}
-				}
-
-				break;
-			}
-		}
-	}
-}
-
-/*
-=======================================================================================================================================
-Bot1FCTFOrders_EnemyHasFlag
-
-X% defend the base, Y% towards neutral flag.
-=======================================================================================================================================
-*/
-void Bot1FCTFOrders_EnemyHasFlag(bot_state_t *bs) {
-	int numteammates, defenders, attackers, i;
-	int teammates[MAX_CLIENTS];
-	char name[MAX_NETNAME];
-
-	// sort team mates by travel time to base
-	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	// sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
-	// passive strategy
-	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// both defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
-				break;
-			}
-			case 3:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the second one closest to the base will defend the base
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
-				// the other will also defend the base
-				PlayerName(teammates[2], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[2]);
-				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_DEFEND);
-				break;
-			}
-			default:
-			{
-				// 80% will defend the base
-				defenders = (int)(float)numteammates * 0.8 + 0.5;
-
-				if (defenders > 8) {
-					defenders = 8;
-				}
-				// 10% will try to return the flag
-				attackers = (int)(float)numteammates * 0.1 + 0.5;
-
-				if (attackers > 1) {
-					attackers = 1;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
-					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
-				}
-
-				break;
-			}
-		}
-	} else { // aggressive
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the other will get the flag
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
-				break;
-			}
-			case 3:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the others should go for the enemy flag
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
-
-				PlayerName(teammates[2], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[2]);
-				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
-				break;
-			}
-			default:
-			{
-				// 70% defend the base
-				defenders = (int)(float)numteammates * 0.7 + 0.5;
-
-				if (defenders > 7) {
-					defenders = 7;
-				}
-				// 20% try to return the flag
-				attackers = (int)(float)numteammates * 0.2 + 0.5;
-
-				if (attackers > 2) {
-					attackers = 2;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_returnflag", name, NULL);
-					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
-				}
-
-				break;
-			}
-		}
-	}
-}
-
-/*
-=======================================================================================================================================
-Bot1FCTFOrders_EnemyDroppedFlag
-
-X% defend the base, Y% get the flag.
-=======================================================================================================================================
-*/
-void Bot1FCTFOrders_EnemyDroppedFlag(bot_state_t *bs) {
-	int numteammates, defenders, attackers, i;
-	int teammates[MAX_CLIENTS];
-	char name[MAX_NETNAME];
-
-	// sort team mates by travel time to base
-	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	// sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
-	// passive strategy
-	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the other will get the flag
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-				break;
-			}
-			case 3:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the second one closest to the base will defend the base
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
-				// the other will get the flag
-				PlayerName(teammates[2], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[2]);
-				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
-				break;
-			}
-			default:
-			{
-				// 50% defend the base
-				defenders = (int)(float)numteammates * 0.5 + 0.5;
-
-				if (defenders > 5) {
-					defenders = 5;
-				}
-				// 40% get the flag
-				attackers = (int)(float)numteammates * 0.4 + 0.5;
-
-				if (attackers > 4) {
-					attackers = 4;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
-				}
-
-				break;
-			}
-		}
-	} else { // aggressive
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the other will get the flag
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-				break;
-			}
-			case 3:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the others should go for the enemy flag
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_GETFLAG);
-
-				PlayerName(teammates[2], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-				BotSayTeamOrder(bs, teammates[2]);
-				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_GETFLAG);
-				break;
-			}
-			default:
-			{
-				// 30% defend the base
-				defenders = (int)(float)numteammates * 0.3 + 0.5;
-
-				if (defenders > 3) {
-					defenders = 3;
-				}
-				// 60% get the flag
-				attackers = (int)(float)numteammates * 0.6 + 0.5;
-
-				if (attackers > 6) {
-					attackers = 6;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_getflag", name, NULL);
-					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_GETFLAG);
-				}
-
-				break;
-			}
-		}
-	}
-}
-
-/*
-=======================================================================================================================================
-Bot1FCTFOrders
-=======================================================================================================================================
-*/
-void Bot1FCTFOrders(bot_state_t *bs) {
-
-	switch (bs->neutralflagstatus) {
-		case 0:
-			Bot1FCTFOrders_FlagAtCenter(bs);
-			break;
-		case 1:
-			Bot1FCTFOrders_TeamHasFlag(bs);
-			break;
-		case 2:
-			Bot1FCTFOrders_EnemyHasFlag(bs);
-			break;
-		case 3:
-			Bot1FCTFOrders_EnemyDroppedFlag(bs);
-			break;
-	}
-}
-
-/*
-=======================================================================================================================================
-BotObeliskOrders
-
-X% in defence Y% in offence.
-=======================================================================================================================================
-*/
-void BotObeliskOrders(bot_state_t *bs) {
-	int numteammates, defenders, attackers, i;
-	int teammates[MAX_CLIENTS];
-	char name[MAX_NETNAME];
-
-	// sort team mates by travel time to base
-	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	// sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
-	// passive strategy
-	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the other will attack the enemy base
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
-				break;
-			}
-			case 3:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the one second closest to the base also defends the base
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
-				// the other one attacks the enemy base
-				PlayerName(teammates[2], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
-				BotSayTeamOrder(bs, teammates[2]);
-				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_OFFENSE);
-				break;
-			}
-			default:
-			{
-				// 50% defend the base
-				defenders = (int)(float)numteammates * 0.5 + 0.5;
-
-				if (defenders > 5) {
-					defenders = 5;
-				}
-				// 40% attack the enemy base
-				attackers = (int)(float)numteammates * 0.4 + 0.5;
-
-				if (attackers > 4) {
-					attackers = 4;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
-					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
-				}
-
-				break;
-			}
-		}
-	} else {
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the other will attack the enemy base
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
-				break;
-			}
-			case 3:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the others attack the enemy base
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
-
-				PlayerName(teammates[2], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
-				BotSayTeamOrder(bs, teammates[2]);
-				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_OFFENSE);
-				break;
-			}
-			default:
-			{
-				// 30% defend the base
-				defenders = (int)(float)numteammates * 0.3 + 0.5;
-
-				if (defenders > 3) {
-					defenders = 3;
-				}
-				// 70% attack the enemy base
-				attackers = (int)(float)numteammates * 0.7 + 0.5;
-
-				if (attackers > 7) {
-					attackers = 7;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_attackenemybase", name, NULL);
-					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
-				}
-
-				break;
-			}
-		}
-	}
-}
-
-/*
-=======================================================================================================================================
-BotHarvesterOrders
-
-X% defend the base, Y% harvest.
-=======================================================================================================================================
-*/
-void BotHarvesterOrders(bot_state_t *bs) {
-	int numteammates, defenders, attackers, i;
-	int teammates[MAX_CLIENTS] = {0};
-	char name[MAX_NETNAME];
-
-	// sort team mates by travel time to base
-	numteammates = BotSortTeamMatesByBaseTravelTime(bs, teammates, sizeof(teammates));
-	// sort team mates by CTF preference
-	BotSortTeamMatesByTaskPreference(bs, teammates, numteammates);
-	// passive strategy
-	if (!(bs->ctfstrategy & CTFS_AGRESSIVE)) {
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the other will harvest
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
-				break;
-			}
-			case 3:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the one second closest to the base also defends the base
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_DEFEND);
-				// the other one goes harvesting
-				PlayerName(teammates[2], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
-				BotSayTeamOrder(bs, teammates[2]);
-				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_OFFENSE);
-				break;
-			}
-			default:
-			{
-				// 50% defend the base
-				defenders = (int)(float)numteammates * 0.5 + 0.5;
-
-				if (defenders > 5) {
-					defenders = 5;
-				}
-				// 40% goes harvesting
-				attackers = (int)(float)numteammates * 0.4 + 0.5;
-
-				if (attackers > 4) {
-					attackers = 4;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
-					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
-				}
-
-				break;
-			}
-		}
-	} else {
-		// different orders based on the number of team mates
-		switch (numteammates) {
-			case 1:
-				break;
-			case 2:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the other will harvest
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
-				break;
-			}
-
-			case 3:
-			{
-				// the one closest to the base will defend the base
-				PlayerName(teammates[0], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-				BotSayTeamOrder(bs, teammates[0]);
-				BotSayVoiceTeamOrder(bs, teammates[0], VOICECHAT_DEFEND);
-				// the others go harvesting
-				PlayerName(teammates[1], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
-				BotSayTeamOrder(bs, teammates[1]);
-				BotSayVoiceTeamOrder(bs, teammates[1], VOICECHAT_OFFENSE);
-
-				PlayerName(teammates[2], name, sizeof(name));
-				BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
-				BotSayTeamOrder(bs, teammates[2]);
-				BotSayVoiceTeamOrder(bs, teammates[2], VOICECHAT_OFFENSE);
-				break;
-			}
-			default:
-			{
-				// 30% defend the base
-				defenders = (int)(float)numteammates * 0.3 + 0.5;
-
-				if (defenders > 3) {
-					defenders = 3;
-				}
-				// 70% go harvesting
-				attackers = (int)(float)numteammates * 0.7 + 0.5;
-
-				if (attackers > 7) {
-					attackers = 7;
-				}
-
-				for (i = 0; i < defenders; i++) {
-					PlayerName(teammates[i], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_defendbase", name, NULL);
-					BotSayTeamOrder(bs, teammates[i]);
-					BotSayVoiceTeamOrder(bs, teammates[i], VOICECHAT_DEFEND);
-				}
-
-				for (i = 0; i < attackers; i++) {
-					PlayerName(teammates[numteammates - i - 1], name, sizeof(name));
-					BotAI_BotInitialChat(bs, "cmd_harvest", name, NULL);
-					BotSayTeamOrder(bs, teammates[numteammates - i - 1]);
-					BotSayVoiceTeamOrder(bs, teammates[numteammates - i - 1], VOICECHAT_OFFENSE);
-				}
-
-				break;
-			}
-		}
-	}
-}
-#endif
 /*
 =======================================================================================================================================
 FindHumanTeamLeader
@@ -2142,7 +2182,7 @@ int FindHumanTeamLeader(bot_state_t *bs) {
 				if (!notleader[i]) {
 					// if this player is on the same team
 					if (BotSameTeam(bs, i)) {
-						PlayerName(i, bs->teamleader, sizeof(bs->teamleader));
+						ClientName(i, bs->teamleader, sizeof(bs->teamleader));
 						// if not yet ordered to do anything
 						if (!BotSetLastOrderedTask(bs)) {
 							// go on defense by default
@@ -2185,16 +2225,16 @@ void BotTeamAI(bot_state_t *bs) {
 			if (bs->askteamleader_time && bs->askteamleader_time < FloatTime()) {
 				// if asked for a team leader and no response
 				BotAI_BotInitialChat(bs, "whoisteamleader", NULL);
-				BotEnterChat(bs->cs, 0, CHAT_TEAM);
+				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 				bs->askteamleader_time = 0;
 				bs->becometeamleader_time = FloatTime() + 8 + random() * 10;
 			}
 
 			if (bs->becometeamleader_time && bs->becometeamleader_time < FloatTime()) {
 				BotAI_BotInitialChat(bs, "iamteamleader", NULL);
-				BotEnterChat(bs->cs, 0, CHAT_TEAM);
+				trap_BotEnterChat(bs->cs, 0, CHAT_TEAM);
 				BotSayVoiceTeamOrder(bs, -1, VOICECHAT_STARTLEADER);
-				PlayerName(bs->playernum, netname, sizeof(netname));
+				ClientName(bs->client, netname, sizeof(netname));
 				strncpy(bs->teamleader, netname, sizeof(bs->teamleader));
 				bs->teamleader[sizeof(bs->teamleader) - 1] = '\0';
 				bs->becometeamleader_time = 0;
@@ -2206,9 +2246,9 @@ void BotTeamAI(bot_state_t *bs) {
 
 	bs->askteamleader_time = 0;
 	bs->becometeamleader_time = 0;
-	// return if this bot is NOT the team leader
-	PlayerName(bs->playernum, netname, sizeof(netname));
 
+	ClientName(bs->client, netname, sizeof(netname));
+	// return if this bot is NOT the team leader
 	if (Q_stricmp(netname, bs->teamleader) != 0) {
 		return;
 	}
@@ -2259,12 +2299,12 @@ void BotTeamAI(bot_state_t *bs) {
 			// if it's time to give orders
 			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 3) {
 				BotCTFOrders(bs);
+
 				bs->teamgiveorders_time = 0;
 			}
 
 			break;
 		}
-#ifdef MISSIONPACK
 		case GT_1FCTF:
 		{
 			// if the enemy team leads and time limit has expired to 70%, choose aggressive strategy
@@ -2293,6 +2333,7 @@ void BotTeamAI(bot_state_t *bs) {
 			// if it's time to give orders
 			if (bs->teamgiveorders_time && bs->teamgiveorders_time < FloatTime() - 2) {
 				Bot1FCTFOrders(bs);
+
 				bs->teamgiveorders_time = 0;
 			}
 
@@ -2340,6 +2381,5 @@ void BotTeamAI(bot_state_t *bs) {
 
 			break;
 		}
-#endif
 	}
 }

@@ -69,8 +69,7 @@ typedef char *va_list;
 #define islower(c) ((c) >= 'a' && (c) <= 'z')
 #define isprint(c) ((c) >= ' ' && (c) <= '~')
 #define ispunct(c) (((c) > ' ' && (c) <= '~') && !isalnum(c))
-#define isspace(c) ((c) == ' ' || (c) == '\f' || (c) == '\n' || (c) == '\r' || \
- (c) == '\t' || (c) == '\v')
+#define isspace(c) ((c) == ' ' || (c) == '\f' || (c) == '\n' || (c) == '\r' || (c) == '\t' || (c) == '\v')
 #define isupper(c) ((c) >= 'A' && (c) <= 'Z')
 #define isxdigit(c) (isxupper(c) || isxlower(c))
 #define isxlower(c) (isdigit(c) || (c >= 'a' && c <= 'f'))
@@ -121,5 +120,6 @@ double log(double x);
 double log10(double x);
 int abs(int n);
 double fabs(double x);
+float fabsf(float x);
 double rint(double v);
 #endif // BG_LIB_H

@@ -147,14 +147,14 @@ CG_FragmentBounceMark
 =======================================================================================================================================
 */
 void CG_FragmentBounceMark(localEntity_t *le, trace_t *trace) {
-	int radius;
+	int markRadius;
 
 	if (le->leMarkType == LEMT_BLOOD) {
-		radius = 16 + (rand()&31);
-		CG_ImpactMark(cgs.media.bloodMarkShader, trace->endpos, trace->plane.normal, random() * 360, 1, 1, 1, 1, qtrue, radius, qfalse);
+		markRadius = 16 + (rand()&31);
+		CG_ImpactMark(cgs.media.bloodMarkShader, trace->endpos, trace->plane.normal, random() * 360, 1, 1, 1, 1, qtrue, markRadius, qfalse);
 	} else if (le->leMarkType == LEMT_BURN) {
-		radius = 8 + (rand()&15);
-		CG_ImpactMark(cgs.media.burnMarkShader, trace->endpos, trace->plane.normal, random() * 360, 1, 1, 1, 1, qtrue, radius, qfalse);
+		markRadius = 8 + (rand()&15);
+		CG_ImpactMark(cgs.media.burnMarkShader, trace->endpos, trace->plane.normal, random() * 360, 1, 1, 1, 1, qtrue, markRadius, qfalse);
 	}
 	// don't allow a fragment to make multiple marks, or they pile up while settling
 	le->leMarkType = LEMT_NONE;
@@ -181,7 +181,7 @@ void CG_FragmentBounceSound(localEntity_t *le, trace_t *trace) {
 				s = cgs.media.gibBounce3Sound;
 			}
 
-			trap_S_StartSound(trace->endpos, ENTITYNUM_WORLD, CHAN_AUTO, s);
+			trap_S_StartSound(trace->endpos, ENTITYNUM_WORLD, CHAN_AUTO, s, 48);
 		}
 	} else if (le->leBounceSoundType == LEBS_BRASS) {
 
@@ -220,8 +220,7 @@ void CG_ReflectVelocity(localEntity_t *le, trace_t *trace) {
 		le->pos.trType = TR_STATIONARY;
 
 		VectorCopy(trace->endpos, le->refEntity.origin);
-
-		vectoangles(le->refEntity.axis[0], le->angles.trBase);
+		VectorToAngles(le->refEntity.axis[0], le->angles.trBase);
 
 		le->groundEntityNum = trace->entityNum;
 	} else {
@@ -235,14 +234,14 @@ CG_AddFragment
 =======================================================================================================================================
 */
 void CG_AddFragment(localEntity_t *le) {
-	vec3_t newOrigin;
+	vec3_t newOrigin, angles;
 	trace_t trace;
 
 	if (le->pos.trType == TR_STATIONARY) {
 		// sink into the ground if near the removal time
 		int t;
 		float oldZ;
-		
+
 		CG_AdjustPositionForMover(le->refEntity.origin, le->groundEntityNum, le->pos.trTime, cg.time, le->refEntity.origin, le->angles.trBase, le->angles.trBase);
 		AnglesToAxis(le->angles.trBase, le->refEntity.axis);
 
@@ -252,16 +251,23 @@ void CG_AddFragment(localEntity_t *le) {
 		if (t < SINK_TIME) {
 			// we must use an explicit lighting origin, otherwise the lighting would be lost as soon as the origin went into the ground
 			VectorCopy(le->refEntity.origin, le->refEntity.lightingOrigin);
+
 			le->refEntity.renderfx |= RF_LIGHTING_ORIGIN;
 			oldZ = le->refEntity.origin[2];
 			le->refEntity.origin[2] -= 16 * (1.0 - (float)t / SINK_TIME);
+
 			CG_AddRefEntityWithMinLight(&le->refEntity);
+
 			le->refEntity.origin[2] = oldZ;
 		} else {
 			CG_AddRefEntityWithMinLight(&le->refEntity);
 		}
 
 		return;
+	}
+	// never free fragments while they're flying
+	if (le->endTime < cg.time + 2000) {
+		le->endTime = cg.time + 2000;
 	}
 	// calculate new position
 	BG_EvaluateTrajectory(&le->pos, cg.time, newOrigin);
@@ -271,14 +277,22 @@ void CG_AddFragment(localEntity_t *le) {
 	if (trace.fraction == 1.0) {
 		// still in free fall
 		VectorCopy(newOrigin, le->refEntity.origin);
+		VectorClear(angles);
 
-		if (le->leFlags & LEF_TUMBLE) {
-			vec3_t angles;
-
-			BG_EvaluateTrajectory(&le->angles, cg.time, angles);
-			AnglesToAxis(angles, le->refEntity.axis);
+		switch (le->leFlags) {
+			case LEF_TUMBLE:
+				BG_EvaluateTrajectory(&le->angles, cg.time, angles);
+				break;
+			case LEF_GIBS:
+				angles[1] = ((cg.time & 2047) * 360 / 2048.0 + 120);
+				angles[0] = ((cg.time & 2047) * 360 / 2048.0);
+				angles[2] = ((cg.time & 2047) * 360 / 2048.0 + 240);
+				break;
+			default:
+				break;
 		}
 
+		AnglesToAxis(angles, le->refEntity.axis);
 		CG_AddRefEntityWithMinLight(&le->refEntity);
 		// add a blood trail
 		if (le->leBounceSoundType == LEBS_BLOOD) {
@@ -290,11 +304,10 @@ void CG_AddFragment(localEntity_t *le) {
 	// fragment inside mover, find the direction/origin of impact
 	if (trace.allsolid && cg_entities[trace.entityNum].currentState.eType == ET_MOVER) {
 		vec3_t origin, angles, dir;
-
 		float dist;
 		int oldTime;
-
 		trace_t tr;
+
 		// get last location
 		if (cg.time == le->pos.trTime) {
 			// fragment was added this frame. no good way to fix this.
@@ -305,7 +318,6 @@ void CG_AddFragment(localEntity_t *le) {
 		}
 
 		BG_EvaluateTrajectory(&le->pos, oldTime, origin);
-
 		VectorClear(angles);
 		// add the distance mover has moved since then
 		CG_AdjustPositionForMover(origin, trace.entityNum, oldTime, cg.time, origin, angles, angles);
@@ -313,8 +325,8 @@ void CG_AddFragment(localEntity_t *le) {
 		VectorSubtract(origin, newOrigin, dir);
 
 		dist = VectorNormalize(dir);
-		VectorMA(origin, dist, dir, origin);
 
+		VectorMA(origin, dist, dir, origin);
 		CG_Trace(&tr, origin, NULL, NULL, newOrigin, -1, CONTENTS_SOLID);
 		// found impact. restore allsolid because trace fraction won't work correct in CG_ReflectVelocity
 		if (!tr.allsolid) {
@@ -334,7 +346,6 @@ void CG_AddFragment(localEntity_t *le) {
 	CG_FragmentBounceSound(le, &trace);
 	// reflect the velocity on the trace plane
 	CG_ReflectVelocity(le, &trace);
-
 	CG_AddRefEntityWithMinLight(&le->refEntity);
 }
 
@@ -565,7 +576,7 @@ static void CG_AddSpriteExplosion(localEntity_t *le) {
 		trap_R_AddLightToScene(le->refEntity.origin, radius, intensity, le->lightColor[0], le->lightColor[1], le->lightColor[2], 0);
 	}
 }
-#ifdef MISSIONPACK
+
 /*
 =======================================================================================================================================
 CG_AddKamikaze
@@ -588,6 +599,7 @@ void CG_AddKamikaze(localEntity_t *le) {
 		if (!(le->leFlags & LEF_SOUND1)) {
 			//trap_S_StartSound(re->origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.kamikazeExplodeSound);
 			trap_S_StartLocalSound(cgs.media.kamikazeExplodeSound, CHAN_AUTO);
+
 			le->leFlags |= LEF_SOUND1;
 		}
 		// 1st kamikaze shockwave
@@ -679,6 +691,7 @@ void CG_AddKamikaze(localEntity_t *le) {
 		AnglesToAxis(test, axis);
 
 		c = (float)(t - KAMI_SHOCKWAVE2_STARTTIME) / (float)(KAMI_SHOCKWAVE2_ENDTIME - KAMI_SHOCKWAVE2_STARTTIME);
+
 		VectorScale(axis[0], c * KAMI_SHOCKWAVE2_MAXRADIUS / KAMI_SHOCKWAVEMODEL_RADIUS, shockwave.axis[0]);
 		VectorScale(axis[1], c * KAMI_SHOCKWAVE2_MAXRADIUS / KAMI_SHOCKWAVEMODEL_RADIUS, shockwave.axis[1]);
 		VectorScale(axis[2], c * KAMI_SHOCKWAVE2_MAXRADIUS / KAMI_SHOCKWAVEMODEL_RADIUS, shockwave.axis[2]);
@@ -704,39 +717,6 @@ void CG_AddKamikaze(localEntity_t *le) {
 
 /*
 =======================================================================================================================================
-CG_AddInvulnerabilityImpact
-=======================================================================================================================================
-*/
-void CG_AddInvulnerabilityImpact(localEntity_t *le) {
-	CG_AddRefEntityWithMinLight(&le->refEntity);
-}
-
-/*
-=======================================================================================================================================
-CG_AddInvulnerabilityJuiced
-=======================================================================================================================================
-*/
-void CG_AddInvulnerabilityJuiced(localEntity_t *le) {
-	int t;
-
-	t = cg.time - le->startTime;
-
-	if (t > 3000) {
-		le->refEntity.axis[0][0] = (float)1.0 + 0.3 * (t - 3000) / 2000;
-		le->refEntity.axis[1][1] = (float)1.0 + 0.3 * (t - 3000) / 2000;
-		le->refEntity.axis[2][2] = (float)0.7 + 0.3 * (2000 - (t - 3000)) / 2000;
-	}
-
-	if (t > 5000) {
-		le->endTime = 0;
-		CG_GibPlayer(le->refEntity.origin);
-	} else {
-		CG_AddRefEntityWithMinLight(&le->refEntity);
-	}
-}
-
-/*
-=======================================================================================================================================
 CG_AddRefEntity
 =======================================================================================================================================
 */
@@ -749,7 +729,6 @@ void CG_AddRefEntity(localEntity_t *le) {
 
 	CG_AddRefEntityWithMinLight(&le->refEntity);
 }
-#endif
 /*
 =======================================================================================================================================
 CG_AddScorePlum
@@ -833,8 +812,8 @@ void CG_BubbleThink(localEntity_t *le) {
 
 	contents = CG_PointContents(trace.endpos, -1);
 
-	if (!(contents &(CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))) {
-		// Bubble isn't in liquid anymore, remove it.
+	if (!(contents & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))) {
+		// bubble isn't in liquid anymore, remove it
 		CG_FreeLocalEntity(le);
 		return;
 	}
@@ -854,7 +833,7 @@ void CG_AddLocalEntities(void) {
 	int forceRenderfx;
 	int oldPhysicsTime;
 
-	// have local entities interact with movers(submodels)at their render position
+	// have local entities interact with movers (submodels) at their render position
 	oldPhysicsTime = cg.physicsTime;
 	cg.physicsTime = cg.time;
 	// walk the list backwards, so any new local entities generated (trails, marks, etc.) will be present this frame
@@ -872,7 +851,7 @@ void CG_AddLocalEntities(void) {
 		viewFlags = le->defaultViewFlags;
 
 		for (i = 0; i < le->numPlayerEffects; i++) {
-			if (le->playerEffects[i].playerNum == cg.snap->pss[cg.cur_localPlayerNum].playerNum) {
+			if (le->playerEffects[i].clientNum == cg.snap->pss[cg.cur_localPlayerNum].clientNum) {
 				viewFlags = le->playerEffects[i].viewFlags;
 				break;
 			}
@@ -882,15 +861,15 @@ void CG_AddLocalEntities(void) {
 			continue;
 		}
 
-		if ((viewFlags & LEVF_THIRD_PERSON_NO_DRAW) && cg.cur_lc->renderingThirdPerson) {
+		if ((viewFlags & LEVF_THIRD_PERSON_NO_DRAW) && cg.renderingThirdPerson) {
 			continue;
 		}
 
-		if ((viewFlags & LEVF_FIRST_PERSON_NO_DRAW) && !cg.cur_lc->renderingThirdPerson) {
+		if ((viewFlags & LEVF_FIRST_PERSON_NO_DRAW) && !cg.renderingThirdPerson) {
 			continue;
 		}
 
-		if ((viewFlags & LEVF_FIRST_PERSON_MIRROR) && !cg.cur_lc->renderingThirdPerson) {
+		if ((viewFlags & LEVF_FIRST_PERSON_MIRROR) && !cg.renderingThirdPerson) {
 			forceRenderfx = RF_ONLY_MIRROR;
 		} else {
 			forceRenderfx = 0;
@@ -903,19 +882,22 @@ void CG_AddLocalEntities(void) {
 			default:
 				CG_Error("Bad leType: %i", le->leType);
 				break;
-			case LE_MARK:
-				break;
 			case LE_SPRITE_EXPLOSION:
 				CG_AddSpriteExplosion(le);
 				break;
 			case LE_EXPLOSION:
 				CG_AddExplosion(le);
 				break;
+			case LE_KAMIKAZE:
+				CG_AddKamikaze(le);
+				break;
+			case LE_MARK:
+				break;
 			case LE_FRAGMENT: // gibs and brass
 				CG_AddFragment(le);
 				break;
-			case LE_MOVE_SCALE_FADE: // water bubbles
-				CG_AddMoveScaleFade(le);
+			case LE_SCALE_FADE: // rocket trails
+				CG_AddScaleFade(le);
 				break;
 			case LE_FADE_RGB: // teleporters, railtrails
 				CG_AddFadeRGB(le);
@@ -923,29 +905,18 @@ void CG_AddLocalEntities(void) {
 			case LE_FALL_SCALE_FADE: // gib blood trails
 				CG_AddFallScaleFade(le);
 				break;
-			case LE_SCALE_FADE: // rocket trails
-				CG_AddScaleFade(le);
-				break;
-			case LE_SCOREPLUM:
-				CG_AddScorePlum(le);
+			case LE_MOVE_SCALE_FADE: // water bubbles
+				CG_AddMoveScaleFade(le);
 				break;
 			case LE_BUBBLE:
 				CG_BubbleThink(le);
 				break;
-#ifdef MISSIONPACK
-			case LE_KAMIKAZE:
-				CG_AddKamikaze(le);
-				break;
-			case LE_INVULIMPACT:
-				CG_AddInvulnerabilityImpact(le);
-				break;
-			case LE_INVULJUICED:
-				CG_AddInvulnerabilityJuiced(le);
+			case LE_SCOREPLUM:
+				CG_AddScorePlum(le);
 				break;
 			case LE_SHOWREFENTITY:
 				CG_AddRefEntity(le);
 				break;
-#endif
 		}
 
 		le->refEntity.renderfx &= ~forceRenderfx;

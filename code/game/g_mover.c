@@ -53,8 +53,8 @@ gentity_t *G_TestEntityPosition(gentity_t *ent) {
 	int mask;
 
 	if (ent->player) {
-		VectorCopy(ent->player->ps.origin, origin);
-		collisionType = ent->player->ps.collisionType;
+		VectorCopy(ent->client->ps.origin, origin);
+		collisionType = ent->client->ps.collisionType;
 	} else {
 		VectorCopy(ent->s.pos.trBase, origin);
 		collisionType = ent->s.collisionType;
@@ -146,9 +146,9 @@ qboolean G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, ve
 	VectorCopy(check->s.pos.trBase, pushed_p->origin);
 	VectorCopy(check->s.apos.trBase, pushed_p->angles);
 
-	if (check->player) {
-		pushed_p->deltayaw = check->player->ps.delta_angles[YAW];
-		VectorCopy(check->player->ps.origin, pushed_p->origin);
+	if (check->client) {
+		pushed_p->deltayaw = check->client->ps.delta_angles[YAW];
+		VectorCopy(check->client->ps.origin, pushed_p->origin);
 	}
 
 	pushed_p++;
@@ -157,8 +157,8 @@ qboolean G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, ve
 	G_CreateRotationMatrix(amove, transpose);
 	G_TransposeMatrix(transpose, matrix);
 
-	if (check->player) {
-		VectorSubtract(check->player->ps.origin, pusher->r.currentOrigin, org);
+	if (check->client) {
+		VectorSubtract(check->client->ps.origin, pusher->r.currentOrigin, org);
 	} else {
 		VectorSubtract(check->s.pos.trBase, pusher->r.currentOrigin, org);
 	}
@@ -170,11 +170,11 @@ qboolean G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, ve
 	VectorAdd(check->s.pos.trBase, move, check->s.pos.trBase);
 	VectorAdd(check->s.pos.trBase, move2, check->s.pos.trBase);
 
-	if (check->player) {
-		VectorAdd(check->player->ps.origin, move, check->player->ps.origin);
-		VectorAdd(check->player->ps.origin, move2, check->player->ps.origin);
-		// make sure the player's view rotates when on a rotating mover
-		check->player->ps.delta_angles[YAW] += ANGLE2SHORT(amove[YAW]);
+	if (check->client) {
+		VectorAdd(check->client->ps.origin, move, check->client->ps.origin);
+		VectorAdd(check->client->ps.origin, move2, check->client->ps.origin);
+		// make sure the client's view rotates when on a rotating mover
+		check->client->ps.delta_angles[YAW] += ANGLE2SHORT(amove[YAW]);
 	}
 	// may have pushed them off an edge
 	if (check->s.groundEntityNum != pusher->s.number) {
@@ -185,8 +185,8 @@ qboolean G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, ve
 
 	if (!block) {
 		// pushed ok
-		if (check->player) {
-			VectorCopy(check->player->ps.origin, check->r.currentOrigin);
+		if (check->client) {
+			VectorCopy(check->client->ps.origin, check->r.currentOrigin);
 		} else {
 			VectorCopy(check->s.pos.trBase, check->r.currentOrigin);
 		}
@@ -196,14 +196,14 @@ qboolean G_TryPushingEntity(gentity_t *check, gentity_t *pusher, vec3_t move, ve
 	}
 	// if it is ok to leave in the old position, do it
 	// this is only relevant for riding entities, not pushed
-	// sliding trapdoors can cause this.
-	VectorCopy((pushed_p-1)->origin, check->s.pos.trBase);
+	// sliding trapdoors can cause this
+	VectorCopy((pushed_p - 1)->origin, check->s.pos.trBase);
 
-	if (check->player) {
-		VectorCopy((pushed_p-1)->origin, check->player->ps.origin);
+	if (check->client) {
+		VectorCopy((pushed_p - 1)->origin, check->client->ps.origin);
 	}
 
-	VectorCopy((pushed_p-1)->angles, check->s.apos.trBase);
+	VectorCopy((pushed_p - 1)->angles, check->s.apos.trBase);
 
 	block = G_TestEntityPosition(check);
 
@@ -332,20 +332,6 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 	for (e = 0; e < listedEntities; e++) {
 		check = &g_entities[entityList[e]];
 
-		if (check->s.eType == ET_GRAPPLE) {
-			// if this grappling hook is attached to this mover try to move it with the pusher
-			if (check->enemy == pusher) {
-				if (!G_TryPushingProxMine(check, pusher, move, amove)) {
-					// remove hook
-					if (check->parent && check->parent->player && check->parent->player->hook == check) {
-						Weapon_HookFree(check);
-					}
-				}
-			}
-
-			continue;
-		}
-#ifdef MISSIONPACK
 		if (check->s.eType == ET_MISSILE) {
 			// if it is a prox mine
 			if (!strcmp(check->classname, "prox mine")) {
@@ -362,6 +348,7 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 							G_FreeEntity(check->activator);
 							check->activator = NULL;
 						}
+
 						//G_Printf("prox mine explodes\n");
 					}
 				} else {
@@ -377,6 +364,7 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 							G_FreeEntity(check->activator);
 							check->activator = NULL;
 						}
+
 						//G_Printf("prox mine explodes\n");
 					}
 				}
@@ -384,7 +372,6 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 				continue;
 			}
 		}
-#endif
 		// only push items and players
 		if (check->s.eType != ET_ITEM && check->s.eType != ET_PLAYER && !check->physicsObject) {
 			continue;
@@ -420,9 +407,9 @@ qboolean G_MoverPush(gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **o
 			VectorCopy(p->origin, p->ent->s.pos.trBase);
 			VectorCopy(p->angles, p->ent->s.apos.trBase);
 
-			if (p->ent->player) {
-				p->ent->player->ps.delta_angles[YAW] = p->deltayaw;
-				VectorCopy(p->origin, p->ent->player->ps.origin);
+			if (p->ent->client) {
+				p->ent->client->ps.delta_angles[YAW] = p->deltayaw;
+				VectorCopy(p->origin, p->ent->client->ps.origin);
 			}
 
 			trap_LinkEntity(p->ent);
@@ -470,6 +457,7 @@ void G_MoverTeam(gentity_t *ent) {
 
 			BG_EvaluateTrajectory(&part->s.pos, level.time, part->r.currentOrigin);
 			BG_EvaluateTrajectory(&part->s.apos, level.time, part->r.currentAngles);
+
 			trap_LinkEntity(part);
 		}
 		// if the pusher has a "blocked" function, call it
@@ -814,8 +802,8 @@ Blocked_Door
 */
 void Blocked_Door(gentity_t *ent, gentity_t *other) {
 
-	// remove anything other than a player
-	if (!other->player) {
+	// remove anything other than a client
+	if (!other->client) {
 		// except CTF flags!!!!
 		if (other->s.eType == ET_ITEM && other->item->giType == IT_TEAM) {
 			Team_DroppedFlagThink(other);
@@ -853,7 +841,7 @@ static void Touch_DoorTriggerSpectator(gentity_t *ent, gentity_t *other, trace_t
 	doorMin = ent->r.absmin[axis] + 100;
 	doorMax = ent->r.absmax[axis] - 100;
 
-	VectorCopy(other->player->ps.origin, origin);
+	VectorCopy(other->client->ps.origin, origin);
 
 	if (origin[axis] < doorMin || origin[axis] > doorMax) {
 		return;
@@ -865,7 +853,7 @@ static void Touch_DoorTriggerSpectator(gentity_t *ent, gentity_t *other, trace_t
 		origin[axis] = doorMax + 10;
 	}
 
-	TeleportPlayer(other, origin, tv(10000000.0, 0, 0));
+	TeleportPlayer(other, origin, TempVector(10000000.0, 0, 0));
 }
 
 /*
@@ -875,7 +863,7 @@ Touch_DoorTrigger
 */
 void Touch_DoorTrigger(gentity_t *ent, gentity_t *other, trace_t *trace) {
 
-	if (other->player && other->player->sess.sessionTeam == TEAM_SPECTATOR) {
+	if (other->client && other->client->sess.sessionTeam == TEAM_SPECTATOR) {
 		// if the door is not open and not opening
 		if (ent->parent->moverState != MOVER_1TO2 && ent->parent->moverState != MOVER_POS2) {
 			Touch_DoorTriggerSpectator(ent, other, trace);
@@ -1051,7 +1039,7 @@ Don't allow decent if a living player is on it.
 */
 void Touch_Plat(gentity_t *ent, gentity_t *other, trace_t *trace) {
 
-	if (!other->player || other->player->ps.stats[STAT_HEALTH] <= 0) {
+	if (!other->client || other->client->ps.stats[STAT_HEALTH] <= 0) {
 		return;
 	}
 	// delay return-to-pos1 by one second
@@ -1069,7 +1057,7 @@ If the plat is at the bottom position, start it going up.
 */
 void Touch_PlatCenterTrigger(gentity_t *ent, gentity_t *other, trace_t *trace) {
 
-	if (!other->player) {
+	if (!other->client) {
 		return;
 	}
 
@@ -1184,7 +1172,7 @@ Touch_Button
 */
 void Touch_Button(gentity_t *ent, gentity_t *other, trace_t *trace) {
 
-	if (!other->player) {
+	if (!other->client) {
 		return;
 	}
 
@@ -1354,7 +1342,7 @@ void Think_SetupTrainTargets(gentity_t *ent) {
 	ent->nextTrain = G_Find(NULL, FOFS(targetname), ent->target);
 
 	if (!ent->nextTrain) {
-		G_Printf("func_train at %s with an unfound target\n", vtos(ent->r.absmin));
+		G_Printf("func_train at %s with an unfound target\n", VectorToString(ent->r.absmin));
 		return;
 	}
 
@@ -1366,7 +1354,7 @@ void Think_SetupTrainTargets(gentity_t *ent) {
 		}
 
 		if (!path->target) {
-			G_Printf("Train corner at %s without a target\n", vtos(path->s.origin));
+			G_Printf("Train corner at %s without a target\n", VectorToString(path->s.origin));
 			return;
 		}
 		// find a path_corner among the targets. There may also be other targets that get fired when the corner is reached
@@ -1376,7 +1364,7 @@ void Think_SetupTrainTargets(gentity_t *ent) {
 			next = G_Find(next, FOFS(targetname), path->target);
 
 			if (!next) {
-				G_Printf("Train corner at %s without a target path_corner\n", vtos(path->s.origin));
+				G_Printf("Train corner at %s without a target path_corner\n", VectorToString(path->s.origin));
 				return;
 			}
 		} while (strcmp(next->classname, "path_corner"));
@@ -1396,7 +1384,7 @@ Target: next path corner and other targets to fire
 void SP_path_corner(gentity_t *self) {
 
 	if (!self->targetname) {
-		G_Printf("path_corner with no targetname at %s\n", vtos(self->s.origin));
+		G_Printf("path_corner with no targetname at %s\n", VectorToString(self->s.origin));
 		G_FreeEntity(self);
 		return;
 	}
@@ -1432,13 +1420,12 @@ void SP_func_train(gentity_t *self) {
 	}
 
 	if (!self->target) {
-		G_Printf("func_train without a target at %s\n", vtos(self->r.absmin));
+		G_Printf("func_train without a target at %s\n", VectorToString(self->r.absmin));
 		G_FreeEntity(self);
 		return;
 	}
 
 	G_SetBrushModel(self, self->model);
-
 	InitMover(self);
 
 	self->reached = Reached_Train;
@@ -1464,9 +1451,7 @@ A bmodel that just sits there, doing nothing. Can be used for conditional walls 
 void SP_func_static(gentity_t *ent) {
 
 	G_SetBrushModel(ent, ent->model);
-
 	InitMover(ent);
-
 	VectorCopy(ent->s.origin, ent->s.pos.trBase);
 	VectorCopy(ent->s.origin, ent->r.currentOrigin);
 }
@@ -1511,13 +1496,10 @@ void SP_func_rotating(gentity_t *ent) {
 	}
 
 	G_SetBrushModel(ent, ent->model);
-
 	InitMover(ent);
-
 	VectorCopy(ent->s.origin, ent->s.pos.trBase);
 	VectorCopy(ent->s.pos.trBase, ent->r.currentOrigin);
 	VectorCopy(ent->s.apos.trBase, ent->r.currentAngles);
-
 	trap_LinkEntity(ent);
 }
 
@@ -1547,10 +1529,9 @@ void SP_func_bobbing(gentity_t *ent) {
 	G_SpawnFloat("height", "32", &height);
 	G_SpawnInt("dmg", "2", &ent->damage);
 	G_SpawnFloat("phase", "0", &phase);
+
 	G_SetBrushModel(ent, ent->model);
-
 	InitMover(ent);
-
 	VectorCopy(ent->s.origin, ent->s.pos.trBase);
 	VectorCopy(ent->s.origin, ent->r.currentOrigin);
 
@@ -1607,7 +1588,6 @@ void SP_func_pendulum(gentity_t *ent) {
 	ent->s.pos.trDuration = (1000 / freq);
 
 	InitMover(ent);
-
 	VectorCopy(ent->s.origin, ent->s.pos.trBase);
 	VectorCopy(ent->s.origin, ent->r.currentOrigin);
 	VectorCopy(ent->s.angles, ent->s.apos.trBase);

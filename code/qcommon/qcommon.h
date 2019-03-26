@@ -35,7 +35,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define PRODUCT_NAME				"Spearmint"
 // Keep this in-sync with VERSION in Makefile.
 #ifndef PRODUCT_VERSION
-#define PRODUCT_VERSION			"0.4"
+#define PRODUCT_VERSION			"1.0.1"
 #endif
 #define Q3_VERSION PRODUCT_NAME " " PRODUCT_VERSION
 // Settings directory name
@@ -59,7 +59,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 // Prefix for renderer native libraries. Example: PREFIXopengl1_x86.dll
 // Change this if you break renderer compatibility with Spearmint.
 // You'll also need to change RENDERER_PREFIX in Makefile.
-#define RENDERER_PREFIX				"mint-renderer-"
+#ifndef RENDERER_PREFIX
+#define RENDERER_PREFIX				"spearmint-renderer-"
+#endif
 // Default game to load (default fs_game value).
 // You can change this and it won't break network compatiblity.
 #ifndef BASEGAME
@@ -67,7 +69,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #endif
 // File containing a list of games to check if are installed to use as default base game.
 // This overrides BASEGAME if a game is found. If none are found, uses BASEGAME.
-#define MINT_GAMELIST					"mint-gamelist.txt"
+#define MINT_GAMELIST					"spearmint-gamelist.txt"
 // In the future if the client-server protocol is modified, this may allow old and new engines to play together
 //#define LEGACY_PROTOCOL
 // Heartbeat for dpmaster protocol. You shouldn't change this unless you know what you're doing
@@ -99,7 +101,6 @@ void MSG_InitOOB(msg_t *buf, byte *data, int length);
 void MSG_Clear(msg_t *buf);
 void MSG_WriteData(msg_t *buf, const void *data, int length);
 void MSG_Bitstream(msg_t *buf);
-// TTimo
 // copy a msg_t in case we need to store it as is for a bit (as I needed this to keep an msg_t from a static var for later use)
 // sets data buffer as MSG_Init does prior to do the copy
 void MSG_Copy(msg_t *buf, byte *data, int length, msg_t *src);
@@ -150,12 +151,12 @@ void MSG_ReportChangeVectors_f(void);
 =======================================================================================================================================
 */
 
-#define NET_ENABLEV4		0x01
-#define NET_ENABLEV6		0x02
+#define NET_ENABLEV4		0x00000001
+#define NET_ENABLEV6		0x00000002
 // if this flag is set, always attempt ipv6 connections instead of ipv4 if a v6 address is found.
-#define NET_PRIOV6			0x04
+#define NET_PRIOV6			0x00000004
 // disables ipv6 multicast support if set.
-#define NET_DISABLEMCAST	0x08
+#define NET_DISABLEMCAST	0x00000008
 
 #define PACKET_BACKUP 32 // number of old messages that must be kept on client and server for delta compression and ping estimation
 #define PACKET_MASK (PACKET_BACKUP - 1)
@@ -187,7 +188,7 @@ typedef struct {
 	byte ip[4];
 	byte ip6[16];
 	unsigned short port;
-	unsigned long scope_id; // Needed for IPv6 link-local addresses
+	unsigned long scope_id; // needed for IPv6 link-local addresses
 } netadr_t;
 
 void NET_Init(void);
@@ -255,22 +256,20 @@ qboolean Netchan_Process(netchan_t *chan, msg_t *msg);
 =======================================================================================================================================
 */
 
-#define PROTOCOL_VERSION 10
+#define PROTOCOL_VERSION 12
 #define PROTOCOL_LEGACY_VERSION	0
-
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
 extern int demo_protocols[];
-
 //#define UPDATE_SERVER_NAME "update.quake3arena.com"
 // override on command line, config files etc.
 #ifndef MASTER_SERVER_NAME
 #define MASTER_SERVER_NAME "dpmaster.deathmask.net"
 #endif
-#define PORT_MASTER			27950
-#define PORT_UPDATE			27951
-#define PORT_SERVER			27960
-#define NUM_SERVER_PORTS	4 // broadcast scan this many ports after PORT_SERVER so a single machine can run multiple servers
+#define PORT_MASTER 27950
+#define PORT_UPDATE 27951
+#define PORT_SERVER 27960
+#define NUM_SERVER_PORTS 4 // broadcast scan this many ports after PORT_SERVER so a single machine can run multiple servers
 // the svc_strings[] array in cl_parse.c should mirror this
 // server to client
 enum svc_ops_e {
@@ -392,16 +391,18 @@ void Cbuf_Execute(void);
 **************************************************************************************************************************************/
 
 typedef void (*xcommand_t)(void);
+typedef void (*completionFunc_t)(char *args, int argNum);
 void Cmd_Init(void);
 void Cmd_AddCommand(const char *cmd_name, xcommand_t function);
-// called by the init functions of other parts of the program to register commands and functions to call for them.
+void Cmd_AddCommandWithCompletion(const char *cmd_name, xcommand_t function, completionFunc_t complete);
+// called by the init functions of other parts of the program to register commands and functions to call for them
 // The cmd_name is referenced later, so it should not be in temp memory
 // if function is NULL, the command will be forwarded to the server as a clc_clientCommand instead of executed locally
 void Cmd_RemoveCommand(const char *cmd_name);
 void Cmd_RemoveCommandsByFunc(xcommand_t function);
 typedef void (*completionFunc_t)(char *args, int argNum);
 // don't allow VMs to remove system commands
-void Cmd_AddCommandSafe(const char *cmd_name, xcommand_t function);
+void Cmd_AddCommandSafe(const char *cmd_name, xcommand_t function, completionFunc_t complete);
 void Cmd_RemoveCommandSafe(const char *cmd_name, xcommand_t function);
 void Cmd_CommandCompletion(void(*callback)(const char *s));
 // callback with each valid string
@@ -416,12 +417,11 @@ char *Cmd_ArgsFrom(int arg);
 void Cmd_ArgsBuffer(char *buffer, int bufferLength);
 void Cmd_LiteralArgsBuffer(char *buffer, int bufferLength);
 char *Cmd_Cmd(void);
-void Cmd_Args_Sanitize(void);
 // The functions that execute commands get their parameters with these functions. Cmd_Argv() will return an empty string, not a NULL
 // if arg > argc, so string operations are always safe.
 void Cmd_TokenizeString(const char *text);
 void Cmd_TokenizeStringIgnoreQuotes(const char *text_in);
-// Takes a null terminated string. Does not need to be /n terminated. breaks the string up into arg tokens.
+// Takes a null terminated string. Does not need to be /n terminated. Breaks the string up into arg tokens
 void Cmd_ExecuteString(const char *text);
 // Parses a single line of text into arguments and tries to execute it as if it was typed at the console
 void Cmd_SaveCmdContext(void);
@@ -482,8 +482,10 @@ void Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 // returns an empty string if not defined
 void Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 // returns the latched value if there is one, else the normal one, empty string if not defined
+void Cvar_DefaultVariableStringBuffer(const char *var_name, char *buffer, int bufsize);
+// returns the default value or empty string if not defined
 int Cvar_Flags(const char *var_name);
-// returns CVAR_NONEXISTENT if cvar doesn't exist or the flags of that particular CVAR.
+// returns CVAR_NONEXISTENT if cvar doesn't exist or the flags of that particular CVAR
 void Cvar_CommandCompletion(void(*callback)(const char *s));
 // callback with each valid string
 void Cvar_Reset(const char *var_name);
@@ -492,9 +494,9 @@ void Cvar_SetCheatState(void);
 // reset all testing vars to a safe value
 qboolean Cvar_Command(void);
 // called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known command. Returns true if the command was a variable reference that
-// was handled. (print or change)
+// was handled (print or change)
 void Cvar_WriteVariables(fileHandle_t f);
-// writes lines containing "set variable value" for all variables with the archive flag set to true.
+// writes lines containing "set variable value" for all variables with the archive flag set to true
 void Cvar_Init(void);
 char *Cvar_InfoString(int bit);
 char *Cvar_InfoString_Big(int bit);
@@ -510,7 +512,7 @@ void Cvar_ResetDefaultOverrides(void);
 void Cvar_CompleteCvarName(char *args, int argNum);
 extern int cvar_modifiedFlags;
 // whenever a cvar is modifed, its flags will be OR'd into this, so a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,
-// etc. variables have been modified since the last check. The bit can then be cleared to allow another change detection.
+// etc., variables have been modified since the last check. The bit can then be cleared to allow another change detection.
 
 /*
 =======================================================================================================================================
@@ -558,7 +560,8 @@ int FS_FindVM(void **startSearch, char *found, int foundlen, const char *name, i
 char *FS_BuildOSPath(const char *base, const char *game, const char *qpath);
 qboolean FS_CompareZipChecksum(const char *zipfile);
 int FS_LoadStack(void);
-int FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize);
+char **FS_GetFileList(const char *path, const char *extension, int *numfiles, qboolean allowNonPureFilesOnDisk);
+int FS_GetFileListBuffer(const char *path, const char *extension, char *listbuf, int bufsize);
 int FS_GetModList(char *listbuf, int bufsize);
 void FS_GetModDescription(const char *modDir, char *description, int descriptionLen);
 fileHandle_t FS_FOpenFileWrite(const char *qpath);
@@ -587,10 +590,9 @@ long FS_ReadFileDir(const char *qpath, void *searchPath, qboolean unpure, void *
 long FS_ReadFile(const char *qpath, void **buffer);
 // returns the length of the file
 // a null buffer will just return the file length without loading
-// as a quick check for existance. -1 length == not present
+// as a quick check for existence. -1 length == not present
 // A 0 byte will always be appended at the end, so string ops are safe.
-// the buffer should be considered read-only, because it may be cached
-// for other uses.
+// the buffer should be considered read-only, because it may be cached for other uses.
 void FS_ForceFlush(fileHandle_t f);
 // forces flush on files we're writing to.
 void FS_FreeFile(void *buffer);
@@ -625,15 +627,16 @@ void FS_PureServerSetLoadedPaks(const char *pakSums, const char *pakNames);
 // separated checksums will be checked for files, with the
 // sole exception of .cfg files.
 qboolean FS_CheckDirTraversal(const char *checkdir);
+qboolean FS_InvalidGameDir(const char *gamedir);
 pakType_t FS_ReferencedPakType(const char *name, int checksum, qboolean *installed);
 qboolean FS_ComparePaks(char *neededpaks, int len, qboolean dlstring);
 qboolean FS_Rename(const char *from, const char *to);
 int FS_Remove(const char *osPath);
 int FS_HomeRemove(const char *homePath);
-void FS_FilenameCompletion(const char *dir, const char *ext, qboolean stripExt, void(*callback)(const char *s), qboolean allowNonPureFilesOnDisk);
+void FS_FilenameCompletion(char **filenames, int nfiles, qboolean stripExt, void(*callback)(const char *s), qboolean allowNonPureFilesOnDisk);
 const char *FS_GetCurrentGameDir(void);
 qboolean FS_Which(const char *filename, void *searchPath);
-
+qboolean FS_IsDemoExt(const char *filename, int namelen);
 /*
 =======================================================================================================================================
 
@@ -684,7 +687,8 @@ void Field_Clear(field_t *edit);
 void Field_AutoComplete(field_t *edit);
 void Field_CompleteKeyname(void);
 void Field_CompleteFilename(const char *dir, const char *ext, qboolean stripExt, qboolean allowNonPureFilesOnDisk);
-void Field_CompleteCommand(char *cmd, qboolean doCommands, qboolean doCvars);
+void Field_CompleteCommand(const char *cmd, qboolean doCommands, qboolean doCvars);
+void Field_CompleteList(const char *list);
 
 /*
 =======================================================================================================================================
@@ -705,7 +709,7 @@ typedef enum {
 	CF_SSE2 = 1 << 6,
 	CF_ALTIVEC = 1 << 7
 } cpuFeatures_t;
-// centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
+// centralized and cleaned, that's the max string you can send to a Com_Printf/Com_DPrintf (above gets truncated)
 #define MAXPRINTMSG 4096
 
 typedef enum {
@@ -753,7 +757,7 @@ int Com_FilterPath(char *filter, char *name, int casesensitive);
 int Com_RealTime(qtime_t *qtime);
 qboolean Com_SafeMode(void);
 void Com_RunAndTimeServerPacket(netadr_t *evFrom, msg_t *buf);
-qboolean Com_IsVoipTarget(uint8_t *voipTargets, int voipTargetsSize, int playerNum);
+qboolean Com_IsVoipTarget(uint8_t *voipTargets, int voipTargetsSize, int clientNum);
 qboolean Com_GameIsSinglePlayer(void);
 void Com_StartupVariable(const char *match);
 // checks for and removes command line "+set var arg" constructs
@@ -793,12 +797,11 @@ extern cvar_t *com_legacyprotocol;
 #ifndef DEDICATED
 extern cvar_t *con_autochat;
 #endif
+extern cvar_t *com_demoext;
 #ifdef USE_RENDERER_DLOPEN
 extern cvar_t *com_renderer;
 #endif
-#ifndef DEDICATED
-extern cvar_t *con_autochat;
-#endif
+
 // com_speeds times
 extern int time_game;
 extern int time_frontend;
@@ -814,7 +817,6 @@ extern fileHandle_t com_journalDataFile;
 typedef enum {
 	TAG_FREE,
 	TAG_GENERAL,
-	TAG_BOTLIB,
 	TAG_RENDERER,
 	TAG_SMALL,
 	TAG_STATIC,
@@ -826,14 +828,13 @@ typedef enum {
 --- low memory ----
 server vm
 server clipmap
----mark---
+--- mark ---
 renderer initialization (shaders, etc.)
+UI vm
 cgame vm
 renderer map
 renderer models
-
----free---
-
+--- free ---
 temp file loading
 --- high memory ---
 */
@@ -843,14 +844,14 @@ temp file loading
 #define Z_Malloc(size) Z_MallocDebug(size, #size, __FILE__, __LINE__)
 #define S_Malloc(size) S_MallocDebug(size, #size, __FILE__, __LINE__)
 #define Z_Free(ptr) Z_FreeDebug(ptr, #ptr, __FILE__, __LINE__)
-void *Z_TagMallocDebug(int size, int tag, char *label, char *file, int line);	// NOT 0 filled memory
-void *Z_MallocDebug(int size, char *label, char *file, int line);				// returns 0 filled memory
-void *S_MallocDebug(int size, char *label, char *file, int line);				// returns 0 filled memory
+void *Z_TagMallocDebug(int size, int tag, char *label, char *file, int line); // NOT 0 filled memory
+void *Z_MallocDebug(int size, char *label, char *file, int line); // returns 0 filled memory
+void *S_MallocDebug(int size, char *label, char *file, int line); // returns 0 filled memory
 void Z_FreeDebug(void *ptr, char *label, char *file, int line );
 #else
-void *Z_TagMalloc(int size, int tag);	// NOT 0 filled memory
-void *Z_Malloc(int size);				// returns 0 filled memory
-void *S_Malloc(int size);				// NOT 0 filled memory only for small allocations
+void *Z_TagMalloc(int size, int tag); // NOT 0 filled memory
+void *Z_Malloc(int size); // returns 0 filled memory
+void *S_Malloc(int size); // NOT 0 filled memory only for small allocations
 void Z_Free(void *ptr);
 #endif
 int Z_FreeTags(int tag);
@@ -984,6 +985,7 @@ void Sys_Init(void);
 void *QDECL Sys_LoadGameDll(const char *name, intptr_t(QDECL **entryPoint)(int, ...), intptr_t(QDECL *systemcalls)(intptr_t, ...));
 void Sys_UnloadDll(void *dllHandle);
 qboolean Sys_DllExtension(const char *name);
+qboolean Sys_PathIsAbsolute(const char *path);
 char *Sys_GetCurrentUser(void);
 void QDECL Sys_Error(const char *error, ...) __attribute__((noreturn, format(printf, 1, 2)));
 void Sys_Quit(void) __attribute__((noreturn));

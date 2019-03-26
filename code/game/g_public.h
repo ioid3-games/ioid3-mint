@@ -178,7 +178,7 @@ typedef enum {
 	// the game needs to let the server system know where and how big the gentities
 	// are, so it can look at them directly without going through an interface
 
-	G_DROP_PLAYER,		//(int playerNum, const char *reason);
+	G_DROP_PLAYER,		//(int clientNum, const char *reason);
 	// kick a player off the server with a message
 
 	G_SEND_SERVER_COMMAND,	//(int clientNum, int localPlayerNum, const char *text);
@@ -241,9 +241,9 @@ typedef enum {
 	// access for bots to get and free a server client(FIXME?)
 	G_BOT_ALLOCATE_CLIENT,	//(void);
 
-	G_BOT_FREE_CLIENT,	//(int playerNum);
+	G_BOT_FREE_CLIENT,	//(int clientNum);
 
-	G_GET_USERCMD,	//(int playerNum, usercmd_t *cmd)
+	G_GET_USERCMD,	//(int clientNum, usercmd_t *cmd)
 
 	G_GET_ENTITY_TOKEN,	// qboolean(int *parseOffset, char *buffer, int bufferSize)
 	// Retrieves the next string token from the entity spawn text, returning
@@ -264,7 +264,7 @@ typedef enum {
 	                   //  const vec3_t *torsoAxis, qhandle_t torsoFrameModel, int torsoFrame, qhandle_t oldTorsoFrameModel, int oldTorsoFrame, float torsoFrac);
 	G_R_MODELBOUNDS, //(qhandle_t handle, vec3_t mins, vec3_t maxs, int startFrame, int endFrame, float frac);
 
-	G_CLIENT_COMMAND,	//(int playerNum, const char *command);
+	G_CLIENT_COMMAND,	//(int clientNum, const char *command);
 
 	G_CLIPTOENTITIES, //(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask);
 	G_CLIPTOENTITIESCAPSULE, //(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask);
@@ -277,9 +277,9 @@ typedef enum {
 	BOTLIB_LOAD_MAP,
 	BOTLIB_UPDATENTITY,
 	BOTLIB_TEST,
-	BOTLIB_GET_SNAPSHOT_ENTITY,		//(int playerNum, int ent);
-	BOTLIB_GET_CONSOLE_MESSAGE,		//(int playerNum, char *message, int size);
-	BOTLIB_USER_COMMAND,			//(int playerNum, usercmd_t *ucmd);
+	BOTLIB_GET_SNAPSHOT_ENTITY,		//(int clientNum, int ent);
+	BOTLIB_GET_CONSOLE_MESSAGE,		//(int clientNum, char *message, int size);
+	BOTLIB_USER_COMMAND,			//(int clientNum, usercmd_t *ucmd);
 
 	BOTLIB_AAS_BBOX_AREAS = 301,
 	BOTLIB_AAS_AREA_INFO,
@@ -349,19 +349,19 @@ typedef enum {
 
 	GAME_SHUTDOWN,	//(void);
 
-	GAME_PLAYER_CONNECT,	//(int playerNum, qboolean firstTime, qboolean isBot, int clientNum, int localPlayerNum);
+	GAME_PLAYER_CONNECT,	//(int clientNum, qboolean firstTime, qboolean isBot, int clientNum, int localPlayerNum);
 	// return NULL if the player is allowed to connect, otherwise return
 	// a text string with the reason for denial
 
-	GAME_PLAYER_BEGIN,				//(int playerNum);
+	GAME_PLAYER_BEGIN,				//(int clientNum);
 
-	GAME_PLAYER_USERINFO_CHANGED,	//(int playerNum);
+	GAME_PLAYER_USERINFO_CHANGED,	//(int clientNum);
 
-	GAME_PLAYER_DISCONNECT,			//(int playerNum);
+	GAME_PLAYER_DISCONNECT,			//(int clientNum);
 
 	GAME_CLIENT_COMMAND,			//(int clientNum);
 
-	GAME_PLAYER_THINK,				//(int playerNum);
+	GAME_PLAYER_THINK,				//(int clientNum);
 
 	GAME_RUN_FRAME,					//(int levelTime);
 
@@ -373,7 +373,7 @@ typedef enum {
 
 	BOTAI_START_FRAME,				//(int time);
 
-	GAME_SNAPSHOT_CALLBACK,         //(int entityNum, int playerNum);
+	GAME_SNAPSHOT_CALLBACK,         //(int entityNum, int clientNum);
 	// return qfalse if you don't want it to be added
 
 	GAME_VID_RESTART,				//(void);

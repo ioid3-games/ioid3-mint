@@ -106,7 +106,6 @@ static worldSector_t *SV_CreateworldSector(int depth, vec3_t mins, vec3_t maxs) 
 	vec3_t mins1, maxs1, mins2, maxs2;
 
 	anode = &sv_worldSectors[sv_numworldSectors];
-
 	sv_numworldSectors++;
 
 	if (depth == AREA_DEPTH) {
@@ -131,7 +130,6 @@ static worldSector_t *SV_CreateworldSector(int depth, vec3_t mins, vec3_t maxs) 
 	VectorCopy(maxs, maxs2);
 
 	maxs1[anode->axis] = mins2[anode->axis] = anode->dist;
-
 	anode->children[0] = SV_CreateworldSector(depth + 1, mins2, maxs2);
 	anode->children[1] = SV_CreateworldSector(depth + 1, mins1, maxs1);
 
@@ -404,9 +402,9 @@ int SV_AreaEntities(const vec3_t mins, const vec3_t maxs, int *entityList, int m
 }
 
 typedef struct {
-	vec3_t boxmins, boxmaxs; // enclose the test object along entire move
+	vec3_t boxmins, boxmaxs;	// enclose the test object along entire move
 	const float *mins;
-	const float *maxs; // size of the moving object
+	const float *maxs;			// size of the moving object
 	const float *start;
 	vec3_t end;
 	trace_t trace;
@@ -568,15 +566,17 @@ void SV_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec
 
 	clip.contentmask = contentmask;
 	clip.start = start;
-//	VectorCopy(clip.trace.endpos, clip.end);
+
+	//VectorCopy(clip.trace.endpos, clip.end);
 	VectorCopy(end, clip.end);
+
 	clip.mins = mins;
 	clip.maxs = maxs;
 	clip.passEntityNum = passEntityNum;
 	clip.traceType = type;
 	// create the bounding box of the entire move
-	// we can limit it to the part of the move not already clipped off by the world, which can be
-	// a significant savings for line of sight and shot traces
+	// we can limit it to the part of the move not already clipped off by the world,
+	// which can be a significant savings for line of sight and shot traces
 	for (i = 0; i < 3; i++) {
 		if (end[i] > start[i]) {
 			clip.boxmins[i] = clip.start[i] + clip.mins[i] - 1;
@@ -612,7 +612,7 @@ void SV_ClipToEntities(trace_t *results, const vec3_t start, const vec3_t mins, 
 	}
 
 	Com_Memset(&clip, 0, sizeof(moveclip_t));
-	// Skip clipping to world
+	// skip clipping to world
 	clip.trace.fraction = 1; // assume it goes the entire distance until shown otherwise
 
 	VectorCopy(end, clip.trace.endpos);
@@ -620,7 +620,8 @@ void SV_ClipToEntities(trace_t *results, const vec3_t start, const vec3_t mins, 
 	clip.trace.entityNum = ENTITYNUM_NONE;
 	clip.contentmask = contentmask;
 	clip.start = start;
-//	VectorCopy(clip.trace.endpos, clip.end);
+
+	//VectorCopy(clip.trace.endpos, clip.end);
 	VectorCopy(end, clip.end);
 
 	clip.mins = mins;
@@ -628,8 +629,8 @@ void SV_ClipToEntities(trace_t *results, const vec3_t start, const vec3_t mins, 
 	clip.passEntityNum = passEntityNum;
 	clip.traceType = type;
 	// create the bounding box of the entire move
-	// we can limit it to the part of the move not already clipped off by the world, which can be
-	// a significant savings for line of sight and shot traces
+	// we can limit it to the part of the move not already clipped off by the world,
+	// which can be a significant savings for line of sight and shot traces
 	for (i = 0; i < 3; i++) {
 		if (end[i] > start[i]) {
 			clip.boxmins[i] = clip.start[i] + clip.mins[i] - 1;

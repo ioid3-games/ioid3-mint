@@ -64,8 +64,8 @@ bot_input_t botinputs[MAX_CLIENTS];
 EA_Say
 =======================================================================================================================================
 */
-void EA_Say(int playerNum, char *str) {
-	trap_ClientCommand(playerNum, va("say %s", str));
+void EA_Say(int clientNum, char *str) {
+	trap_ClientCommand(clientNum, va("say %s", str));
 }
 
 /*
@@ -73,8 +73,8 @@ void EA_Say(int playerNum, char *str) {
 EA_SayTeam
 =======================================================================================================================================
 */
-void EA_SayTeam(int playerNum, char *str) {
-	trap_ClientCommand(playerNum, va("say_team %s", str));
+void EA_SayTeam(int clientNum, char *str) {
+	trap_ClientCommand(clientNum, va("say_team %s", str));
 }
 
 /*
@@ -82,8 +82,8 @@ void EA_SayTeam(int playerNum, char *str) {
 EA_Tell
 =======================================================================================================================================
 */
-void EA_Tell(int playerNum, int playerto, char *str) {
-	trap_ClientCommand(playerNum, va("tell %d, %s", playerto, str));
+void EA_Tell(int clientNum, int playerto, char *str) {
+	trap_ClientCommand(clientNum, va("tell %d, %s", playerto, str));
 }
 
 /*
@@ -91,8 +91,8 @@ void EA_Tell(int playerNum, int playerto, char *str) {
 EA_UseItem
 =======================================================================================================================================
 */
-void EA_UseItem(int playerNum, char *it) {
-	trap_ClientCommand(playerNum, va("use %s", it));
+void EA_UseItem(int clientNum, char *it) {
+	trap_ClientCommand(clientNum, va("use %s", it));
 }
 
 /*
@@ -100,8 +100,8 @@ void EA_UseItem(int playerNum, char *it) {
 EA_DropItem
 =======================================================================================================================================
 */
-void EA_DropItem(int playerNum, char *it) {
-	trap_ClientCommand(playerNum, va("drop %s", it));
+void EA_DropItem(int clientNum, char *it) {
+	trap_ClientCommand(clientNum, va("drop %s", it));
 }
 
 /*
@@ -109,8 +109,8 @@ void EA_DropItem(int playerNum, char *it) {
 EA_UseInv
 =======================================================================================================================================
 */
-void EA_UseInv(int playerNum, char *inv) {
-	trap_ClientCommand(playerNum, va("invuse %s", inv));
+void EA_UseInv(int clientNum, char *inv) {
+	trap_ClientCommand(clientNum, va("invuse %s", inv));
 }
 
 /*
@@ -118,8 +118,8 @@ void EA_UseInv(int playerNum, char *inv) {
 EA_DropInv
 =======================================================================================================================================
 */
-void EA_DropInv(int playerNum, char *inv) {
-	trap_ClientCommand(playerNum, va("invdrop %s", inv));
+void EA_DropInv(int clientNum, char *inv) {
+	trap_ClientCommand(clientNum, va("invdrop %s", inv));
 }
 
 /*
@@ -127,10 +127,10 @@ void EA_DropInv(int playerNum, char *inv) {
 EA_Gesture
 =======================================================================================================================================
 */
-void EA_Gesture(int playerNum) {
+void EA_Gesture(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_GESTURE;
 }
@@ -140,8 +140,8 @@ void EA_Gesture(int playerNum) {
 EA_Command
 =======================================================================================================================================
 */
-void EA_Command(int playerNum, char *command) {
-	trap_ClientCommand(playerNum, command);
+void EA_Command(int clientNum, char *command) {
+	trap_ClientCommand(clientNum, command);
 }
 
 /*
@@ -149,10 +149,10 @@ void EA_Command(int playerNum, char *command) {
 EA_SelectWeapon
 =======================================================================================================================================
 */
-void EA_SelectWeapon(int playerNum, int weapon) {
+void EA_SelectWeapon(int clientNum, int weapon) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->weapon = weapon;
 }
@@ -162,10 +162,10 @@ void EA_SelectWeapon(int playerNum, int weapon) {
 EA_Attack
 =======================================================================================================================================
 */
-void EA_Attack(int playerNum) {
+void EA_Attack(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_ATTACK;
 }
@@ -175,10 +175,10 @@ void EA_Attack(int playerNum) {
 EA_Talk
 =======================================================================================================================================
 */
-void EA_Talk(int playerNum) {
+void EA_Talk(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_TALK;
 }
@@ -188,10 +188,10 @@ void EA_Talk(int playerNum) {
 EA_Use
 =======================================================================================================================================
 */
-void EA_Use(int playerNum) {
+void EA_Use(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_USE;
 }
@@ -201,10 +201,10 @@ void EA_Use(int playerNum) {
 EA_Respawn
 =======================================================================================================================================
 */
-void EA_Respawn(int playerNum) {
+void EA_Respawn(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_RESPAWN;
 }
@@ -214,10 +214,10 @@ void EA_Respawn(int playerNum) {
 EA_Jump
 =======================================================================================================================================
 */
-void EA_Jump(int playerNum) {
+void EA_Jump(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	if (bi->actionflags & ACTION_JUMPEDLASTFRAME) {
 		bi->actionflags &= ~ACTION_JUMP;
@@ -231,10 +231,10 @@ void EA_Jump(int playerNum) {
 EA_DelayedJump
 =======================================================================================================================================
 */
-void EA_DelayedJump(int playerNum) {
+void EA_DelayedJump(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	if (bi->actionflags & ACTION_JUMPEDLASTFRAME) {
 		bi->actionflags &= ~ACTION_DELAYEDJUMP;
@@ -248,10 +248,10 @@ void EA_DelayedJump(int playerNum) {
 EA_Crouch
 =======================================================================================================================================
 */
-void EA_Crouch(int playerNum) {
+void EA_Crouch(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_CROUCH;
 }
@@ -261,10 +261,10 @@ void EA_Crouch(int playerNum) {
 EA_Action
 =======================================================================================================================================
 */
-void EA_Action(int playerNum, int action) {
+void EA_Action(int clientNum, int action) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= action;
 }
@@ -274,10 +274,10 @@ void EA_Action(int playerNum, int action) {
 EA_MoveUp
 =======================================================================================================================================
 */
-void EA_MoveUp(int playerNum) {
+void EA_MoveUp(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_MOVEUP;
 }
@@ -287,10 +287,10 @@ void EA_MoveUp(int playerNum) {
 EA_MoveDown
 =======================================================================================================================================
 */
-void EA_MoveDown(int playerNum) {
+void EA_MoveDown(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_MOVEDOWN;
 }
@@ -300,10 +300,10 @@ void EA_MoveDown(int playerNum) {
 EA_MoveForward
 =======================================================================================================================================
 */
-void EA_MoveForward(int playerNum) {
+void EA_MoveForward(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_MOVEFORWARD;
 }
@@ -313,10 +313,10 @@ void EA_MoveForward(int playerNum) {
 EA_MoveBack
 =======================================================================================================================================
 */
-void EA_MoveBack(int playerNum) {
+void EA_MoveBack(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_MOVEBACK;
 }
@@ -326,10 +326,10 @@ void EA_MoveBack(int playerNum) {
 EA_MoveLeft
 =======================================================================================================================================
 */
-void EA_MoveLeft(int playerNum) {
+void EA_MoveLeft(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_MOVELEFT;
 }
@@ -339,10 +339,10 @@ void EA_MoveLeft(int playerNum) {
 EA_MoveRight
 =======================================================================================================================================
 */
-void EA_MoveRight(int playerNum) {
+void EA_MoveRight(int clientNum) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->actionflags |= ACTION_MOVERIGHT;
 }
@@ -352,10 +352,10 @@ void EA_MoveRight(int playerNum) {
 EA_Move
 =======================================================================================================================================
 */
-void EA_Move(int playerNum, vec3_t dir, float speed) {
+void EA_Move(int clientNum, vec3_t dir, float speed) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	VectorCopy(dir, bi->dir);
 	// cap speed
@@ -373,10 +373,10 @@ void EA_Move(int playerNum, vec3_t dir, float speed) {
 EA_View
 =======================================================================================================================================
 */
-void EA_View(int playerNum, vec3_t viewangles) {
+void EA_View(int clientNum, vec3_t viewangles) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	VectorCopy(viewangles, bi->viewangles);
 }
@@ -386,7 +386,7 @@ void EA_View(int playerNum, vec3_t viewangles) {
 EA_EndRegular
 =======================================================================================================================================
 */
-void EA_EndRegular(int playerNum, float thinktime) {
+void EA_EndRegular(int clientNum, float thinktime) {
 }
 
 /*
@@ -394,10 +394,10 @@ void EA_EndRegular(int playerNum, float thinktime) {
 EA_GetInput
 =======================================================================================================================================
 */
-void EA_GetInput(int playerNum, float thinktime, bot_input_t *input) {
+void EA_GetInput(int clientNum, float thinktime, bot_input_t *input) {
 	bot_input_t *bi;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 	bi->thinktime = thinktime;
 	Com_Memcpy(input, bi, sizeof(bot_input_t));
 }
@@ -407,11 +407,11 @@ void EA_GetInput(int playerNum, float thinktime, bot_input_t *input) {
 EA_ResetInput
 =======================================================================================================================================
 */
-void EA_ResetInput(int playerNum) {
+void EA_ResetInput(int clientNum) {
 	bot_input_t *bi;
 	int jumped = qfalse;
 
-	bi = &botinputs[playerNum];
+	bi = &botinputs[clientNum];
 
 	bi->thinktime = 0;
 	VectorClear(bi->dir);

@@ -22,7 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-// g_local.h -- local definitions for game module
+/**************************************************************************************************************************************
+ Local definitions for game module.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
@@ -32,20 +34,19 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define BODY_QUEUE_SIZE 64
 #define FRAMETIME 100 // msec
 #define CARNAGE_REWARD_TIME 3000
-#define REWARD_SPRITE_TIME 2000
+#define REWARD_TIME 2000
 #define INTERMISSION_DELAY_TIME 1000
 #define SP_INTERMISSION_DELAY_TIME 5000
 // gentity->flags
-#define FL_GODMODE			0x00000010
-#define FL_NOTARGET			0x00000020
-#define FL_TEAMSLAVE		0x00000400 // not the first on the team
-#define FL_NO_KNOCKBACK		0x00000800
-#define FL_DROPPED_ITEM		0x00001000
-#define FL_NO_BOTS			0x00002000 // spawn point not for bot use
-#define FL_NO_HUMANS		0x00004000 // spawn point just for bots
-#define FL_FORCE_GESTURE	0x00008000 // force gesture on player
-
-// movers are things like doors, plats, buttons, etc
+#define FL_GODMODE			0x00000001
+#define FL_NOTARGET			0x00000002
+#define FL_TEAMSLAVE		0x00000004 // not the first on the team
+#define FL_NO_KNOCKBACK		0x00000008
+#define FL_DROPPED_ITEM		0x00000010
+#define FL_NO_BOTS			0x00000020 // spawn point not for bot use
+#define FL_NO_HUMANS		0x00000040 // spawn point just for bots
+#define FL_FORCE_GESTURE	0x00000080 // force gesture on client
+// movers are things like doors, plats, buttons, etc.
 typedef enum {
 	MOVER_POS1,
 	MOVER_POS2,
@@ -56,30 +57,29 @@ typedef enum {
 #define SP_PODIUM_MODEL "models/mapobjects/podium/podium4.md3"
 
 typedef struct gentity_s gentity_t;
-typedef struct gplayer_s gplayer_t;
+typedef struct gclient_s gclient_t;
 
 struct gentity_s {
-	entityShared_t r;				// shared by both the server system and game
-	entityState_t s;				// communicated by server to clients
+	entityState_t s;			// communicated by server to clients
+	entityShared_t r;			// shared by both the server system and game
+	//=================================================================================================================================
 	// DO NOT MODIFY ANYTHING ABOVE THIS, THE SERVER EXPECTS THE FIELDS IN THAT ORDER!
-	//================================
-	struct gplayer_s *player;			// NULL if not a player
+	//=================================================================================================================================
+	struct gclient_s *client;	// NULL if not a client
 	qboolean inuse;
 	char *classname;			// set in QuakeEd
-	int spawnflags;			// set in QuakeEd
-	qboolean neverFree;		// if true, FreeEntity will only unlink, bodyque uses this
-	int flags;				// FL_* variables
+	int spawnflags;				// set in QuakeEd
+	qboolean neverFree;			// if true, FreeEntity will only unlink, bodyque uses this
+	int flags;					// FL_* variables
 	char *model;
 	char *model2;
-	int freetime;			// level.time when the object was freed
-	int eventTime;			// events will be cleared EVENT_VALID_MSEC after set
+	int freetime;				// level.time when the object was freed
+	int eventTime;				// events will be cleared EVENT_VALID_MSEC after set
 	qboolean freeAfterEvent;
 	qboolean unlinkAfterEvent;
-	qboolean physicsObject;	// if true, it can be pushed by movers and fall off edges, all game items are physicsObjects,
-	float physicsBounce;	// 1.0 = continuous bounce, 0.0 = no bounce
-	int clipmask;			// brushes with this content value will be collided against
-							// when moving.  items and corpses do not collide against
-							// players, for instance
+	qboolean physicsObject;		// if true, it can be pushed by movers and fall off edges, all game items are physicsObjects
+	float physicsBounce;		// 1.0 = continuous bounce, 0.0 = no bounce
+	int clipmask;				// brushes with this content value will be collided against when moving. items and corpses do not collide against players, for instance
 	// movers
 	moverState_t moverState;
 	int soundPos1;
@@ -92,7 +92,7 @@ struct gentity_s {
 	gentity_t *prevTrain;
 	vec3_t pos1, pos2;
 	char *message;
-	int timestamp;		// body queue sinking, etc.
+	int timestamp;				// body queue sinking, etc.
 	char *target;
 	char *targetname;
 	char *team;
@@ -103,7 +103,7 @@ struct gentity_s {
 	vec3_t movedir;
 	int nextthink;
 	void (*think)(gentity_t *self);
-	void (*reached)(gentity_t *self);	// movers call this when hitting endpoint
+	void (*reached)(gentity_t *self); // movers call this when hitting endpoint
 	void (*blocked)(gentity_t *self, gentity_t *other);
 	void (*touch)(gentity_t *self, gentity_t *other, trace_t *trace);
 	void (*use)(gentity_t *self, gentity_t *other, gentity_t *activator);
@@ -111,11 +111,11 @@ struct gentity_s {
 	void (*die)(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
 	qboolean (*snapshotCallback)(gentity_t *self, gentity_t *player);
 	int pain_debounce_time;
-	int fly_sound_debounce_time;	// wind tunnel
+	int fly_sound_debounce_time; // wind tunnel
 	int health;
 	qboolean takedamage;
 	int damage;
-	int splashDamage;	// quad will increase this without increasing radius
+	int splashDamage;			// quad will increase this without increasing radius
 	int splashRadius;
 	int methodOfDeath;
 	int splashMethodOfDeath;
@@ -124,18 +124,17 @@ struct gentity_s {
 	gentity_t *enemy;
 	gentity_t *activator;
 	gentity_t *teamchain;		// next entity in team
-	gentity_t *teammaster;	// master of the team
-#ifdef MISSIONPACK
+	gentity_t *teammaster;		// master of the team
 	int kamikazeTime;
 	int kamikazeShockTime;
-#endif
 	int watertype;
 	int waterlevel;
 	int noise_index;
+	int radius;
 	// timing variables
 	float wait;
 	float random;
-	gitem_t *item;			// for bonus items
+	gitem_t *item;				// for bonus items
 	// dlights
 	vec3_t dl_color;
 	char *dl_stylestring;
@@ -167,8 +166,8 @@ typedef enum {
 } spectatorState_t;
 
 typedef enum {
-	TEAM_BEGIN,	// Beginning a team game, spawn at base
-	TEAM_ACTIVE	// Now actively playing
+	TEAM_BEGIN, // beginning a team game, spawn at base
+	TEAM_ACTIVE // now actively playing
 } playerTeamStateState_t;
 
 typedef struct {
@@ -178,11 +177,9 @@ typedef struct {
 	float lastreturnedflag;
 	float lastfraggedcarrier;
 } playerTeamState_t;
-
-// player data that stays across multiple levels or tournament restarts
-// this is achieved by writing all the data to cvar strings at game shutdown
-// time and reading them back at connection time.  Anything added here
-// MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
+// client data that stays across multiple levels or tournament restarts
+// this is achieved by writing all the data to cvar strings at game shutdown time and reading them back at connection time.
+// anything added here MUST be dealt with in G_InitSessionData()/G_ReadSessionData()/G_WriteSessionData()
 typedef struct {
 	team_t sessionTeam;
 	int spectatorNum;		// for determining next-in-line to play
@@ -192,8 +189,8 @@ typedef struct {
 	qboolean teamLeader;	// true when this player is a team leader
 } playerSession_t;
 
-#define MAX_NETNAME			36
-#define MAX_VOTE_COUNT		3
+#define MAX_NETNAME 36
+#define MAX_VOTE_COUNT 3
 // player data that stays across multiple respawns, but is cleared on each level change or team change at PlayerBegin()
 typedef struct {
 	int connectionNum;		// index in level.connections
@@ -224,7 +221,7 @@ typedef struct {
 } playerMarker_t;
 
 // this structure is cleared on each PlayerSpawn(),
-// except for 'player->pers' and 'player->sess'
+// except for 'player->pers' and 'client->sess'
 struct gplayer_s {
 	// ps MUST be the first element, because the server expects it
 	playerState_t ps;				// communicated by server to clients
@@ -255,7 +252,7 @@ struct gplayer_s {
 	int accuracy_shots;		// total number of shots
 	int accuracy_hits;		// total number of hits
 	int lastkilled_player;	// last player that this player killed
-	int lasthurt_player;	// last player that damaged this player
+	int lasthurt_client;	// last player that damaged this player
 	int lasthurt_mod;		// type of damage the player did
 	// timers
 	int respawnTime;		// can respawn when time > this, force after g_forcerespwan
@@ -290,7 +287,7 @@ typedef struct gconnection_s {
 #define MAX_SPAWN_VARS_CHARS 4096
 
 typedef struct {
-	struct gplayer_s *players;		// [maxplayers]
+	struct gplayer_s *players;		// [maxclients]
 	struct gentity_s *gentities;
 	int gentitySize;
 	int num_entities;		// MAX_CLIENTS <= num_entities <= ENTITYNUM_MAX_NORMAL
@@ -298,7 +295,7 @@ typedef struct {
 	int warmupTime;			// restart match at this time
 	fileHandle_t logFile;
 	// store latched cvars here that we want to get at often
-	int maxplayers;
+	int maxclients;
 	int maxconnections;
 	int framenum;
 	int time;					// in msec
@@ -313,8 +310,8 @@ typedef struct {
 	int numConnectedPlayers;
 	int numNonSpectatorPlayers;	// includes connecting players
 	int numPlayingPlayers;		// connected, non-spectators
-	int sortedPlayers[MAX_CLIENTS];		// sorted by score
-	int follow1, follow2;		// playerNums for auto-follow spectators
+	int sortedClients[MAX_CLIENTS];		// sorted by score
+	int follow1, follow2;		// clientNums for auto-follow spectators
 	int snd_fry;				// sound index for standing in lava
 	int warmupModificationCount;	// for detecting if g_warmup is changed
 	int botReportModificationCount;
@@ -393,7 +390,7 @@ void SaveRegisteredItems(void);
 int G_FindConfigstringIndex(char *name, int start, int max, qboolean create);
 int G_ModelIndex(char *name);
 int G_SoundIndex(char *name);
-void trap_SendServerCommand(int playerNum, char *cmd);
+void trap_SendServerCommand(int clientNum, char *cmd);
 void G_TeamCommand(team_t team, char *cmd);
 void G_KillBox(gentity_t *ent);
 gentity_t *G_Find(gentity_t *from, int fieldofs, const char *match);
@@ -490,7 +487,8 @@ void G_UndoTimeShiftFor(gentity_t *ent);
 void G_UnTimeShiftClient(gentity_t *client);
 void G_PredictPlayerMove(gentity_t *ent, float frametime);
 // g_svcmds.c
-qboolean ConsoleCommand(void);
+qboolean G_ConsoleCommand(void);
+qboolean G_ConsoleCompleteArgument(int completeArgument);
 void G_RegisterCommands(void);
 void G_ProcessIPBans(void);
 qboolean G_FilterPacket(char *from);
@@ -516,14 +514,15 @@ void QDECL G_DPrintf(const char *fmt, ...)__attribute__((format(printf, 1, 2)));
 void QDECL G_Printf(const char *fmt, ...)__attribute__((format(printf, 1, 2)));
 void QDECL G_Error(const char *fmt, ...)__attribute__((noreturn, format(printf, 1, 2)));
 // g_client.c
-char *PlayerConnect(int playerNum, qboolean firstTime, qboolean isBot, int connectionNum, int localPlayerNum);
-void PlayerUserinfoChanged(int playerNum);
-void PlayerDisconnect(int playerNum);
-void PlayerBegin(int playerNum);
+char *PlayerConnect(int clientNum, qboolean firstTime, qboolean isBot, int connectionNum, int localPlayerNum);
+void PlayerUserinfoChanged(int clientNum);
+qboolean PlayerDisconnect(int clientNum, qboolean force);
+void PlayerDisconnect(int clientNum);
+void PlayerBegin(int clientNum);
 void ClientCommand(int connectionNum);
 float PlayerHandicap(gplayer_t *player);
 // g_active.c
-void PlayerThink(int playerNum);
+void PlayerThink(int clientNum);
 void PlayerEndFrame(gentity_t *ent);
 void G_RunPlayer(gentity_t *ent);
 // g_team.c
@@ -544,12 +543,19 @@ void G_InitBots(qboolean restart);
 char *G_GetBotInfoByNumber(int num);
 char *G_GetBotInfoByName(const char *name);
 void G_CheckBotSpawn(void);
-void G_RemoveQueuedBotBegin(int playerNum);
-qboolean G_BotConnect(int playerNum, qboolean restart);
+void G_RemoveQueuedBotBegin(int clientNum);
+qboolean G_BotConnect(int clientNum, qboolean restart);
 void Svcmd_AddBot_f(void);
+void Svcmd_AddBotComplete(char *args, int argNum);
 void Svcmd_BotList_f(void);
 void BotInterbreedEndMatch(void);
+//
+// g_botlib.c
+//
+void G_BotInitBotLib(void);
+//
 // ai_main.c
+//
 #define MAX_FILEPATH 144
 // bot settings
 typedef struct bot_settings_s {
@@ -577,7 +583,7 @@ extern gentity_t g_entities[MAX_GENTITIES];
 extern vmCvar_t g_gametype;
 extern vmCvar_t g_dedicated;
 extern vmCvar_t g_cheats;
-extern vmCvar_t g_maxplayers;		// allow this many total, including spectators
+extern vmCvar_t g_maxclients;		// allow this many total, including spectators
 extern vmCvar_t g_maxGamePlayers;	// allow this many active
 extern vmCvar_t g_restarted;
 extern vmCvar_t g_dmflags;
@@ -621,3 +627,5 @@ extern vmCvar_t g_rankings;
 extern vmCvar_t g_singlePlayer;
 extern vmCvar_t g_proxMineTimeout;
 extern vmCvar_t g_playerCapsule;
+extern	vmCvar_t g_instagib;
+

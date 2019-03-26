@@ -45,7 +45,7 @@ qboolean CG_AddCustomSurface(const refEntity_t *re) {
 		case RT_RAIL_CORE:
 			CG_SurfaceRailCore(re);
 			return qtrue;
-		case RT_LIGHTNING:
+		case RT_BEAMGUN:
 			CG_SurfaceLightningBolt(re);
 			return qtrue;
 		case RT_BEAM:

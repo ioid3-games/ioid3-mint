@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, 
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -290,7 +284,6 @@ void Svcmd_AddIP_f(void) {
 	}
 
 	trap_Argv(1, str, sizeof(str));
-
 	AddIP(str);
 }
 
@@ -352,38 +345,38 @@ void Svcmd_EntityList_f(void) {
 			case ET_PLAYER:
 				G_Printf("ET_PLAYER           ");
 				break;
-			case ET_ITEM:
-				G_Printf("ET_ITEM             ");
-				break;
 			case ET_MISSILE:
 				G_Printf("ET_MISSILE          ");
+				break;
+			case ET_TEAM:
+				G_Printf("ET_TEAM             ");
+				break;
+			case ET_ITEM:
+				G_Printf("ET_ITEM             ");
 				break;
 			case ET_MOVER:
 				G_Printf("ET_MOVER            ");
 				break;
-			case ET_BEAM:
-				G_Printf("ET_BEAM             ");
-				break;
-			case ET_PORTAL:
-				G_Printf("ET_PORTAL           ");
+			case ET_CORONA:
+				G_Printf("ET_CORONA           ");
 				break;
 			case ET_SPEAKER:
 				G_Printf("ET_SPEAKER          ");
 				break;
-			case ET_PUSH_TRIGGER:
-				G_Printf("ET_PUSH_TRIGGER     ");
+			case ET_PORTAL:
+				G_Printf("ET_PORTAL           ");
+				break;
+			case ET_BEAM:
+				G_Printf("ET_BEAM             ");
 				break;
 			case ET_TELEPORT_TRIGGER:
 				G_Printf("ET_TELEPORT_TRIGGER ");
 				break;
+			case ET_PUSH_TRIGGER:
+				G_Printf("ET_PUSH_TRIGGER     ");
+				break;
 			case ET_INVISIBLE:
 				G_Printf("ET_INVISIBLE        ");
-				break;
-			case ET_GRAPPLE:
-				G_Printf("ET_GRAPPLE          ");
-				break;
-			case ET_CORONA:
-				G_Printf("ET_CORONA           ");
 				break;
 			default:
 				G_Printf("%3i                 ", check->s.eType);
@@ -406,13 +399,13 @@ PlayerForString
 int PlayerForString(const char *s){
 	gplayer_t *cl;
 	int idnum;
-	char cleanName[MAX_STRING_CHARS];
+	char cleanName[MAX_NETNAME];
 
 	// numeric values could be slot numbers
 	if (StringIsInteger(s)) {
 		idnum = atoi(s);
 
-		if (idnum >= 0 && idnum < level.maxplayers) {
+		if (idnum >= 0 && idnum < level.maxclients) {
 			cl = &level.players[idnum];
 
 			if (cl->pers.connected == CON_CONNECTED) {
@@ -421,7 +414,7 @@ int PlayerForString(const char *s){
 		}
 	}
 	// check for a name match
-	for (idnum = 0, cl = level.players; idnum < level.maxplayers; idnum++, cl++) {
+	for (idnum = 0, cl = level.players; idnum < level.maxclients; idnum++, cl++) {
 		if (cl->pers.connected != CON_CONNECTED) {
 			continue;
 		}
@@ -441,13 +434,51 @@ int PlayerForString(const char *s){
 
 /*
 =======================================================================================================================================
+G_Field_CompletePlayerName
+=======================================================================================================================================
+*/
+void G_Field_CompletePlayerName(void) {
+	gplayer_t *cl;
+	int idnum;
+	char cleanName[MAX_NETNAME];
+	char list[MAX_CLIENTS * MAX_NETNAME];
+	int listTotalLength;
+
+	// ZTM: FIXME: have to clear whole list because BG_AddStringToList doesn't properly terminate list
+	memset(list, 0, sizeof(list));
+
+	listTotalLength = 0;
+
+	for (idnum = 0, cl = level.players; idnum < level.maxclients ; idnum++, cl++) {
+		if (cl->pers.connected != CON_CONNECTED) {
+			continue;
+		}
+
+		Q_strncpyz(cleanName, cl->pers.netname, sizeof(cleanName));
+		Q_CleanStr(cleanName);
+		// use quotes if there is a space in the name
+		if (strchr(cleanName, ' ') != NULL) {
+			BG_AddStringToList(list, sizeof(list), &listTotalLength, va( "\"%s\"", cleanName));
+		} else {
+			BG_AddStringToList(list, sizeof(list), &listTotalLength, cleanName);
+		}
+	}
+
+	if (listTotalLength > 0) {
+		list[listTotalLength++] = 0;
+		trap_Field_CompleteList(list);
+	}
+}
+
+/*
+=======================================================================================================================================
 Svcmd_ForceTeam_f
 
 forceTeam <player> <team>.
 =======================================================================================================================================
 */
 void Svcmd_ForceTeam_f(void) {
-	int playerNum;
+	int clientNum;
 	char str[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 3) {
@@ -457,14 +488,28 @@ void Svcmd_ForceTeam_f(void) {
 	// find the player
 	trap_Argv(1, str, sizeof(str));
 
-	playerNum = PlayerForString(str);
+	clientNum = PlayerForString(str);
 
-	if (playerNum == -1) {
+	if (clientNum == -1) {
 		return;
 	}
 	// set the team
 	trap_Argv(2, str, sizeof(str));
-	SetTeam(&g_entities[playerNum], str);
+	SetTeam(&g_entities[clientNum], str);
+}
+
+/*
+=======================================================================================================================================
+Svcmd_ForceTeamComplete
+=======================================================================================================================================
+*/
+void Svcmd_ForceTeamComplete(char *args, int argNum) {
+
+	if (argNum == 2) {
+		G_Field_CompletePlayerName();
+	} else if (argNum == 3) {
+		trap_Field_CompleteList("blue\0follow1\0follow2\0free\0red\0scoreboard\0spectator\0");
+	}
 }
 
 /*
@@ -475,7 +520,7 @@ teleport <player> <x> <y> <z> [yaw].
 =======================================================================================================================================
 */
 void Svcmd_Teleport_f(void) {
-	int playerNum;
+	int clientNum;
 	gentity_t *ent;
 	char str[MAX_TOKEN_CHARS];
 	vec3_t position, angles;
@@ -491,9 +536,9 @@ void Svcmd_Teleport_f(void) {
 	}
 	// find the player
 	trap_Argv(1, str, sizeof(str));
-	playerNum = PlayerForString(str);
+	clientNum = PlayerForString(str);
 
-	if (playerNum == -1) {
+	if (clientNum == -1) {
 		return;
 	}
 	// set the position
@@ -506,7 +551,7 @@ void Svcmd_Teleport_f(void) {
 	trap_Argv(4, str, sizeof(str));
 	position[2] = atoi(str);
 
-	ent = &g_entities[playerNum];
+	ent = &g_entities[clientNum];
 	VectorCopy(ent->s.angles, angles);
 
 	if (trap_Argc() > 5) {
@@ -519,6 +564,18 @@ void Svcmd_Teleport_f(void) {
 
 /*
 =======================================================================================================================================
+Svcmd_TeleportComplete
+=======================================================================================================================================
+*/
+void Svcmd_TeleportComplete(char *args, int argNum) {
+
+	if (argNum == 2) {
+		G_Field_CompletePlayerName();
+	}
+}
+
+/*
+=======================================================================================================================================
 Svcmd_ListIPs_f
 =======================================================================================================================================
 */
@@ -526,7 +583,6 @@ void Svcmd_ListIPs_f(void) {
 	trap_Cmd_ExecuteText(EXEC_NOW, "g_banIPs\n");
 }
 
-#if 0
 /*
 =======================================================================================================================================
 Svcmd_Say_f
@@ -551,7 +607,7 @@ Svcmd_Tell_f
 */
 void Svcmd_Tell_f(void) {
 	char arg[MAX_TOKEN_CHARS];
-	int playerNum;
+	int clientNum;
 	gentity_t *target;
 	char *p;
 
@@ -562,13 +618,13 @@ void Svcmd_Tell_f(void) {
 
 	trap_Argv(1, arg, sizeof(arg));
 
-	playerNum = PlayerForString(arg);
+	clientNum = PlayerForString(arg);
 
-	if (playerNum == -1) {
+	if (clientNum == -1) {
 		return;
 	}
 
-	target = &level.gentities[playerNum];
+	target = &level.gentities[clientNum];
 
 	if (!target->inuse || !target->player) {
 		return;
@@ -578,35 +634,47 @@ void Svcmd_Tell_f(void) {
 
 	G_Say(NULL, target, SAY_TELL, p);
 }
-#endif
+
+/*
+=======================================================================================================================================
+Svcmd_TellComplete
+=======================================================================================================================================
+*/
+void Svcmd_TellComplete(char *args, int argNum) {
+
+	if (argNum == 2) {
+		G_Field_CompletePlayerName();
+	}
+}
 
 struct svcmd {
 	char *cmd;
 	qboolean dedicated;
 	void (*function)(void);
+	void (*complete)(char *, int);
 } svcmds[] = {
 	{"abort_podium", qfalse, Svcmd_AbortPodium_f},
-	{"addbot", qfalse, Svcmd_AddBot_f},
+	{"addbot", qfalse, Svcmd_AddBot_f, Svcmd_AddBotComplete},
 	{"addip", qfalse, Svcmd_AddIP_f},
 	{"botlist", qfalse, Svcmd_BotList_f},
 	{"botreport", qfalse, Svcmd_BotTeamplayReport_f},
 	{"entityList", qfalse, Svcmd_EntityList_f},
-	{"forceTeam", qfalse, Svcmd_ForceTeam_f},
+	{"forceTeam", qfalse, Svcmd_ForceTeam_f, Svcmd_ForceTeamComplete},
 	{"listip", qfalse, Svcmd_ListIPs_f},
 	{"removeip", qfalse, Svcmd_RemoveIP_f},
-	//{"say", qtrue, Svcmd_Say_f},
-	{"teleport", qfalse, Svcmd_Teleport_f},
-	//{"tell", qtrue, Svcmd_Tell_f},
+	{"say", qtrue, Svcmd_Say_f},
+	{"teleport", qfalse, Svcmd_Teleport_f, Svcmd_TeleportComplete},
+	{"tell", qtrue, Svcmd_Tell_f, Svcmd_TellComplete},
 };
 
 const size_t numSvCmds = ARRAY_LEN(svcmds);
 
 /*
 =======================================================================================================================================
-ConsoleCommand
+G_ConsoleCommand
 =======================================================================================================================================
 */
-qboolean ConsoleCommand(void) {
+qboolean G_ConsoleCommand(void) {
 	char cmd[MAX_TOKEN_CHARS];
 	struct svcmd *command;
 
@@ -627,6 +695,34 @@ qboolean ConsoleCommand(void) {
 	}
 
 	command->function();
+	return qtrue;
+}
+
+/*
+=======================================================================================================================================
+G_ConsoleCompleteArgument
+=======================================================================================================================================
+*/
+qboolean G_ConsoleCompleteArgument(int completeArgument) {
+	char args[BIG_INFO_STRING];
+	char cmd[MAX_TOKEN_CHARS];
+	struct svcmd *command;
+
+	trap_Argv(0, cmd, sizeof(cmd));
+
+	command = bsearch(cmd, svcmds, numSvCmds, sizeof(struct svcmd), cmdcmp);
+
+	if (!command || !command->complete) {
+		return qfalse;
+	}
+
+	if (command->dedicated && !g_dedicated.integer) {
+		return qfalse;
+	}
+
+	trap_LiteralArgs(args, sizeof (args));
+
+	command->complete(args, completeArgument);
 	return qtrue;
 }
 

@@ -163,8 +163,8 @@ void trap_SetNetFields(int entityStateSize, int entityNetworkSize, vmNetField_t 
 								playerStateSize, playerNetworkSize, playerStateFields, numPlayerStateFields);
 }
 
-void trap_DropPlayer(int playerNum, const char *reason) {
-	syscall(G_DROP_PLAYER, playerNum, reason);
+void trap_DropPlayer(int clientNum, const char *reason) {
+	syscall(G_DROP_PLAYER, clientNum, reason);
 }
 
 void trap_SendServerCommandEx(int clientNum, int localPlayerNum, const char *text) {
@@ -260,12 +260,12 @@ int trap_BotAllocateClient(void) {
 	return syscall(G_BOT_ALLOCATE_CLIENT);
 }
 
-void trap_BotFreeClient(int playerNum) {
-	syscall(G_BOT_FREE_CLIENT, playerNum);
+void trap_BotFreeClient(int clientNum) {
+	syscall(G_BOT_FREE_CLIENT, clientNum);
 }
 
-void trap_GetUsercmd(int playerNum, usercmd_t *cmd) {
-	syscall(G_GET_USERCMD, playerNum, cmd);
+void trap_GetUsercmd(int clientNum, usercmd_t *cmd) {
+	syscall(G_GET_USERCMD, clientNum, cmd);
 }
 
 qboolean trap_GetEntityToken(int *parseOffset, char *buffer, int bufferSize) {
@@ -333,8 +333,8 @@ int trap_R_ModelBounds(clipHandle_t handle, vec3_t mins, vec3_t maxs, int startF
 	return syscall(G_R_MODELBOUNDS, handle, mins, maxs, startFrame, endFrame, PASSFLOAT(frac));
 }
 
-void trap_ClientCommand(int playerNum, const char *command) {
-	syscall(G_CLIENT_COMMAND, playerNum, command);
+void trap_ClientCommand(int clientNum, const char *command) {
+	syscall(G_CLIENT_COMMAND, clientNum, command);
 }
 
 // BotLib traps start here
@@ -370,16 +370,16 @@ int trap_BotLibTest(int parm0, char *parm1, vec3_t parm2, vec3_t parm3) {
 	return syscall(BOTLIB_TEST, parm0, parm1, parm2, parm3);
 }
 
-int trap_BotGetSnapshotEntity(int playerNum, int sequence) {
-	return syscall(BOTLIB_GET_SNAPSHOT_ENTITY, playerNum, sequence);
+int trap_BotGetSnapshotEntity(int clientNum, int sequence) {
+	return syscall(BOTLIB_GET_SNAPSHOT_ENTITY, clientNum, sequence);
 }
 
-int trap_BotGetServerCommand(int playerNum, char *message, int size) {
-	return syscall(BOTLIB_GET_CONSOLE_MESSAGE, playerNum, message, size);
+int trap_BotGetServerCommand(int clientNum, char *message, int size) {
+	return syscall(BOTLIB_GET_CONSOLE_MESSAGE, clientNum, message, size);
 }
 
-void trap_BotUserCommand(int playerNum, usercmd_t *ucmd) {
-	syscall(BOTLIB_USER_COMMAND, playerNum, ucmd);
+void trap_BotUserCommand(int clientNum, usercmd_t *ucmd) {
+	syscall(BOTLIB_USER_COMMAND, clientNum, ucmd);
 }
 
 int trap_AAS_Loaded(void) {

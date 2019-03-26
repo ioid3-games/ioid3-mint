@@ -170,5 +170,5 @@ void BotInitPhysicsSettings(void);
 // shutdown movement AI
 void BotShutdownMoveAI(void);
 
-#define BotAllocMoveState(_playerNum) (_playerNum + 1)
-#define BotFreeMoveState(_playerNum) // nothing
+#define BotAllocMoveState(_clientNum) (_clientNum + 1)
+#define BotFreeMoveState(_clientNum) // nothing

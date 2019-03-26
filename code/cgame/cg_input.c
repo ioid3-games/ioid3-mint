@@ -833,7 +833,7 @@ IN_CenterView
 void IN_CenterView(int localPlayerNum) {
 	playerState_t *ps;
 
-	if (!cg.snap || cg.snap->playerNums[localPlayerNum] == -1) {
+	if (!cg.snap || cg.snap->clientNums[localPlayerNum] == -1) {
 		return;
 	}
 

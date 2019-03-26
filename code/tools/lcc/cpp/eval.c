@@ -122,7 +122,7 @@ eval(Tokenrow *trp, int kw)
 	op = ops;
 	*op++ = END;
 	for (rand=0, tp = trp->bp+ntok; tp < trp->lp; tp++) {
-		switch(tp->type) {
+		switch (tp->type) {
 		case WS:
 		case NL:
 			continue;

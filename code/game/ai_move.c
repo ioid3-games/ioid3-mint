@@ -1324,8 +1324,8 @@ int BotCheckBarrierJump(bot_movestate_t *ms, vec3_t dir, float speed, qboolean d
 	}
 
 	if (doMovement) {
-		EA_Jump(ms->playernum);
-		EA_Move(ms->playernum, hordir, speed);
+		trap_EA_Jump(ms->playernum);
+		trap_EA_Move(ms->playernum, hordir, speed);
 		ms->moveflags |= MFL_BARRIERJUMP;
 	}
 	// there is a barrier
@@ -1382,7 +1382,7 @@ int BotSwimInDirection(bot_movestate_t *ms, vec3_t dir, float speed, int type) {
 
 	VectorCopy(dir, normdir);
 	VectorNormalize(normdir);
-	EA_Move(ms->playernum, normdir, speed);
+	trap_EA_Move(ms->playernum, normdir, speed);
 	return qtrue;
 }
 
@@ -1515,14 +1515,14 @@ int BotWalkInDirection(bot_movestate_t *ms, vec3_t dir, float speed, int type) {
 		}
 		// perform the movement
 		if (type & MOVE_JUMP) {
-			EA_Jump(ms->playernum);
+			trap_EA_Jump(ms->playernum);
 		}
 
 		if (type & MOVE_CROUCH) {
-			EA_Crouch(ms->playernum);
+			trap_EA_Crouch(ms->playernum);
 		}
 
-		EA_Move(ms->playernum, hordir, speed);
+		trap_EA_Move(ms->playernum, hordir, speed);
 
 		ms->presencetype = presencetype;
 		ms->moveflags |= moveflags;
@@ -1532,7 +1532,7 @@ int BotWalkInDirection(bot_movestate_t *ms, vec3_t dir, float speed, int type) {
 		if (ms->moveflags & MFL_BARRIERJUMP) {
 			// if near the top or going down
 			if (ms->velocity[2] < 50) {
-				EA_Move(ms->playernum, dir, speed);
+				trap_EA_Move(ms->playernum, dir, speed);
 			}
 		}
 		// FIXME: do air control to avoid hazards
@@ -1618,7 +1618,7 @@ int BotMoveInDirection(int movestate, vec3_t dir, float speed, int type) {
 		bot_input_t bi;
 
 		Com_Memset(&result, 0, sizeof(result));
-		EA_GetInput(ms->playernum, ms->thinktime, &bi);
+		trap_EA_GetInput(ms->playernum, ms->thinktime, &bi);
 		BotCheckBlocked(ms, bi.dir, qfalse, &result);
 
 		if (result.blocked) {
@@ -1658,7 +1658,7 @@ bot_moveresult_t BotTravel_Walk(bot_movestate_t *ms, aas_reachability_t *reach, 
 	if (!(BotAreaPresenceType(reach->areanum)& PRESENCE_NORMAL)) {
 		// if pretty close to the reachable area
 		if (dist < 20) {
-			EA_Crouch(ms->playernum);
+			trap_EA_Crouch(ms->playernum);
 		}
 	}
 
@@ -1678,7 +1678,7 @@ bot_moveresult_t BotTravel_Walk(bot_movestate_t *ms, aas_reachability_t *reach, 
 		}
 	}
 	// elemantary action move in direction
-	EA_Move(ms->playernum, hordir, speed);
+	trap_EA_Move(ms->playernum, hordir, speed);
 	VectorCopy(hordir, result.movedir);
 
 	return result;
@@ -1703,8 +1703,8 @@ bot_moveresult_t BotTravel_Crouch(bot_movestate_t *ms, aas_reachability_t *reach
 	VectorNormalize(hordir);
 	BotCheckBlocked(ms, hordir, qtrue, &result);
 	// elemantary actions
-	EA_Crouch(ms->playernum);
-	EA_Move(ms->playernum, hordir, speed);
+	trap_EA_Crouch(ms->playernum);
+	trap_EA_Move(ms->playernum, hordir, speed);
 	VectorCopy(hordir, result.movedir);
 
 	return result;
@@ -1729,7 +1729,7 @@ bot_moveresult_t BotTravel_BarrierJump(bot_movestate_t *ms, aas_reachability_t *
 	BotCheckBlocked(ms, hordir, qtrue, &result);
 	// if pretty close to the barrier
 	if (dist < 9) {
-		EA_Jump(ms->playernum);
+		trap_EA_Jump(ms->playernum);
 	} else {
 		if (dist > 60) {
 			dist = 60;
@@ -1737,7 +1737,7 @@ bot_moveresult_t BotTravel_BarrierJump(bot_movestate_t *ms, aas_reachability_t *
 
 		speed = 360 - (360 - 6 * dist);
 
-		EA_Move(ms->playernum, hordir, speed);
+		trap_EA_Move(ms->playernum, hordir, speed);
 	}
 
 	VectorCopy(hordir, result.movedir);
@@ -1761,7 +1761,7 @@ bot_moveresult_t BotFinishTravel_BarrierJump(bot_movestate_t *ms, aas_reachabili
 		hordir[2] = 0;
 
 		BotCheckBlocked(ms, hordir, qtrue, &result);
-		EA_Move(ms->playernum, hordir, 400);
+		trap_EA_Move(ms->playernum, hordir, 400);
 		VectorCopy(hordir, result.movedir);
 	}
 
@@ -1782,10 +1782,10 @@ bot_moveresult_t BotTravel_Swim(bot_movestate_t *ms, aas_reachability_t *reach) 
 	VectorNormalize(dir);
 	BotCheckBlocked(ms, dir, qtrue, &result);
 	// elemantary actions
-	EA_Move(ms->playernum, dir, 400);
+	trap_EA_Move(ms->playernum, dir, 400);
 	VectorCopy(dir, result.movedir);
 
-	vectoangles(dir, result.ideal_viewangles);
+	VectorToAngles(dir, result.ideal_viewangles);
 	result.flags |= MOVERESULT_SWIMVIEW;
 
 	return result;
@@ -1813,13 +1813,13 @@ bot_moveresult_t BotTravel_WaterJump(bot_movestate_t *ms, aas_reachability_t *re
 	dist = VectorNormalize(hordir);
 	// elemantary actions
 	//EA_Move(ms->playernum, dir, 400);
-	EA_MoveForward(ms->playernum);
+	trap_EA_MoveForward(ms->playernum);
 	// move up if close to the actual out of water jump spot
 	if (dist < 40) {
-		EA_MoveUp(ms->playernum);
+		trap_EA_MoveUp(ms->playernum);
 	}
 	// set the ideal view angles
-	vectoangles(dir, result.ideal_viewangles);
+	VectorToAngles(dir, result.ideal_viewangles);
 	result.flags |= MOVERESULT_MOVEMENTVIEW;
 
 	VectorCopy(dir, result.movedir);
@@ -1855,9 +1855,9 @@ bot_moveresult_t BotFinishTravel_WaterJump(bot_movestate_t *ms, aas_reachability
 	dir[1] += crandom() * 10;
 	dir[2] += 70 + crandom() * 10;
 	// elemantary actions
-	EA_Move(ms->playernum, dir, 400);
+	trap_EA_Move(ms->playernum, dir, 400);
 	// set the ideal view angles
-	vectoangles(dir, result.ideal_viewangles);
+	VectorToAngles(dir, result.ideal_viewangles);
 	result.flags |= MOVERESULT_MOVEMENTVIEW;
 
 	VectorCopy(dir, result.movedir);
@@ -1924,7 +1924,7 @@ bot_moveresult_t BotTravel_WalkOffLedge(bot_movestate_t *ms, aas_reachability_t 
 
 	BotCheckBlocked(ms, hordir, qtrue, &result);
 	// elemantary action
-	EA_Move(ms->playernum, hordir, speed);
+	trap_EA_Move(ms->playernum, hordir, speed);
 	VectorCopy(hordir, result.movedir);
 
 	return result;
@@ -1999,7 +1999,7 @@ bot_moveresult_t BotFinishTravel_WalkOffLedge(bot_movestate_t *ms, aas_reachabil
 		speed = 400;
 	}
 
-	EA_Move(ms->playernum, hordir, speed);
+	trap_EA_Move(ms->playernum, hordir, speed);
 	VectorCopy(hordir, result.movedir);
 
 	return result;
@@ -2035,7 +2035,7 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t *ms, aas_reachability_t *reach) 
 		hordir[1] = reach->end[1] - ms->origin[1];
 		VectorNormalize(hordir);
 		// elemantary action jump
-		EA_Jump(ms->playernum);
+		trap_EA_Jump(ms->playernum);
 
 		ms->jumpreach = ms->lastreachnum;
 
@@ -2046,7 +2046,7 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t *ms, aas_reachability_t *reach) 
 		}
 	}
 	// elemantary action
-	EA_Move(ms->playernum, hordir, speed);
+	trap_EA_Move(ms->playernum, hordir, speed);
 	VectorCopy(hordir, result.movedir);
 
 	return result;
@@ -2112,12 +2112,12 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t *ms, aas_reachability_t *reach) 
 		VectorNormalize(hordir);
 		// elemantary action jump
 		if (dist1 < 24) {
-			EA_Jump(ms->playernum);
+			trap_EA_Jump(ms->playernum);
 		} else if (dist1 < 32) {
-			EA_DelayedJump(ms->playernum);
+			trap_EA_DelayedJump(ms->playernum);
 		}
 
-		EA_Move(ms->playernum, hordir, 600);
+		trap_EA_Move(ms->playernum, hordir, 600);
 
 		ms->jumpreach = ms->lastreachnum;
 	} else {
@@ -2133,7 +2133,7 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t *ms, aas_reachability_t *reach) 
 
 		speed = 400 - (400 - 5 * dist2);
 
-		EA_Move(ms->playernum, hordir, speed);
+		trap_EA_Move(ms->playernum, hordir, speed);
 	}
 
 	VectorCopy(hordir, result.movedir);
@@ -2198,12 +2198,12 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t *ms, aas_reachability_t *reach) 
 		BotCheckBlocked(ms, hordir, qtrue, &result);
 		// elemantary action jump
 		if (dist1 < 24) {
-			EA_Jump(ms->playernum);
+			trap_EA_Jump(ms->playernum);
 		} else if (dist1 < 32) {
-			EA_DelayedJump(ms->playernum);
+			trap_EA_DelayedJump(ms->playernum);
 		}
 
-		EA_Move(ms->playernum, hordir, 600);
+		trap_EA_Move(ms->playernum, hordir, 600);
 
 		ms->jumpreach = ms->lastreachnum;
 	} else {
@@ -2221,7 +2221,7 @@ bot_moveresult_t BotTravel_Jump(bot_movestate_t *ms, aas_reachability_t *reach) 
 
 		speed = 400 - (400 - 5 * dist2);
 
-		EA_Move(ms->playernum, hordir, speed);
+		trap_EA_Move(ms->playernum, hordir, speed);
 	}
 
 	VectorCopy(hordir, result.movedir);
@@ -2260,7 +2260,7 @@ bot_moveresult_t BotFinishTravel_Jump(bot_movestate_t *ms, aas_reachability_t *r
 	// always use max speed when traveling through the air
 	speed = 800;
 
-	EA_Move(ms->playernum, hordir, speed);
+	trap_EA_Move(ms->playernum, hordir, speed);
 	VectorCopy(hordir, result.movedir);
 
 	return result;
@@ -2288,10 +2288,10 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t *ms, aas_reachability_t *reach
 		viewdir[0] = dir[0];
 		viewdir[1] = dir[1];
 		viewdir[2] = 3 * dir[2];
-		vectoangles(viewdir, result.ideal_viewangles);
+		VectorToAngles(viewdir, result.ideal_viewangles);
 		// elemantary action
-		EA_Move(ms->playernum, origin, 0);
-		EA_MoveForward(ms->playernum);
+		trap_EA_Move(ms->playernum, origin, 0);
+		trap_EA_MoveForward(ms->playernum);
 		// set movement view flag so the AI can see the view is focussed
 		result.flags |= MOVERESULT_MOVEMENTVIEW;
 	}
@@ -2318,7 +2318,7 @@ bot_moveresult_t BotTravel_Ladder(bot_movestate_t *ms, aas_reachability_t *reach
 
 		speed = 400 - (200 - 4 * dist);
 
-		EA_Move(ms->playernum, dir, speed);
+		trap_EA_Move(ms->playernum, dir, speed);
 	}
 	*/
 	// save the movement direction
@@ -2353,9 +2353,9 @@ bot_moveresult_t BotTravel_Teleport(bot_movestate_t *ms, aas_reachability_t *rea
 	BotCheckBlocked(ms, hordir, qtrue, &result);
 
 	if (dist < 30) {
-		EA_Move(ms->playernum, hordir, 200);
+		trap_EA_Move(ms->playernum, hordir, 200);
 	} else {
-		EA_Move(ms->playernum, hordir, 400);
+		trap_EA_Move(ms->playernum, hordir, 400);
 	}
 
 	if (ms->moveflags & MFL_SWIMMING) {
@@ -2400,7 +2400,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t *ms, aas_reachability_t *rea
 			VectorNormalize(hordir);
 
 			if (!BotCheckBarrierJump(ms, hordir, 100, qtrue)) {
-				EA_Move(ms->playernum, hordir, 400);
+				trap_EA_Move(ms->playernum, hordir, 400);
 			}
 
 			VectorCopy(hordir, result.movedir);
@@ -2423,7 +2423,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t *ms, aas_reachability_t *rea
 
 				speed = 400 - (400 - 4 * dist);
 
-				EA_Move(ms->playernum, hordir, speed);
+				trap_EA_Move(ms->playernum, hordir, speed);
 				VectorCopy(hordir, result.movedir);
 			}
 		}
@@ -2445,7 +2445,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t *ms, aas_reachability_t *rea
 
 			if ((ms->moveflags & MFL_SWIMMING) || !BotCheckBarrierJump(ms, dir, 50, qtrue)) {
 				if (dist > 5) {
-					EA_Move(ms->playernum, dir, speed);
+					trap_EA_Move(ms->playernum, dir, speed);
 				}
 			}
 
@@ -2484,7 +2484,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t *ms, aas_reachability_t *rea
 
 			if (!(ms->moveflags & MFL_SWIMMING) && !BotCheckBarrierJump(ms, dir, 50, qtrue)) {
 				if (dist > 5) {
-					EA_Move(ms->playernum, dir, speed);
+					trap_EA_Move(ms->playernum, dir, speed);
 				}
 			}
 
@@ -2531,7 +2531,7 @@ bot_moveresult_t BotTravel_Elevator(bot_movestate_t *ms, aas_reachability_t *rea
 		speed = 400 - (400 - 6 * dist);
 
 		if (!(ms->moveflags & MFL_SWIMMING) && !BotCheckBarrierJump(ms, dir, 50, qtrue)) {
-			EA_Move(ms->playernum, dir, speed);
+			trap_EA_Move(ms->playernum, dir, speed);
 		}
 
 		VectorCopy(dir, result.movedir);
@@ -2562,10 +2562,10 @@ bot_moveresult_t BotFinishTravel_Elevator(bot_movestate_t *ms, aas_reachability_
 
 	if (fabs(bottomdir[2]) < fabs(topdir[2])) {
 		VectorNormalize(bottomdir);
-		EA_Move(ms->playernum, bottomdir, 300);
+		trap_EA_Move(ms->playernum, bottomdir, 300);
 	} else {
 		VectorNormalize(topdir);
-		EA_Move(ms->playernum, topdir, 300);
+		trap_EA_Move(ms->playernum, topdir, 300);
 	}
 
 	return result;
@@ -2663,7 +2663,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t *ms, aas_reachability_t *
 			VectorNormalize(hordir);
 
 			if (!BotCheckBarrierJump(ms, hordir, 100, qtrue)) {
-				EA_Move(ms->playernum, hordir, 400);
+				trap_EA_Move(ms->playernum, hordir, 400);
 			}
 
 			VectorCopy(hordir, result.movedir);
@@ -2686,7 +2686,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t *ms, aas_reachability_t *
 
 				speed = 400 - (400 - 4 * dist);
 
-				EA_Move(ms->playernum, hordir, speed);
+				trap_EA_Move(ms->playernum, hordir, speed);
 
 				VectorCopy(hordir, result.movedir);
 			}
@@ -2712,7 +2712,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t *ms, aas_reachability_t *
 			// if swimming or no barrier jump
 			if ((ms->moveflags & MFL_SWIMMING) || !BotCheckBarrierJump(ms, dir, 50, qtrue)) {
 				if (dist > 5) {
-					EA_Move(ms->playernum, dir, speed);
+					trap_EA_Move(ms->playernum, dir, speed);
 				}
 			}
 
@@ -2752,7 +2752,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t *ms, aas_reachability_t *
 
 			if (!(ms->moveflags & MFL_SWIMMING) && !BotCheckBarrierJump(ms, dir, 50, qtrue)) {
 				if (dist > 5) {
-					EA_Move(ms->playernum, dir, speed);
+					trap_EA_Move(ms->playernum, dir, speed);
 				}
 			}
 
@@ -2799,7 +2799,7 @@ bot_moveresult_t BotTravel_FuncBobbing(bot_movestate_t *ms, aas_reachability_t *
 		speed = 400 - (400 - 6 * dist);
 
 		if (!(ms->moveflags & MFL_SWIMMING) && !BotCheckBarrierJump(ms, dir, 50, qtrue)) {
-			EA_Move(ms->playernum, dir, speed);
+			trap_EA_Move(ms->playernum, dir, speed);
 		}
 
 		VectorCopy(dir, result.movedir);
@@ -2847,7 +2847,7 @@ bot_moveresult_t BotFinishTravel_FuncBobbing(bot_movestate_t *ms, aas_reachabili
 		speed = 360 - (360 - 6 * dist);
 
 		if (dist > 5) {
-			EA_Move(ms->playernum, dir, speed);
+			trap_EA_Move(ms->playernum, dir, speed);
 		}
 
 		VectorCopy(dir, result.movedir);
@@ -2873,7 +2873,7 @@ bot_moveresult_t BotFinishTravel_FuncBobbing(bot_movestate_t *ms, aas_reachabili
 
 			speed = 400 - (400 - 4 * dist);
 
-			EA_Move(ms->playernum, hordir, speed);
+			trap_EA_Move(ms->playernum, hordir, speed);
 			VectorCopy(hordir, result.movedir);
 		}
 	}
@@ -2917,7 +2917,7 @@ void BotResetGrapple(bot_movestate_t *ms) {
 	if ((reach.traveltype & TRAVELTYPE_MASK) != TRAVEL_GRAPPLEHOOK) {
 		if ((ms->moveflags & MFL_ACTIVEGRAPPLE) || ms->grapplevisible_time) {
 			if (bot_offhandgrapple.integer) {
-				EA_Command(ms->playernum, CMD_GRAPPLEOFF);
+				trap_EA_Command(ms->playernum, CMD_GRAPPLEOFF);
 			}
 
 			ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
@@ -2951,7 +2951,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t *ms, aas_reachability_t *reac
 #endif // DEBUG_GRAPPLE
 	if (ms->moveflags & MFL_GRAPPLERESET) {
 		if (bot_offhandgrapple.integer) {
-			EA_Command(ms->playernum, CMD_GRAPPLEOFF);
+			trap_EA_Command(ms->playernum, CMD_GRAPPLEOFF);
 		}
 
 		ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
@@ -2980,7 +2980,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t *ms, aas_reachability_t *reac
 				BotAI_Print(PRT_ERROR, "grapple normal end\n");
 #endif // DEBUG_GRAPPLE
 				if (bot_offhandgrapple.integer) {
-					EA_Command(ms->playernum, CMD_GRAPPLEOFF);
+					trap_EA_Command(ms->playernum, CMD_GRAPPLEOFF);
 				}
 
 				ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
@@ -2995,7 +2995,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t *ms, aas_reachability_t *reac
 				BotAI_Print(PRT_ERROR, "grapple not visible\n");
 #endif // DEBUG_GRAPPLE
 				if (bot_offhandgrapple.integer) {
-					EA_Command(ms->playernum, CMD_GRAPPLEOFF);
+					trap_EA_Command(ms->playernum, CMD_GRAPPLEOFF);
 				}
 
 				ms->moveflags &= ~MFL_ACTIVEGRAPPLE;
@@ -3008,7 +3008,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t *ms, aas_reachability_t *reac
 		}
 
 		if (!bot_offhandgrapple.integer) {
-			EA_Attack(ms->playernum);
+			trap_EA_Attack(ms->playernum);
 		}
 		// remember the current grapple distance
 		ms->lastgrappledist = dist;
@@ -3028,7 +3028,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t *ms, aas_reachability_t *reac
 		VectorSubtract(reach->end, org, viewdir);
 
 		dist = VectorNormalize(dir);
-		vectoangles(viewdir, result.ideal_viewangles);
+		VectorToAngles(viewdir, result.ideal_viewangles);
 		result.flags |= MOVERESULT_MOVEMENTVIEW;
 
 		if (dist < 5 && fabs(AngleDiff(result.ideal_viewangles[0], ms->viewangles[0])) < 2 && fabs(AngleDiff(result.ideal_viewangles[1], ms->viewangles[1])) < 2) {
@@ -3046,9 +3046,9 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t *ms, aas_reachability_t *reac
 			}
 			// activate the grapple
 			if (bot_offhandgrapple.integer) {
-				EA_Command(ms->playernum, CMD_GRAPPLEON);
+				trap_EA_Command(ms->playernum, CMD_GRAPPLEON);
 			} else {
-				EA_Attack(ms->playernum);
+				trap_EA_Attack(ms->playernum);
 			}
 
 			ms->moveflags |= MFL_ACTIVEGRAPPLE;
@@ -3062,7 +3062,7 @@ bot_moveresult_t BotTravel_Grapple(bot_movestate_t *ms, aas_reachability_t *reac
 
 			BotCheckBlocked(ms, dir, qtrue, &result);
 			// elemantary action move in direction
-			EA_Move(ms->playernum, dir, speed);
+			trap_EA_Move(ms->playernum, dir, speed);
 			VectorCopy(dir, result.movedir);
 		}
 		// if in another area before actually grappling
@@ -3094,7 +3094,7 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t *ms, aas_reachability_t *r
 
 	dist = VectorNormalize(hordir);
 	// look in the movement direction
-	vectoangles(hordir, result.ideal_viewangles);
+	VectorToAngles(hordir, result.ideal_viewangles);
 	// look straight down
 	result.ideal_viewangles[PITCH] = 90;
 
@@ -3105,9 +3105,9 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t *ms, aas_reachability_t *r
 		hordir[2] = 0;
 		VectorNormalize(hordir);
 		// elemantary action jump
-		EA_Jump(ms->playernum);
-		EA_Attack(ms->playernum);
-		EA_Move(ms->playernum, hordir, 800);
+		trap_EA_Jump(ms->playernum);
+		trap_EA_Attack(ms->playernum);
+		trap_EA_Move(ms->playernum, hordir, 800);
 
 		ms->jumpreach = ms->lastreachnum;
 	} else {
@@ -3117,20 +3117,20 @@ bot_moveresult_t BotTravel_RocketJump(bot_movestate_t *ms, aas_reachability_t *r
 
 		speed = 400 - (400 - 5 * dist);
 
-		EA_Move(ms->playernum, hordir, speed);
+		trap_EA_Move(ms->playernum, hordir, speed);
 	}
 	// look in the movement direction
-	vectoangles(hordir, result.ideal_viewangles);
+	VectorToAngles(hordir, result.ideal_viewangles);
 	// look straight down
 	result.ideal_viewangles[PITCH] = 90;
 	// set the view angles directly
-	EA_View(ms->playernum, result.ideal_viewangles);
+	trap_EA_View(ms->playernum, result.ideal_viewangles);
 	// view is important for the movment
 	result.flags |= MOVERESULT_MOVEMENTVIEWSET;
 	// select the rocket launcher
-	EA_SelectWeapon(ms->playernum, WP_ROCKET_LAUNCHER);
+	trap_EA_SelectWeapon(ms->playernum, WP_ROCKETLAUNCHER);
 	// weapon is used for movement
-	result.weapon = WP_ROCKET_LAUNCHER;
+	result.weapon = WP_ROCKETLAUNCHER;
 	result.flags |= MOVERESULT_MOVEMENTWEAPON;
 
 	VectorCopy(hordir, result.movedir);
@@ -3162,9 +3162,9 @@ bot_moveresult_t BotTravel_BFGJump(bot_movestate_t *ms, aas_reachability_t *reac
 		hordir[2] = 0;
 		VectorNormalize(hordir);
 		// elemantary action jump
-		EA_Jump(ms->playernum);
-		EA_Attack(ms->playernum);
-		EA_Move(ms->playernum, hordir, 800);
+		trap_EA_Jump(ms->playernum);
+		trap_EA_Attack(ms->playernum);
+		trap_EA_Move(ms->playernum, hordir, 800);
 
 		ms->jumpreach = ms->lastreachnum;
 	} else {
@@ -3174,18 +3174,18 @@ bot_moveresult_t BotTravel_BFGJump(bot_movestate_t *ms, aas_reachability_t *reac
 
 		speed = 400 - (400 - 5 * dist);
 
-		EA_Move(ms->playernum, hordir, speed);
+		trap_EA_Move(ms->playernum, hordir, speed);
 	}
 	// look in the movement direction
-	vectoangles(hordir, result.ideal_viewangles);
+	VectorToAngles(hordir, result.ideal_viewangles);
 	// look straight down
 	result.ideal_viewangles[PITCH] = 90;
 	// set the view angles directly
-	EA_View(ms->playernum, result.ideal_viewangles);
+	trap_EA_View(ms->playernum, result.ideal_viewangles);
 	// view is important for the movment
 	result.flags |= MOVERESULT_MOVEMENTVIEWSET;
 	// select the rocket launcher
-	EA_SelectWeapon(ms->playernum, WP_BFG);
+	trap_EA_SelectWeapon(ms->playernum, WP_BFG);
 	// weapon is used for movement
 	result.weapon = WP_BFG;
 	result.flags |= MOVERESULT_MOVEMENTWEAPON;
@@ -3215,7 +3215,7 @@ bot_moveresult_t BotFinishTravel_WeaponJump(bot_movestate_t *ms, aas_reachabilit
 	hordir[2] = 0;
 	VectorNormalize(hordir);
 	// always use max speed when traveling through the air
-	EA_Move(ms->playernum, hordir, 800);
+	trap_EA_Move(ms->playernum, hordir, 800);
 	VectorCopy(hordir, result.movedir);
 	*/
 	if (!BotAirControl(ms->origin, ms->velocity, reach->end, hordir, &speed)) {
@@ -3226,7 +3226,7 @@ bot_moveresult_t BotFinishTravel_WeaponJump(bot_movestate_t *ms, aas_reachabilit
 		speed = 400;
 	}
 
-	EA_Move(ms->playernum, hordir, speed);
+	trap_EA_Move(ms->playernum, hordir, speed);
 	VectorCopy(hordir, result.movedir);
 
 	return result;
@@ -3248,7 +3248,7 @@ bot_moveresult_t BotTravel_JumpPad(bot_movestate_t *ms, aas_reachability_t *reac
 
 	BotCheckBlocked(ms, hordir, qtrue, &result);
 	// elemantary action move in direction
-	EA_Move(ms->playernum, hordir, 400);
+	trap_EA_Move(ms->playernum, hordir, 400);
 	VectorCopy(hordir, result.movedir);
 
 	return result;
@@ -3274,7 +3274,7 @@ bot_moveresult_t BotFinishTravel_JumpPad(bot_movestate_t *ms, aas_reachability_t
 
 	BotCheckBlocked(ms, hordir, qtrue, &result);
 	// elemantary action move in direction
-	EA_Move(ms->playernum, hordir, speed);
+	trap_EA_Move(ms->playernum, hordir, speed);
 	VectorCopy(hordir, result.movedir);
 
 	return result;
@@ -3374,11 +3374,11 @@ bot_moveresult_t BotMoveInGoalArea(bot_movestate_t *ms, bot_goal_t *goal) {
 
 	BotCheckBlocked(ms, dir, qtrue, &result);
 	// elemantary action move in direction
-	EA_Move(ms->playernum, dir, speed);
+	trap_EA_Move(ms->playernum, dir, speed);
 	VectorCopy(dir, result.movedir);
 
 	if (ms->moveflags & MFL_SWIMMING) {
-		vectoangles(dir, result.ideal_viewangles);
+		VectorToAngles(dir, result.ideal_viewangles);
 		result.flags |= MOVERESULT_SWIMVIEW;
 	}
 	// if(!debugline)debugline = botimport.DebugLineCreate();

@@ -86,11 +86,11 @@ void CG_SetInitialSnapshot(snapshot_t *snap) {
 	cg.snap = snap;
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		if (cg.snap->playerNums[i] == -1) {
+		if (cg.snap->clientNums[i] == -1) {
 			continue;
 		}
 
-		BG_PlayerStateToEntityState(&cg.snap->pss[i], &cg_entities[cg.snap->pss[i].playerNum].currentState, qfalse);
+		BG_PlayerStateToEntityState(&cg.snap->pss[i], &cg_entities[cg.snap->pss[i].clientNum].currentState, qfalse);
 	}
 	// sort out solid entities
 	CG_BuildSolidList();
@@ -153,17 +153,17 @@ static void CG_TransitionSnapshot(void) {
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
 		// server added or removed local player
-		if (oldFrame && oldFrame->playerNums[i] != cg.snap->playerNums[i]) {
+		if (oldFrame && oldFrame->clientNums[i] != cg.snap->clientNums[i]) {
 			CG_LocalPlayerRemoved(i);
 
-			if (cg.snap->playerNums[i] != -1) {
-				CG_LocalPlayerAdded(i, cg.snap->playerNums[i]);
+			if (cg.snap->clientNums[i] != -1) {
+				CG_LocalPlayerAdded(i, cg.snap->clientNums[i]);
 			}
 		}
 
-		if (cg.snap->playerNums[i] != -1) {
-			BG_PlayerStateToEntityState(&cg.snap->pss[i], &cg_entities[cg.snap->pss[i].playerNum].currentState, qfalse);
-			cg_entities[cg.snap->pss[i].playerNum].interpolate = qfalse;
+		if (cg.snap->clientNums[i] != -1) {
+			BG_PlayerStateToEntityState(&cg.snap->pss[i], &cg_entities[cg.snap->pss[i].clientNum].currentState, qfalse);
+			cg_entities[cg.snap->pss[i].clientNum].interpolate = qfalse;
 		}
 	}
 
@@ -181,7 +181,7 @@ static void CG_TransitionSnapshot(void) {
 		playerState_t *ops, *ps;
 
 		for (i = 0; i < CG_MaxSplitView(); i++) {
-			if (oldFrame->playerNums[i] == -1 || oldFrame->playerNums[i] != cg.snap->playerNums[i]) {
+			if (oldFrame->clientNums[i] == -1 || oldFrame->clientNums[i] != cg.snap->clientNums[i]) {
 				continue;
 			}
 
@@ -223,13 +223,13 @@ static void CG_SetNextSnap(snapshot_t *snap) {
 	cg.nextSnap = snap;
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		if (cg.snap->playerNums[i] == -1) {
+		if (cg.snap->clientNums[i] == -1) {
 			continue;
 		}
 
-		BG_PlayerStateToEntityState(&cg.snap->pss[i], &cg_entities[cg.snap->pss[i].playerNum].nextState, qfalse);
+		BG_PlayerStateToEntityState(&cg.snap->pss[i], &cg_entities[cg.snap->pss[i].clientNum].nextState, qfalse);
 
-		cg_entities[cg.snap->pss[i].playerNum].interpolate = qtrue;
+		cg_entities[cg.snap->pss[i].clientNum].interpolate = qtrue;
 	}
 	// check for extrapolation errors
 	for (num = 0; num < snap->numEntities; num++) {
@@ -250,7 +250,7 @@ static void CG_SetNextSnap(snapshot_t *snap) {
 	cg.nextFrameTeleport = qfalse;
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		if (snap->playerNums[i] == -1) {
+		if (snap->clientNums[i] == -1) {
 			continue;
 		}
 		// if the next frame is a teleport for the playerstate, we can't interpolate during demos
@@ -258,7 +258,7 @@ static void CG_SetNextSnap(snapshot_t *snap) {
 			cg.nextFrameTeleport = qtrue;
 		}
 		// if changing follow mode, don't interpolate
-		if (cg.nextSnap->pss[i].playerNum != cg.snap->pss[i].playerNum) {
+		if (cg.nextSnap->pss[i].clientNum != cg.snap->pss[i].clientNum) {
 			cg.nextFrameTeleport = qtrue;
 		}
 	}
@@ -295,7 +295,6 @@ static snapshot_t *CG_ReadNextSnapshot(void) {
 		}
 		// try to read the snapshot from the client system
 		cgs.processedSnapshotNum++;
-
 		r = trap_GetSnapshot(cgs.processedSnapshotNum, (vmSnapshot_t *)dest, dest->pss, dest->entities, MAX_ENTITIES_IN_SNAPSHOT);
 		// FIXME: why would trap_GetSnapshot return a snapshot with the same server time
 		if (cg.snap && r && dest->serverTime == cg.snap->serverTime) {
@@ -307,11 +306,11 @@ static snapshot_t *CG_ReadNextSnapshot(void) {
 			return dest;
 		}
 		// a GetSnapshot will return failure if the snapshot never arrived, or is so old that its entities have been shoved off the
-		// end of the circular buffer in the client system.
+		// end of the circular buffer in the client system
 
 		// record as a dropped packet
 		CG_AddLagometerSnapshotInfo(NULL);
-		// if there are additional snapshots, continue trying to read them.
+		// if there are additional snapshots, continue trying to read them
 	}
 	// nothing left to read
 	return NULL;
@@ -428,11 +427,11 @@ void CG_RestoreSnapshot(void) {
 CG_LocalPlayerState
 =======================================================================================================================================
 */
-playerState_t *CG_LocalPlayerState(int playerNum) {
+playerState_t *CG_LocalPlayerState(int clientNum) {
 	int i;
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		if (cg.snap->playerNums[i] != -1 && cg.snap->pss[i].playerNum == playerNum) {
+		if (cg.snap->clientNums[i] != -1 && cg.snap->pss[i].clientNum == clientNum) {
 			return &cg.snap->pss[i];
 		}
 	}
@@ -450,7 +449,7 @@ int CG_NumLocalPlayers(void) {
 	int i;
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		if (cg.localPlayers[i].playerNum != -1) {
+		if (cg.localPlayers[i].clientNum != -1) {
 			numLocalPlayers++;
 		}
 	}

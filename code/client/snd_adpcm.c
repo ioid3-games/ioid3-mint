@@ -19,7 +19,7 @@ TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF 
 /**************************************************************************************************************************************
  Intel/DVI ADPCM coder/decoder.
 
- The algorithm for this coder was taken from the IMA Compatability Project proceedings, Vol 2, Number 2; May 1992.
+ The algorithm for this coder was taken from the IMA Compatibility Project proceedings, Vol 2, Number 2; May 1992.
 
  Version 1.2, 18-Dec-92.
 **************************************************************************************************************************************/
@@ -50,16 +50,16 @@ S_AdpcmEncode
 =======================================================================================================================================
 */
 void S_AdpcmEncode(short indata[], char outdata[], int len, struct adpcm_state *state) {
-	short *inp;			// Input buffer pointer
+	short *inp;			// input buffer pointer
 	signed char *outp;	// output buffer pointer
-	int val;			// Current input sample value
-	int sign;			// Current adpcm sign bit
-	int delta;			// Current adpcm output value
-	int diff;			// Difference between val and sample
-	int step;			// Stepsize
-	int valpred;		// Predicted output value
-	int vpdiff;			// Current change to valpred
-	int index;			// Current step change index
+	int val;			// current input sample value
+	int sign;			// current adpcm sign bit
+	int delta;			// current adpcm output value
+	int diff;			// difference between val and sample
+	int step;			// stepsize
+	int valpred;		// predicted output value
+	int vpdiff;			// current change to valpred
+	int index;			// current step change index
 	int outputbuffer;	// place to keep previous 4-bit value
 	int bufferstep;		// toggle between outputbuffer/output
 
@@ -145,7 +145,7 @@ void S_AdpcmEncode(short indata[], char outdata[], int len, struct adpcm_state *
 
 		bufferstep = !bufferstep;
 	}
-	// Output last step, if needed
+	// output last step, if needed
 	if (!bufferstep) {
 		*outp++ = outputbuffer;
 	}
@@ -159,15 +159,15 @@ void S_AdpcmEncode(short indata[], char outdata[], int len, struct adpcm_state *
 S_AdpcmDecode
 =======================================================================================================================================
 */
-/* static */ void S_AdpcmDecode(const char indata[], short *outdata, int len, struct adpcm_state *state) {
-	signed char *inp;	// Input buffer pointer
+/*static*/ void S_AdpcmDecode(const char indata[], short *outdata, int len, struct adpcm_state *state) {
+	signed char *inp;	// input buffer pointer
 	int outp;			// output buffer pointer
-	int sign;			// Current adpcm sign bit
-	int delta;			// Current adpcm output value
-	int step;			// Stepsize
-	int valpred;		// Predicted value
-	int vpdiff;			// Current change to valpred
-	int index;			// Current step change index
+	int sign;			// current adpcm sign bit
+	int delta;			// current adpcm output value
+	int step;			// stepsize
+	int valpred;		// predicted value
+	int vpdiff;			// current change to valpred
+	int index;			// current step change index
 	int inputbuffer;	// place to keep next 4-bit value
 	int bufferstep;		// toggle between inputbuffer/input
 
@@ -203,7 +203,7 @@ S_AdpcmDecode
 		sign = delta & 8;
 		delta = delta & 7;
 		// Step 4 - Compute difference and new predicted value
-		// Computes 'vpdiff = (delta + 0.5) * step / 4', but see comment in adpcm_coder.
+		// computes 'vpdiff = (delta + 0.5) * step / 4', but see comment in adpcm_coder
 		vpdiff = step >> 3;
 
 		if (delta & 4) {

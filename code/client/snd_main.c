@@ -792,7 +792,7 @@ void S_Init(void) {
 
 		Cmd_AddCommand("s_info", S_SoundInfo);
 
-		cv = Cvar_Get("s_useOpenAL", "0", CVAR_ARCHIVE);
+		cv = Cvar_Get( "s_useOpenAL", "0", CVAR_ARCHIVE|CVAR_LATCH);
 
 		if (cv->integer) {
 			//OpenAL

@@ -187,8 +187,7 @@ static void SV_Map_f(void) {
 	// start up the map
 	SV_SpawnServer(mapname, killBots);
 	// set the cheat value
-	// if the level was started with "map <levelname>", then cheats will not be allowed. If started with "devmap <levelname>"
-	// then cheats will be allowed
+	// if the level was started with "map <levelname>", then cheats will not be allowed. If started with "devmap <levelname>" then cheats will be allowed
 	if (cheat) {
 		Cvar_Set("sv_cheats", "1");
 	} else {
@@ -233,14 +232,13 @@ static void SV_MapRestart_f(void) {
 		Com_Printf("variable change -- restarting.\n");
 		// restart the map the slow way
 		Q_strncpyz(mapname, Cvar_VariableString("mapname"), sizeof(mapname));
-
 		SV_SpawnServer(mapname, qfalse);
 		return;
 	}
 	// toggle the server bit so clients can detect that a map_restart has happened
 	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 	// generate a new serverid
-	// TTimo - don't update restartedserverId there, otherwise we won't deal correctly with multiple map_restart
+	// don't update restartedserverId there, otherwise we won't deal correctly with multiple map_restart
 	sv.serverId = com_frameTime;
 
 	Cvar_Set("sv_serverid", va("%i", sv.serverId));
@@ -299,7 +297,7 @@ static void SV_MapRestart_f(void) {
 			if (denied) {
 				// this generally shouldn't happen, because the player was connected before the level change
 				if (player != NULL) {
-					SV_DropPlayer(player, denied);
+					SV_DropPlayer(player, denied, qtrue);
 				}
 
 				Com_Printf("SV_MapRestart_f: dropped client %i - denied!\n", i);
@@ -357,7 +355,7 @@ static void SV_Kick_f(void) {
 		return;
 	}
 
-	SV_DropPlayer(player, "was kicked");
+	SV_DropPlayer(player, "was kicked", qtrue);
 
 	client->lastPacketTime = svs.time; // in case there is a funny zombie
 }
@@ -494,7 +492,7 @@ static void SV_RehashBans_f(void) {
 
 	if ((filelen = FS_SV_FOpenFileRead(filepath, &readfrom)) >= 0) {
 		if (filelen < 2) {
-			// Don't bother if file is too short.
+			// don't bother if file is too short
 			FS_FCloseFile(readfrom);
 			return;
 		}
@@ -755,7 +753,6 @@ static void SV_AddBanToList(qboolean isexception) {
 	serverBansCount++;
 
 	SV_WriteBans();
-
 	Com_Printf("Added %s: %s/%d\n", isexception ? "ban exception" : "ban", NET_AdrToString(ip), mask);
 }
 
@@ -882,7 +879,6 @@ static void SV_FlushBans_f(void) {
 	serverBansCount = 0;
 	// empty the ban file.
 	SV_WriteBans();
-
 	Com_Printf("All bans and exceptions have been deleted.\n");
 }
 
@@ -965,7 +961,7 @@ static void SV_Status_f(void) {
 	}
 
 	Com_Printf("map: %s\n", sv_mapname->string);
-	Com_Printf("cl score ping name            address                                 rate \n");
+	Com_Printf("cl score ping name            address                                 rate\n");
 	Com_Printf("-- ----- ---- --------------- --------------------------------------- -----\n");
 
 	for (i = 0, player = svs.players; i < sv_maxclients->integer; i++, player++) {
@@ -1003,7 +999,7 @@ static void SV_Status_f(void) {
 			Com_Printf(" ");
 			j++;
 		} while (j < l);
-		// TTimo adding a ^7 to reset the color
+		// adding a ^7 to reset the color
 		s = NET_AdrToString(cl->netchan.remoteAddress);
 
 		Com_Printf("^7%s", s);
@@ -1021,80 +1017,6 @@ static void SV_Status_f(void) {
 	}
 
 	Com_Printf("\n");
-}
-
-/*
-=======================================================================================================================================
-SV_ConSay_f
-=======================================================================================================================================
-*/
-static void SV_ConSay_f(void) {
-	char *p;
-	char text[1024];
-
-	// make sure server is running
-	if (!com_sv_running->integer) {
-		Com_Printf("Server is not running.\n");
-		return;
-	}
-
-	if (Cmd_Argc() < 2) {
-		return;
-	}
-
-	strcpy(text, "console: ");
-	p = Cmd_Args();
-
-	if (*p == '"') {
-		p++;
-		p[strlen(p) - 1] = 0;
-	}
-
-	strcat(text, p);
-
-	Com_Printf("%s\n", text);
-	SV_SendServerCommand(NULL, -1, "chat \"%s\" -1", text);
-}
-
-/*
-=======================================================================================================================================
-SV_ConTell_f
-=======================================================================================================================================
-*/
-static void SV_ConTell_f(void) {
-	char *p;
-	char text[1024];
-	player_t *player;
-
-	// make sure server is running
-	if (!com_sv_running->integer) {
-		Com_Printf("Server is not running.\n");
-		return;
-	}
-
-	if (Cmd_Argc() < 3) {
-		Com_Printf("Usage: tell <client number> <text>\n");
-		return;
-	}
-
-	player = SV_GetPlayerByNum();
-
-	if (!player) {
-		return;
-	}
-
-	strcpy(text, "console_tell: ");
-	p = Cmd_ArgsFrom(2);
-
-	if (*p == '"') {
-		p++;
-		p[strlen(p) - 1] = 0;
-	}
-
-	strcat(text, p);
-
-	Com_Printf("%s\n", text);
-	SV_SendServerCommand(player->client, SV_LocalPlayerNum(player), "tell \"%s\" -1", text);
 }
 
 /*
@@ -1229,12 +1151,6 @@ void SV_AddOperatorCommands(void) {
 	Cmd_AddCommand("devmap", SV_Map_f);
 	Cmd_SetCommandCompletionFunc("devmap", SV_CompleteMapName);
 	Cmd_AddCommand("killserver", SV_KillServer_f);
-
-	if (com_dedicated->integer) {
-		Cmd_AddCommand("say", SV_ConSay_f);
-		Cmd_AddCommand("tell", SV_ConTell_f);
-	}
-
 	Cmd_AddCommand("rehashbans", SV_RehashBans_f);
 	Cmd_AddCommand("listbans", SV_ListBans_f);
 	Cmd_AddCommand("banaddr", SV_BanAddr_f);

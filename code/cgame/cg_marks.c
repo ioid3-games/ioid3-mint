@@ -36,6 +36,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
+// doubled to support more marks if r_marksOnTriangleMeshes is on, see ioquake3 README
+#define MAX_MARK_FRAGMENTS 256
+#define MAX_MARK_POINTS 768
+#define MARK_TOTAL_TIME 10000
+#define MARK_FADE_TIME 1000
+
 markPoly_t cg_activeMarkPolys; // double linked list
 markPoly_t *cg_freeMarkPolys; // single linked list
 markPoly_t cg_markPolys[MAX_MARK_POLYS];
@@ -123,10 +129,7 @@ CG_ImpactMark
 Temporary marks will not be stored or randomly oriented, but immediately passed to the renderer.
 =======================================================================================================================================
 */
-#define MAX_MARK_FRAGMENTS 128
-#define MAX_MARK_POINTS 384
-
-void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, float orientation, float red, float green, float blue, float alpha, qboolean alphaFade, float radius, qboolean temporary) {
+void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, float orientation, float red, float green, float blue, float alpha, qboolean alphaFade, float markRadius, qboolean temporary) {
 	vec3_t axis[3];
 	float texCoordScale;
 	vec3_t originalPoints[4];
@@ -141,7 +144,7 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 		return;
 	}
 
-	if (radius <= 0) {
+	if (markRadius <= 0) {
 		CG_Error("CG_ImpactMark called with <= 0 radius");
 	}
 
@@ -154,16 +157,17 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 	RotatePointAroundVector(axis[2], axis[0], axis[1], orientation);
 	CrossProduct(axis[0], axis[2], axis[1]);
 
-	texCoordScale = 0.5 * 1.0 / radius;
+	texCoordScale = 0.5 * 1.0 / markRadius;
 	// create the full polygon
 	for (i = 0; i < 3; i++) {
-		originalPoints[0][i] = origin[i] - radius * axis[1][i] - radius * axis[2][i];
-		originalPoints[1][i] = origin[i] + radius * axis[1][i] - radius * axis[2][i];
-		originalPoints[2][i] = origin[i] + radius * axis[1][i] + radius * axis[2][i];
-		originalPoints[3][i] = origin[i] - radius * axis[1][i] + radius * axis[2][i];
+		originalPoints[0][i] = origin[i] - markRadius * axis[1][i] - markRadius * axis[2][i];
+		originalPoints[1][i] = origin[i] + markRadius * axis[1][i] - markRadius * axis[2][i];
+		originalPoints[2][i] = origin[i] + markRadius * axis[1][i] + markRadius * axis[2][i];
+		originalPoints[3][i] = origin[i] - markRadius * axis[1][i] + markRadius * axis[2][i];
 	}
 	// get the fragments
 	VectorScale(dir, -20, projection);
+
 	numFragments = trap_CM_MarkFragments(4, (void *)originalPoints, projection, MAX_MARK_POINTS, markPoints[0], MAX_MARK_FRAGMENTS, markFragments);
 
 	colors[0] = red * 255;
@@ -181,15 +185,15 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 		// create the texture axis
 		VectorNormalize2(mf->projectionDir, axis[0]);
 		VectorScale(axis[0], -1, axis[0]); // ZTM: the dir was scaled to -20 before giving to renderer, turn it back around. :S
-
 		PerpendicularVector(axis[1], axis[0]);
 		RotatePointAroundVector(axis[2], axis[0], axis[1], orientation);
 		CrossProduct(axis[0], axis[2], axis[1]);
 
 		if (mf->bmodelNum) {
 			// ZTM: TODO?: compensate for scale in the axes if necessary? see R_RotateForEntity
-			// ZTM: FIXME: cgame should be able to get origin and axis from entity !
+			// ZTM: FIXME: cgame should be able to get origin and axis from entity!
 			VectorSubtract(origin, mf->bmodelOrigin, delta);
+
 			localOrigin[0] = DotProduct(delta, mf->bmodelAxis[0]);
 			localOrigin[1] = DotProduct(delta, mf->bmodelAxis[1]);
 			localOrigin[2] = DotProduct(delta, mf->bmodelAxis[2]);
@@ -232,8 +236,6 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 	}
 }
 
-#define MARK_TOTAL_TIME 10000
-#define MARK_FADE_TIME 1000
 /*
 =======================================================================================================================================
 CG_AddMarks

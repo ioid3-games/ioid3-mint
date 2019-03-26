@@ -34,7 +34,7 @@ qboolean CG_AddCustomSurface(const refEntity_t *re);
 #ifndef Q3_VM
 static intptr_t(QDECL *syscall)(intptr_t arg, ...) = (intptr_t(QDECL *)(intptr_t, ...)) -1;
 
-Q_EXPORT void dllEntry(intptr_t(QDECL  *syscallptr)(intptr_t arg,...)) {
+Q_EXPORT void dllEntry(intptr_t(QDECL *syscallptr)(intptr_t arg,...)) {
 	syscall = syscallptr;
 }
 #endif
@@ -97,6 +97,10 @@ void trap_Cvar_VariableStringBuffer(const char *var_name, char *buffer, int bufs
 
 void trap_Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer, int bufsize) {
 	syscall(CG_CVAR_LATCHED_VARIABLE_STRING_BUFFER, var_name, buffer, bufsize);
+}
+
+void trap_Cvar_DefaultVariableStringBuffer(const char *var_name, char *buffer, int bufsize) {
+	syscall(CG_CVAR_DEFAULT_VARIABLE_STRING_BUFFER, var_name, buffer, bufsize);
 }
 
 void trap_Cvar_InfoStringBuffer(int bit, char *buffer, int bufsize) {
@@ -324,6 +328,10 @@ void trap_S_SetStreamVolume(int stream, float volume) {
 	syscall(CG_S_SETSTREAMVOLUME, stream, PASSFLOAT(volume));
 }
 
+void trap_S_StopAllSounds(void) {
+	syscall(CG_S_STOPALLSOUNDS);
+}
+
 void trap_R_LoadWorldMap(const char *mapname) {
 	syscall(CG_R_LOADWORLDMAP, mapname);
 }
@@ -515,24 +523,24 @@ void trap_GetGlconfig(glconfig_t *glconfig) {
 	syscall(CG_GETGLCONFIG, glconfig, sizeof(glconfig_t));
 }
 
-int trap_GetVoipTime(int playerNum) {
-	return syscall(CG_GET_VOIP_TIME, playerNum);
+int trap_GetVoipTime(int clientNum) {
+	return syscall(CG_GET_VOIP_TIME, clientNum);
 }
 
-float trap_GetVoipPower(int playerNum) {
+float trap_GetVoipPower(int clientNum) {
 	floatint_t fi;
-	fi.i = syscall(CG_GET_VOIP_POWER, playerNum);
+	fi.i = syscall(CG_GET_VOIP_POWER, clientNum);
 	return fi.f;
 }
 
-float trap_GetVoipGain(int playerNum) {
+float trap_GetVoipGain(int clientNum) {
 	floatint_t fi;
-	fi.i = syscall(CG_GET_VOIP_GAIN, playerNum);
+	fi.i = syscall(CG_GET_VOIP_GAIN, clientNum);
 	return fi.f;
 }
 
-qboolean trap_GetVoipMute(int playerNum) {
-	return syscall(CG_GET_VOIP_MUTE_PLAYER, playerNum);
+qboolean trap_GetVoipMute(int clientNum) {
+	return syscall(CG_GET_VOIP_MUTE_PLAYER, clientNum);
 }
 
 qboolean trap_GetVoipMuteAll(void) {
@@ -765,8 +773,12 @@ qboolean trap_LAN_ServerIsInFavoriteList(int source, int n) {
 	return syscall(CG_LAN_SERVERISINFAVORITELIST, source, n);
 }
 
-int trap_PC_AddGlobalDefine(char *define) {
+int trap_PC_AddGlobalDefine(const char *define) {
 	return syscall(CG_PC_ADD_GLOBAL_DEFINE, define);
+}
+
+int trap_PC_RemoveGlobalDefine(const char *define) {
+	return syscall(CG_PC_REMOVE_GLOBAL_DEFINE, define);
 }
 
 void trap_PC_RemoveAllGlobalDefines(void) {
@@ -779,6 +791,10 @@ int trap_PC_LoadSource(const char *filename, const char *basepath) {
 
 int trap_PC_FreeSource(int handle) {
 	return syscall(CG_PC_FREE_SOURCE, handle);
+}
+
+int trap_PC_AddDefine(int handle, const char *define) {
+	return syscall(CG_PC_ADD_DEFINE, handle, define);
 }
 
 int trap_PC_ReadToken(int handle, pc_token_t *pc_token) {
@@ -803,6 +819,18 @@ int trap_HeapAvailable(void) {
 
 void trap_HeapFree(void *data) {
 	syscall(CG_HEAP_FREE, data);
+}
+
+void trap_Field_CompleteFilename(const char *dir, const char *ext, qboolean stripExt, qboolean allowNonPureFilesOnDisk) {
+	syscall(CG_FIELD_COMPLETEFILENAME, dir, ext, stripExt, allowNonPureFilesOnDisk);
+}
+
+void trap_Field_CompleteCommand(const char *cmd, qboolean doCommands, qboolean doCvars) {
+	syscall(CG_FIELD_COMPLETECOMMAND, cmd, doCommands, doCvars);
+}
+
+void trap_Field_CompleteList(const char *list) {
+	syscall(CG_FIELD_COMPLETELIST, list);
 }
 
 int trap_RealTime(qtime_t *qtime) {

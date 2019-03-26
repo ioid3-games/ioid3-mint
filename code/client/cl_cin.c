@@ -614,7 +614,7 @@ static unsigned int yuv_to_rgb24( long y, long u, long v )
 	if (g > 255) g = 255;
 	if (b > 255) b = 255;
 	
-	return LittleLong ((r)|(g<<8)|(b<<16)|(255<<24));
+	return LittleLong ((unsigned long)((r)|(g << 8)|(b << 16))|(255UL << 24));
 }
 
 /******************************************************************************
@@ -1128,7 +1128,7 @@ static void RoQInterrupt(void)
 // new frame is ready
 //
 redump:
-	switch(cinTable[currentHandle].roq_id) 
+	switch (cinTable[currentHandle].roq_id) 
 	{
 		case	ROQ_QUAD_VQ:
 			if ((cinTable[currentHandle].numQuads&1)) {

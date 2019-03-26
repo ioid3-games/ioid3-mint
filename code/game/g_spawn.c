@@ -34,7 +34,7 @@ qboolean G_SpawnString(const char *key, const char *defaultString, char **out) {
 
 	if (!level.spawning) {
 		*out = (char *)defaultString;
-//		G_Error("G_SpawnString() called while not spawning");
+		//G_Error("G_SpawnString() called while not spawning");
 	}
 
 	for (i = 0; i < level.numSpawnVars; i++) {
@@ -125,7 +125,7 @@ field_t fields[] = {
 	{"angle", FOFS(s.angles), F_ANGLEHACK},
 	{"targetShaderName", FOFS(targetShaderName), F_STRING},
 	{"targetShaderNewName", FOFS(targetShaderNewName), F_STRING},
-	//(SA)dlight lightstyles(made all these unique variables for testing)
+	// dlight lightstyles (made all these unique variables for testing)
 	{"_color", FOFS(dl_color), F_VECTOR}, // color of the light (the underscore is inserted by the color picker in QER)
 	{"color", FOFS(dl_color), F_VECTOR}, // color of the light
 	{"stylestring", FOFS(dl_stylestring), F_STRING}, // user defined stylestring "fffndlsfaaaaaa" for example
@@ -188,15 +188,13 @@ void SP_team_CTF_redplayer(gentity_t *ent);
 void SP_team_CTF_blueplayer(gentity_t *ent);
 void SP_team_CTF_redspawn(gentity_t *ent);
 void SP_team_CTF_bluespawn(gentity_t *ent);
-#ifdef MISSIONPACK
 void SP_team_blueobelisk(gentity_t *ent);
 void SP_team_redobelisk(gentity_t *ent);
 void SP_team_neutralobelisk(gentity_t *ent);
-#endif
-void SP_item_botroam(gentity_t *ent) {}
 void SP_dlight(gentity_t *ent);
 void SP_corona(gentity_t *ent);
 void SP_props_skyportal(gentity_t *ent);
+void SP_item_botroam(gentity_t *ent) {}
 
 spawn_t spawns[] = {
 	// info entities don't do anything at all, but provide positional information for things controlled by other processes
@@ -216,9 +214,9 @@ spawn_t spawns[] = {
 	{"func_train", SP_func_train},
 	{"func_group", SP_info_null},
 	{"func_timer", SP_func_timer}, // rename trigger_timer?
-	// Triggers are brush objects that cause an effect when contacted by a living player, usually involving firing targets.
-	// While almost everything could be done with a single trigger class and different targets, triggered effects
-	// could not be client side predicted (push and teleport).
+	// triggers are brush objects that cause an effect when contacted by a living player, usually involving firing targets
+	// while almost everything could be done with a single trigger class and different targets, triggered effects
+	// could not be client side predicted (push and teleport)
 	{"trigger_always", SP_trigger_always},
 	{"trigger_multiple", SP_trigger_multiple},
 	{"trigger_push", SP_trigger_push},
@@ -255,15 +253,13 @@ spawn_t spawns[] = {
 	{"team_CTF_blueplayer", SP_team_CTF_blueplayer},
 	{"team_CTF_redspawn", SP_team_CTF_redspawn},
 	{"team_CTF_bluespawn", SP_team_CTF_bluespawn},
-#ifdef MISSIONPACK
 	{"team_redobelisk", SP_team_redobelisk},
 	{"team_blueobelisk", SP_team_blueobelisk},
 	{"team_neutralobelisk", SP_team_neutralobelisk},
-#endif
-	{"item_botroam", SP_item_botroam},
 	{"dlight", SP_dlight},
 	{"corona", SP_corona},
 	{"props_skyportal", SP_props_skyportal},
+	{"item_botroam", SP_item_botroam},
 	{NULL, 0}
 };
 
@@ -292,6 +288,11 @@ qboolean G_CallSpawn(gentity_t *ent) {
 		}
 
 		if (!strcmp(item->classname, ent->classname)) {
+			if (g_instagib.integer && item->giType != IT_TEAM) {
+				// only spawn team play items in instagib mode
+				return qfalse;
+			}
+
 			G_SpawnItem(ent, item);
 			return qtrue;
 		}
@@ -321,7 +322,6 @@ char *G_NewString(const char *string) {
 	int i, l;
 
 	l = strlen(string) + 1;
-
 	newb = trap_HeapMalloc(l);
 	new_p = newb;
 	// turn \n into a real linefeed
@@ -361,6 +361,12 @@ void G_ParseField(const char *key, const char *value, gentity_t *ent) {
 			b = (byte *)ent;
 
 			switch (f->type) {
+				case F_INT:
+					*(int *)(b + f->ofs) = atoi(value);
+					break;
+				case F_FLOAT:
+					*(float *)(b + f->ofs) = atof(value);
+					break;
 				case F_STRING:
 					*(char **)(b + f->ofs) = G_NewString(value);
 					break;
@@ -369,12 +375,6 @@ void G_ParseField(const char *key, const char *value, gentity_t *ent) {
 					((float *)(b + f->ofs))[0] = vec[0];
 					((float *)(b + f->ofs))[1] = vec[1];
 					((float *)(b + f->ofs))[2] = vec[2];
-					break;
-				case F_INT:
-					*(int *)(b + f->ofs) = atoi(value);
-					break;
-				case F_FLOAT:
-					*(float *)(b + f->ofs) = atof(value);
 					break;
 				case F_ANGLEHACK:
 					v = atof(value);
@@ -400,7 +400,7 @@ void G_ParseField(const char *key, const char *value, gentity_t *ent) {
 =======================================================================================================================================
 G_SpawnGEntityFromSpawnVars
 
-Spawn an entity and fill in all of the level fields from level.spawnVars[], then call the class specfic spawn function.
+Spawn an entity and fill in all of the level fields from level.spawnVars[], then call the class specific spawn function.
 =======================================================================================================================================
 */
 void G_SpawnGEntityFromSpawnVars(void) {
@@ -418,10 +418,9 @@ void G_SpawnGEntityFromSpawnVars(void) {
 	spawnInfo.gametype = g_gametype.integer;
 	spawnInfo.spawnInt = G_SpawnInt;
 	spawnInfo.spawnString = G_SpawnString;
-	// check "notsingle", "notfree", "notteam", etc
+	// check "notsingle", "notfree", "notteam", etc.
 	if (!BG_CheckSpawnEntity(&spawnInfo)) {
 		ADJUST_AREAPORTAL();
-
 		G_FreeEntity(ent);
 		return;
 	}
@@ -527,7 +526,7 @@ void SP_worldspawn(void) {
 		G_Error("SP_worldspawn: The first entity isn't 'worldspawn'");
 	}
 	// make some data visible to connecting client
-	trap_SetConfigstring(CS_GAME_VERSION, GAME_VERSION);
+	trap_SetConfigstring(CS_GAME_PROTOCOL, GAME_PROTOCOL);
 	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
 
 	G_SpawnString("music", "", &s);
@@ -542,9 +541,8 @@ void SP_worldspawn(void) {
 	trap_Cvar_Set("g_gravity", s);
 #if 0 // ZTM: Currently game doesn't need the tracemap
 	level.mapcoordsValid = qfalse;
-
-	if (G_SpawnVector2D("mapcoordsmins", "-128 128", level.mapcoordsMins) && // top left
-		 G_SpawnVector2D("mapcoordsmaxs", "128 -128", level.mapcoordsMaxs)) { // bottom right
+	// top left/bottom right
+	if (G_SpawnVector2D("mapcoordsmins", "-128 128", level.mapcoordsMins) && G_SpawnVector2D("mapcoordsmaxs", "128 -128", level.mapcoordsMaxs)) {
 		level.mapcoordsValid = qtrue;
 	}
 #endif
@@ -561,7 +559,7 @@ void SP_worldspawn(void) {
 	if (g_restarted.integer) {
 		trap_Cvar_SetValue("g_restarted", 0);
 		level.warmupTime = 0;
-	} else if (g_doWarmup.integer) { // Turn it on
+	} else if (g_doWarmup.integer) { // turn it on
 		level.warmupTime = -1;
 		trap_SetConfigstring(CS_WARMUP, va("%i", level.warmupTime));
 		G_LogPrintf("Warmup:\n");

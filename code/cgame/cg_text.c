@@ -49,23 +49,23 @@ Team Arena's pre-rendered menu/hud TrueType fonts (fonts/smallfont:12,
 fonts/font:16, and fonts/bigfont:20) are Impact.
 */
 void CG_HudTextInit( void ) {
-	if ( !CG_InitTrueTypeFont( cg_hudFont.string, TINYCHAR_HEIGHT, 0, &cgs.media.tinyFont ) ) {
+	if ( !CG_InitTrueTypeFont( cg_hudFont.string, TINYCHAR_HEIGHT, cg_hudFontBorder.value*0.5f, &cgs.media.tinyFont ) ) {
 		CG_InitBitmapFont( &cgs.media.tinyFont, TINYCHAR_HEIGHT, TINYCHAR_WIDTH );
 	}
 
-	if ( !CG_InitTrueTypeFont( cg_hudFont.string, SMALLCHAR_HEIGHT, 0, &cgs.media.smallFont ) ) {
+	if ( !CG_InitTrueTypeFont( cg_hudFont.string, SMALLCHAR_HEIGHT, cg_hudFontBorder.value, &cgs.media.smallFont ) ) {
 		CG_InitBitmapFont( &cgs.media.smallFont, SMALLCHAR_HEIGHT, SMALLCHAR_WIDTH );
 	}
 
-	if ( !CG_InitTrueTypeFont( cg_hudFont.string, BIGCHAR_HEIGHT, 0, &cgs.media.textFont ) ) {
+	if ( !CG_InitTrueTypeFont( cg_hudFont.string, BIGCHAR_HEIGHT, cg_hudFontBorder.value, &cgs.media.textFont ) ) {
 		CG_InitBitmapFont( &cgs.media.textFont, BIGCHAR_HEIGHT, BIGCHAR_WIDTH );
 	}
 
-	if ( !CG_InitTrueTypeFont( cg_hudFont.string, GIANTCHAR_HEIGHT, 0, &cgs.media.bigFont ) ) {
+	if ( !CG_InitTrueTypeFont( cg_hudFont.string, GIANTCHAR_HEIGHT, cg_hudFontBorder.value*2.0f, &cgs.media.bigFont ) ) {
 		CG_InitBitmapFont( &cgs.media.bigFont, GIANTCHAR_HEIGHT, GIANTCHAR_WIDTH );
 	}
 
-	if ( !CG_InitTrueTypeFont( cg_numberFont.string, CHAR_HEIGHT, 0, &cgs.media.numberFont ) ) {
+	if ( !CG_InitTrueTypeFont( cg_numberFont.string, CHAR_HEIGHT, cg_numberFontBorder.value, &cgs.media.numberFont ) ) {
 		CG_InitBitmapNumberFont( &cgs.media.numberFont, CHAR_HEIGHT, CHAR_WIDTH );
 	}
 }
@@ -320,7 +320,7 @@ void Text_PaintGlyph( float x, float y, float w, float h, const glyphInfo_t *gly
 	}
 }
 
-void Text_Paint( float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor ) {
+void Text_Paint( float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor, qboolean textInMotion ) {
 	int len, count;
 	vec4_t newColor;
 	vec4_t gradientColor;
@@ -347,11 +347,13 @@ void Text_Paint( float x, float y, const fontInfo_t *font, float scale, const ve
 	useScaleX = scale * font->glyphScale * xscale;
 	useScaleY = scale * font->glyphScale * yscale;
 
-	// prevent native resolution text from being blurred due to sub-pixel blending
-	x = floor( x );
-	y = floor( y );
-	shadowOffsetX = floor( shadowOffsetX );
-	shadowOffsetY = floor( shadowOffsetY );
+	if ( !textInMotion ) {
+		// prevent native resolution text from being blurred due to sub-pixel blending
+		x = floor( x );
+		y = floor( y );
+		shadowOffsetX = floor( shadowOffsetX );
+		shadowOffsetY = floor( shadowOffsetY );
+	}
 
 	trap_R_SetColor( color );
 	Vector4Copy( color, newColor );
@@ -406,7 +408,7 @@ void Text_Paint( float x, float y, const fontInfo_t *font, float scale, const ve
 	trap_R_SetColor( NULL );
 }
 
-void Text_PaintWithCursor( float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor ) {
+void Text_PaintWithCursor( float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor, qboolean textInMotion ) {
 	int len, count;
 	vec4_t newColor;
 	vec4_t gradientColor;
@@ -433,11 +435,13 @@ void Text_PaintWithCursor( float x, float y, const fontInfo_t *font, float scale
 	useScaleX = scale * font->glyphScale * xscale;
 	useScaleY = scale * font->glyphScale * yscale;
 
-	// prevent native resolution text from being blurred due to sub-pixel blending
-	x = floor( x );
-	y = floor( y );
-	shadowOffsetX = floor( shadowOffsetX );
-	shadowOffsetY = floor( shadowOffsetY );
+	if ( !textInMotion ) {
+		// prevent native resolution text from being blurred due to sub-pixel blending
+		x = floor( x );
+		y = floor( y );
+		shadowOffsetX = floor( shadowOffsetX );
+		shadowOffsetY = floor( shadowOffsetY );
+	}
 
 	trap_R_SetColor( color );
 	Vector4Copy( color, newColor );
@@ -533,12 +537,12 @@ void Text_PaintWithCursor( float x, float y, const fontInfo_t *font, float scale
 	trap_R_SetColor( NULL );
 }
 
-void Text_Paint_Limit( float *maxX, float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char* text, float adjust, int limit ) {
+void Text_Paint_Limit( float *maxX, float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char* text, float adjust, int limit, qboolean textInMotion ) {
 	int len, count;
 	vec4_t newColor;
 	const glyphInfo_t *glyph;
 	const char *s;
-	float max;
+	float start, max;
 	float yadj, xadj;
 	float useScaleX, useScaleY;
 	float xscale, yscale;
@@ -549,17 +553,20 @@ void Text_Paint_Limit( float *maxX, float x, float y, const fontInfo_t *font, fl
 
 	xscale = 1.0f;
 	yscale = 1.0f;
+	start = 0.0f;
+	max = *maxX;
 	CG_AdjustFrom640( &x, &y, &xscale, &yscale );
-
-	max = *maxX * xscale;
-	adjust *= xscale;
+	CG_AdjustFrom640( &start, NULL, &adjust, NULL );
+	CG_AdjustFrom640( &max, NULL, NULL, NULL );
 
 	useScaleX = scale * font->glyphScale * xscale;
 	useScaleY = scale * font->glyphScale * yscale;
 
-	// prevent native resolution text from being blurred due to sub-pixel blending
-	x = floor( x );
-	y = floor( y );
+	if ( !textInMotion ) {
+		// prevent native resolution text from being blurred due to sub-pixel blending
+		x = floor( x );
+		y = floor( y );
+	}
 
 	trap_R_SetColor( color );
 	Vector4Copy( color, lastTextColor );
@@ -584,7 +591,7 @@ void Text_Paint_Limit( float *maxX, float x, float y, const fontInfo_t *font, fl
 		glyph = Text_GetGlyph( font, Q_UTF8_CodePoint( &s ) );
 
 		if ( x + ( glyph->xSkip * useScaleX ) > max ) {
-			*maxX = 0;
+			x = start;
 			break;
 		}
 
@@ -593,16 +600,18 @@ void Text_Paint_Limit( float *maxX, float x, float y, const fontInfo_t *font, fl
 
 		Text_PaintGlyph( x + xadj, y - yadj, glyph->imageWidth * useScaleX, glyph->imageHeight * useScaleY, glyph, NULL );
 		x += ( glyph->xSkip * useScaleX ) + adjust;
-		*maxX = x / xscale;
 		count++;
 	}
 	trap_R_SetColor( NULL );
+
+	// convert X to 640 coords
+	*maxX = ( x - start ) / xscale;
 }
 
 #define MAX_WRAP_BYTES 1024
 #define MAX_WRAP_LINES 1024
 
-void Text_Paint_AutoWrapped( float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *str, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor, float xmax, float ystep, int style ) {
+void Text_Paint_AutoWrapped( float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *str, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor, qboolean textInMotion, float xmax, float ystep, int style ) {
 	int width;
 	char *s1, *s2, *s3;
 	char c_bcp;
@@ -758,7 +767,7 @@ void Text_Paint_AutoWrapped( float x, float y, const fontInfo_t *font, float sca
 				break;
 		}
 
-		Text_Paint( drawX, y, font, scale, newColor, buf, adjust, 0, shadowOffset, gradient, forceColor );
+		Text_Paint( drawX, y, font, scale, newColor, buf, adjust, 0, shadowOffset, gradient, forceColor, textInMotion );
 		y += ystep;
 
 		if ( numLines >= MAX_WRAP_LINES || autoNewline[numLines] ) {

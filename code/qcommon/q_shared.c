@@ -119,7 +119,7 @@ void COM_StripExtension(const char *in, char *out, int destsize) {
 =======================================================================================================================================
 COM_CompareExtension
 
-string compare the end of the strings and return qtrue if strings match.
+String compare the end of the strings and return qtrue if strings match.
 =======================================================================================================================================
 */
 qboolean COM_CompareExtension(const char *in, const char *ext) {
@@ -419,7 +419,6 @@ void COM_ParseError(char *format, ...) {
 	va_start(argptr, format);
 	Q_vsnprintf(string, sizeof(string), format, argptr);
 	va_end(argptr);
-
 	Com_Printf("ERROR: %s, line %d: %s\n", com_parsename, COM_GetCurrentParseLine(), string);
 }
 
@@ -435,7 +434,6 @@ void COM_ParseWarning(char *format, ...) {
 	va_start(argptr, format);
 	Q_vsnprintf(string, sizeof(string), format, argptr);
 	va_end(argptr);
-
 	Com_Printf("WARNING: %s, line %d: %s\n", com_parsename, COM_GetCurrentParseLine(), string);
 }
 
@@ -508,7 +506,9 @@ int COM_Compress(char *data_p) {
 					*out++ = '\n';
 					newline = qfalse;
 					whitespace = qfalse;
-				} if (whitespace) {
+				}
+
+				if (whitespace) {
 					*out++ = ' ';
 					whitespace = qfalse;
 				}
@@ -576,7 +576,7 @@ char *COM_ParseExt2(char **data_p, qboolean allowLineBreaks, char delimiter) {
 		}
 
 		if (data && linesSkipped && !allowLineBreaks) {
-			// ZTM: Don't move the pointer so that calling SkipRestOfLine afterwards works as expected
+			// ZTM: don't move the pointer so that calling SkipRestOfLine afterwards works as expected
 			//*data_p = data;
 			return com_token;
 		}
@@ -802,14 +802,14 @@ Com_HexStrToInt
 */
 int Com_HexStrToInt(const char *str) {
 
-	if (!str || !str[0]) {
+	if (!str) {
 		return -1;
 	}
 	// check for hex code
-	if (str[0] == '0' && str[1] == 'x') {
-		int i, n = 0;
+	if (str[0] == '0' && str[1] == 'x' && str[2] != '\0') {
+		int i, n = 0, len = strlen(str);
 
-		for (i = 2; i < strlen(str); i++) {
+		for (i = 2; i < len; i++) {
 			char digit;
 
 			n *= 16;
@@ -922,12 +922,13 @@ Q_isintegral
 qboolean Q_isintegral(float f) {
 	return (int)f == f;
 }
-#ifdef _MSC_VER
+#ifdef _WIN32
 /*
 =======================================================================================================================================
 Q_vsnprintf
 
-Special wrapper function for Microsoft's broken _vsnprintf() function. MinGW comes with its own snprintf() which is not broken.
+Special wrapper function for Microsoft's broken _vsnprintf() function. MinGW comes with its own vsnprintf() which is not broken.
+MinGW-w64 however, uses Microsoft's broken _vsnprintf() function.
 =======================================================================================================================================
 */
 int Q_vsnprintf(char *str, size_t size, const char *format, va_list ap) {
@@ -938,7 +939,7 @@ int Q_vsnprintf(char *str, size_t size, const char *format, va_list ap) {
 	if (retval < 0 || retval == size) {
 		// Microsoft doesn't adhere to the C99 standard of vsnprintf, which states that the return value must be the number of
 		// bytes written if the output string had sufficient length.
-		// Obviously we cannot determine that value from Microsoft's implementation, so we have no choice but to return size.
+		// obviously we cannot determine that value from Microsoft's implementation, so we have no choice but to return size.
 		str[size - 1] = '\0';
 		return size;
 	}
@@ -968,6 +969,7 @@ void Q_strncpyz(char *dest, const char *src, int destsize) {
 	}
 
 	strncpy(dest, src, destsize - 1);
+
 	dest[destsize - 1] = 0;
 }
 
@@ -1259,7 +1261,7 @@ char *QDECL va(char *format, ...) {
 =======================================================================================================================================
 Com_TruncateLongString
 
-Assumes buffer is atleast TRUNCATE_LENGTH big.
+Assumes buffer is at least TRUNCATE_LENGTH big.
 =======================================================================================================================================
 */
 void Com_TruncateLongString(char *buffer, const char *s) {

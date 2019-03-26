@@ -47,6 +47,7 @@ void RotatePoint(vec3_t point, /*const*/ vec3_t matrix[3]) { // FIXME
 	vec3_t tvec;
 
 	VectorCopy(point, tvec);
+
 	point[0] = DotProduct(matrix[0], tvec);
 	point[1] = DotProduct(matrix[1], tvec);
 	point[2] = DotProduct(matrix[2], tvec);
@@ -555,7 +556,7 @@ void CM_TraceThroughBrush(traceWork_t *tw, cbrush_t *brush) {
 			if (d1 > 0 && (d2 >= SURFACE_CLIP_EPSILON || d2 >= d1)) {
 				return;
 			}
-			// if it doesn't cross the plane, the plane isn't relevent
+			// if it doesn't cross the plane, the plane isn't relevant
 			if (d1 <= 0 && d2 <= 0) {
 				continue;
 			}
@@ -940,7 +941,6 @@ void CM_TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf) {
 }
 
 #define RADIUS_EPSILON 1.0f
-
 /*
 =======================================================================================================================================
 CM_TraceThroughSphere
@@ -1013,6 +1013,7 @@ void CM_TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t 
 
 		if (fraction < tw->trace.fraction) {
 			tw->trace.fraction = fraction;
+
 			VectorSubtract(end, start, dir);
 			VectorMA(start, fraction, dir, intersection);
 			VectorSubtract(intersection, origin, dir);
@@ -1050,7 +1051,7 @@ void CM_TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t 
 =======================================================================================================================================
 CM_TraceThroughVerticalCylinder
 
-Get the first intersection of the ray with the cylinder the cylinder extends halfheight above and below the origin.
+Get the first intersection of the ray with the cylinder. The cylinder extends halfheight above and below the origin.
 =======================================================================================================================================
 */
 void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radius, float halfheight, vec3_t start, vec3_t end, int contents) {
@@ -1110,14 +1111,14 @@ void CM_TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radiu
 
 	VectorSubtract(start, origin, v1);
 	// dir is normalized so we can use a = 1
-	//a = 1.0f; // * (dir[0] * dir[0] + dir[1] * dir[1]);
+	//a = 1.0f; //* (dir[0] * dir[0] + dir[1] * dir[1]);
 	b = 2.0f * (v1[0] * dir[0] + v1[1] * dir[1]);
 	c = v1[0] * v1[0] + v1[1] * v1[1] - (radius + RADIUS_EPSILON) * (radius + RADIUS_EPSILON);
-	d = b * b - 4.0f * c; // * a;
+	d = b * b - 4.0f * c; //* a;
 
 	if (d > 0) {
 		sqrtd = SquareRootFloat(d);
-		// = (-b + sqrtd) * 0.5f; // / (2.0f * a);
+		//= (-b + sqrtd) * 0.5f; // / (2.0f * a);
 		fraction = (-b - sqrtd) * 0.5f; // / (2.0f * a);
 
 		if (fraction < 0) {
@@ -1201,9 +1202,13 @@ void CM_TraceCapsuleThroughCapsule(traceWork_t *tw, clipHandle_t model) {
 	halfheight = symetricSize[1][2];
 	radius = (halfwidth > halfheight) ? halfheight : halfwidth;
 	offs = halfheight - radius;
+
 	VectorCopy(offset, top);
+
 	top[2] += offs;
+
 	VectorCopy(offset, bottom);
+
 	bottom[2] -= offs;
 	// expand radius of spheres
 	radius += tw->sphere.radius;
@@ -1397,13 +1402,13 @@ void CM_Trace(trace_t *results, const vec3_t start, const vec3_t end, const vec3
 	cmodel_t *cmod;
 
 	cmod = CM_ClipHandleToModel(model);
-
 	cm.checkcount++; // for multi-check avoidance
 	c_traces++; // for statistics, may be zeroed
 	// fill in a default trace
 	Com_Memset(&tw, 0, sizeof(tw));
 
 	tw.trace.fraction = 1; // assume it goes the entire distance until shown otherwise
+
 	VectorCopy(origin, tw.modelOrigin);
 	tw.type = type;
 
@@ -1562,9 +1567,9 @@ void CM_Trace(trace_t *results, const vec3_t start, const vec3_t end, const vec3
 			tw.trace.endpos[i] = start[i] + tw.trace.fraction * (end[i] - start[i]);
 		}
 	}
-	// If allsolid is set (was entirely inside something solid), the plane is not valid.
-	// If fraction == 1.0, we never hit anything, and thus the plane is not valid.
-	// Otherwise, the normal on the plane should have unit length
+	// if allsolid is set (was entirely inside something solid), the plane is not valid.
+	// if fraction == 1.0, we never hit anything, and thus the plane is not valid.
+	// otherwise, the normal on the plane should have unit length
 	assert(tw.trace.allsolid || tw.trace.fraction == 1.0 || VectorLengthSquared(tw.trace.plane.normal) > 0.9999);
 	*results = tw.trace;
 }
@@ -1728,8 +1733,8 @@ void CM_BiSphereTrace(trace_t *results, const vec3_t start, const vec3_t end, fl
 			tw.trace.endpos[i] = start[i] + tw.trace.fraction * (end[i] - start[i]);
 		}
 	}
-	// if allsolid is set(was entirely inside something solid), the plane is not valid.
-	// if fraction == 1.0, we never hit anything, and thus the plane is not valid.
+	// if allsolid is set (was entirely inside something solid), the plane is not valid
+	// if fraction == 1.0, we never hit anything, and thus the plane is not valid
 	// otherwise, the normal on the plane should have unit length
 	assert(tw.trace.allsolid || tw.trace.fraction == 1.0 || VectorLengthSquared(tw.trace.plane.normal) > 0.9999);
 

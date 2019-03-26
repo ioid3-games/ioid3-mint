@@ -92,7 +92,7 @@ typedef struct {
 	int numPSs;
 	darray_t playerStates;
 	int localPlayerIndex[MAX_SPLITVIEW];
-	int playerNums[MAX_SPLITVIEW];
+	int clientNums[MAX_SPLITVIEW];
 	int num_entities;
 	int first_entity;	// into the circular sv_packet_entities[], the entities MUST be in increasing state number order, otherwise the delta compression will fail
 	int messageSent;	// time the message was transmitted
@@ -119,7 +119,7 @@ typedef struct player_s {
 	qboolean inWorld;
 	char userinfo[MAX_INFO_STRING];	// name, etc.
 	usercmd_t lastUsercmd;
-	sharedEntity_t *gentity;		// SV_GentityNum(playerNum)
+	sharedEntity_t *gentity;		// SV_GentityNum(clientNum)
 	char name[MAX_NAME_LENGTH];		// extracted from userinfo, high bits masked
 	struct client_s *client;
 } player_t;
@@ -147,7 +147,7 @@ typedef struct client_s {
 	int downloadXmitBlock;		// last block we xmited
 	unsigned char *downloadBlocks[MAX_DOWNLOAD_WINDOW]; // the buffers for the download blocks
 	int downloadBlockSize[MAX_DOWNLOAD_WINDOW];
-	qboolean downloadEOF;		// We have sent the EOF block
+	qboolean downloadEOF;		// we have sent the EOF block
 	int downloadSendTime;		// time we last got an ack from the client
 	int deltaMessage;			// frame last client usercmd message
 	int nextReliableTime;		// svs.time when another reliable command will be allowed
@@ -216,7 +216,7 @@ typedef struct {
 // Structure for managing bans
 typedef struct {
 	netadr_t ip;
-	// For a CIDR-Notation type suffix
+	// for a CIDR-Notation type suffix
 	int subnet;
 	qboolean isexception;
 } serverBan_t;
@@ -306,7 +306,7 @@ void SV_PlayerEnterWorld(player_t *player, usercmd_t *cmd);
 void SV_FreePlayer(player_t *player);
 void SV_DropPlayer(player_t *drop, const char *reason);
 void SV_FreeClient(client_t *client);
-void SV_DropClient(client_t *drop, const char *reason);
+void SV_DropClient(client_t *drop, const char *reason, qboolean force);
 const char *SV_ClientName(client_t *client);
 int SV_ClientNumLocalPlayers(client_t *client);
 int SV_ClientNumLocalPlayersInWorld(client_t *client);
@@ -336,21 +336,20 @@ sharedEntity_t *SV_GEntityForSvEntity(svEntity_t *svEnt);
 void SV_InitGameProgs(void);
 void SV_ShutdownGameProgs(void);
 void SV_RestartGameProgs(void);
-void SV_GameCommand(void);
 qboolean SV_inPVS(const vec3_t p1, const vec3_t p2);
 // sv_bot.c
 void SV_BotFrame(int time);
 int SV_BotAllocateClient(void);
-void SV_BotFreeClient(int playerNum);
+void SV_BotFreeClient(int clientNum);
 void SV_BotInitCvars(void);
 int SV_BotLibSetup(void);
 int SV_BotLibShutdown(void);
-int SV_BotGetSnapshotEntity(int playerNum, int ent);
-int SV_BotGetConsoleMessage(int playerNum, char *buf, int size);
+int SV_BotGetSnapshotEntity(int clientNum, int ent);
+int SV_BotGetServerCommand(int clientNum, char *buf, int size);
 int BotImport_DebugPolygonCreate(int color, int numPoints, vec3_t *points);
 void BotImport_DebugPolygonShow(int id, int color, int numPoints, vec3_t *points);
 void BotImport_DebugPolygonDelete(int id);
-void SV_ForceClientCommand(int playerNum, const char *command);
+void SV_ForceClientCommand(int clientNum, const char *command);
 void SV_BotInitBotLib(void);
 // high level object sorting to reduce interaction tests
 void SV_ClearWorld(void);
@@ -358,16 +357,16 @@ void SV_ClearWorld(void);
 void SV_UnlinkEntity(sharedEntity_t *ent);
 // call before removing an entity, and before trying to move one, so it doesn't clip against itself
 void SV_LinkEntity(sharedEntity_t *ent);
-// Needs to be called any time an entity changes origin, mins, maxs, or solid. Automatically unlinks if needed.
+// needs to be called any time an entity changes origin, mins, maxs, or solid. Automatically unlinks if needed
 // sets ent->r.absmin and ent->r.absmax
 // sets ent->leafnums[] for pvs determination even if the entity is not solid
 clipHandle_t SV_ClipHandleForEntity(const sharedEntity_t *ent);
 void SV_SectorList_f(void);
 int SV_AreaEntities(const vec3_t mins, const vec3_t maxs, int *entityList, int maxcount);
-// fills in a table of entity numbers with entities that have bounding boxes that intersect the given area.
-// It is possible for a non-axial bmodel to be returned that doesn't actually intersect the area on an exact test.
+// fills in a table of entity numbers with entities that have bounding boxes that intersect the given area
+// it is possible for a non-axial bmodel to be returned that doesn't actually intersect the area on an exact test
 // returns the number of pointers filled in
-// The world entity is never returned in this list.
+// the world entity is never returned in this list
 int SV_PointContents(const vec3_t p, int passEntityNum);
 // returns the CONTENTS_* value from the world and all entities at the given point.
 void SV_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, traceType_t type);

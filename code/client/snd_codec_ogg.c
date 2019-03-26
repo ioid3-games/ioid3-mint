@@ -1,19 +1,26 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com)
-Copyright (C) 2005-2006 Joerg Dietrich <dietrich_joerg@gmx.de>
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com).
+Copyright (C) 2005-2006 Joerg Dietrich <dietrich_joerg@gmx.de>.
 
-This file is part of Quake III Arena source code.
+This file is part of Spearmint Source Code.
 
-Quake III Arena source code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
-License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Quake III Arena source code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Quake III Arena source code; if not, write to the Free
-Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
+
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
+
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -26,8 +33,7 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 US
 #include <errno.h>
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
-// The OGG codec can return the samples in a number of different formats,
-// we use the standard signed short format.
+// the OGG codec can return the samples in a number of different formats, we use the standard signed short format
 #define OGG_SAMPLEWIDTH 2
 // Q3 OGG codec
 snd_codec_t ogg_codec = {
@@ -42,7 +48,7 @@ snd_codec_t ogg_codec = {
 /*
 =======================================================================================================================================
 
-	Callbacks for vobisfile
+	CALLBACKS FOR VORBISFILE
 
 =======================================================================================================================================
 */
@@ -67,7 +73,7 @@ size_t S_OGG_Callback_read(void *ptr, size_t size, size_t nmemb, void *datasourc
 	}
 
 	if (!(size && nmemb)) {
-		// It's not an error, caller just wants zero bytes!
+		// it's not an error, caller just wants zero bytes!
 		errno = 0;
 		return 0;
 	}
@@ -212,17 +218,17 @@ S_OGG_CodecOpenStream
 */
 snd_stream_t *S_OGG_CodecOpenStream(const char *filename) {
 	snd_stream_t *stream;
-
 	// OGG codec control structure
 	OggVorbis_File *vf;
 	// some variables used to get informations about the OGG
 	vorbis_info *OGGInfo;
 	ogg_int64_t numSamples;
+
 	// check if input is valid
 	if (!filename) {
 		return NULL;
 	}
-	// Open the stream
+	// open the stream
 	stream = S_CodecUtilOpen(filename, &ogg_codec);
 
 	if (!stream) {
@@ -273,9 +279,9 @@ snd_stream_t *S_OGG_CodecOpenStream(const char *filename) {
 	stream->info.samples = numSamples;
 	stream->info.size = stream->info.samples * stream->info.channels * stream->info.width;
 	stream->info.dataofs = 0;
-	// We use stream->pos for the file pointer in the compressed ogg file
+	// we use stream->pos for the file pointer in the compressed ogg file
 	stream->pos = 0;
-	// We use the generic pointer in stream for the OGG codec control structure
+	// we use the generic pointer in stream for the OGG codec control structure
 	stream->ptr = vf;
 
 	return stream;
@@ -310,7 +316,7 @@ int S_OGG_CodecReadStream(snd_stream_t *stream, int bytes, void *buffer) {
 	int bytesRead, bytesLeft, c;
 	char *bufPtr;
 
-	// Bitstream for the decoder
+	// bitstream for the decoder
 	int BS = 0;
 	// big endian machines want their samples in big endian order
 	int IsBigEndian = 0;

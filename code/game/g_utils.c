@@ -50,15 +50,15 @@ void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	for (i = 0; i < remapCount; i++) {
 		if (Q_stricmp(oldShader, remappedShaders[i].oldShader) == 0) {
 			// found it, just update this one
-			strcpy(remappedShaders[i].newShader,newShader);
+			strcpy(remappedShaders[i].newShader, newShader);
 			remappedShaders[i].timeOffset = timeOffset;
 			return;
 		}
 	}
 
 	if (remapCount < MAX_SHADER_REMAPS) {
-		strcpy(remappedShaders[remapCount].newShader,newShader);
-		strcpy(remappedShaders[remapCount].oldShader,oldShader);
+		strcpy(remappedShaders[remapCount].newShader, newShader);
+		strcpy(remappedShaders[remapCount].oldShader, oldShader);
 		remappedShaders[remapCount].timeOffset = timeOffset;
 		remapCount++;
 	}
@@ -87,7 +87,7 @@ const char *BuildShaderStateConfig(void) {
 /*
 =======================================================================================================================================
 
-	Model / Sound configstring indexes.
+	Model/Sound configstring indexes.
 
 =======================================================================================================================================
 */
@@ -156,12 +156,12 @@ Broadcasts a command to only a specific plsyer.
 ZTM: NOTE: Function name kept to reduce source code changes.
 =======================================================================================================================================
 */
-void trap_SendServerCommand(int playerNum, char *cmd) {
+void trap_SendServerCommand(int clientNum, char *cmd) {
 
-	if (playerNum == -1) {
+	if (clientNum == -1) {
 		trap_SendServerCommandEx(-1, -1, cmd);
 	} else {
-		trap_SendServerCommandEx(level.players[playerNum].pers.connectionNum, level.players[playerNum].pers.localPlayerNum, cmd);
+		trap_SendServerCommandEx(level.players[clientNum].pers.connectionNum, level.players[clientNum].pers.localPlayerNum, cmd);
 	}
 }
 
@@ -174,7 +174,7 @@ Broadcasts a command to only a specific team.
 */
 void G_TeamCommand(team_t team, char *cmd) {
 	gconnection_t *connection;
-	int i, j, playerNum;
+	int i, j, clientNum;
 
 	for (i = 0; i < level.maxconnections; i++) {
 		connection = &level.connections[i];
@@ -184,20 +184,19 @@ void G_TeamCommand(team_t team, char *cmd) {
 				continue;
 			}
 
-			playerNum = connection->localPlayerNums[j];
+			clientNum = connection->localPlayerNums[j];
 
-			if (level.players[playerNum].sess.sessionTeam == team) {
+			if (level.players[clientNum].sess.sessionTeam == team) {
+				if (connection->numLocalPlayers == 1) {
+					trap_SendServerCommand(clientNum, cmd);
+				}
+
 				break;
 			}
 		}
-
-		if (j < MAX_SPLITVIEW) {
-			// Include team when there are multiple local players
-			if (connection->numLocalPlayers > 1) {
-				trap_SendServerCommandEx(i, -1, va("[%s] %s", TeamName(team), cmd));
-			} else {
-				trap_SendServerCommand(i, cmd);
-			}
+		// include team when there are multiple local players
+		if (connection->numLocalPlayers > 1 && j < MAX_SPLITVIEW) {
+			trap_SendServerCommandEx(i, -1, va("[%s] %s", TeamName(team), cmd));
 		}
 	}
 }
@@ -325,17 +324,17 @@ void G_UseTargets(gentity_t *ent, gentity_t *activator) {
 
 /*
 =======================================================================================================================================
-tv
+TempVector
 
-TempVector: This is just a convenience function for making temporary vectors for function calls.
+This is just a convenience function for making temporary vectors for function calls.
 =======================================================================================================================================
 */
-float *tv(float x, float y, float z) {
+float *TempVector(float x, float y, float z) {
 	static int index;
 	static vec3_t vecs[8];
 	float *v;
 
-	// use an array so that multiple tempvectors won't collide for a while
+	// use an array so that multiple vectors won't collide for a while
 	v = vecs[index];
 	index = (index + 1)&7;
 
@@ -348,17 +347,17 @@ float *tv(float x, float y, float z) {
 
 /*
 =======================================================================================================================================
-vtos
+VectorToString
 
-VectorToString: This is just a convenience function for printing vectors.
+This is just a convenience function for printing vectors.
 =======================================================================================================================================
 */
-char *vtos(const vec3_t v) {
+char *VectorToString(const vec3_t v) {
 	static int index;
 	static char str[8][32];
 	char *s;
 
-	// use an array so that multiple vtos won't collide
+	// use an array so that multiple vectors won't collide
 	s = str[index];
 	index = (index + 1)&7;
 
@@ -413,7 +412,7 @@ void G_SetMovedir(vec3_t angles, vec3_t movedir) {
 	} else if (VectorCompare(angles, VEC_DOWN)) {
 		VectorCopy(MOVEDIR_DOWN, movedir);
 	} else {
-		AngleVectors(angles, movedir, NULL, NULL);
+		AngleVectorsForward(angles, movedir);
 	}
 
 	VectorClear(angles);
@@ -421,10 +420,10 @@ void G_SetMovedir(vec3_t angles, vec3_t movedir) {
 
 /*
 =======================================================================================================================================
-vectoyaw
+VectorToYaw
 =======================================================================================================================================
 */
-float vectoyaw(const vec3_t vec) {
+float VectorToYaw(const vec3_t vec) {
 	float yaw;
 
 	if (vec[YAW] == 0 && vec[PITCH] == 0) {
@@ -464,7 +463,7 @@ void G_InitGentity(gentity_t *e) {
 G_Spawn
 
 Either finds a free entity, or allocates a new one.
-The slots from 0 to MAX_CLIENTS - 1 are always reserved for players, and will never be used by anything else.
+The slots from 0 to MAX_CLIENTS - 1 are always reserved for clients, and will never be used by anything else.
 Try to avoid reusing an entity that was recently freed, because it can cause the client to think the entity morphed into something else
 instead of being removed and recreated, which can cause interpolated angles and bad trails.
 =======================================================================================================================================
@@ -507,7 +506,7 @@ gentity_t *G_Spawn(void) {
 	// open up a new slot
 	level.num_entities++;
 	// let the server system know that there are more entities
-	trap_LocateGameData(level.gentities, level.num_entities, sizeof(gentity_t), &level.players[0].ps, sizeof(level.players[0]));
+	trap_LocateGameData(level.gentities, level.num_entities, sizeof(gentity_t), &level.clients[0].ps, sizeof(level.clients[0]));
 	G_InitGentity(e);
 	return e;
 }
@@ -601,15 +600,15 @@ void G_KillBox(gentity_t *ent) {
 	gentity_t *hit;
 	vec3_t mins, maxs;
 
-	VectorAdd(ent->player->ps.origin, ent->s.mins, mins);
-	VectorAdd(ent->player->ps.origin, ent->s.maxs, maxs);
+	VectorAdd(ent->client->ps.origin, ent->s.mins, mins);
+	VectorAdd(ent->client->ps.origin, ent->s.maxs, maxs);
 
 	num = trap_EntitiesInBox(mins, maxs, touch, MAX_GENTITIES);
 
 	for (i = 0; i < num; i++) {
 		hit = &g_entities[touch[i]];
 
-		if (!hit->player) {
+		if (!hit->client) {
 			continue;
 		}
 		// nail it
@@ -627,11 +626,11 @@ Adds an event + parm and twiddles the event counter.
 */
 void G_AddPredictableEvent(gentity_t *ent, int event, int eventParm) {
 
-	if (!ent->player) {
+	if (!ent->client) {
 		return;
 	}
 
-	BG_AddPredictableEventToPlayerstate(event, eventParm, &ent->player->ps);
+	BG_AddPredictableEventToPlayerstate(event, eventParm, &ent->client->ps);
 }
 
 /*
@@ -648,12 +647,13 @@ void G_AddEvent(gentity_t *ent, int event, int eventParm) {
 		G_Printf("G_AddEvent: zero event added for entity %i\n", ent->s.number);
 		return;
 	}
-	// players need to add the event in playerState_t instead of entityState_t
-	if (ent->player) {
-		bits = ent->player->ps.externalEvent & EV_EVENT_BITS;
-		bits = (bits + EV_EVENT_BIT1)& EV_EVENT_BITS;
-		ent->player->ps.externalEvent = event|bits;
-		ent->player->ps.externalEventParm = eventParm;
+	// clients need to add the event in playerState_t instead of entityState_t
+	if (ent->client) {
+		bits = ent->client->ps.externalEvent & EV_EVENT_BITS;
+		bits = (bits + EV_EVENT_BIT1) & EV_EVENT_BITS;
+
+		ent->client->ps.externalEvent = event|bits;
+		ent->client->ps.externalEventParm = eventParm;
 	} else {
 		bits = ent->s.event & EV_EVENT_BITS;
 		bits = (bits + EV_EVENT_BIT1) & EV_EVENT_BITS;

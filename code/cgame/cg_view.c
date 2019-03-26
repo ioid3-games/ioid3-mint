@@ -40,7 +40,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 	Testmodel will create a fake entity 100 units in front of the current view position, directly facing the viewer. It will remain
 	immobile, so you can move around it to view it from different angles.
 
-	Testgun will cause the model to follow the player around and supress the real view weapon model. The default frame 0 of most guns
+	Testgun will cause the model to follow the player around and suppress the real view weapon model. The default frame 0 of most guns
 	is completely off screen, so you will probably have to cycle a couple frames to see it.
 
 	"nextframe", "prevframe", "nextskin", and "prevskin" commands will change the frame or skin of the testmodel. These are bound to F5,
@@ -64,6 +64,8 @@ Creates an entity in front of the current position, which can then be moved arou
 void CG_TestModel_f(void) {
 	vec3_t angles;
 
+	cg.testGun = qfalse;
+
 	memset(&cg.testModelEntity, 0, sizeof(cg.testModelEntity));
 
 	if (trap_Argc() < 2) {
@@ -71,6 +73,7 @@ void CG_TestModel_f(void) {
 	}
 
 	Q_strncpyz(cg.testModelName, CG_Argv(1), MAX_QPATH);
+
 	cg.testModelEntity.hModel = trap_R_RegisterModel(cg.testModelName);
 
 	if (trap_Argc() == 3) {
@@ -91,7 +94,18 @@ void CG_TestModel_f(void) {
 	angles[ROLL] = 0;
 
 	AnglesToAxis(angles, cg.testModelEntity.axis);
-	cg.testGun = qfalse;
+}
+
+/*
+=======================================================================================================================================
+CG_TestModelComplete
+=======================================================================================================================================
+*/
+void CG_TestModelComplete(char *args, int argNum) {
+
+	if (argNum == 2) {
+		trap_Field_CompleteFilename("", "$models", qfalse, qfalse);
+	}
 }
 
 /*
@@ -105,8 +119,12 @@ void CG_TestGun_f(void) {
 
 	CG_TestModel_f();
 
+	if (!cg.testModelEntity.hModel) {
+		return;
+	}
+
 	cg.testGun = qtrue;
-	cg.testModelEntity.renderfx = RF_DEPTHHACK|RF_NO_MIRROR;
+	cg.testModelEntity.renderfx = RF_NO_MIRROR|RF_DEPTHHACK;
 }
 
 /*
@@ -207,7 +225,7 @@ Sets the coordinates of the viewport and rendered window.
 void CG_CalcVrect(void) {
 	int size;
 
-	// Viewport size
+	// viewport size
 	cg.viewportX = cg.viewportY = 0;
 	cg.viewportWidth = cgs.glconfig.vidWidth;
 	cg.viewportHeight = cgs.glconfig.vidHeight;
@@ -270,16 +288,16 @@ void CG_CalcVrect(void) {
 	cgs.screenYScaleStretch = cg.viewportHeight * (1.0 / 480.0);
 
 	if (cg.viewportWidth * 480 > cg.viewportHeight * 640) {
-		cgs.screenXScale = cg.viewportWidth * (1.0 / 640.0);
-		cgs.screenYScale = cg.viewportHeight * (1.0 / 480.0);
+		cgs.screenXScale = cgs.screenXScaleStretch;
+		cgs.screenYScale = cgs.screenYScaleStretch;
 		// wide screen
 		cgs.screenXBias = 0.5 * (cg.viewportWidth - (cg.viewportHeight * (640.0 / 480.0)));
 		cgs.screenXScale = cgs.screenYScale;
 		// no narrow screen
 		cgs.screenYBias = 0;
 	} else {
-		cgs.screenXScale = cg.viewportWidth * (1.0 / 640.0);
-		cgs.screenYScale = cg.viewportHeight * (1.0 / 480.0);
+		cgs.screenXScale = cgs.screenXScaleStretch;
+		cgs.screenYScale = cgs.screenYScaleStretch;
 		// narrow screen
 		cgs.screenYBias = 0.5 * (cg.viewportHeight - (cg.viewportWidth * (480.0 / 640.0)));
 		cgs.screenYScale = cgs.screenXScale;
@@ -289,7 +307,7 @@ void CG_CalcVrect(void) {
 
 	cgs.screenFakeWidth = cg.viewportWidth / cgs.screenXScale;
 	// the intermission should always be full screen
-	if (!cg.cur_ps || cg.cur_ps->pm_type == PM_INTERMISSION) {
+	if (!cg.cur_ps || cg.snap->ps.pm_type == PM_INTERMISSION) {
 		size = 100;
 	} else {
 		size = cg_viewsize.integer;
@@ -297,10 +315,8 @@ void CG_CalcVrect(void) {
 	// rendered window for drawing world
 	cg.refdef.width = cg.viewportWidth * size / 100;
 	cg.refdef.width &= ~1;
-
 	cg.refdef.height = cg.viewportHeight * size / 100;
 	cg.refdef.height &= ~1;
-
 	cg.refdef.x = cg.viewportX + (cg.viewportWidth - cg.refdef.width) / 2;
 	cg.refdef.y = cg.viewportY + (cg.viewportHeight - cg.refdef.height) / 2;
 }
@@ -316,10 +332,10 @@ void CG_StepOffset(vec3_t vieworg) {
 	int timeDelta;
 
 	// smooth out stair climbing
-	timeDelta = cg.time - cg.cur_lc->stepTime;
+	timeDelta = cg.time - cg.stepTime;
 
 	if (timeDelta < STEP_TIME) {
-		vieworg[2] -= cg.cur_lc->stepChange * (STEP_TIME - timeDelta) / STEP_TIME;
+		vieworg[2] -= cg.stepChange * (STEP_TIME - timeDelta) / STEP_TIME;
 	}
 }
 
@@ -334,20 +350,20 @@ static void CG_OffsetThirdPersonView(void) {
 	vec3_t view;
 	vec3_t focusAngles;
 	trace_t trace;
-	static vec3_t mins = {-5, -5, -5};
-	static vec3_t maxs = {5, 5, 5};
+	static vec3_t mins = {-6, -6, -6};
+	static vec3_t maxs = {6, 6, 6};
 	vec3_t focusPoint;
 	float focusDist;
 	float forwardScale, sideScale;
 	float thirdPersonAngle, thirdPersonRange;
 
-	cg.refdef.vieworg[2] += cg.cur_lc->predictedPlayerState.viewheight;
+	cg.refdef.vieworg[2] += cg.predictedPlayerState.viewheight;
 
 	VectorCopy(cg.refdefViewAngles, focusAngles);
 
-	if (cg.cur_lc->cameraOrbit) {
-		thirdPersonAngle = cg.cur_lc->cameraOrbitAngle;
-		thirdPersonRange = cg.cur_lc->cameraOrbitRange;
+	if (cg.cameraOrbit) {
+		thirdPersonAngle = cg.cameraOrbitAngle;
+		thirdPersonRange = cg.cameraOrbitRange;
 		// make camera orbit horizontal
 		focusAngles[PITCH] = 0;
 		cg.refdefViewAngles[PITCH] = 0;
@@ -355,9 +371,9 @@ static void CG_OffsetThirdPersonView(void) {
 		thirdPersonAngle = cg_thirdPersonAngle[cg.cur_localPlayerNum].value;
 		thirdPersonRange = cg_thirdPersonRange[cg.cur_localPlayerNum].value;
 		// if dead, look at killer
-		if (cg.cur_lc->predictedPlayerState.stats[STAT_HEALTH] <= 0) {
-			focusAngles[YAW] = cg.cur_lc->predictedPlayerState.stats[STAT_DEAD_YAW];
-			cg.refdefViewAngles[YAW] = cg.cur_lc->predictedPlayerState.stats[STAT_DEAD_YAW];
+		if (cg.predictedPlayerState.stats[STAT_HEALTH] <= 0) {
+			focusAngles[YAW] = cg.predictedPlayerState.stats[STAT_DEAD_YAW];
+			cg.refdefViewAngles[YAW] = cg.predictedPlayerState.stats[STAT_DEAD_YAW];
 		}
 	}
 
@@ -365,7 +381,7 @@ static void CG_OffsetThirdPersonView(void) {
 		focusAngles[PITCH] = 45; // don't go too far overhead
 	}
 
-	AngleVectors(focusAngles, forward, NULL, NULL);
+	AngleVectorsForward(focusAngles, forward);
 
 	if (cg_thirdPersonSmooth[cg.cur_localPlayerNum].integer) {
 		CG_StepOffset(cg.refdef.vieworg);
@@ -375,7 +391,6 @@ static void CG_OffsetThirdPersonView(void) {
 	VectorCopy(cg.refdef.vieworg, view);
 
 	view[2] += cg_thirdPersonHeight[cg.cur_localPlayerNum].value;
-
 	cg.refdefViewAngles[PITCH] *= 0.5;
 
 	AngleVectors(cg.refdefViewAngles, forward, right, up);
@@ -385,16 +400,16 @@ static void CG_OffsetThirdPersonView(void) {
 
 	VectorMA(view, -thirdPersonRange * forwardScale, forward, view);
 	VectorMA(view, -thirdPersonRange * sideScale, right, view);
-	// trace a ray from the origin to the viewpoint to make sure the view isn't in a solid block. Use a 10 by 10 block to prevent the
+	// trace a ray from the origin to the viewpoint to make sure the view isn't in a solid block. Use a 12 by 12 block to prevent the
 	// view from near clipping anything
 	if (!cg_cameraMode.integer) {
-		CG_Trace(&trace, cg.refdef.vieworg, mins, maxs, view, cg.cur_lc->predictedPlayerState.playerNum, MASK_SOLID);
+		CG_Trace(&trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID);
 
 		if (trace.fraction != 1.0) {
 			VectorCopy(trace.endpos, view);
 			view[2] += (1.0 - trace.fraction) * 32;
 			// try another trace to this position, because a tunnel may have the ceiling close enough that this is poking out
-			CG_Trace(&trace, cg.refdef.vieworg, mins, maxs, view, cg.cur_lc->predictedPlayerState.playerNum, MASK_SOLID);
+			CG_Trace(&trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID);
 			VectorCopy(trace.endpos, view);
 		}
 	}
@@ -429,7 +444,7 @@ static void CG_OffsetFirstPersonView(void) {
 	vec3_t predictedVelocity;
 	int timeDelta;
 
-	if (cg.cur_ps->pm_type == PM_INTERMISSION) {
+	if (cg.snap->ps.pm_type == PM_INTERMISSION) {
 		return;
 	}
 
@@ -438,45 +453,44 @@ static void CG_OffsetFirstPersonView(void) {
 
 	origin = cg.firstPersonViewOrg;
 	angles = cg.firstPersonViewAngles;
-
 	// if dead, fix the angle and don't add any kick
-	if (cg.cur_ps->stats[STAT_HEALTH] <= 0) {
+	if (cg.snap->ps.stats[STAT_HEALTH] <= 0) {
 		angles[ROLL] = 40;
 		angles[PITCH] = -15;
-		angles[YAW] = cg.cur_ps->stats[STAT_DEAD_YAW];
-		origin[2] += cg.cur_lc->predictedPlayerState.viewheight;
+		angles[YAW] = cg.snap->ps.stats[STAT_DEAD_YAW];
+		origin[2] += cg.predictedPlayerState.viewheight;
 		return;
 	}
 	// add angles based on damage kick
-	if (cg.cur_lc->damageTime) {
-		ratio = cg.time - cg.cur_lc->damageTime;
+	if (cg.damageTime) {
+		ratio = cg.time - cg.damageTime;
 
 		if (ratio < DAMAGE_DEFLECT_TIME) {
 			ratio /= DAMAGE_DEFLECT_TIME;
-			angles[PITCH] += ratio * cg.cur_lc->v_dmg_pitch;
-			angles[ROLL] += ratio * cg.cur_lc->v_dmg_roll;
+			angles[PITCH] += ratio * cg.v_dmg_pitch;
+			angles[ROLL] += ratio * cg.v_dmg_roll;
 		} else {
 			ratio = 1.0 - (ratio - DAMAGE_DEFLECT_TIME) / DAMAGE_RETURN_TIME;
 
 			if (ratio > 0) {
-				angles[PITCH] += ratio * cg.cur_lc->v_dmg_pitch;
-				angles[ROLL] += ratio * cg.cur_lc->v_dmg_roll;
+				angles[PITCH] += ratio * cg.v_dmg_pitch;
+				angles[ROLL] += ratio * cg.v_dmg_roll;
 			}
 		}
 	}
 	// add pitch based on fall kick
 #if 0
-	ratio = (cg.time - cg.cur_lc->landTime) / FALL_TIME;
+	ratio = (cg.time - cg.landTime) / FALL_TIME;
 
-	if (ratio < 0){
+	if (ratio < 0) {
 		ratio = 0;
 	}
 
 	angles[PITCH] += ratio * cg.fall_value;
 #endif
-	if (!cg.cur_lc->renderingThirdPerson && cg_viewbob.integer) {
+	if (!cg.renderingThirdPerson && cg_viewbob.integer) {
 		// add angles based on velocity
-		VectorCopy(cg.cur_lc->predictedPlayerState.velocity, predictedVelocity);
+		VectorCopy(cg.predictedPlayerState.velocity, predictedVelocity);
 
 		delta = DotProduct(predictedVelocity, cg.refdef.viewaxis[0]);
 		angles[PITCH] += delta * cg_runpitch.value;
@@ -489,16 +503,21 @@ static void CG_OffsetFirstPersonView(void) {
 		speed = cg.xyspeed > 200 ? cg.xyspeed : 200;
 		delta = cg.bobfracsin * cg_bobpitch.value * speed;
 
-		if (cg.cur_lc->predictedPlayerState.pm_flags & PMF_DUCKED)
-			delta *= 3;		// crouching
+		if (cg.predictedPlayerState.pm_flags & PMF_DUCKED) {
+			delta *= 3; // crouching
+		}
+
 		angles[PITCH] += delta;
 
 		delta = cg.bobfracsin * cg_bobroll.value * speed;
 
-		if (cg.cur_lc->predictedPlayerState.pm_flags & PMF_DUCKED)
-			delta *= 3;		// crouching accentuates roll
-		if (cg.bobcycle & 1)
+		if (cg.predictedPlayerState.pm_flags & PMF_DUCKED) {
+			delta *= 3; // crouching accentuates roll
+		}
+
+		if (cg.bobcycle & 1) {
 			delta = -delta;
+		}
 
 		angles[ROLL] += delta;
 		// add bob height
@@ -511,23 +530,23 @@ static void CG_OffsetFirstPersonView(void) {
 		origin[2] += bob;
 	}
 	// add view height
-	origin[2] += cg.cur_lc->predictedPlayerState.viewheight;
+	origin[2] += cg.predictedPlayerState.viewheight;
 	// smooth out duck height changes
-	timeDelta = cg.time - cg.cur_lc->duckTime;
+	timeDelta = cg.time - cg.duckTime;
 
 	if (timeDelta < DUCK_TIME) {
-		origin[2] -= cg.cur_lc->duckChange * (DUCK_TIME - timeDelta) / DUCK_TIME;
+		origin[2] -= cg.duckChange * (DUCK_TIME - timeDelta) / DUCK_TIME;
 	}
 	// add fall height
-	delta = cg.time - cg.cur_lc->landTime;
+	delta = cg.time - cg.landTime;
 
 	if (delta < LAND_DEFLECT_TIME) {
 		f = delta / LAND_DEFLECT_TIME;
-		origin[2] += cg.cur_lc->landChange * f;
+		origin[2] += cg.landChange * f;
 	} else if (delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME) {
 		delta -= LAND_DEFLECT_TIME;
 		f = 1.0 - (delta / LAND_RETURN_TIME);
-		origin[2] += cg.cur_lc->landChange * f;
+		origin[2] += cg.landChange * f;
 	}
 	// add step offset
 	CG_StepOffset(origin);
@@ -535,12 +554,13 @@ static void CG_OffsetFirstPersonView(void) {
 #if 0
 	{
 #define NECK_LENGTH 8
-	vec3_t forward, up;
+		vec3_t forward, up;
 
-	origin[2] -= NECK_LENGTH;
-	AngleVectors(cg.refdefViewAngles, forward, NULL, up);
-	VectorMA(origin, 3, forward, origin);
-	VectorMA(origin, NECK_LENGTH, up, origin);
+		origin[2] -= NECK_LENGTH;
+
+		AngleVectors(cg.refdefViewAngles, forward, NULL, up);
+		VectorMA(origin, 3, forward, origin);
+		VectorMA(origin, NECK_LENGTH, up, origin);
 	}
 #endif
 }
@@ -594,14 +614,14 @@ static void CG_CalcFov2(const refdef_t *refdef, float *input_fov, float *out_fov
 	float zoomFov;
 	float f;
 
-	if (cg.cur_lc->predictedPlayerState.pm_type == PM_INTERMISSION) {
+	if (cg.predictedPlayerState.pm_type == PM_INTERMISSION) {
 		// if in intermission, use a fixed value
 		fov_x = 90;
 		*input_fov = 90;
 	} else {
 		// user selectable
 		if (cgs.dmflags & DF_FIXED_FOV) {
-			// dmflag to prevent wide fov for all players
+			// dmflag to prevent wide fov for all clients
 			fov_x = 90;
 			*input_fov = 90;
 		} else {
@@ -610,8 +630,8 @@ static void CG_CalcFov2(const refdef_t *refdef, float *input_fov, float *out_fov
 		// account for zooms
 		zoomFov = cg_zoomFov.value;
 
-		if (cg.cur_lc->zoomed) {
-			f = (cg.time - cg.cur_lc->zoomTime) / (float)ZOOM_TIME;
+		if (cg.zoomed) {
+			f = (cg.time - cg.zoomTime) / (float)ZOOM_TIME;
 
 			if (f > 1.0) {
 				fov_x = zoomFov;
@@ -619,7 +639,7 @@ static void CG_CalcFov2(const refdef_t *refdef, float *input_fov, float *out_fov
 				fov_x = fov_x + f * (zoomFov - fov_x);
 			}
 		} else {
-			f = (cg.time - cg.cur_lc->zoomTime) / (float)ZOOM_TIME;
+			f = (cg.time - cg.zoomTime) / (float)ZOOM_TIME;
 
 			if (f <= 1.0) {
 				fov_x = zoomFov + f * (fov_x - zoomFov);
@@ -628,13 +648,12 @@ static void CG_CalcFov2(const refdef_t *refdef, float *input_fov, float *out_fov
 	}
 
 	if (cg_fovAspectAdjust.integer) {
-		// Based on LordHavoc's code for Darkplaces
-		// http:// www.quakeworld.nu/forum/topic/53/what-does-your-qw-look-like/page/30
-		const float baseAspect = 0.75f; // 3/4
-		const float aspect = (float)refdef->width/(float)refdef->height;
+		// based on LordHavoc's code for Darkplaces -> http://www.quakeworld.nu/forum/topic/53/what-does-your-qw-look-like/page/30
+		const float baseAspect = 0.75f; // 3 / 4
+		const float aspect = (float)refdef->width / (float)refdef->height;
 		const float desiredFov = fov_x;
 
-		fov_x = atan(tan(desiredFov*M_PI / 360.0f) * baseAspect*aspect) *360.0f / M_PI;
+		fov_x = atan(tan(desiredFov * M_PI / 360.0f) * baseAspect*aspect) * 360.0f / M_PI;
 	}
 
 	x = refdef->width / tan(fov_x / 360 * M_PI);
@@ -670,17 +689,18 @@ static int CG_CalcFov(void) {
 		cg.refdef.rdflags &= ~RDF_UNDERWATER;
 	}
 	// set world fov
-	fov = cg_fov.integer;
+	fov = cg_fov.value;
+
 	CG_CalcFov2(&cg.refdef, &fov, &cg.refdef.fov_x, &cg.refdef.fov_y);
 	// set view weapon fov
-	cg.viewWeaponFov = cg_weaponFov.integer ? cg_weaponFov.integer : cg_fov.integer;
+	cg.viewWeaponFov = cg_weaponFov.value ? cg_weaponFov.value : cg_fov.value;
 
 	CG_CalcFov2(&cg.refdef, &cg.viewWeaponFov, &cg.refdef.weapon_fov_x, &cg.refdef.weapon_fov_y);
 
-	if (!cg.cur_lc->zoomed) {
-		cg.cur_lc->zoomSensitivity = 1;
+	if (!cg.zoomed) {
+		cg.zoomSensitivity = 1;
 	} else {
-		cg.cur_lc->zoomSensitivity = cg.refdef.fov_y / 75.0;
+		cg.zoomSensitivity = cg.refdef.fov_y / 75.0;
 	}
 
 	return (cg.refdef.rdflags & RDF_UNDERWATER);
@@ -742,15 +762,15 @@ static void CG_DamageBlendBlob(void) {
 		return;
 	}
 
-	if (!cg.cur_lc->damageValue) {
+	if (!cg.damageValue) {
 		return;
 	}
-	//if(cg.cameraMode) {
+	//if (cg.cameraMode) {
 	//	return;
 	//}
 
 	maxTime = DAMAGE_TIME;
-	t = cg.time - cg.cur_lc->damageTime;
+	t = cg.time - cg.damageTime;
 
 	if (t <= 0 || t >= maxTime) {
 		return;
@@ -762,15 +782,16 @@ static void CG_DamageBlendBlob(void) {
 	ent.renderfx = RF_NO_MIRROR;
 
 	VectorMA(cg.refdef.vieworg, 8, cg.refdef.viewaxis[0], ent.origin);
-	VectorMA(ent.origin, cg.cur_lc->damageX * -8, cg.refdef.viewaxis[1], ent.origin);
-	VectorMA(ent.origin, cg.cur_lc->damageY * 8, cg.refdef.viewaxis[2], ent.origin);
+	VectorMA(ent.origin, cg.damageX * -8, cg.refdef.viewaxis[1], ent.origin);
+	VectorMA(ent.origin, cg.damageY * 8, cg.refdef.viewaxis[2], ent.origin);
 
-	ent.radius = cg.cur_lc->damageValue * 3;
+	ent.radius = cg.damageValue * 3;
 	ent.customShader = cgs.media.viewBloodShader;
 	ent.shaderRGBA[0] = 255;
 	ent.shaderRGBA[1] = 255;
 	ent.shaderRGBA[2] = 255;
 	ent.shaderRGBA[3] = 200 * (1.0 - ((float)t / maxTime));
+
 	trap_R_AddRefEntityToScene(&ent);
 }
 
@@ -785,15 +806,13 @@ static int CG_CalcViewValues(void) {
 	playerState_t *ps;
 
 	memset(&cg.refdef, 0, sizeof(cg.refdef));
-
 	// strings for in game rendering
-	// Q_strncpyz(cg.refdef.text[0], "Park Ranger", sizeof(cg.refdef.text[0]));
-	// Q_strncpyz(cg.refdef.text[1], "19", sizeof(cg.refdef.text[1]));
-
+	//Q_strncpyz(cg.refdef.text[0], "Park Ranger", sizeof(cg.refdef.text[0]));
+	//Q_strncpyz(cg.refdef.text[1], "19", sizeof(cg.refdef.text[1]));
 	// calculate size of 3D view
 	CG_CalcVrect();
 
-	ps = &cg.cur_lc->predictedPlayerState;
+	ps = &cg.predictedPlayerState;
 /*
 	if (cg.cameraMode) {
 		vec3_t origin, angles;
@@ -824,27 +843,27 @@ static int CG_CalcViewValues(void) {
 	VectorCopy(ps->origin, cg.refdef.vieworg);
 	VectorCopy(ps->viewangles, cg.refdefViewAngles);
 
-	if (cg.cur_lc->cameraOrbit) {
-		cg.cur_lc->cameraOrbitAngle += cg.cur_lc->cameraOrbit * cg.frametime * 0.001f;
+	if (cg.cameraOrbit) {
+		cg.cameraOrbitAngle += cg.cameraOrbit * cg.frametime * 0.001f;
 	}
 	// add error decay
 	if (cg_errorDecay.value > 0) {
 		int t;
 		float f;
 
-		t = cg.time - cg.cur_lc->predictedErrorTime;
+		t = cg.time - cg.predictedErrorTime;
 		f = (cg_errorDecay.value - t) / cg_errorDecay.value;
 
 		if (f > 0 && f < 1) {
-			VectorMA(cg.refdef.vieworg, f, cg.cur_lc->predictedError, cg.refdef.vieworg);
+			VectorMA(cg.refdef.vieworg, f, cg.predictedError, cg.refdef.vieworg);
 		} else {
-			cg.cur_lc->predictedErrorTime = 0;
+			cg.predictedErrorTime = 0;
 		}
 	}
 	// offset for local bobbing and kicks
 	CG_OffsetFirstPersonView();
 
-	if (cg.cur_lc->renderingThirdPerson) {
+	if (cg.renderingThirdPerson) {
 		// back away from character
 		CG_OffsetThirdPersonView();
 	} else {
@@ -855,17 +874,17 @@ static int CG_CalcViewValues(void) {
 	AnglesToAxis(cg.refdefViewAngles, cg.refdef.viewaxis);
 	AnglesToAxis(cg.firstPersonViewAngles, cg.firstPersonViewAxis);
 
-	if (cg.cur_lc->hyperspace) {
+	if (cg.hyperspace) {
 		cg.refdef.rdflags |= RDF_NOWORLDMODEL|RDF_HYPERSPACE;
 	}
 
-	cg.cur_lc->lastViewPos[0] = cg.refdef.vieworg[0];
-	cg.cur_lc->lastViewPos[1] = cg.refdef.vieworg[1];
-	cg.cur_lc->lastViewPos[2] = cg.refdef.vieworg[2];
+	cg.lastViewPos[0] = cg.refdef.vieworg[0];
+	cg.lastViewPos[1] = cg.refdef.vieworg[1];
+	cg.lastViewPos[2] = cg.refdef.vieworg[2];
 
-	cg.cur_lc->lastViewAngles[YAW] = cg.refdefViewAngles[YAW];
-	cg.cur_lc->lastViewAngles[PITCH] = cg.refdefViewAngles[PITCH];
-	cg.cur_lc->lastViewAngles[ROLL] = cg.refdefViewAngles[ROLL];
+	cg.lastViewAngles[YAW] = cg.refdefViewAngles[YAW];
+	cg.lastViewAngles[PITCH] = cg.refdefViewAngles[PITCH];
+	cg.lastViewAngles[ROLL] = cg.refdefViewAngles[ROLL];
 	// field of view
 	return CG_CalcFov();
 }
@@ -881,7 +900,7 @@ static void CG_PowerupTimerSounds(void) {
 
 	// powerup timers going away
 	for (i = 0; i < MAX_POWERUPS; i++) {
-		t = cg.cur_ps->powerups[i];
+		t = cg.snap->ps.powerups[i];
 
 		if (t <= cg.time) {
 			continue;
@@ -892,7 +911,7 @@ static void CG_PowerupTimerSounds(void) {
 		}
 
 		if ((t - cg.time) / POWERUP_BLINK_TIME != (t - cg.oldTime) / POWERUP_BLINK_TIME) {
-			trap_S_StartSound(NULL, cg.cur_ps->playerNum, CHAN_ITEM, cgs.media.wearOffSound);
+			trap_S_StartSound(NULL, cg.snap->ps.clientNum, CHAN_ITEM, cgs.media.wearOffSound, 48); // Tobias CHECK: CHAN_LOCAL?
 		}
 	}
 }
@@ -934,7 +953,11 @@ static void CG_PlayBufferedSounds(void) {
 }
 
 /*
-**  Frustum code
+=======================================================================================================================================
+
+	FRUSTUM CODE
+
+=======================================================================================================================================
 */
 
 // some culling bits
@@ -996,11 +1019,11 @@ qboolean CG_CullPoint(vec3_t pt) {
 		frust = &frustum[i];
 
 		if ((DotProduct(pt, frust->normal) - frust->dist) < 0) {
-			return (qtrue);
+			return qtrue;
 		}
 	}
 
-	return (qfalse);
+	return qfalse;
 }
 
 /*
@@ -1017,11 +1040,11 @@ qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius) {
 		frust = &frustum[i];
 
 		if ((DotProduct(pt, frust->normal) - frust->dist) < -radius) {
-			return (qtrue);
+			return qtrue;
 		}
 	}
 
-	return (qfalse);
+	return qfalse;
 }
 
 /*
@@ -1064,7 +1087,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	cg.clientFrame++;
 	// use single camera/viewport at intermission
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		if (cg.localPlayers[i].playerNum != -1 && cg.snap->pss[i].pm_type != PM_INTERMISSION) {
+		if (cg.localPlayers[i].clientNum != -1 && cg.snap->pss[i].pm_type != PM_INTERMISSION) {
 			// player present and not at intermission, keep viewports separate.
 			break;
 		}
@@ -1074,7 +1097,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	cg.numViewports = 0;
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		if (cg.localPlayers[i].playerNum == -1) {
+		if (cg.localPlayers[i].clientNum == -1) {
 			renderPlayerViewport[i] = qfalse;
 			continue;
 		}
@@ -1083,7 +1106,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		cg.cur_lc = &cg.localPlayers[i];
 
 		cg.cur_ps = &cg.snap->pss[i];
-		// Check if viewport should be drawn.
+		// check if viewport should be drawn.
 		if (cg.singleCamera && cg.numViewports >= 1) {
 			renderPlayerViewport[i] = qfalse;
 		} else {
@@ -1092,8 +1115,8 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		}
 		// update cg.predictedPlayerState
 		CG_PredictPlayerState();
-		// Remove expired console lines
-		if (cg.cur_lc->consoleLines[0].time + cg_consoleLatency.integer < cg.time && cg_consoleLatency.integer > 0) {
+		// remove expired console lines
+		if (cg.consoleLines[0].time + cg_consoleLatency.integer < cg.time && cg_consoleLatency.integer > 0) {
 			CG_RemoveNotifyLine(cg.cur_lc);
 		}
 	}
@@ -1110,10 +1133,9 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	CG_CheckGameSounds();
 	// add buffered sounds
 	CG_PlayBufferedSounds();
-#ifdef MISSIONPACK
 	// play buffered voice chats
 	CG_PlayBufferedVoiceChats();
-#endif
+
 	for (i = 0, cg.viewport = -1; i < CG_MaxSplitView(); i++) {
 		if (!renderPlayerViewport[i]) {
 			continue;
@@ -1124,18 +1146,18 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		cg.cur_lc = &cg.localPlayers[i];
 		cg.cur_ps = &cg.snap->pss[i];
 		// decide on third person view
-		cg.cur_lc->renderingThirdPerson = cg.cur_ps->persistant[PERS_TEAM] != TEAM_SPECTATOR && (cg_thirdPerson[cg.cur_localPlayerNum].integer || (cg.cur_ps->stats[STAT_HEALTH] <= 0) || cg.cur_lc->cameraOrbit);
+		cg.renderingThirdPerson = cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR && (cg_thirdPerson[cg.cur_localPlayerNum].integer || (cg.snap->ps.stats[STAT_HEALTH] <= 0) || cg.cameraOrbit);
 		// build cg.refdef
 		inwater = CG_CalcViewValues();
 
 		CG_SetupFrustum();
 		CG_DrawSkyBoxPortal();
 		// first person blend blobs, done after AnglesToAxis
-		if (!cg.cur_lc->renderingThirdPerson) {
+		if (!cg.renderingThirdPerson) {
 			CG_DamageBlendBlob();
 		}
 		// build the render lists
-		if (!cg.cur_lc->hyperspace) {
+		if (!cg.hyperspace) {
 			CG_AddPacketEntities(); // alter calcViewValues, so predicted player state is correct
 			CG_AddMarks();
 			CG_AddParticles();
@@ -1143,7 +1165,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 			CG_AddAtmosphericEffects();
 		}
 
-		CG_AddViewWeapon(&cg.cur_lc->predictedPlayerState);
+		CG_AddViewWeapon(&cg.predictedPlayerState);
 		// finish up the rest of the refdef
 		if (cg.testModelEntity.hModel) {
 			CG_AddTestModel();
@@ -1155,7 +1177,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		// warning sounds when powerup is wearing off
 		CG_PowerupTimerSounds();
 		// update audio positions
-		trap_S_Respatialize(cg.cur_ps->playerNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater, !cg.cur_lc->renderingThirdPerson);
+		trap_S_Respatialize(cg.snap->ps.clientNum, cg.refdef.vieworg, cg.refdef.viewaxis, inwater, !cg.renderingThirdPerson);
 		// make sure the lagometerSample and frame timing isn't done twice when in stereo
 		if (stereoView != STEREO_RIGHT && cg.viewport == 0) {
 			cg.frametime = cg.time - cg.oldTime;
@@ -1219,7 +1241,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 		// calculate size of viewport
 		CG_CalcVrect();
 	}
-	// Draw over all viewports
+	// draw over all viewports
 	CG_DrawScreen2D(stereoView);
 
 	if (cg_stats.integer) {

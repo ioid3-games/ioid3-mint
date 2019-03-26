@@ -88,7 +88,7 @@ int BotNumConsoleMessages(int chatstate);
 // selects a chat message of the given type
 void BotInitialChat(int chatstate, char *type, int mcontext, char *var0, char *var1, char *var2, char *var3, char *var4, char *var5, char *var6, char *var7);
 // returns the number of initial chat messages of the given type
-int BotNumInitialChats(int chatstate, char *type);
+int trap_BotNumInitialChats(int chatstate, char *type);
 // find and select a reply for the given message
 int BotReplyChat(int chatstate, char *message, int mcontext, int vcontext, char *var0, char *var1, char *var2, char *var3, char *var4, char *var5, char *var6, char *var7);
 // returns the length of the currently selected chat message
@@ -100,9 +100,9 @@ void BotGetChatMessage(int chatstate, char *buf, int size);
 // checks if the first string contains the second one, returns index into first string or -1 if not found
 int StringContains(char *str1, char *str2, int casesensitive);
 // finds a match for the given string using the match templates
-int BotFindMatch(char *str, bot_match_t *match, unsigned long int context);
+int trap_BotFindMatch(char *str, bot_match_t *match, unsigned long int context);
 // returns a variable from a match
-void BotMatchVariable(bot_match_t *match, int variable, char *buf, int size);
+void trap_BotMatchVariable(bot_match_t *match, int variable, char *buf, int size);
 // unify all the white spaces in the string
 void UnifyWhiteSpaces(char *string);
 // replace all the context related synonyms in the string

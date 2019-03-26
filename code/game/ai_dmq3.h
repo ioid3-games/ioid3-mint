@@ -54,18 +54,16 @@ qboolean EntityIsDead(aas_entityinfo_t *entinfo);
 qboolean EntityIsInvisible(aas_entityinfo_t *entinfo);
 // returns true if the entity is shooting
 qboolean EntityIsShooting(aas_entityinfo_t *entinfo);
-#ifdef MISSIONPACK
 // returns true if this entity has the kamikaze
 qboolean EntityHasKamikaze(aas_entityinfo_t *entinfo);
-#endif
 // set a user info key/value pair
 void BotSetUserInfo(bot_state_t *bs, char *key, char *value);
 // set the team status (offense, defense etc.)
 void BotSetTeamStatus(bot_state_t *bs);
-// returns the name of the player
-char *PlayerName(int playernum, char *name, int size);
-// returns a simplified player name
-char *EasyPlayerName(int playernum, char *name, int size);
+// returns the name of the client
+char *ClientName(int client, char *name, int size);
+// returns a simplified client name
+char *EasyClientName(int client, char *name, int size);
 // returns the appropriate synonym context for the current game type and situation
 int BotSynonymContext(bot_state_t *bs);
 // set last ordered task
@@ -84,8 +82,6 @@ int BotWantsToChase(bot_state_t *bs);
 int BotWantsToHelp(bot_state_t *bs);
 // returns true if the bot can and wants to rocketjump
 int BotCanAndWantsToRocketJump(bot_state_t *bs);
-// returns true if the bot can use grappling hook
-int BotCanGrapple(bot_state_t *bs);
 // returns true if the bot has a persistant powerup and a weapon
 int BotHasPersistantPowerupAndWeapon(bot_state_t *bs);
 // returns true if the bot wants to and goes camping
@@ -98,7 +94,7 @@ int BotSameTeam(bot_state_t *bs, int entnum);
 int TeamPlayIsOn(void);
 // returns true if the bot can camp
 qboolean BotCanCamp(bot_state_t *bs);
-// returns the player number of the team mate flag carrier(-1 if none)
+// returns the client number of the team mate flag carrier (-1 if none)
 int BotTeamFlagCarrier(bot_state_t *bs);
 // returns visible team mate flag carrier if available
 int BotTeamFlagCarrierVisible(bot_state_t *bs);
@@ -134,7 +130,7 @@ int BotPopFromActivateGoalStack(bot_state_t *bs);
 void BotClearActivateGoalStack(bot_state_t *bs);
 // returns the team the bot is in
 int BotTeam(bot_state_t *bs);
-// retuns the opposite team of the bot
+// returns the opposite team of the bot
 int BotOppositeTeam(bot_state_t *bs);
 // returns the flag the bot is carrying (CTFFLAG_?)
 int BotCTFCarryingFlag(bot_state_t *bs);
@@ -144,7 +140,6 @@ void BotRememberLastOrderedTask(bot_state_t *bs);
 void BotCTFSeekGoals(bot_state_t *bs);
 // set ctf goals (defend base, get enemy flag) during retreat
 void BotCTFRetreatGoals(bot_state_t *bs);
-#ifdef MISSIONPACK
 int Bot1FCTFCarryingFlag(bot_state_t *bs);
 int BotHarvesterCarryingCubes(bot_state_t *bs);
 void Bot1FCTFSeekGoals(bot_state_t *bs);
@@ -156,7 +151,6 @@ void BotHarvesterSeekGoals(bot_state_t *bs);
 void BotHarvesterRetreatGoals(bot_state_t *bs);
 int BotTeamCubeCarrierVisible(bot_state_t *bs);
 int BotEnemyCubeCarrierVisible(bot_state_t *bs);
-#endif
 // get a random alternate route goal towards the given base
 int BotGetAlternateRouteGoal(bot_state_t *bs, int base);
 // returns either the alternate route goal or the given goal
@@ -167,9 +161,9 @@ bot_waypoint_t *BotCreateWayPoint(char *name, vec3_t origin, int areanum);
 bot_waypoint_t *BotFindWayPoint(bot_waypoint_t *waypoints, char *name);
 // strstr but case insensitive
 char *stristr(char *str, char *charset);
-// returns the number of the player with the given name
-int PlayerFromName(char *name);
-int PlayerOnSameTeamFromName(bot_state_t *bs, char *name);
+// returns the number of the client with the given name
+int ClientFromName(char *name);
+int ClientOnSameTeamFromName(bot_state_t *bs, char *name);
 int BotPointAreaNum(vec3_t origin);
 void BotMapScripts(bot_state_t *bs);
 // CTF flags
@@ -177,27 +171,22 @@ void BotMapScripts(bot_state_t *bs);
 #define CTF_FLAG_RED	1
 #define CTF_FLAG_BLUE	2
 // CTF skins
-#define CTF_SKIN_REDTEAMm"red"
-#define CTF_SKIN_BLUETEAMm "blue"
+#define CTF_SKIN_REDTEAM "red"
+#define CTF_SKIN_BLUETEAM "blue"
 
 extern int gametype;	// game type
-extern int maxplayers;	// maximum number of players
+extern int maxclients;	// maximum number of clients
 
-extern vmCvar_t bot_grapple;
 extern vmCvar_t bot_rocketjump;
 extern vmCvar_t bot_fastchat;
 extern vmCvar_t bot_nochat;
 extern vmCvar_t bot_testichat;
 extern vmCvar_t bot_testrchat;
 extern vmCvar_t bot_challenge;
-extern vmCvar_t bot_droppedweight;
-extern vmCvar_t bot_offhandgrapple;
 
 extern bot_goal_t ctf_redflag;
 extern bot_goal_t ctf_blueflag;
-#ifdef MISSIONPACK
 extern bot_goal_t ctf_neutralflag;
 extern bot_goal_t redobelisk;
 extern bot_goal_t blueobelisk;
 extern bot_goal_t neutralobelisk;
-#endif

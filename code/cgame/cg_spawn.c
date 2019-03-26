@@ -22,21 +22,23 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*
-	* name:		cg_spawn.c
-	*
-	* desc:		Client sided only map entities
-*/
+/**************************************************************************************************************************************
+ Client sided only map entities.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
+/*
+=======================================================================================================================================
+CG_SpawnString
+=======================================================================================================================================
+*/
 qboolean CG_SpawnString(const char *key, const char *defaultString, char **out) {
 	int i;
 
 	if (!cg.spawning) {
 		*out = (char *)defaultString;
-
-		CG_Error("CG_SpawnString()called while not spawning");
+		CG_Error("CG_SpawnString() called while not spawning");
 	}
 
 	for (i = 0; i < cg.numSpawnVars; i++) {
@@ -50,6 +52,11 @@ qboolean CG_SpawnString(const char *key, const char *defaultString, char **out) 
 	return qfalse;
 }
 
+/*
+=======================================================================================================================================
+CG_SpawnFloat
+=======================================================================================================================================
+*/
 qboolean CG_SpawnFloat(const char *key, const char *defaultString, float *out) {
 	char *s;
 	qboolean present;
@@ -59,6 +66,11 @@ qboolean CG_SpawnFloat(const char *key, const char *defaultString, float *out) {
 	return present;
 }
 
+/*
+=======================================================================================================================================
+CG_SpawnInt
+=======================================================================================================================================
+*/
 qboolean CG_SpawnInt(const char *key, const char *defaultString, int *out) {
 	char *s;
 	qboolean present;
@@ -68,6 +80,11 @@ qboolean CG_SpawnInt(const char *key, const char *defaultString, int *out) {
 	return present;
 }
 
+/*
+=======================================================================================================================================
+CG_SpawnVector
+=======================================================================================================================================
+*/
 qboolean CG_SpawnVector(const char *key, const char *defaultString, float *out) {
 	char *s;
 	qboolean present;
@@ -77,6 +94,11 @@ qboolean CG_SpawnVector(const char *key, const char *defaultString, float *out) 
 	return present;
 }
 
+/*
+=======================================================================================================================================
+CG_SpawnVector2D
+=======================================================================================================================================
+*/
 qboolean CG_SpawnVector2D(const char *key, const char *defaultString, float *out) {
 	char *s;
 	qboolean present;
@@ -90,16 +112,15 @@ qboolean CG_SpawnVector2D(const char *key, const char *defaultString, float *out
 =======================================================================================================================================
 VectorToString
 
-This is just a convenience function
-for printing vectors
+This is just a convenience function for printing vectors.
 =======================================================================================================================================
 */
-char *vtos(const vec3_t v) {
+char *VectorToString(const vec3_t v) {
 	static int index;
 	static char str[8][32];
 	char *s;
 
-	// use an array so that multiple vtos won't collide
+	// use an array so that multiple VectorToString won't collide
 	s = str[index];
 	index = (index + 1)& 7;
 
@@ -108,35 +129,33 @@ char *vtos(const vec3_t v) {
 	return s;
 }
 
+/*
+=======================================================================================================================================
+CG_SpawnVector2D
+=======================================================================================================================================
+*/
 void SP_misc_gamemodel(void) {
 	char *model;
 	char *skin;
 	vec_t angle;
 	vec3_t angles;
-
 	vec_t scale;
 	vec3_t vScale;
-
 	vec3_t org;
-
 	cg_gamemodel_t *gamemodel;
 	int i;
-
 #if 0 // ZTM: Note: Spearmint's game always drops misc_gamemodels. Also, RTCW has targetname set though I'm not sure what, if anything, it's used for.
 	if (CG_SpawnString("targetname", "", &model) || CG_SpawnString("scriptname", "", &model) || CG_SpawnString("spawnflags", "", &model)) {
-		// Gordon: this model may not be static, so let the server handle it
+		// this model may not be static, so let the server handle it
 		return;
 	}
 #endif
-
 	if (cg.numMiscGameModels >= MAX_STATIC_GAMEMODELS) {
-		CG_Error("^1MAX_STATIC_GAMEMODELS(%i)hit", MAX_STATIC_GAMEMODELS);
+		CG_Error("^1MAX_STATIC_GAMEMODELS(%i) hit", MAX_STATIC_GAMEMODELS);
 	}
 
 	CG_SpawnString("model", "", &model);
-
 	CG_SpawnString("skin", "", &skin);
-
 	CG_SpawnVector("origin", "0 0 0", org);
 
 	if (!CG_SpawnVector("angles", "0 0 0", angles)) {
@@ -182,13 +201,12 @@ void SP_misc_gamemodel(void) {
 	}
 }
 
-/*QUAKED props_skyportal(.6 .7 .7)(-8 -8 0)(8 8 16)
+/*QUAKED props_skyportal (.6 .7 .7)(-8 -8 0)(8 8 16)
 "fov" for the skybox default is 90
 To have the portal sky fogged, enter any of the following values:
-"fogcolor"(r g b)(values 0.0-1.0)
-"fognear" distance from entity to start fogging(FIXME? Supported by RTCW, but not Spearmint)
+"fogcolor" (r g b)(values 0.0-1.0)
+"fognear" distance from entity to start fogging (FIXME? Supported by RTCW, but not Spearmint)
 "fogfar" distance from entity that fog is opaque
-
 */
 void SP_skyportal(void) {
 	int fogn;
@@ -197,6 +215,7 @@ void SP_skyportal(void) {
 	cg.hasSkyPortal = qtrue;
 
 	CG_SpawnVector("origin", "0 0 0", cg.skyPortalOrigin);
+
 	isfog = CG_SpawnVector("fogcolor", "0 0 0", cg.skyPortalFogColor);
 	isfog += CG_SpawnInt("fognear", "0", &fogn);
 	isfog += CG_SpawnInt("fogfar", "300", &cg.skyPortalFogDepthForOpaque);
@@ -213,18 +232,16 @@ typedef struct {
 
 spawn_t spawns[] = {
 	{0, 0},
-	{"misc_gamemodel",               SP_misc_gamemodel},
-	{"props_skyportal",              SP_skyportal},
+	{"misc_gamemodel", SP_misc_gamemodel},
+	{"props_skyportal", SP_skyportal},
 };
 
 int numSpawns = ARRAY_LEN(spawns);
-
 /*
 =======================================================================================================================================
 CG_ParseEntityFromSpawnVars
 
-Spawn an entity and fill in all of the level fields from
-cg.spawnVars[], then call the class specfic spawn function
+Spawn an entity and fill in all of the level fields from cg.spawnVars[], then call the class specfic spawn function.
 =======================================================================================================================================
 */
 void CG_ParseEntityFromSpawnVars(void) {
@@ -235,8 +252,7 @@ void CG_ParseEntityFromSpawnVars(void) {
 	spawnInfo.gametype = cgs.gametype;
 	spawnInfo.spawnInt = CG_SpawnInt;
 	spawnInfo.spawnString = CG_SpawnString;
-
-	// check "notsingle", "notfree", "notteam", etc
+	// check "notsingle", "notfree", "notteam", etc.
 	if (!BG_CheckSpawnEntity(&spawnInfo)) {
 		return;
 	}
@@ -267,6 +283,7 @@ char *CG_AddSpawnVarToken(const char *string) {
 	}
 
 	dest = cg.spawnVarChars + cg.numSpawnVarChars;
+
 	memcpy(dest, string, l + 1);
 
 	cg.numSpawnVarChars += l + 1;
@@ -278,9 +295,7 @@ char *CG_AddSpawnVarToken(const char *string) {
 =======================================================================================================================================
 CG_ParseSpawnVars
 
-Parses a brace bounded set of key / value pairs out of the
-level's entity strings into cg.spawnVars[]
-
+Parses a brace bounded set of key/value pairs out of the level's entity strings into cg.spawnVars[].
 This does not actually spawn an entity.
 =======================================================================================================================================
 */
@@ -290,7 +305,6 @@ qboolean CG_ParseSpawnVars(void) {
 
 	cg.numSpawnVars = 0;
 	cg.numSpawnVarChars = 0;
-
 	// parse the opening brace
 	if (!trap_GetEntityToken(&cg.spawnEntityOffset, com_token, sizeof(com_token))) {
 		// end of spawn string
@@ -324,9 +338,7 @@ qboolean CG_ParseSpawnVars(void) {
 		}
 
 		cg.spawnVars[cg.numSpawnVars][0] = CG_AddSpawnVarToken(keyname);
-
 		cg.spawnVars[cg.numSpawnVars][1] = CG_AddSpawnVarToken(com_token);
-
 		cg.numSpawnVars++;
 	}
 
@@ -347,24 +359,20 @@ void SP_worldspawn(void) {
 
 	CG_SpawnString("enableBreath", "0", &s);
 	trap_Cvar_Set("cg_enableBreath", s);
-
-	if (CG_SpawnVector2D("mapcoordsmins", "-128 128", cg.mapcoordsMins) &&  // top left
-		 CG_SpawnVector2D("mapcoordsmaxs", "128 -128", cg.mapcoordsMaxs)) { // bottom right
+	// top left/bottom right
+	if (CG_SpawnVector2D("mapcoordsmins", "-128 128", cg.mapcoordsMins) && CG_SpawnVector2D("mapcoordsmaxs", "128 -128", cg.mapcoordsMaxs)) {
 		cg.mapcoordsValid = qtrue;
 	} else {
 		cg.mapcoordsValid = qfalse;
 	}
-
 #if 0
 	cg.mapcoordsScale[0] = 1 / (cg.mapcoordsMaxs[0] - cg.mapcoordsMins[0]);
 	cg.mapcoordsScale[1] = 1 / (cg.mapcoordsMaxs[1] - cg.mapcoordsMins[1]);
 
 	BG_InitLocations(cg.mapcoordsMins, cg.mapcoordsMaxs);
 #endif
-
 	CG_SpawnString("atmosphere", "", &s);
 	CG_EffectParse(s);
-
 	CG_SpawnFloat("skyalpha", "1", &cg.skyAlpha);
 }
 
@@ -376,21 +384,20 @@ Parses textual entity definitions out of an entstring and spawns gentities.
 =======================================================================================================================================
 */
 void CG_ParseEntitiesFromString(void) {
+
 	// allow calls to CG_Spawn*()
 	cg.spawning = qtrue;
 	cg.numSpawnVars = 0;
 	cg.spawnEntityOffset = 0;
 	cg.numMiscGameModels = 0;
 
-	// the worldspawn is not an actual entity, but it still
-	// has a "spawn" function to perform any global setup
-	// needed by a level(setting configstrings or cvars, etc)
+	// the worldspawn is not an actual entity, but it still has a "spawn" function to perform any global setup
+	// needed by a level (setting configstrings or cvars, etc.)
 	if (!CG_ParseSpawnVars()) {
 		CG_Error("ParseEntities: no entities");
 	}
 
 	SP_worldspawn();
-
 	// parse ents
 	while (CG_ParseSpawnVars()) {
 		CG_ParseEntityFromSpawnVars();
@@ -398,5 +405,5 @@ void CG_ParseEntitiesFromString(void) {
 
 	CG_DPrintf("CGame loaded %d misc_gamemodels\n", cg.numMiscGameModels);
 
-	cg.spawning = qfalse;           // any future calls to CG_Spawn*()will be errors
+	cg.spawning = qfalse; // any future calls to CG_Spawn*() will be errors
 }

@@ -132,13 +132,14 @@ void SV_RankBegin(char *gamekey) {
 	memset(SV_RankGameKey, 0, sizeof(SV_RankGameKey));
 
 	strncpy(SV_RankGameKey, gamekey, sizeof(SV_RankGameKey) - 1);
+
 	init = GRankInit(1, SV_RankGameKey, GR_OPT_POLL, GR_OPT_END);
 	s_server_context = init.context;
 	s_rankings_contexts++;
 
 	Com_DPrintf("SV_RankBegin(); GR_GAMEKEY is %s\n", gamekey);
-	Com_DPrintf("SV_RankBegin(); s_rankings_contexts=%d\n", s_rankings_contexts);
-	Com_DPrintf("SV_RankBegin(); s_server_context=%d\n", init.context);
+	Com_DPrintf("SV_RankBegin(); s_rankings_contexts = %d\n", s_rankings_contexts);
+	Com_DPrintf("SV_RankBegin(); s_server_context = %d\n", init.context);
 	// new game
 	if (!strlen(Cvar_VariableString("sv_leagueName"))) {
 		status = GRankNewGameAsync(s_server_context, SV_RankNewGameCBF, NULL, GR_OPT_LEAGUENAME, (void *)(Cvar_VariableString("sv_leagueName")), GR_OPT_END);
@@ -204,6 +205,7 @@ void SV_RankEnd(void) {
 	}
 
 	s_rankings_active = qfalse;
+
 	Cvar_Set("sv_rankingsActive", "0");
 }
 
@@ -352,8 +354,8 @@ void SV_RankUserCreate(int index, char *username, char *password, char *email) {
 	s_ranked_players[index].context = init.context;
 	s_rankings_contexts++;
 
-	Com_DPrintf("SV_RankUserCreate(); s_rankings_contexts=%d\n", s_rankings_contexts);
-	Com_DPrintf("SV_RankUserCreate(); s_ranked_players[%d].context=%d\n", index, init.context);
+	Com_DPrintf("SV_RankUserCreate(); s_rankings_contexts = %d\n", s_rankings_contexts);
+	Com_DPrintf("SV_RankUserCreate(); s_ranked_players[%d].context = %d\n", index, init.context);
 	// attempt to create a new account, proceed to SV_RankUserCBF
 	status = GRankUserCreateAsync(s_ranked_players[index].context, username, password, email, SV_RankUserCBF, (void *)&s_ranked_players[index], GR_OPT_END);
 
@@ -398,8 +400,8 @@ void SV_RankUserLogin(int index, char *username, char *password) {
 	s_ranked_players[index].context = init.context;
 	s_rankings_contexts++;
 
-	Com_DPrintf("SV_RankUserLogin(); s_rankings_contexts=%d\n", s_rankings_contexts);
-	Com_DPrintf("SV_RankUserLogin(); s_ranked_players[%d].context=%d\n", index, init.context);
+	Com_DPrintf("SV_RankUserLogin(); s_rankings_contexts = %d\n", s_rankings_contexts);
+	Com_DPrintf("SV_RankUserLogin(); s_ranked_players[%d].context = %d\n", index, init.context);
 	// login user, proceed to SV_RankUserCBF
 	status = GRankUserLoginAsync(s_ranked_players[index].context, username, password, SV_RankUserCBF, (void *)&s_ranked_players[index], GR_OPT_END);
 
@@ -445,12 +447,12 @@ qboolean SV_RankUserValidate(int index, const char *player_id, const char *key, 
 		ranked_player->context = init.context;
 		s_rankings_contexts++;
 
-		Com_DPrintf("SV_RankUserValidate(); s_rankings_contexts=%d\n", s_rankings_contexts);
-		Com_DPrintf("SV_RankUserValidate(); s_ranked_players[%d].context=%d\n", index, init.context);
-		// uudecode player id and player token
+		Com_DPrintf("SV_RankUserValidate(); s_rankings_contexts = %d\n", s_rankings_contexts);
+		Com_DPrintf("SV_RankUserValidate(); s_ranked_players[%d].context = %d\n", index, init.context);
+		// decode player id and player token
 		ranked_player->player_id = SV_RankDecodePlayerID(player_id);
 
-		Com_DPrintf("SV_RankUserValidate(); ranked_player->player_id =%u\n", (uint32_t)ranked_player->player_id);
+		Com_DPrintf("SV_RankUserValidate(); ranked_player->player_id = %u\n", (uint32_t)ranked_player->player_id);
 		SV_RankDecodePlayerKey(key, ranked_player->token);
 		// save name and check for duplicates
 		Q_strncpyz(ranked_player->name, name, sizeof(ranked_player->name));
@@ -691,6 +693,7 @@ void SV_RankQuit(void) {
 				} else {
 					if (s_ranked_players[i].context) {
 						GR_STATUS cleanup_status;
+
 						cleanup_status = GRankCleanupAsync(s_ranked_players[i].context, 0, SV_RankCleanupCBF, (void *)&(s_ranked_players[i]), GR_OPT_END);
 
 						if (cleanup_status != GR_STATUS_PENDING) {
@@ -974,6 +977,7 @@ static void SV_RankCloseContext(ranked_player_t *ranked_player) {
 	}
 
 	assert(s_rankings_contexts > 0);
+
 	s_rankings_contexts--;
 
 	Com_DPrintf("SV_RankCloseContext: s_rankings_contexts = %d\n", s_rankings_contexts);
@@ -1106,7 +1110,7 @@ static void SV_RankEncodeGameID(uint64_t game_id, char *result, int len) {
 		Com_DPrintf("SV_RankEncodeGameID: result buffer too small\n");
 		result[0] = '\0';
 	} else {
-		qint64 gameid = LittleLong64(*(qint64*)&game_id);
+		qint64 gameid = LittleLong64(*(qint64 *)&game_id);
 		SV_RankAsciiEncode(result, (unsigned char *)&gameid, sizeof(qint64));
 	}
 }
@@ -1128,7 +1132,7 @@ static uint64_t SV_RankDecodePlayerID(const char *string) {
 	Com_DPrintf("SV_RankDecodePlayerID: string length %d\n", len);
 	SV_RankAsciiDecode(buffer, string, len);
 
-	player_id = LittleLong64(*(qint64*)buffer);
+	player_id = LittleLong64(*(qint64 *)buffer);
 	return *(uint64_t *)&player_id;
 }
 
@@ -1140,9 +1144,11 @@ SV_RankDecodePlayerKey
 static void SV_RankDecodePlayerKey(const char *string, GR_PLAYER_TOKEN key) {
 	unsigned char buffer[1400];
 	int len;
+
 	assert(string != NULL);
 
 	len = strlen(string);
+
 	Com_DPrintf("SV_RankDecodePlayerKey: string length %d\n", len);
 
 	memset(key, 0, sizeof(GR_PLAYER_TOKEN));
@@ -1207,6 +1213,7 @@ static void SV_RankError(const char *fmt, ...) {
 	Com_DPrintf("****************************************\n");
 
 	s_rankings_active = qfalse;
+
 	Cvar_Set("sv_rankingsActive", "0");
 	// FIXME - attempt clean shutdown?
 }

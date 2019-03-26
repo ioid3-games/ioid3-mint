@@ -43,13 +43,13 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define WINDOW_MOUSEOVER		0x00000001 // mouse is over it, non exclusive
 #define WINDOW_HASFOCUS			0x00000002 // has cursor focus, exclusive
 #define WINDOW_VISIBLE			0x00000004 // is visible
-#define WINDOW_GREY				0x00000008 // is visible but grey(non-active)
-#define WINDOW_DECORATION		0x00000010 // for decoration only, no mouse, keyboard, etc..
+#define WINDOW_GREY				0x00000008 // is visible but grey (non-active)
+#define WINDOW_DECORATION		0x00000010 // for decoration only, no mouse, keyboard, etc.
 #define WINDOW_FADINGOUT		0x00000020 // fading out, non-active
 #define WINDOW_FADINGIN			0x00000040 // fading in
 #define WINDOW_MOUSEOVERTEXT	0x00000080 // mouse is over it, non exclusive
 #define WINDOW_INTRANSITION		0x00000100 // window is in transition
-#define WINDOW_FORECOLORSET		0x00000200 // forecolor was explicitly set(used to color alpha images or not)
+#define WINDOW_FORECOLORSET		0x00000200 // forecolor was explicitly set (used to color alpha images or not)
 #define WINDOW_HORIZONTAL		0x00000400 // for list boxes and sliders, vertical is default this is set of horizontal
 #define WINDOW_LB_LEFTARROW		0x00000800 // mouse is over left/up arrow
 #define WINDOW_LB_RIGHTARROW	0x00001000 // mouse is over right/down arrow
@@ -63,7 +63,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define WINDOW_FORCED			0x00100000 // forced open
 #define WINDOW_POPUP			0x00200000 // popup
 #define WINDOW_BACKCOLORSET		0x00400000 // backcolor was explicitly set
-#define WINDOW_TIMEDVISIBLE		0x00800000 // visibility timing(NOT implemented)
+#define WINDOW_TIMEDVISIBLE		0x00800000 // visibility timing (NOT implemented)
+
 // CGAME cursor type bits
 #define CURSOR_NONE		0x00000001
 #define CURSOR_ARROW	0x00000002
@@ -116,13 +117,14 @@ typedef struct {
 } scriptDef_t;
 
 typedef struct {
-	float x;	// horiz position
-	float y;	// vert position
-	float w;	// width
-	float h;	// height;
+	float x; // horiz position
+	float y; // vert position
+	float w; // width
+	float h; // height;
 } rectDef_t;
 
 typedef rectDef_t Rectangle;
+
 // FIXME: do something to separate text vs window stuff
 typedef struct {
 	Rectangle rect;				// client coord rectangle
@@ -248,7 +250,7 @@ typedef struct itemDef_s {
 	sfxHandle_t focusSound;
 	int numColors;				// number of color ranges
 	colorRangeDef_t colorRanges[MAX_COLOR_RANGES];
-	float special;				// used for feeder id's etc.. diff per type
+	float special;				// used for feeder id's etc., diff per type
 	int cursorPos;				// cursor position in characters
 	void *typeData;				// type specific data ptr's
 } itemDef_t;
@@ -368,6 +370,9 @@ typedef struct {
 	void (*stopCinematic)(int handle);
 	void (*drawCinematic)(int handle, float x, float y, float w, float h);
 	void (*runCinematicFrame)(int handle);
+	void (*adjustFrom640)(float *x, float *y, float *w, float *h);
+	void (*setScreenPlacement)(screenPlacement_e hpos, screenPlacement_e vpos);
+	void (*popScreenPlacement)(void);
 	int realTime;
 	int frameTime;
 	int cursorx;

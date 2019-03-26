@@ -1,31 +1,25 @@
 /*
-===========================================================================
-Copyright(C) 1999-2010 id Software LLC, a ZeniMax Media company.
+=======================================================================================================================================
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
-===========================================================================
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+=======================================================================================================================================
 */
 
 /**************************************************************************************************************************************
@@ -100,10 +94,10 @@ void CG_LoadingItem(int itemNum) {
 
 /*
 =======================================================================================================================================
-CG_LoadingPlayer
+CG_LoadingClient
 =======================================================================================================================================
 */
-void CG_LoadingPlayer(int playerNum) {
+void CG_LoadingClient(int clientNum) {
 	const char *info;
 	char *skin;
 	char personality[MAX_QPATH];
@@ -111,7 +105,7 @@ void CG_LoadingPlayer(int playerNum) {
 	char iconName[MAX_QPATH];
 	const char *defaultModel;
 
-	info = CG_ConfigString(CS_PLAYERS + playerNum);
+	info = CG_ConfigString(CS_PLAYERS + clientNum);
 
 	if (loadingPlayerIconCount < MAX_LOADING_PLAYER_ICONS) {
 		Q_strncpyz(model, Info_ValueForKey(info, "model"), sizeof(model));
@@ -128,7 +122,7 @@ void CG_LoadingPlayer(int playerNum) {
 		loadingPlayerIcons[loadingPlayerIconCount] = trap_R_RegisterShaderNoMip(iconName);
 
 		if (!loadingPlayerIcons[loadingPlayerIconCount]) {
-			if (cgs.gametype >= GT_TEAM) {
+			if (cgs.gametype > GT_TOURNAMENT) {
 				defaultModel = cg_defaultTeamModelGender.string[0] == 'f' ? cg_defaultFemaleTeamModel.string : cg_defaultMaleTeamModel.string;
 			} else {
 				defaultModel = cg_defaultModelGender.string[0] == 'f' ? cg_defaultFemaleModel.string : cg_defaultMaleModel.string;
@@ -148,7 +142,7 @@ void CG_LoadingPlayer(int playerNum) {
 	Q_CleanStr(personality);
 
 	if (cgs.gametype == GT_SINGLE_PLAYER) {
-		trap_S_RegisterSound(va("sound/player/announce/%s.wav", personality), qtrue);
+		trap_S_RegisterSound(va("snd/v/%s.wav", personality), qtrue);
 	}
 
 	CG_LoadingString(personality);
@@ -184,6 +178,7 @@ void CG_DrawInformation(void) {
 	trap_R_DrawStretchPic(0, 0, cgs.glconfig.vidWidth, cgs.glconfig.vidHeight, 0, 0, 1, 1, levelshot);
 	// blend a detail texture over it
 	detail = trap_R_RegisterShader("levelShotDetail");
+
 	trap_R_DrawStretchPic(0, 0, cgs.glconfig.vidWidth, cgs.glconfig.vidHeight, 0, 0, 2.5, 2, detail);
 	// draw the icons of things as they are loaded
 	CG_DrawLoadingIcons();
@@ -237,6 +232,7 @@ void CG_DrawInformation(void) {
 	}
 	// game type
 	UI_DrawProportionalString(320, y, cgs.gametypeName, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, colorWhite);
+
 	y += PROP_HEIGHT;
 	value = atoi(Info_ValueForKey(info, "timelimit"));
 
@@ -254,7 +250,7 @@ void CG_DrawInformation(void) {
 		}
 	}
 
-	if (cgs.gametype >= GT_CTF) {
+	if (cgs.gametype > GT_TEAM) {
 		value = atoi(Info_ValueForKey(info, "capturelimit"));
 
 		if (value) {

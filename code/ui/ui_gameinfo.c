@@ -29,6 +29,7 @@ int ui_numBots;
 static char *ui_botInfos[MAX_BOTS];
 static int ui_numArenas;
 static char *ui_arenaInfos[MAX_ARENAS];
+
 /*
 =======================================================================================================================================
 UI_ParseInfos
@@ -119,7 +120,9 @@ static void UI_LoadArenasFromFile(char *filename) {
 	}
 
 	trap_FS_Read(buf, len, f);
+
 	buf[len] = 0;
+
 	trap_FS_FCloseFile(f);
 
 	ui_numArenas += UI_ParseInfos(buf, MAX_ARENAS - ui_numArenas, &ui_arenaInfos[ui_numArenas]);
@@ -136,12 +139,10 @@ void UI_LoadArenas(void) {
 	char filename[128];
 	char dirlist[1024];
 	char *dirptr;
-	int i, n;
+	int i;
 	int dirlen;
-	char *type;
 
 	ui_numArenas = 0;
-	uiInfo.mapCount = 0;
 
 	trap_Cvar_Register(&arenasFile, "g_arenasFile", "", CVAR_INIT|CVAR_ROM);
 
@@ -161,11 +162,23 @@ void UI_LoadArenas(void) {
 		UI_LoadArenasFromFile(filename);
 	}
 
-	trap_Print(va("%i arenas parsed\n", ui_numArenas));
+	Com_DPrintf("%i arenas parsed\n", ui_numArenas);
 
 	if (UI_OutOfMemory()) {
 		trap_Print(S_COLOR_YELLOW "WARNING: not enough memory in pool to load all arenas\n");
 	}
+}
+
+/*
+=======================================================================================================================================
+UI_LoadArenasIntoMapList
+=======================================================================================================================================
+*/
+void UI_LoadArenasIntoMapList(void) {
+	int n;
+	char *type;
+
+	uiInfo.mapCount = 0;
 
 	for (n = 0; n < ui_numArenas; n++) {
 		// determine type
@@ -213,8 +226,8 @@ void UI_LoadArenas(void) {
 		}
 	}
 
-	trap_Cvar_CheckRange("ui_currentMap", 0, uiInfo.mapCount-1, qtrue);
-	trap_Cvar_CheckRange("ui_currentNetMap", 0, uiInfo.mapCount-1, qtrue);
+	trap_Cvar_CheckRange("ui_currentMap", 0, uiInfo.mapCount - 1, qtrue);
+	trap_Cvar_CheckRange("ui_currentNetMap", 0, uiInfo.mapCount - 1, qtrue);
 }
 
 /*
@@ -241,9 +254,10 @@ static void UI_LoadBotsFromFile(char *filename) {
 	}
 
 	trap_FS_Read(buf, len, f);
-	buf[len] = 0;
-	trap_FS_FCloseFile(f);
 
+	buf[len] = 0;
+
+	trap_FS_FCloseFile(f);
 	COM_Compress(buf);
 
 	ui_numBots += UI_ParseInfos(buf, MAX_BOTS - ui_numBots, &ui_botInfos[ui_numBots]);

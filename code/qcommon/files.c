@@ -1,31 +1,25 @@
 /*
-===========================================================================
-Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
+=======================================================================================================================================
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, 
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., 
-Suite 120, Rockville, Maryland 20850 USA.
-===========================================================================
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+=======================================================================================================================================
 */
 
 /**************************************************************************************************************************************
@@ -80,7 +74,7 @@ automatically restricts where game media can come from to prevent add-ons from w
 File search order: when FS_FOpenFileRead gets called it will go through the fs_searchpaths structure and stop on the first successful
 hit. fs_searchpaths is built with successive calls to FS_AddGameDirectory
 
-Additionaly, we search in several subdirectories:
+Additionally, we search in several subdirectories:
 current game is the current mode
 base game is a variable to allow mods based on other mods
 (such as baseq3 + missionpack content combination in a mod for instance)
@@ -144,7 +138,7 @@ Casing
 
 Read/write config to floppy option.
 
-Different version coexistance?
+Different version coexistence?
 
 When building a pak file, make sure a q3config.cfg isn't present in it, or configs will never get loaded from disk!
 
@@ -180,8 +174,6 @@ int fs_numPaksums;
 // executable with the production windows pak before the mac/linux products
 // hit the shelves a little later
 // NOW defined in build files
-//#define PRE_RELEASE_TADEMO
-
 #define MAX_ZPATH 256
 #define MAX_SEARCH_PATHS 4096
 #define MAX_FILEHASH_SIZE 1024
@@ -205,7 +197,7 @@ typedef struct {
 	pakType_t pakType;				// is it a commercial pak?
 	int hashSize;					// hash table size (power of 2)
 	fileInPack_t **hashTable;		// hash table
-	fileInPack_t *buildBuffer;	// buffer with the filenames etc.
+	fileInPack_t *buildBuffer;		// buffer with the filenames etc.
 } pack_t;
 
 typedef struct {
@@ -219,7 +211,7 @@ typedef struct {
 
 typedef struct searchpath_s {
 	struct searchpath_s *next;
-	pack_t *pack; // only one of pack / dir will be non NULL
+	pack_t *pack; // only one of pack/dir will be non NULL
 	directory_t *dir;
 } searchpath_t;
 
@@ -353,7 +345,7 @@ qboolean FS_PakIsPure(pack_t *pack) {
 			// NOTE TTimo: a pk3 with same checksum but different name would be validated too
 			// I don't see this as allowing for any exploit, it would only happen if the client does manips of its file names 'not a bug'
 			if (pack->checksum == fs_serverPaks[i]) {
-				return qtrue; // on the aproved list
+				return qtrue; // on the approved list
 			}
 		}
 
@@ -392,10 +384,19 @@ static long FS_HashFileName(const char *fname, int hashSize) {
 	while (fname[i] != '\0') {
 		letter = tolower(fname[i]);
 
-		if (letter =='.')break;					// don't include extension
-		if (letter =='\\')letter = '/';			// damn path names
-		if (letter == PATH_SEP)letter = '/';	// damn path names
-		hash+=(long)(letter)*(i+119);
+		if (letter == '.') {
+			break; // don't include extension
+		}
+
+		if (letter == '\\') {
+			letter = '/'; // damn path names
+		}
+
+		if (letter == PATH_SEP) {
+			letter = '/'; // damn path names
+		}
+
+		hash += (long)(letter) * (i + 119);
 		i++;
 	}
 
@@ -762,7 +763,7 @@ long FS_SV_FOpenFileRead(const char *filename, fileHandle_t *fp) {
 	ospath = FS_BuildOSPath(fs_homepath->string, NULL, filename);
 
 	if (fs_debug->integer) {
-		Com_Printf("FS_SV_FOpenFileRead (fs_homepath): %s\n", ospath);
+		Com_Printf("FS_SV_FOpenFileRead(fs_homepath): %s\n", ospath);
 	}
 
 	fsh[f].handleFiles.file.o = Sys_FOpen(ospath, "rb");
@@ -1080,7 +1081,7 @@ fileHandle_t FS_FCreateOpenPipeFile(const char *filename) {
 =======================================================================================================================================
 FS_FilenameCompare
 
-Ignore case and seprator char distinctions.
+Ignore case and separator char distinctions.
 =======================================================================================================================================
 */
 qboolean FS_FilenameCompare(const char *s1, const char *s2) {
@@ -1143,7 +1144,11 @@ Return qtrue if filename has a demo extension.
 =======================================================================================================================================
 */
 qboolean FS_IsDemoExt(const char *filename, int namelen) {
-	return FS_IsExt(filename, "." DEMOEXT, namelen);
+	char dotdemoext[MAX_QPATH];
+
+	Com_sprintf(dotdemoext, sizeof(dotdemoext), ".%s", com_demoext->string);
+
+	return FS_IsExt(filename, dotdemoext, namelen);
 }
 
 /*
@@ -1197,7 +1202,7 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 	if (filename[0] == '/' || filename[0] == '\\') {
 		filename++;
 	}
-	// make absolutely sure that it can't back up the path.
+	// make absolutely sure that it can't back up the path
 	// the searchpaths do guarantee that something will always be prepended, so we don't need to worry about "c:" or "//limbo"
 	if (strstr(filename, "..") || strstr(filename, "::")) {
 		if (file == NULL) {
@@ -1342,11 +1347,12 @@ long FS_FOpenFileReadDir(const char *filename, searchpath_t *search, fileHandle_
 		// turned out I used FS_FileExists instead
 		if (!unpure && fs_numServerPaks) {
 			if (!FS_IsExt(filename, ".cfg", len) &&		// for config files
+				!FS_IsExt(filename, ".txt", len) &&		// menu files, bots.txt, arenas.txt
 				!FS_IsExt(filename, ".menu", len) &&	// menu files
 				!FS_IsExt(filename, ".game", len) &&	// menu files
 				!FS_IsExt(filename, ".dat", len) &&		// for journal files
-				!strstr(filename, "fonts") &&
-				!strstr(filename, "music") &&
+				strncmp(filename, "fonts", 5) != 0 &&
+				strncmp(filename, "music", 5) != 0 &&
 				!FS_IsDemoExt(filename, len))			// demos
 			{
 				*file = 0;
@@ -1431,7 +1437,7 @@ long FS_FOpenFileRead(const char *filename, fileHandle_t *file, qboolean uniqueF
 		*file = 0;
 		return -1;
 	} else {
-		// when file is NULL, we're querying the existance of the file
+		// when file is NULL, we're querying the existence of the file
 		// if we've got here, it doesn't exist
 		return 0;
 	}
@@ -1782,7 +1788,6 @@ void QDECL FS_Printf(fileHandle_t h, const char *fmt, ...) {
 	va_start(argptr, fmt);
 	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
 	va_end(argptr);
-
 	FS_Write(msg, strlen(msg), h);
 }
 
@@ -1848,7 +1853,7 @@ int FS_Seek(fileHandle_t f, long offset, int origin) {
 
 				unzSetOffset(fsh[f].handleFiles.file.z, fsh[f].zipFilePos);
 				unzOpenCurrentFile(fsh[f].handleFiles.file.z);
-				// fallthrough
+			// fall through
 			case FS_SEEK_END:
 			case FS_SEEK_CUR:
 				while (remainder > PK3_SEEK_BUFFER_SIZE) {
@@ -1898,8 +1903,8 @@ int FS_Seek(fileHandle_t f, long offset, int origin) {
 =======================================================================================================================================
 FS_ReadFileDir
 
-Filename are relative to the quake search path. A null buffer will just return the file length without loading.
-If searchPath is non-NULL search only in that specific search path.
+Filename are relative to the quake search path.
+A null buffer will just return the file length without loading. If searchPath is non-NULL search only in that specific search path.
 =======================================================================================================================================
 */
 long FS_ReadFileDir(const char *qpath, void *searchPath, qboolean unpure, void **buffer) {
@@ -2170,6 +2175,7 @@ static pack_t *FS_LoadZipFile(const char *zipfile, const char *basename) {
 	}
 
 	len = 0;
+
 	unzGoToFirstFile(uf);
 
 	for (i = 0; i < gi.number_entry; i++) {
@@ -2210,6 +2216,7 @@ static pack_t *FS_LoadZipFile(const char *zipfile, const char *basename) {
 
 	pack->handle = uf;
 	pack->numfiles = gi.number_entry;
+
 	unzGoToFirstFile(uf);
 
 	for (i = 0; i < gi.number_entry; i++) {
@@ -2282,6 +2289,7 @@ qboolean FS_CompareZipChecksum(const char *zipfile) {
 	}
 
 	checksum = thepak->checksum;
+
 	FS_FreePak(thepak);
 
 	for (index = 0; index < fs_numServerReferencedPaks; index++) {
@@ -2326,6 +2334,7 @@ static int FS_ReturnPath(const char *zname, char *zpath, int *depth) {
 	}
 
 	strcpy(zpath, zname);
+
 	zpath[len] = 0;
 	*depth = newdep;
 
@@ -2415,7 +2424,7 @@ char **FS_ListFilteredFiles(const char *path, const char *extension, char *filte
 	for (search = fs_searchpaths; search; search = search->next) {
 		// is the element a pak file?
 		if (search->pack) {
-			// ZOID: If we are pure, don't search for files on paks that aren't on the pure list
+			// if we are pure, don't search for files on paks that aren't on the pure list
 			if (!FS_PakIsPure(search->pack)) {
 				continue;
 			}
@@ -2593,7 +2602,123 @@ void FS_FreeFileList(char **list) {
 FS_GetFileList
 =======================================================================================================================================
 */
-int FS_GetFileList(const char *path, const char *extension, char *listbuf, int bufsize) {
+char **FS_GetFileList(const char *path, const char *extension, int *numfiles, qboolean allowNonPureFilesOnDisk) {
+	int nFiles;
+	char **pFiles = NULL;
+
+	if (!path) {
+		if (numfiles) {
+			*numfiles = 0;
+		}
+
+		return NULL;
+	}
+
+	if (!extension) {
+		extension = "";
+	}
+
+	if (Q_stricmp(extension, "$demos") == 0)
+	{
+		char dotdemoext[MAX_QPATH];
+		Com_sprintf(dotdemoext, sizeof (dotdemoext), ".%s", com_demoext->string);
+		pFiles = FS_ListFilteredFiles(path, dotdemoext, NULL, &nFiles, allowNonPureFilesOnDisk);
+	} else if (Q_stricmp(extension, "$videos") == 0) {
+		const char *extensions[] = { "RoQ", "roq" };
+		int extNamesSize = ARRAY_LEN(extensions);
+		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, allowNonPureFilesOnDisk);
+	} else if (Q_stricmp(extension, "$images") == 0) {
+		const char *extensions[] = { "png", "tga", "jpg", "jpeg", "ftx", "dds", "pcx", "bmp" };
+		int extNamesSize = ARRAY_LEN(extensions);
+		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, allowNonPureFilesOnDisk);
+	} else if (Q_stricmp(extension, "$sounds") == 0) {
+		const char *extensions[] = { "wav"
+#ifdef USE_CODEC_VORBIS
+			, "ogg"
+#endif
+#ifdef USE_CODEC_OPUS
+			, "opus"
+#endif
+			};
+		int extNamesSize = ARRAY_LEN(extensions);
+		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, allowNonPureFilesOnDisk);
+	} else if (Q_stricmp(extension, "$fonts") == 0) {
+		const char *extensions[] = { "ttf", "otf", "ttc", "otc", "fon" };
+		int extNamesSize = ARRAY_LEN(extensions);
+		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, allowNonPureFilesOnDisk);
+	} else if (Q_stricmp(extension, "$models") == 0) {
+		const char *extensions[] = { "md3", "mdr", "mdc", "mds", "mdx", "mdm", "tan", "iqm" };
+		int extNamesSize = ARRAY_LEN(extensions);
+		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, allowNonPureFilesOnDisk);
+	// allow extension to be a list. Example "RoQ;roq;jpg;wav"
+	} else if (strstr(extension, ";")) {
+		#define MAX_FILE_LIST_EXTS 8
+		char buffer[MAX_QPATH];
+		const char *extensions[MAX_FILE_LIST_EXTS];
+		int numExts;
+		int len;
+		char *s1;
+		char *s2;
+
+		numExts = 0;
+
+		Q_strncpyz(buffer, extension, MAX_QPATH);
+
+		s1 = buffer;
+		s2 = strchr(s1, ';');
+		len = s2 - s1 + 1;
+
+		if (len > 0) {
+			extensions[numExts] = s1;
+			numExts++;
+		}
+
+		while (1) {
+			s1 = s2;
+
+			if (!s1) {
+				break;
+			}
+
+			*s1 = 0; // Change ';' to '\0'
+			s1++;
+			s2 = strchr(s1, ';');
+
+			if (s2) {
+				len = s2 - s1 + 1;
+			} else {
+				len = strlen(s1) + 1;
+			}
+
+			if (len > 0) {
+				extensions[numExts] = s1;
+				numExts++;
+
+				if (numExts == MAX_FILE_LIST_EXTS) {
+					break;
+				}
+			}
+		}
+
+		pFiles = FS_ListFilesEx(path, extensions, numExts, &nFiles, allowNonPureFilesOnDisk);
+		#undef MAX_FILE_LIST_EXTS
+	} else {
+		pFiles = FS_ListFilteredFiles(path, extension, NULL, &nFiles, allowNonPureFilesOnDisk);
+	}
+
+	if (numfiles) {
+		*numfiles = nFiles;
+	}
+
+	return pFiles;
+}
+
+/*
+================
+FS_GetFileListBuffer
+================
+*/
+int	FS_GetFileListBuffer(const char *path, const char *extension, char *listbuf, int bufsize) {
 	int nFiles, i, nTotal, nLen;
 	char **pFiles = NULL;
 
@@ -2613,13 +2738,17 @@ int FS_GetFileList(const char *path, const char *extension, char *listbuf, int b
 		return FS_GetModList(listbuf, bufsize);
 	}
 
+	// ZTM: TODO: merging removing extension with general block as this list code is duplicate.
 	if (Q_stricmp(extension, "$demos") == 0) {
+		char dotdemoext[MAX_QPATH];
+		int extLength;
+
+		Com_sprintf(dotdemoext, sizeof (dotdemoext), ".%s", com_demoext->string);
+
+		extLength = strlen(dotdemoext);
+		pFiles = FS_ListFiles(path, dotdemoext, &nFiles);
 		// strip extension from list items
-		int extLength = strlen(DEMOEXT) + 1;
-
-		pFiles = FS_ListFiles(path, DEMOEXT, &nFiles);
-
-		for (i =0; i < nFiles; i++) {
+		for (i = 0; i < nFiles; i++) {
 			nLen = strlen(pFiles[i]) + 1 - extLength;
 
 			if (nTotal + nLen + 1 < bufsize) {
@@ -2636,93 +2765,9 @@ int FS_GetFileList(const char *path, const char *extension, char *listbuf, int b
 		return nFiles;
 	}
 
-	if (Q_stricmp(extension, "$videos") == 0) {
-		const char *extensions[] = {"RoQ", "roq"};
-		int extNamesSize = ARRAY_LEN(extensions);
+	pFiles = FS_GetFileList(path, extension, &nFiles, qfalse);
 
-		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, qfalse);
-	} else if (Q_stricmp(extension, "$images") == 0) {
-		const char *extensions[] = {"png", "tga", "jpg", "jpeg", "ftx", "dds", "pcx", "bmp"};
-		int extNamesSize = ARRAY_LEN(extensions);
-
-		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, qfalse);
-	} else if (Q_stricmp(extension, "$sounds") == 0) {
-		const char *extensions[] = {"wav"
-#ifdef USE_CODEC_VORBIS
-			, "ogg"
-#endif
-#ifdef USE_CODEC_OPUS
-			, "opus"
-#endif
-			};
-		int extNamesSize = ARRAY_LEN(extensions);
-
-		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, qfalse);
-	} else if (Q_stricmp(extension, "$fonts") == 0) {
-		const char *extensions[] = {"ttf", "otf", "ttc", "otc", "fon"};
-		int extNamesSize = ARRAY_LEN(extensions);
-
-		pFiles = FS_ListFilesEx(path, extensions, extNamesSize, &nFiles, qfalse);
-	}
-	// Allow extension to be a list
-	// Example "RoQ;roq;jpg;wav"
-	} else if (strstr(extension, ";")) {
-		#define MAX_FILE_LIST_EXTS 8
-		char buffer[MAX_QPATH];
-		const char *extensions[MAX_FILE_LIST_EXTS];
-		int numExts;
-		int len;
-		char *s1;
-		char *s2;
-
-		numExts = 0;
-
-		Q_strncpyz(buffer, extension, MAX_QPATH);
-
-		s1 = buffer;
-		s2 = strchr(s1, ';');
-
-		len = s2 - s1 + 1;
-
-		if (len > 0) {
-			extensions[numExts] = s1;
-			numExts++;
-		}
-
-		while (1) {
-			s1 = s2;
-
-			if (!s1) {
-				break;
-			}
-
-			*s1 = 0; // Change ';' to '\0'
-			s1++;
-
-			s2 = strchr(s1, ';');
-
-			if (s2) {
-				len = s2 - s1 + 1;
-			} else {
-				len = strlen(s1) + 1;
-			}
-
-			if (len > 0) {
-				extensions[numExts] = s1;
-				numExts++;
-				if (numExts == MAX_FILE_LIST_EXTS) {
-					break;
-				}
-			}
-		}
-
-		pFiles = FS_ListFilesEx(path, extensions, numExts, &nFiles, qfalse);
-		#undef MAX_FILE_LIST_EXTS
-	} else {
-		pFiles = FS_ListFiles(path, extension, &nFiles);
-	}
-
-	for (i = 0; i < nFiles; i++) {
+	for (i =0; i < nFiles; i++) {
 		nLen = strlen(pFiles[i]) + 1;
 
 		if (nTotal + nLen + 1 < bufsize) {
@@ -2775,9 +2820,9 @@ static char **Sys_ConcatenateFileLists(char **list0, char **list1, char **list2)
 	totalLength += Sys_CountFileList(list0);
 	totalLength += Sys_CountFileList(list1);
 	totalLength += Sys_CountFileList(list2);
-	// create new list.
+	// create new list
 	dst = cat = Z_Malloc((totalLength + 1) * sizeof(char *));
-	// copy over lists.
+	// copy over lists
 	if (list0) {
 		for (src = list0; *src; src++, dst++) {
 			*dst = *src;
@@ -2797,7 +2842,7 @@ static char **Sys_ConcatenateFileLists(char **list0, char **list1, char **list2)
 	}
 	// terminate the list
 	*dst = NULL;
-	// free our old lists.
+	// free our old lists
 	// NOTE: not freeing their content, it's been merged in dst and still being used
 	if (list0) {
 		Z_Free(list0);
@@ -2825,13 +2870,15 @@ void FS_GetModDescription(const char *modDir, char *description, int description
 	int nDescLen;
 	FILE *file;
 
-	Com_sprintf(descPath, sizeof(descPath), "%s/description.txt", modDir);
+	Com_sprintf(descPath, sizeof(descPath), "%s%cdescription.txt", modDir, PATH_SEP);
 
 	nDescLen = FS_SV_FOpenFileRead(descPath, &descHandle);
 
-	if (nDescLen > 0 && descHandle) {
+	if (nDescLen > 0) {
 		file = FS_FileForHandle(descHandle);
+
 		Com_Memset(description, 0, descriptionLen);
+
 		nDescLen = fread(description, 1, descriptionLen, file);
 
 		if (nDescLen >= 0) {
@@ -2847,10 +2894,12 @@ void FS_GetModDescription(const char *modDir, char *description, int description
 			nDescLen--;
 			description[nDescLen] = '\0';
 		}
-
-		FS_FCloseFile(descHandle);
 	} else {
 		Q_strncpyz(description, modDir, descriptionLen);
+	}
+
+	if (descHandle) {
+		FS_FCloseFile(descHandle);
 	}
 }
 
@@ -2970,6 +3019,7 @@ int FS_GetModList(char *listbuf, int bufsize) {
 			// nLen is the length of the mod path
 			// we need to see if there is a description available
 			FS_GetModDescription(name, description, sizeof(description));
+
 			nDescLen = strlen(description) + 1;
 
 			if (nTotal + nLen + 1 + nDescLen + 1 < bufsize) {
@@ -2980,7 +3030,7 @@ int FS_GetModList(char *listbuf, int bufsize) {
 				nTotal += nLen + nDescLen;
 				nMods++;
 			} else {
-				Com_Printf(S_COLOR_YELLOW "WARNING: Ran out of space for mods in mod list(%d mods fit in the %d byte buffer)\n", nMods, bufsize);
+				Com_Printf(S_COLOR_YELLOW "WARNING: Ran out of space for mods in mod list (%d mods fit in the %d byte buffer).\n", nMods, bufsize);
 				break;
 			}
 		}
@@ -3019,7 +3069,7 @@ void FS_Dir_f(void) {
 	Com_Printf("Directory of %s %s\n", path, extension);
 	Com_Printf("---------------\n");
 
-	dirnames = FS_ListFiles(path, extension, &ndirs);
+	dirnames = FS_GetFileList(path, extension, &ndirs, qfalse);
 
 	for (i = 0; i < ndirs; i++) {
 		Com_Printf("%s\n", dirnames[i]);
@@ -3048,7 +3098,7 @@ void FS_ConvertPath(char *s) {
 =======================================================================================================================================
 FS_PathCmp
 
-Ignore case and seprator char distinctions.
+Ignore case and separator char distinctions.
 =======================================================================================================================================
 */
 int FS_PathCmp(const char *s1, const char *s2) {
@@ -3320,12 +3370,10 @@ void FS_AddGameDirectory(const char *path, const char *dir) {
 			Q_strncpyz(pak->pakGamename, dir, sizeof(pak->pakGamename));
 
 			fs_packFiles += pak->numfiles;
-
 			search = Z_Malloc(sizeof(searchpath_t));
 			search->pack = pak;
 			search->next = fs_searchpaths;
 			fs_searchpaths = search;
-
 			pakfilesi++;
 		} else {
 			// the next .pk3dir is before the next .pk3 file
@@ -3349,7 +3397,6 @@ void FS_AddGameDirectory(const char *path, const char *dir) {
 			search->dir->virtualDir = qtrue;
 			search->next = fs_searchpaths;
 			fs_searchpaths = search;
-
 			pakdirsi++;
 		}
 	}
@@ -3470,9 +3517,25 @@ qboolean FS_CheckDirTraversal(const char *checkdir) {
 
 /*
 =======================================================================================================================================
+FS_InvalidGameDir
+
+Return true if path is a reference to current directory or directory traversal or a sub-directory.
+=======================================================================================================================================
+*/
+qboolean FS_InvalidGameDir(const char *gamedir) {
+
+	if (!strcmp(gamedir, ".") || !strcmp(gamedir, "..") || strchr(gamedir, '/') || strchr(gamedir, '\\')) {
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+/*
+=======================================================================================================================================
 FS_ComparePaks
 
-------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------
 dlstring == qtrue
 
 Returns a list of pak files that we should download from the server. They all get stored in the current gamedir and an FS_Restart will
@@ -3486,7 +3549,7 @@ static int fs_numServerReferencedPaks;
 static int fs_serverReferencedPaks[MAX_SEARCH_PATHS];
 static char *fs_serverReferencedPakNames[MAX_SEARCH_PATHS];
 
-------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------
 dlstring == qfalse
 
 We are not interested in a download string format, we want something human-readable (this is used for diagnostics while connecting to
@@ -3530,7 +3593,7 @@ qboolean FS_ComparePaks(char *neededpaks, int len, qboolean dlstring) {
 		if (pakType == PAK_NO_DOWNLOAD && dlstring) {
 			continue;
 		}
-		// make sure the server cannot make us write to non-quake3 directories.
+		// make sure the server cannot make us write to non-quake3 directories
 		if (FS_CheckDirTraversal(fs_serverReferencedPakNames[i])) {
 			Com_Printf("WARNING: Invalid download name %s\n", fs_serverReferencedPakNames[i]);
 			continue;
@@ -3679,8 +3742,8 @@ void FS_UnstashSearchPath(void) {
 =======================================================================================================================================
 FS_ReorderPurePaks
 
-NOTE: the reordering that happens here is not reflected in the cvars(\cvarlist *pak*)
-this can lead to misleading situations, see https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=540
+NOTE: the reordering that happens here is not reflected in the cvars (\cvarlist *pak*).
+This can lead to misleading situations, see https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=540.
 =======================================================================================================================================
 */
 static void FS_ReorderPurePaks(void) {
@@ -4143,6 +4206,10 @@ static void FS_Startup(qboolean quiet) {
 
 	if (!fs_gamedirvar->string[0]) {
 		Cvar_ForceReset("fs_game");
+	}
+
+	if (FS_InvalidGameDir(fs_gamedirvar->string)) {
+		Com_Error(ERR_DROP, "Invalid fs_game '%s'", fs_gamedirvar->string);
 	}
 
 	FS_ClearPakChecksums();
@@ -4787,7 +4854,7 @@ void FS_PureServerSetReferencedPaks(const char *pakSums, const char *pakNames) {
 =======================================================================================================================================
 FS_InitFilesystem
 
-Called only at inital startup, not when the filesystem is resetting due to a game change.
+Called only at initial startup, not when the filesystem is resetting due to a game change.
 =======================================================================================================================================
 */
 void FS_InitFilesystem(void) {
@@ -4961,6 +5028,7 @@ int FS_FOpenFileByMode(const char *qpath, fileHandle_t *f, fsMode_t mode) {
 			break;
 		case FS_APPEND_SYNC:
 			sync = qtrue;
+		// fall through
 		case FS_APPEND:
 			if (!f) {
 				return -1;
@@ -5031,13 +5099,9 @@ void FS_Flush(fileHandle_t f) {
 FS_FilenameCompletion
 =======================================================================================================================================
 */
-void FS_FilenameCompletion(const char *dir, const char *ext, qboolean stripExt, void(*callback)(const char *s), qboolean allowNonPureFilesOnDisk) {
-	char **filenames;
-	int nfiles;
+void FS_FilenameCompletion(char **filenames, int nfiles, qboolean stripExt, void(*callback)(const char *s), qboolean allowNonPureFilesOnDisk) {
 	int i;
 	char filename[MAX_STRING_CHARS];
-
-	filenames = FS_ListFilteredFiles(dir, ext, NULL, &nfiles, allowNonPureFilesOnDisk);
 
 	for (i = 0; i < nfiles; i++) {
 		FS_ConvertPath(filenames[i]);
@@ -5049,8 +5113,6 @@ void FS_FilenameCompletion(const char *dir, const char *ext, qboolean stripExt, 
 
 		callback(filename);
 	}
-
-	FS_FreeFileList(filenames);
 }
 
 /*

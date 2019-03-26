@@ -707,7 +707,7 @@ static qboolean BotAlreadySelected(const char *checkName) {
 			continue;
 		}
 
-		if ((s_serveroptions.gametype >= GT_TEAM) && (s_serveroptions.playerTeam[n].curvalue != s_serveroptions.playerTeam[s_serveroptions.newBotIndex].curvalue)) {
+		if ((s_serveroptions.gametype > GT_TOURNAMENT) && (s_serveroptions.playerTeam[n].curvalue != s_serveroptions.playerTeam[s_serveroptions.newBotIndex].curvalue)) {
 			continue;
 		}
 
@@ -727,7 +727,7 @@ ServerOptions_Start
 static void ServerOptions_Start(void) {
 	int timelimit;
 	int fraglimit;
-	int maxplayers;
+	int maxclients;
 	int localPlayerBits;
 	int publicserver;
 	int dedicated;
@@ -747,8 +747,8 @@ static void ServerOptions_Start(void) {
 	friendlyfire = s_serveroptions.friendlyfire.curvalue;
 	pure = s_serveroptions.pure.curvalue;
 	skill = s_serveroptions.botSkill.curvalue + 1;
-	// set maxplayers
-	for (n = 0, maxplayers = 0; n < PLAYER_SLOTS; n++) {
+	// set maxclients
+	for (n = 0, maxclients = 0; n < PLAYER_SLOTS; n++) {
 		if (s_serveroptions.playerType[n].curvalue == PT_CLOSED) {
 			continue;
 		}
@@ -757,7 +757,7 @@ static void ServerOptions_Start(void) {
 			continue;
 		}
 
-		maxplayers++;
+		maxclients++;
 	}
 
 	for (n = 0, localPlayerBits = 1; n < UI_MaxSplitView(); n++) {
@@ -807,7 +807,7 @@ static void ServerOptions_Start(void) {
 			break;
 	}
 
-	trap_Cvar_SetValue("sv_maxclients", Com_Clamp(0, 12, maxplayers));
+	trap_Cvar_SetValue("sv_maxclients", Com_Clamp(0, 12, maxclients));
 
 	if (s_serveroptions.multiplayer) {
 		trap_Cvar_SetValue("ui_publicServer", Com_Clamp(0, 1, publicserver));
@@ -824,7 +824,7 @@ static void ServerOptions_Start(void) {
 	trap_Cvar_SetValue("sv_pure", pure);
 	trap_Cvar_Set("sv_hostname", MField_Buffer(&s_serveroptions.hostname.field));
 	// set player's team
-	if (dedicated == 0 && s_serveroptions.gametype >= GT_TEAM) {
+	if (dedicated == 0 && s_serveroptions.gametype > GT_TOURNAMENT) {
 		for (n = 0; n < UI_MaxSplitView(); ++n) {
 			if (n == 0 || s_serveroptions.playerType[n].curvalue == PT_HUMAN) {
 				trap_Cvar_Set(Com_LocalPlayerCvarName(n, "teampref"), playerTeam_list[s_serveroptions.playerTeam[n].curvalue]);
@@ -847,7 +847,7 @@ static void ServerOptions_Start(void) {
 			continue;
 		}
 
-		if (s_serveroptions.gametype >= GT_TEAM) {
+		if (s_serveroptions.gametype > GT_TOURNAMENT) {
 			Com_sprintf(buf, sizeof(buf), "addbot %s %i %s\n", s_serveroptions.botNameBuffers[n], skill, playerTeam_list[s_serveroptions.playerTeam[n].curvalue]);
 		} else {
 			Com_sprintf(buf, sizeof(buf), "addbot %s %i\n", s_serveroptions.botNameBuffers[n], skill);
@@ -897,7 +897,7 @@ static void ServerOptions_InitPlayerItems(void) {
 		}
 	}
 	// init teams
-	if (s_serveroptions.gametype >= GT_TEAM) {
+	if (s_serveroptions.gametype > GT_TOURNAMENT) {
 		for (n = 0; n < (PLAYER_SLOTS / 2); n++) {
 			s_serveroptions.playerTeam[n].curvalue = 0;
 		}
@@ -1115,7 +1115,7 @@ static void ServerOptions_InitBotNames(void) {
 		strcpy(s_serveroptions.botNameBuffers[n], "Random");
 	}
 
-	if (s_serveroptions.gametype >= GT_TEAM) {
+	if (s_serveroptions.gametype > GT_TOURNAMENT) {
 		Q_strncpyz(s_serveroptions.botNameBuffers[1], "Grunt", 16);
 		Q_strncpyz(s_serveroptions.botNameBuffers[2], "Major", 16);
 
@@ -1386,7 +1386,7 @@ static void ServerOptions_MenuInit(qboolean multiplayer) {
 	s_serveroptions.timelimit.field.widthInChars = 3;
 	s_serveroptions.timelimit.field.maxchars = 3;
 
-	if (s_serveroptions.gametype >= GT_TEAM) {
+	if (s_serveroptions.gametype > GT_TOURNAMENT) {
 		y += BIGCHAR_HEIGHT + 2;
 		s_serveroptions.friendlyfire.generic.type = MTYPE_RADIOBUTTON;
 		s_serveroptions.friendlyfire.generic.flags = QMF_PULSEIFFOCUS|QMF_SMALLFONT;
@@ -1545,7 +1545,7 @@ static void ServerOptions_MenuInit(qboolean multiplayer) {
 
 		Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.playerName[n]);
 
-		if (s_serveroptions.gametype >= GT_TEAM) {
+		if (s_serveroptions.gametype > GT_TOURNAMENT) {
 			Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.playerTeam[n]);
 		}
 	}
@@ -1558,7 +1558,7 @@ static void ServerOptions_MenuInit(qboolean multiplayer) {
 
 	Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.timelimit);
 
-	if (s_serveroptions.gametype >= GT_TEAM) {
+	if (s_serveroptions.gametype > GT_TOURNAMENT) {
 		Menu_AddItem(&s_serveroptions.menu, &s_serveroptions.friendlyfire);
 	}
 

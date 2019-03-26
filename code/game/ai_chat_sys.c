@@ -1522,10 +1522,10 @@ int StringsMatch(bot_matchpiece_t *pieces, bot_match_t *match) {
 
 /*
 =======================================================================================================================================
-BotFindMatch
+trap_BotFindMatch
 =======================================================================================================================================
 */
-int BotFindMatch(char *str, bot_match_t *match, unsigned long int context) {
+int trap_BotFindMatch(char *str, bot_match_t *match, unsigned long int context) {
 	int i;
 	bot_matchtemplate_t *ms;
 
@@ -1588,13 +1588,13 @@ int BotMatchTemplatesContainsString(const char *findstr) {
 
 /*
 =======================================================================================================================================
-BotMatchVariable
+trap_BotMatchVariable
 =======================================================================================================================================
 */
-void BotMatchVariable(bot_match_t *match, int variable, char *buf, int size) {
+void trap_BotMatchVariable(bot_match_t *match, int variable, char *buf, int size) {
 
 	if (variable < 0 || variable >= MAX_MATCHVARIABLES) {
-		BotAI_Print(PRT_FATAL, "BotMatchVariable: variable out of range\n");
+		BotAI_Print(PRT_FATAL, "trap_BotMatchVariable: variable out of range\n");
 		strcpy(buf, "");
 		return;
 	}
@@ -2621,7 +2621,7 @@ char *BotChooseInitialChatMessage(bot_chatstate_t *cs, char *type) {
 BotNumInitialChats
 =======================================================================================================================================
 */
-int BotNumInitialChats(int chatstate, char *type) {
+int trap_BotNumInitialChats(int chatstate, char *type) {
 	bot_chatstate_t *cs;
 	bot_chattype_t *t;
 

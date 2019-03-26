@@ -551,7 +551,7 @@ static	void R_LoadLightmaps( const bspFile_t *bsp ) {
 		}
 	}
 
-	if ( r_lightmap->integer == 2 )	{
+	if ( r_lightmap->integer > 1 )	{
 		ri.Printf( PRINT_ALL, "Brightest lightmap value: %d\n", ( int ) ( maxIntensity * 255 ) );
 	}
 
@@ -2269,7 +2269,7 @@ static	void R_LoadNodesAndLeafs( const bspFile_t *bsp ) {
 		out->nummarksurfaces = LittleLong(inLeaf->numLeafSurfaces);
 	}	
 
-	// chain decendants
+	// chain descendants
 	R_SetParent (s_worldData.nodes, NULL);
 }
 

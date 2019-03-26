@@ -34,6 +34,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 input: origin, velocity, bounds, groundPlane, trace function
 output: origin, velocity, impacts, stairup boolean
 */
+#define MAX_CLIP_PLANES 5
 
 /*
 =======================================================================================================================================
@@ -42,7 +43,6 @@ PM_SlideMove
 Returns qtrue if the velocity was clipped in some way.
 =======================================================================================================================================
 */
-#define MAX_CLIP_PLANES 5
 qboolean PM_SlideMove(qboolean gravity) {
 	int bumpcount, numbumps;
 	vec3_t dir;
@@ -92,7 +92,7 @@ qboolean PM_SlideMove(qboolean gravity) {
 		// calculate position we are trying to move to
 		VectorMA(pm->ps->origin, time_left, pm->ps->velocity, end);
 		// see if we can make it there
-		pm->trace(&trace, pm->ps->origin, pm->ps->mins, pm->ps->maxs, end, pm->ps->playerNum, pm->tracemask);
+		pm->trace(&trace, pm->ps->origin, pm->ps->mins, pm->ps->maxs, end, pm->ps->clientNum, pm->tracemask);
 
 		if (trace.allsolid) {
 			// entity is completely trapped in another solid
@@ -246,7 +246,7 @@ void PM_StepSlideMove(qboolean gravity) {
 	VectorCopy(start_o, down);
 
 	down[2] -= STEPSIZE;
-	pm->trace(&trace, start_o, pm->ps->mins, pm->ps->maxs, down, pm->ps->playerNum, pm->tracemask);
+	pm->trace(&trace, start_o, pm->ps->mins, pm->ps->maxs, down, pm->ps->clientNum, pm->tracemask);
 
 	VectorSet(up, 0, 0, 1);
 	// never step up when you still have up velocity
@@ -256,12 +256,11 @@ void PM_StepSlideMove(qboolean gravity) {
 
 	//VectorCopy(pm->ps->origin, down_o);
 	//VectorCopy(pm->ps->velocity, down_v);
-
 	VectorCopy(start_o, up);
 
 	up[2] += STEPSIZE;
 	// test the player position if they were a stepheight higher
-	pm->trace(&trace, start_o, pm->ps->mins, pm->ps->maxs, up, pm->ps->playerNum, pm->tracemask);
+	pm->trace(&trace, start_o, pm->ps->mins, pm->ps->maxs, up, pm->ps->clientNum, pm->tracemask);
 
 	if (trace.allsolid) {
 		if (pm->debugLevel) {
@@ -275,13 +274,12 @@ void PM_StepSlideMove(qboolean gravity) {
 	// try slidemove from this position
 	VectorCopy(trace.endpos, pm->ps->origin);
 	VectorCopy(start_v, pm->ps->velocity);
-
 	PM_SlideMove(gravity);
 	// push down the final amount
 	VectorCopy(pm->ps->origin, down);
 
 	down[2] -= stepSize;
-	pm->trace(&trace, pm->ps->origin, pm->ps->mins, pm->ps->maxs, down, pm->ps->playerNum, pm->tracemask);
+	pm->trace(&trace, pm->ps->origin, pm->ps->mins, pm->ps->maxs, down, pm->ps->clientNum, pm->tracemask);
 
 	if (!trace.allsolid) {
 		VectorCopy(trace.endpos, pm->ps->origin);
@@ -292,7 +290,7 @@ void PM_StepSlideMove(qboolean gravity) {
 	}
 #if 0
 	// if the down trace can trace back to the original position directly, don't step
-	pm->trace(&trace, pm->ps->origin, pm->ps->mins, pm->ps->maxs, start_o, pm->ps->playerNum, pm->tracemask);
+	pm->trace(&trace, pm->ps->origin, pm->ps->mins, pm->ps->maxs, start_o, pm->ps->clientNum, pm->tracemask);
 
 	if (trace.fraction == 1.0) {
 		// use the original move
