@@ -318,7 +318,7 @@ int R_PolyBufferFogNum( srfPolyBuffer_t *pPolySurf ) {
 
 /*
 =====================
-R_AddPolygonSurfaces
+R_AddPolygonBufferSurfaces
 
 Adds all the scene's polys into this view's drawsurf list
 =====================

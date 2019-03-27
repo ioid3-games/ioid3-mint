@@ -39,7 +39,7 @@ typedef enum
 	IMGTYPE_COLORALPHA, // for color, lightmap, diffuse, and specular
 	IMGTYPE_NORMAL,
 	IMGTYPE_NORMALHEIGHT,
-	IMGTYPE_DELUXE, // normals are swizzled, deluxe are not
+	IMGTYPE_DELUXE // normals are swizzled, deluxe are not
 } imgType_t;
 
 typedef enum
@@ -53,7 +53,7 @@ typedef enum
 	IMGFLAG_CLAMPTOEDGE    = 0x0040,
 	IMGFLAG_GENNORMALMAP   = 0x0080,
 	IMGFLAG_LIGHTMAP       = 0x0100,
-	IMGFLAG_PICMIP2        = 0x0200,
+	IMGFLAG_PICMIP2        = 0x0200
 } imgFlags_t;
 
 #define MIP_RAW_IMAGE ( IMGFLAG_MIPMAP | IMGFLAG_PICMIP )

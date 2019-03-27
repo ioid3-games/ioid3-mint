@@ -782,7 +782,7 @@ enum {
 	U_ATEST_GREATEREQUAL = 3,
 	U_ATEST_EQUAL,
 	U_ATEST_LESSEQUAL,
-	U_ATEST_GREATER,
+	U_ATEST_GREATER
 };
 
 // shaderProgram_t represents a pair of one
@@ -2503,9 +2503,9 @@ SCENE GENERATION
 */
 
 void R_InitNextFrame( void );
-qhandle_t RE_AddSkinToFrame( int numSurfaces, const qhandle_t *surfaces );
 
 void RE_ClearScene( void );
+qhandle_t RE_AddSkinToFrame( int numSurfaces, const qhandle_t *surfaces );
 void RE_AddRefEntityToScene( const refEntity_t *ent, int entBufSize, int numVerts, const polyVert_t *verts, int numPolys );
 void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys, int bmodelNum, int sortLevel );
 void RE_AddPolyBufferToScene( polyBuffer_t* pPolyBuffer );

@@ -68,6 +68,7 @@ typedef struct {
 	qhandle_t (*RegisterShader)( const char *name );
 	qhandle_t (*RegisterShaderNoMip)( const char *name );
 	qhandle_t (*AllocSkinSurface)( const char *name, qhandle_t hShader );
+	qhandle_t (*AddSkinToFrame)( int numSurfaces, const qhandle_t *surfaces );
 	void	(*LoadWorld)( const bspFile_t *bsp );
 
 	// the vis data is a large enough block of data that we go to the trouble
@@ -80,6 +81,7 @@ typedef struct {
 
 	// a scene is built up by calls to R_ClearScene and the various R_Add functions.
 	// Nothing is drawn until R_RenderScene is called.
+	void	(*RenderScene)( const refdef_t *fd, int bufsize );
 	void	(*ClearScene)( void );
 	void	(*AddRefEntityToScene)( const refEntity_t *re, int bufsize, int numVerts, const polyVert_t *verts, int numPolys );
 	void	(*AddPolyToScene)( qhandle_t hShader , int numVerts, const polyVert_t *verts, int numPolys, int bmodelNum, int sortLevel );
@@ -91,7 +93,6 @@ typedef struct {
 	void	(*AddJuniorLightToScene)( const vec3_t org, float radius, float intensity, float r, float g, float b );
 	void	(*AddDirectedLightToScene)( const vec3_t normal, float intensity, float r, float g, float b );
 	void	(*AddCoronaToScene)( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible, qhandle_t hShader );
-	void	(*RenderScene)( const refdef_t *fd, int bufsize );
 
 	void	(*SetColor)( const float *rgba );	// NULL = 1,1,1,1
 	void	(*SetClipRegion)( const float *region );
@@ -105,7 +106,6 @@ typedef struct {
 	void	(*UploadCinematic) (int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty);
 
 	void	(*BeginFrame)( stereoFrame_t stereoFrame );
-	qhandle_t (*AddSkinToFrame)( int numSurfaces, const qhandle_t *surfaces );
 
 	// if the pointers are not NULL, timing info will be returned
 	void	(*EndFrame)( int *frontEndMsec, int *backEndMsec );
