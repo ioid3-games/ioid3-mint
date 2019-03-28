@@ -610,7 +610,6 @@ void ClientEvents(gentity_t *ent, int oldEventSequence) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 SendPendingPredictableEvents

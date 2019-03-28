@@ -485,6 +485,10 @@ void Weapon_Beamgun_Fire(gentity_t *ent) {
 		traceEnt = &g_entities[tr.entityNum];
 
 		if (traceEnt->takedamage) {
+			if (LogAccuracyHit(traceEnt, ent)) {
+				ent->client->accuracy_hits++;
+			}
+
 			G_Damage(traceEnt, ent, ent, forward, tr.endpos, damage, 0, MOD_BEAMGUN);
 		}
 

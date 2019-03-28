@@ -260,14 +260,17 @@ static void PodiumPlacementThink(gentity_t *podium) {
 
 	podium->nextthink = level.time + 100;
 
-	AngleVectors(level.intermission_angle, vec, NULL, NULL);
+	AngleVectorsForward(level.intermission_angle, vec);
 	VectorMA(level.intermission_origin, trap_Cvar_VariableIntegerValue("g_podiumDist"), vec, origin);
+
 	origin[2] -= trap_Cvar_VariableIntegerValue("g_podiumDrop");
+
 	G_SetOrigin(podium, origin);
 
 	if (podium1) {
 		VectorSubtract(level.intermission_origin, podium->r.currentOrigin, vec);
 		VectorToAngles(vec, podium1->s.apos.trBase);
+
 		podium1->s.apos.trBase[PITCH] = 0;
 		podium1->s.apos.trBase[ROLL] = 0;
 

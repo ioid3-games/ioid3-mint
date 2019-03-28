@@ -478,27 +478,18 @@ void G_CheckMinimumPlayers(void) {
 		return;
 	}
 
-	if (g_gametype.integer > GT_TOURNAMENT) {
-		if (minplayers >= g_maxclients.integer / 2) {
-			minplayers =(g_maxclients.integer / 2) - 1;
+	if (g_gametype.integer == GT_FFA) {
+		if (minplayers >= g_maxclients.integer) {
+			minplayers = g_maxclients.integer - 1;
 		}
 
-		humanplayers = G_CountHumanPlayers(TEAM_RED);
-		botplayers = G_CountBotPlayers(TEAM_RED);
+		humanplayers = G_CountHumanPlayers(TEAM_FREE);
+		botplayers = G_CountBotPlayers(TEAM_FREE);
 
 		if (humanplayers + botplayers < minplayers) {
-			G_AddRandomBot(TEAM_RED);
+			G_AddRandomBot(TEAM_FREE);
 		} else if (humanplayers + botplayers > minplayers && botplayers) {
-			G_RemoveRandomBot(TEAM_RED);
-		}
-
-		humanplayers = G_CountHumanPlayers(TEAM_BLUE);
-		botplayers = G_CountBotPlayers(TEAM_BLUE);
-
-		if (humanplayers + botplayers < minplayers) {
-			G_AddRandomBot(TEAM_BLUE);
-		} else if (humanplayers + botplayers > minplayers && botplayers) {
-			G_RemoveRandomBot(TEAM_BLUE);
+			G_RemoveRandomBot(TEAM_FREE);
 		}
 	} else if (g_gametype.integer == GT_TOURNAMENT) {
 		if (minplayers >= g_maxclients.integer) {
@@ -517,18 +508,27 @@ void G_CheckMinimumPlayers(void) {
 				G_RemoveRandomBot(-1);
 			}
 		}
-	} else if (g_gametype.integer == GT_FFA) {
-		if (minplayers >= g_maxclients.integer) {
-			minplayers = g_maxclients.integer - 1;
+	} else if (g_gametype.integer > GT_TOURNAMENT) {
+		if (minplayers >= g_maxclients.integer / 2) {
+			minplayers = (g_maxclients.integer / 2) - 1;
 		}
 
-		humanplayers = G_CountHumanPlayers(TEAM_FREE);
-		botplayers = G_CountBotPlayers(TEAM_FREE);
+		humanplayers = G_CountHumanPlayers(TEAM_RED);
+		botplayers = G_CountBotPlayers(TEAM_RED);
 
 		if (humanplayers + botplayers < minplayers) {
-			G_AddRandomBot(TEAM_FREE);
+			G_AddRandomBot(TEAM_RED);
 		} else if (humanplayers + botplayers > minplayers && botplayers) {
-			G_RemoveRandomBot(TEAM_FREE);
+			G_RemoveRandomBot(TEAM_RED);
+		}
+
+		humanplayers = G_CountHumanPlayers(TEAM_BLUE);
+		botplayers = G_CountBotPlayers(TEAM_BLUE);
+
+		if (humanplayers + botplayers < minplayers) {
+			G_AddRandomBot(TEAM_BLUE);
+		} else if (humanplayers + botplayers > minplayers && botplayers) {
+			G_RemoveRandomBot(TEAM_BLUE);
 		}
 	}
 }
@@ -635,8 +635,8 @@ static int G_DefaultColorForName(const char *name) {
 	const char *p;
 
 	p = name;
-
 	val = 0;
+
 	while (*p) {
 		val += *p;
 		p++;
@@ -733,15 +733,7 @@ static void G_AddBot(const char *name, float skill, const char *team, int delay,
 	Info_SetValueForKey(userinfo, "snaps", "60");
 	Info_SetValueForKey(userinfo, "skill", va("%.2g", skill));
 	Info_SetValueForKey(userinfo, "teampref", team);
-
-	if (skill >= 1 && skill < 2) {
-		Info_SetValueForKey(userinfo, "handicap", "50");
-	} else if (skill >= 2 && skill < 3) {
-		Info_SetValueForKey(userinfo, "handicap", "70");
-	} else if (skill >= 3 && skill < 4) {
-		Info_SetValueForKey(userinfo, "handicap", "90");
-	}
-
+	// model
 	key = "model";
 	model = Info_ValueForKey(botinfo, key);
 	modelSet = (*model);
@@ -785,7 +777,7 @@ static void G_AddBot(const char *name, float skill, const char *team, int delay,
 	s = Info_ValueForKey(botinfo, key);
 
 	if (!*s) {
-		s = va("%d", G_DefaultColorForName(botname + strlen(botname)/ 2));
+		s = va("%d", G_DefaultColorForName(botname + strlen(botname) / 2));
 	}
 
 	Info_SetValueForKey(userinfo, key, s);
@@ -844,7 +836,7 @@ void Svcmd_AddBot_f(void) {
 	trap_Argv(2, string, sizeof(string));
 
 	if (!string[0]) {
-		skill = 4;
+		skill = 3;
 	} else {
 		skill = Com_Clamp(1, 5, atof(string));
 	}

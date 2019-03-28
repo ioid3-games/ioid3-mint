@@ -182,11 +182,11 @@ Touch_PushTrigger
 */
 void Touch_PushTrigger(gentity_t *self, gentity_t *other, trace_t *trace) {
 
-	if (!other->player) {
+	if (!other->client) {
 		return;
 	}
 
-	BG_TouchJumpPad(&other->player->ps, &self->s);
+	BG_TouchJumpPad(&other->client->ps, &self->s);
 }
 
 /*
@@ -321,7 +321,7 @@ Touch_TeleporterTrigger
 void Touch_TeleporterTrigger(gentity_t *self, gentity_t *other, trace_t *trace) {
 	gentity_t *dest;
 
-	if (!other->player) {
+	if (!other->client) {
 		return;
 	}
 

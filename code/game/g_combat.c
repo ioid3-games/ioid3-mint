@@ -608,15 +608,15 @@ void PlayerDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int d
 	Team_FragBonuses(self, inflictor, attacker);
 	// if I committed suicide, the flag does not fall, it returns.
 	if (meansOfDeath == MOD_SUICIDE || meansOfDeath == MOD_SUICIDE_TEAM_CHANGE) {
-		if (self->client->ps.powerups[PW_NEUTRALFLAG]) { // only happens in One Flag CTF
-			Team_ReturnFlag(TEAM_FREE);
-			self->client->ps.powerups[PW_NEUTRALFLAG] = 0;
-		} else if (self->client->ps.powerups[PW_REDFLAG]) { // only happens in standard CTF
+		if (self->client->ps.powerups[PW_REDFLAG]) { // only happens in standard CTF
 			Team_ReturnFlag(TEAM_RED);
 			self->client->ps.powerups[PW_REDFLAG] = 0;
 		} else if (self->client->ps.powerups[PW_BLUEFLAG]) { // only happens in standard CTF
 			Team_ReturnFlag(TEAM_BLUE);
 			self->client->ps.powerups[PW_BLUEFLAG] = 0;
+		} else if (self->client->ps.powerups[PW_NEUTRALFLAG]) { // only happens in One Flag CTF
+			Team_ReturnFlag(TEAM_FREE);
+			self->client->ps.powerups[PW_NEUTRALFLAG] = 0;
 		}
 	}
 

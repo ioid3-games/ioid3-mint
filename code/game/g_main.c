@@ -1382,7 +1382,7 @@ If one or more players have not acknowledged the continue, the game will wait 10
 void CheckIntermissionExit(void) {
 	int ready, notReady, playerCount;
 	int i;
-	gplayer_t *cl;
+	gclient_t *cl;
 	clientList_t readyList;
 
 	if (g_gametype.integer == GT_SINGLE_PLAYER) {
@@ -1396,7 +1396,7 @@ void CheckIntermissionExit(void) {
 	Com_ClientListClear(&readyList);
 
 	for (i = 0; i < g_maxclients.integer; i++) {
-		cl = level.players + i;
+		cl = level.clients + i;
 
 		if (cl->pers.connected != CON_CONNECTED) {
 			continue;
@@ -1480,7 +1480,7 @@ see the last frag.
 */
 void CheckExitRules(void) {
 	int i;
-	gplayer_t *cl;
+	gclient_t *cl;
 
 	// if at the intermission, wait for all non-bots to signal ready, then go to next level
 	if (level.intermissiontime) {

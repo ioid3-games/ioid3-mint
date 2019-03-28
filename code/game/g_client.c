@@ -28,6 +28,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #include "g_local.h"
 
+#define MAX_SPAWN_POINTS 128
+
 static vec3_t playerMins = {-15, -15, -24};
 static vec3_t playerMaxs = {15, 15, 32};
 
@@ -665,30 +667,6 @@ static void ClientCleanName(const char *in, char *out, int outSize) {
 
 /*
 =======================================================================================================================================
-PlayerHandicap
-=======================================================================================================================================
-*/
-float PlayerHandicap(gplayer_t *player) {
-	char userinfo[MAX_INFO_STRING];
-	float handicap;
-
-	if (!player) {
-		return 100;
-	}
-
-	trap_GetUserinfo(player - level.clients, userinfo, sizeof(userinfo));
-
-	handicap = atof(Info_ValueForKey(userinfo, "handicap"));
-
-	if (handicap < 1 || handicap > 100) {
-		handicap = 100;
-	}
-
-	return handicap;
-}
-
-/*
-=======================================================================================================================================
 ClientUserinfoChanged
 
 Called from ClientConnect when the player first connects and directly by the server system when the player updates a userinfo variable.
@@ -746,14 +724,6 @@ void ClientUserinfoChanged(int clientNum) {
 			trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " renamed to %s\n\"", oldname, client->pers.netname));
 		}
 	}
-	// set max health
-	if (client->ps.powerups[PW_GUARD]) {
-		client->pers.maxHealth = 200;
-	} else {
-		client->pers.maxHealth = PlayerHandicap(player);
-	}
-
-	client->ps.stats[STAT_MAX_HEALTH] = client->pers.maxHealth;
 	// set model
 	if (g_gametype.integer > GT_TOURNAMENT) {
 		Q_strncpyz(model, Info_ValueForKey(userinfo, "team_model"), sizeof(model));
@@ -788,11 +758,11 @@ void ClientUserinfoChanged(int clientNum) {
 	Q_strncpyz(c2, Info_ValueForKey(userinfo, "color2"), sizeof(c2));
 	// send over a subset of the userinfo keys so other clients can print scoreboards, display models, and play custom sounds
 	if (ent->r.svFlags & SVF_BOT) {
-		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\skill\\%s\\tt\\%d\\tl\\%d", client->pers.netname, client->sess.sessionTeam, model, headModel, c1, c2, 
-		client->pers.maxHealth, client->sess.wins, client->sess.losses, Info_ValueForKey(userinfo, "skill"), teamTask, teamLeader);
+		s = va("n\\%s\\t\\%i\\tt\\%d\\tl\\%d\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\w\\%i\\l\\%i\\skill\\%s",
+			client->pers.netname, client->sess.sessionTeam, teamTask, teamLeader, model, headModel, c1, c2, client->sess.wins, client->sess.losses, Info_ValueForKey(userinfo, "skill"));
 	} else {
-		s = va("n\\%s\\t\\%i\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\hc\\%i\\w\\%i\\l\\%i\\tt\\%d\\tl\\%d", client->pers.netname, client->sess.sessionTeam, model, headModel, c1, c2, 
-		client->pers.maxHealth, client->sess.wins, client->sess.losses, teamTask, teamLeader);
+		s = va("n\\%s\\t\\%i\\tt\\%d\\tl\\%d\\model\\%s\\hmodel\\%s\\c1\\%s\\c2\\%s\\w\\%i\\l\\%i",
+			client->pers.netname, client->sess.sessionTeam, teamTask, teamLeader, model, headModel, c1, c2, client->sess.wins, client->sess.losses);
 	}
 
 	trap_SetConfigstring(CS_PLAYERS + clientNum, s);
@@ -823,7 +793,7 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot, int conne
 	ent = &g_entities[clientNum];
 
 	trap_GetUserinfo(clientNum, userinfo, sizeof(userinfo));
-	// Check if it's the first player on the client(i.e. not a splitscreen player)
+	// check if it's the first player on the client(i.e. not a splitscreen player)
 	firstConnectionPlayer = (level.connections[connectionNum].numLocalPlayers == 0);
 
 	if (firstConnectionPlayer) {
@@ -848,24 +818,23 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot, int conne
 			}
 		}
 	} else {
-		// Don't allow splitscreen players in single player.
+		// don't allow splitscreen players in single player.
 		if (g_singlePlayer.integer) {
 			return "Splitscreen not allowed in single player.";
 		}
 	}
-	// if a player reconnects quickly after a disconnect, the player disconnect may never be called, thus flag can get lost in the ether
+	// if a player reconnects quickly after a disconnect, the client disconnect may never be called, thus flag can get lost in the ether
 	if (ent->inuse) {
-		G_LogPrintf("Forcing disconnect on active player: %i\n", clientNum);
+		G_LogPrintf("Forcing disconnect on active client: %i\n", clientNum);
 		// so lets just fix up anything that should happen on a disconnect
-		PlayerDisconnect(clientNum, qtrue);
+		ClientDisconnect(clientNum, qtrue);
 	}
 	// they can connect
-	ent->player = level.clients + clientNum;
-	player = ent->player;
+	ent->client = level.clients + clientNum;
+	client = ent->client;
+	//areabits = client->areabits;
 
-//	areabits = client->areabits;
-
-	memset(player, 0, sizeof(*player));
+	memset(client, 0, sizeof(*client));
 
 	client->pers.connected = CON_CONNECTING;
 	client->pers.initialSpawn = qtrue;
@@ -892,13 +861,13 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot, int conne
 	}
 	// read or initialize the session data
 	if (firstTime || level.newSession) {
-		G_InitSessionData(player, userinfo);
+		G_InitSessionData(client, userinfo);
 	}
 
-	G_ReadSessionData(player);
+	G_ReadSessionData(client);
 	// get and distribute relevant parameters
-	G_LogPrintf("PlayerConnect: %i\n", clientNum);
-	PlayerUserinfoChanged(clientNum);
+	G_LogPrintf("ClientConnect: %i\n", clientNum);
+	ClientUserinfoChanged(clientNum);
 	// don't do the "xxx connected" messages if they were caried over from previous level
 	if (firstTime) {
 		if (firstConnectionPlayer) {
@@ -907,14 +876,14 @@ char *ClientConnect(int clientNum, qboolean firstTime, qboolean isBot, int conne
 			trap_SendServerCommand(-1, va("print \"%s" S_COLOR_WHITE " dropped in\n\"", client->pers.netname));
 		}
 	}
-	// count current players and rank for scoreboard
+	// count current clients and rank for scoreboard
 	CalculateRanks();
 	// for statistics
-//	client->areabits = areabits;
+	//client->areabits = areabits;
 
-//	if (!client->areabits) {
-client->er->areabits = trap_Alloc((trap_AAS_PointReachabilityAreaIndex(NULL) + 7) / 8, NULL);
-//	}
+	//if (!client->areabits) {
+	//	client->areabits = trap_Alloc((trap_AAS_PointReachabilityAreaIndex(NULL) + 7) / 8, NULL);
+	//}
 
 	return NULL;
 }
@@ -960,7 +929,7 @@ void ClientBegin(int clientNum) {
 	ClientSpawn(ent);
 
 	if (client->pers.initialSpawn && g_gametype.integer != GT_TOURNAMENT) {
-		// This is only sent to bots because for humans the "joining the battle" etc.
+		// this is only sent to bots because for humans the "joining the battle" etc.
 		// make it clear that the player is now finished connecting. Bots on the other hand have "entered the game" hard coded in
 		// botfiles/match.c so continue to send it to them.
 		for (i = 0; i < level.maxclients; i++) {

@@ -120,35 +120,18 @@ Pickup_PersistantPowerup
 =======================================================================================================================================
 */
 int Pickup_PersistantPowerup(gentity_t *ent, gentity_t *other) {
-	float handicap;
-	int max;
 
 	other->client->ps.stats[STAT_PERSISTANT_POWERUP] = BG_ItemNumForItem(ent->item);
-	other->player->persistantPowerup = ent;
-
-	handicap = PlayerHandicap(other->player);
+	other->client->persistantPowerup = ent;
 
 	switch (ent->item->giTag) {
-		case PW_GUARD:
-			max = (int)(2 * handicap);
-
-			other->health = max;
-			other->client->ps.stats[STAT_HEALTH] = max;
-			other->client->ps.stats[STAT_MAX_HEALTH] = max;
-			other->client->ps.stats[STAT_ARMOR] = max;
-			other->player->pers.maxHealth = max;
-			break;
-		case PW_SCOUT:
-			other->player->pers.maxHealth = handicap;
-			other->client->ps.stats[STAT_ARMOR] = 0;
-			break;
 		case PW_AMMOREGEN:
-			other->player->pers.maxHealth = handicap;
-			memset(other->player->ammoTimes, 0, sizeof(other->player->ammoTimes));
+			memset(other->client->ammoTimes, 0, sizeof(other->client->ammoTimes));
 			break;
+		case PW_GUARD:
 		case PW_DOUBLER:
+		case PW_SCOUT:
 		default:
-			other->player->pers.maxHealth = handicap;
 			break;
 	}
 
@@ -254,18 +237,7 @@ Pickup_Health
 =======================================================================================================================================
 */
 int Pickup_Health(gentity_t *ent, gentity_t *other) {
-	int max;
 	int quantity;
-
-	// small and mega healths will go over the max
-
-	if (BG_ItemForItemNum(other->client->ps.stats[STAT_PERSISTANT_POWERUP])->giTag == PW_GUARD) {
-		max = other->client->ps.stats[STAT_MAX_HEALTH];
-	} else if (ent->item->quantity != 5 && ent->item->quantity != 100) {
-		max = other->client->ps.stats[STAT_MAX_HEALTH];
-	} else {
-		max = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
-	}
 
 	if (ent->count) {
 		quantity = ent->count;
@@ -275,15 +247,11 @@ int Pickup_Health(gentity_t *ent, gentity_t *other) {
 
 	other->health += quantity;
 
-	if (other->health > max) {
-		other->health = max;
+	if (other->health > 100) {
+		other->health = 100;
 	}
 
 	other->client->ps.stats[STAT_HEALTH] = other->health;
-
-	if (ent->item->quantity == 100) { // mega health respawns slow
-		return RESPAWN_MEGAHEALTH;
-	}
 
 	return RESPAWN_HEALTH;
 }
@@ -295,18 +263,10 @@ Pickup_Armor
 */
 int Pickup_Armor(gentity_t *ent, gentity_t *other) {
 
-	int upperBound;
-
-	if (BG_ItemForItemNum(other->client->ps.stats[STAT_PERSISTANT_POWERUP])->giTag == PW_GUARD) {
-		upperBound = other->client->ps.stats[STAT_MAX_HEALTH];
-	} else {
-		upperBound = other->client->ps.stats[STAT_MAX_HEALTH] * 2;
-	}
-
 	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
 
-	if (other->client->ps.stats[STAT_ARMOR] > upperBound) {
-		other->client->ps.stats[STAT_ARMOR] = upperBound;
+	if (other->client->ps.stats[STAT_ARMOR] > 200) {
+		other->client->ps.stats[STAT_ARMOR] = 200;
 	}
 
 	return RESPAWN_ARMOR;

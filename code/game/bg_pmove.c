@@ -1479,7 +1479,7 @@ static void PM_Footsteps(void) {
 
 	// calculate speed and cycle to be used for all cyclic walking effects
 	pm->xyspeed = sqrt(pm->ps->velocity[0] * pm->ps->velocity[0] + pm->ps->velocity[1] * pm->ps->velocity[1]);
-
+	// in the air
 	if (pm->ps->groundEntityNum == ENTITYNUM_NONE) {
 		// airborne leaves position in cycle intact, but doesn't advance
 		if (pm->waterlevel > 1) {
@@ -1554,7 +1554,7 @@ static void PM_Footsteps(void) {
 	if (((old + 64) ^ (pm->ps->bobCycle + 64)) & 128) {
 		if (pm->waterlevel == 0) {
 			// on ground will only play sounds if running
-			if (footstep && !pm->noFootsteps) {
+			if (footstep) {
 				PM_AddEvent(PM_FootstepForSurface());
 			}
 		} else if (pm->waterlevel == 1) {

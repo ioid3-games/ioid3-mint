@@ -107,13 +107,13 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
 
 	if (!noAngles) {
 		// spit the player out
-		AngleVectors(angles, player->client->ps.velocity, NULL, NULL);
+		AngleVectorsForward(angles, player->client->ps.velocity);
 		VectorScale(player->client->ps.velocity, 400, player->client->ps.velocity);
 
 		player->client->ps.pm_time = 160; // hold time
 		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 		// set angles
-		SetPlayerViewAngle(player, angles);
+		SetClientViewAngle(player, angles);
 	}
 	// toggle the teleport bit so the client knows to not lerp
 	player->client->ps.eFlags ^= EF_TELEPORT_BIT;
@@ -122,7 +122,7 @@ void TeleportPlayer(gentity_t *player, vec3_t origin, vec3_t angles) {
 		G_KillBox(player);
 	}
 	// save results of pmove
-	BG_PlayerStateToEntityState(&player->player->ps, &player->s, qtrue);
+	BG_PlayerStateToEntityState(&player->client->ps, &player->s, qtrue);
 	// use the precise origin for linking
 	VectorCopy(player->client->ps.origin, player->r.currentOrigin);
 
@@ -545,14 +545,14 @@ static int dlightstarttime = 0;
 "style": value is an int from 1-19 that contains a pre-defined 'flicker' string.
 "stylestring": set your own 'flicker' string (ex. "klmnmlk"). NOTE: this should be all lowercase
 Stylestring characters run at 10 cps in the game.(meaning the alphabet, at 24 characters, would take 2.4 seconds to cycle)
-"offset": change the initial index in a style string.  So val of 3 in the above example would start this light at 'N' (used to get dlights using the same style out of sync).
+"offset": change the initial index in a style string. So val of 3 in the above example would start this light at 'N' (used to get dlights using the same style out of sync).
 "atten": offset from the alpha values of the stylestring. stylestring of "ddeeffzz" with an atten of -1 would result in "ccddeeyy"
-Use color picker to set color or key "color".  values are 0.0-1.0 for each color(rgb).
+Use color picker to set color or key "color". Values are 0.0-1.0 for each color (rgb).
 FORCEACTIVE	- toggle makes sure this light stays alive in a map even if the user has r_dynamiclight set to 0.
 STARTOFF	- means the dlight doesn't spawn in until ent is triggered
 ONETIME		- when the dlight is triggered, it will play through it's cycle once, then shut down until triggered again
 "shader" name of shader to apply
-"sound" sound to loop every cycle(this actually just plays the sound at the beginning of each cycle)
+"sound" sound to loop every cycle (this actually just plays the sound at the beginning of each cycle)
 
 styles:
 1 - "mmnmmommommnonmmonqnmmo"

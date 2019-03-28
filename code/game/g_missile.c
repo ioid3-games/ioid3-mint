@@ -356,11 +356,8 @@ void G_RunMissile(gentity_t *ent) {
 
 	// get current position
 	BG_EvaluateTrajectory(&ent->s.pos, level.time, origin);
-	// if this missile bounced off an invulnerability sphere
-	if (ent->target_ent) {
-		passent = ent->target_ent->s.number;
-	// prox mines that left the owner bbox will attach to anything, even the owner
-	} else if (ent->s.weapon == WP_PROXLAUNCHER && ent->count) {
+	// missiles that left the owner bbox will interact with anything, even the owner
+	if (ent->s.weapon == WP_PROXLAUNCHER && ent->count) {
 		passent = ENTITYNUM_NONE;
 	} else {
 		// ignore interactions with the missile owner
@@ -392,9 +389,9 @@ void G_RunMissile(gentity_t *ent) {
 			return; // exploded
 		}
 	}
-	// if the prox mine wasn't yet outside the player body
-	if (ent->s.weapon == WP_PROXLAUNCHER && !ent->count) {
-		// check if the prox mine is outside the owner bbox
+	// if the missile wasn't yet outside the player body
+	if (ent->s.weapon != WP_NAILGUN && !ent->count) {
+		// check if the missile is outside the owner bbox
 		trap_Trace(&tr, ent->r.currentOrigin, ent->s.mins, ent->s.maxs, ent->r.currentOrigin, ENTITYNUM_NONE, ent->clipmask);
 
 		if (!tr.startsolid || tr.entityNum != ent->r.ownerNum) {
