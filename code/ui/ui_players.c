@@ -46,7 +46,7 @@ sfxHandle_t weaponChangeSound;
 UI_PlayerInfo_SetWeapon
 =======================================================================================================================================
 */
-static void UI_PlayerInfo_SetWeapon(uiPlayerInfo_t *pi, weapon_t weaponNum) {
+static void UI_PlayerInfo_SetWeapon(playerInfo_t *pi, weapon_t weaponNum) {
 	gitem_t *item;
 	char path[MAX_QPATH];
 
@@ -89,48 +89,37 @@ tryagain:
 
 	switch (weaponNum) {
 		case WP_GAUNTLET:
-			MAKERGB(pi->flashDlightColor, 0.6f, 0.6f, 1);
+			MAKERGB(pi->flashDlightColor, 1.0f, 1.0f, 1.0f);
 			break;
 		case WP_MACHINEGUN:
-			MAKERGB(pi->flashDlightColor, 1, 1, 0);
-			break;
-		case WP_SHOTGUN:
-			MAKERGB(pi->flashDlightColor, 1, 1, 0);
-			break;
-		case WP_GRENADELAUNCHER:
-			MAKERGB(pi->flashDlightColor, 1, 0.7f, 0.5f);
-			break;
-		case WP_ROCKETLAUNCHER:
-			MAKERGB(pi->flashDlightColor, 1, 0.75f, 0);
-			break;
-		case WP_BEAMGUN:
-			MAKERGB(pi->flashDlightColor, 0.6f, 0.6f, 1);
-			break;
-		case WP_RAILGUN:
-			MAKERGB(pi->flashDlightColor, 1, 0.5f, 0);
-			break;
-		case WP_PLASMAGUN:
-			MAKERGB(pi->flashDlightColor, 0.6f, 0.6f, 1);
-			break;
-		case WP_BFG:
-			MAKERGB(pi->flashDlightColor, 1, 0.7f, 1);
-			break;
-		case WP_GRAPPLING_HOOK:
-			MAKERGB(pi->flashDlightColor, 0.6f, 0.6f, 1);
-			break;
-#ifdef MISSIONPACK
-		case WP_NAILGUN:
-			MAKERGB(pi->flashDlightColor, 1, 0.75f, 0);
-			break;
-		case WP_PROXLAUNCHER:
-			MAKERGB(pi->flashDlightColor, 1, 0.70f, 0);
+			MAKERGB(pi->flashDlightColor, 1.0f, 0.75f, 0);
 			break;
 		case WP_CHAINGUN:
-			MAKERGB(pi->flashDlightColor, 1, 1, 0);
+			MAKERGB(pi->flashDlightColor, 1.0f, 0.8f, 0.2f);
 			break;
-#endif
+		case WP_SHOTGUN:
+			MAKERGB(pi->flashDlightColor, 1.0f, 0.7f, 0);
+			break;
+		case WP_NAILGUN:
+			MAKERGB(pi->flashDlightColor, 1, 0.7f, 0);
+			break;
+		case WP_ROCKETLAUNCHER:
+			MAKERGB(pi->flashDlightColor, 1.0f, 0.75f, 0);
+			break;
+		case WP_BEAMGUN:
+			MAKERGB(pi->flashDlightColor, 0.45f, 0.7f, 1.0f);
+			break;
+		case WP_RAILGUN:
+			MAKERGB(pi->flashDlightColor, 1.0f, 0, 0.7f);
+			break;
+		case WP_PLASMAGUN:
+			MAKERGB(pi->flashDlightColor, 0.7f, 0.8f, 1.0f);
+			break;
+		case WP_BFG:
+			MAKERGB(pi->flashDlightColor, 0.65f, 1.0f, 0.7f);
+			break;
 		default:
-			MAKERGB(pi->flashDlightColor, 1, 1, 1);
+			MAKERGB(pi->flashDlightColor, 0, 0, 0);
 			break;
 	}
 }
@@ -140,7 +129,7 @@ tryagain:
 UI_ForceLegsAnim
 =======================================================================================================================================
 */
-static void UI_ForceLegsAnim(uiPlayerInfo_t *pi, int anim) {
+static void UI_ForceLegsAnim(playerInfo_t *pi, int anim) {
 
 	pi->legsAnim = ((pi->legsAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
 
@@ -154,7 +143,7 @@ static void UI_ForceLegsAnim(uiPlayerInfo_t *pi, int anim) {
 UI_SetLegsAnim
 =======================================================================================================================================
 */
-static void UI_SetLegsAnim(uiPlayerInfo_t *pi, int anim) {
+static void UI_SetLegsAnim(playerInfo_t *pi, int anim) {
 
 	if (pi->pendingLegsAnim) {
 		anim = pi->pendingLegsAnim;
@@ -169,7 +158,7 @@ static void UI_SetLegsAnim(uiPlayerInfo_t *pi, int anim) {
 UI_ForceTorsoAnim
 =======================================================================================================================================
 */
-static void UI_ForceTorsoAnim(uiPlayerInfo_t *pi, int anim) {
+static void UI_ForceTorsoAnim(playerInfo_t *pi, int anim) {
 
 	pi->torsoAnim = ((pi->torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
 
@@ -187,7 +176,7 @@ static void UI_ForceTorsoAnim(uiPlayerInfo_t *pi, int anim) {
 UI_SetTorsoAnim
 =======================================================================================================================================
 */
-static void UI_SetTorsoAnim(uiPlayerInfo_t *pi, int anim) {
+static void UI_SetTorsoAnim(playerInfo_t *pi, int anim) {
 
 	if (pi->pendingTorsoAnim) {
 		anim = pi->pendingTorsoAnim;
@@ -202,7 +191,7 @@ static void UI_SetTorsoAnim(uiPlayerInfo_t *pi, int anim) {
 UI_TorsoSequencing
 =======================================================================================================================================
 */
-static void UI_TorsoSequencing(uiPlayerInfo_t *pi) {
+static void UI_TorsoSequencing(playerInfo_t *pi) {
 	int currentAnim;
 
 	currentAnim = pi->torsoAnim & ~ANIM_TOGGLEBIT;
@@ -246,7 +235,7 @@ static void UI_TorsoSequencing(uiPlayerInfo_t *pi) {
 UI_LegsSequencing
 =======================================================================================================================================
 */
-static void UI_LegsSequencing(uiPlayerInfo_t *pi) {
+static void UI_LegsSequencing(playerInfo_t *pi) {
 	int currentAnim;
 
 	currentAnim = pi->legsAnim & ~ANIM_TOGGLEBIT;
@@ -329,7 +318,7 @@ static qboolean UI_PositionRotatedEntityOnTag(refEntity_t *entity, const refEnti
 UI_SetLerpFrameAnimation
 =======================================================================================================================================
 */
-static void UI_SetLerpFrameAnimation(uiPlayerInfo_t *pi, lerpFrame_t *lf, int newAnimation) {
+static void UI_SetLerpFrameAnimation(playerInfo_t *pi, lerpFrame_t *lf, int newAnimation) {
 	animation_t *anim;
 
 	lf->animationNumber = newAnimation;
@@ -350,7 +339,7 @@ static void UI_SetLerpFrameAnimation(uiPlayerInfo_t *pi, lerpFrame_t *lf, int ne
 UI_RunLerpFrame
 =======================================================================================================================================
 */
-static void UI_RunLerpFrame(uiPlayerInfo_t *pi, lerpFrame_t *lf, int newAnimation) {
+static void UI_RunLerpFrame(playerInfo_t *pi, lerpFrame_t *lf, int newAnimation) {
 	int f;
 	animation_t *anim;
 
@@ -413,7 +402,7 @@ static void UI_RunLerpFrame(uiPlayerInfo_t *pi, lerpFrame_t *lf, int newAnimatio
 UI_PlayerAnimation
 =======================================================================================================================================
 */
-static void UI_PlayerAnimation(uiPlayerInfo_t *pi, int *legsOld, int *legs, float *legsBackLerp, int *torsoOld, int *torso, float *torsoBackLerp) {
+static void UI_PlayerAnimation(playerInfo_t *pi, int *legsOld, int *legs, float *legsBackLerp, int *torsoOld, int *torso, float *torsoBackLerp) {
 
 	// legs animation
 	pi->legsAnimationTimer -= uiInfo.uiDC.frameTime;
@@ -516,12 +505,12 @@ static void UI_SwingAngles(float destination, float swingTolerance, float clampT
 UI_MovedirAdjustment
 =======================================================================================================================================
 */
-static float UI_MovedirAdjustment(uiPlayerInfo_t *pi) {
+static float UI_MovedirAdjustment(playerInfo_t *pi) {
 	vec3_t relativeAngles;
 	vec3_t moveVector;
 
 	VectorSubtract(pi->viewAngles, pi->moveAngles, relativeAngles);
-	AngleVectors(relativeAngles, moveVector, NULL, NULL);
+	AngleVectorsForward(relativeAngles, moveVector);
 
 	if (Q_fabs(moveVector[0]) < 0.01) {
 		moveVector[0] = 0.0;
@@ -567,7 +556,7 @@ static float UI_MovedirAdjustment(uiPlayerInfo_t *pi) {
 UI_PlayerAngles
 =======================================================================================================================================
 */
-static void UI_PlayerAngles(uiPlayerInfo_t *pi, vec3_t legs[3], vec3_t torso[3], vec3_t head[3]) {
+static void UI_PlayerAngles(playerInfo_t *pi, vec3_t legs[3], vec3_t torso[3], vec3_t head[3]) {
 	vec3_t legsAngles, torsoAngles, headAngles;
 	float dest;
 	float adjust;
@@ -624,7 +613,7 @@ static void UI_PlayerAngles(uiPlayerInfo_t *pi, vec3_t legs[3], vec3_t torso[3],
 UI_PlayerFloatSprite
 =======================================================================================================================================
 */
-static void UI_PlayerFloatSprite(uiPlayerInfo_t *pi, vec3_t origin, qhandle_t shader) {
+static void UI_PlayerFloatSprite(playerInfo_t *pi, vec3_t origin, qhandle_t shader) {
 	refEntity_t ent;
 
 	memset(&ent, 0, sizeof(ent));
@@ -645,7 +634,7 @@ static void UI_PlayerFloatSprite(uiPlayerInfo_t *pi, vec3_t origin, qhandle_t sh
 UI_MachinegunSpinAngle
 =======================================================================================================================================
 */
-float UI_MachinegunSpinAngle(uiPlayerInfo_t *pi) {
+float UI_MachinegunSpinAngle(playerInfo_t *pi) {
 	int delta;
 	float angle;
 	float speed;
@@ -684,7 +673,7 @@ float UI_MachinegunSpinAngle(uiPlayerInfo_t *pi) {
 UI_DrawPlayer
 =======================================================================================================================================
 */
-void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int time) {
+void UI_DrawPlayer(float x, float y, float w, float h, playerInfo_t *pi, int time) {
 	refdef_t refdef;
 	refEntity_t legs = {0};
 	refEntity_t torso = {0};
@@ -722,7 +711,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 		}
 	}
 
-	CG_AdjustFrom640(&x, &y, &w, &h);
+	UI_AdjustFrom640(&x, &y, &w, &h);
 
 	y -= jumpHeight;
 
@@ -768,7 +757,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	renderfx = RF_LIGHTING_ORIGIN|RF_NOSHADOW;
 	// add the legs
 	legs.hModel = pi->legsModel;
-	legs.customSkin = CG_AddSkinToFrame(&pi->modelSkin);
+	legs.customSkin = UI_AddSkinToFrame(&pi->modelSkin);
 
 	VectorCopy(origin, legs.origin);
 	VectorCopy(origin, legs.lightingOrigin);
@@ -777,7 +766,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 
 	VectorCopy(legs.origin, legs.oldorigin);
 	Byte4Copy(pi->c1RGBA, legs.shaderRGBA);
-	CG_AddRefEntityWithMinLight(&legs);
+	UI_AddRefEntityWithMinLight(&legs);
 
 	if (!legs.hModel) {
 		return;
@@ -797,7 +786,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	torso.renderfx = renderfx;
 
 	Byte4Copy(pi->c1RGBA, torso.shaderRGBA);
-	CG_AddRefEntityWithMinLight(&torso);
+	UI_AddRefEntityWithMinLight(&torso);
 	// add the head
 	head.hModel = pi->headModel;
 
@@ -813,20 +802,20 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 	head.renderfx = renderfx;
 
 	Byte4Copy(pi->c1RGBA, head.shaderRGBA);
-	CG_AddRefEntityWithMinLight(&head);
+	UI_AddRefEntityWithMinLight(&head);
 	// add the gun
 	if (pi->currentWeapon != WP_NONE) {
 		memset(&gun, 0, sizeof(gun));
 
 		gun.hModel = pi->weaponModel;
 
-		Byte4Copy(pi->c1RGBA, gun.shaderRGBA);
 		VectorCopy(origin, gun.lightingOrigin);
 		UI_PositionEntityOnTag(&gun, &torso, pi->torsoModel, "tag_weapon");
 
 		gun.renderfx = renderfx;
 
-		CG_AddRefEntityWithMinLight(&gun);
+		Byte4Copy(pi->c1RGBA, gun.shaderRGBA);
+		UI_AddRefEntityWithMinLight(&gun);
 	}
 	// add the spinning barrel
 	if (pi->barrelModel) {
@@ -834,9 +823,6 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 
 		memset(&barrel, 0, sizeof(barrel));
 
-		VectorCopy(origin, barrel.lightingOrigin);
-
-		barrel.renderfx = renderfx;
 		barrel.hModel = pi->barrelModel;
 
 		angles[YAW] = 0;
@@ -844,8 +830,13 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 		angles[ROLL] = UI_MachinegunSpinAngle(pi);
 
 		AnglesToAxis(angles, barrel.axis);
+		VectorCopy(origin, barrel.lightingOrigin);
 		UI_PositionRotatedEntityOnTag(&barrel, &gun, pi->weaponModel, "tag_barrel");
-		CG_AddRefEntityWithMinLight(&barrel);
+
+		barrel.renderfx = renderfx;
+
+		Byte4Copy(pi->c1RGBA, barrel.shaderRGBA);
+		UI_AddRefEntityWithMinLight(&barrel);
 	}
 	// add muzzle flash
 	if (dp_realtime <= pi->muzzleFlashTime) {
@@ -854,13 +845,13 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 
 			flash.hModel = pi->flashModel;
 
-			Byte4Copy(pi->c1RGBA, flash.shaderRGBA);
 			VectorCopy(origin, flash.lightingOrigin);
 			UI_PositionEntityOnTag(&flash, &gun, pi->weaponModel, "tag_flash");
 
 			flash.renderfx = renderfx;
 
-			CG_AddRefEntityWithMinLight(&flash);
+			Byte4Copy(pi->c1RGBA, flash.shaderRGBA);
+			UI_AddRefEntityWithMinLight(&flash);
 		}
 		// make a dlight for the flash
 		if (pi->flashDlightColor[0] || pi->flashDlightColor[1] || pi->flashDlightColor[2]) {
@@ -904,10 +895,10 @@ static qboolean UI_FileExists(const char *filename) {
 
 /*
 =======================================================================================================================================
-UI_FindPlayerHeadFile
+UI_FindClientHeadFile
 =======================================================================================================================================
 */
-static qboolean UI_FindPlayerHeadFile(char *filename, int length, const char *teamName, const char *headModelName, const char *headSkinName, const char *base, const char *ext) {
+static qboolean UI_FindClientHeadFile(char *filename, int length, const char *teamName, const char *headModelName, const char *headSkinName, const char *base, const char *ext) {
 	char *team, *headsFolder;
 	int i;
 
@@ -959,10 +950,10 @@ static qboolean UI_FindPlayerHeadFile(char *filename, int length, const char *te
 
 /*
 =======================================================================================================================================
-UI_RegisterPlayerSkin
+UI_RegisterClientSkin
 =======================================================================================================================================
 */
-static qboolean UI_RegisterPlayerSkin(uiPlayerInfo_t *pi, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName, const char *teamName) {
+static qboolean UI_RegisterClientSkin(playerInfo_t *pi, const char *modelName, const char *skinName, const char *headModelName, const char *headSkinName, const char *teamName) {
 	char filename[MAX_QPATH];
 	qboolean legsSkin, torsoSkin, headSkin;
 
@@ -972,7 +963,7 @@ static qboolean UI_RegisterPlayerSkin(uiPlayerInfo_t *pi, const char *modelName,
 		Com_sprintf(filename, sizeof(filename), "models/players/%s/lower_%s.skin", modelName, skinName);
 	}
 
-	legsSkin = CG_RegisterSkin(filename, &pi->modelSkin, qfalse);
+	legsSkin = UI_RegisterSkin(filename, &pi->modelSkin, qfalse);
 
 	if (teamName && *teamName) {
 		Com_sprintf(filename, sizeof(filename), "models/players/%s/%s/upper_%s.skin", modelName, teamName, skinName);
@@ -980,10 +971,10 @@ static qboolean UI_RegisterPlayerSkin(uiPlayerInfo_t *pi, const char *modelName,
 		Com_sprintf(filename, sizeof(filename), "models/players/%s/upper_%s.skin", modelName, skinName);
 	}
 
-	torsoSkin = CG_RegisterSkin(filename, &pi->modelSkin, qtrue);
+	torsoSkin = UI_RegisterSkin(filename, &pi->modelSkin, qtrue);
 
-	if (UI_FindPlayerHeadFile(filename, sizeof(filename), teamName, headModelName, headSkinName, "head", "skin")) {
-		headSkin = CG_RegisterSkin(filename, &pi->modelSkin, qtrue);
+	if (UI_FindClientHeadFile(filename, sizeof(filename), teamName, headModelName, headSkinName, "head", "skin")) {
+		headSkin = UI_RegisterSkin(filename, &pi->modelSkin, qtrue);
 	} else {
 		headSkin = qfalse;
 	}
@@ -1042,7 +1033,7 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 			break;
 		}
 
-		if (!Q_stricmp(token, "footsteps")) {
+		if (!Q_stricmp(token, "foottype")) {
 			token = COM_Parse(&text_p);
 
 			if (!token[0]) {
@@ -1152,10 +1143,10 @@ static qboolean UI_ParseAnimationFile(const char *filename, animation_t *animati
 
 /*
 =======================================================================================================================================
-UI_RegisterPlayerModelname
+UI_RegisterClientModelname
 =======================================================================================================================================
 */
-qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinName, const char *headModelSkinName, const char *teamName) {
+qboolean UI_RegisterClientModelname(playerInfo_t *pi, const char *modelSkinName, const char *headModelSkinName, const char *teamName) {
 	char modelName[MAX_QPATH];
 	char skinName[MAX_QPATH];
 	char headModelName[MAX_QPATH];
@@ -1231,8 +1222,8 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 		return qfalse;
 	}
 	// if any skins failed to load, fall back to default
-	if (!UI_RegisterPlayerSkin(pi, modelName, skinName, headModelName, headSkinName, teamName)) {
-		if (!UI_RegisterPlayerSkin(pi, modelName, "default", headModelName, "default", teamName)) {
+	if (!UI_RegisterClientSkin(pi, modelName, skinName, headModelName, headSkinName, teamName)) {
+		if (!UI_RegisterClientSkin(pi, modelName, "default", headModelName, "default", teamName)) {
 			Com_Printf("Failed to load skin file: %s : %s\n", modelName, skinName);
 			return qfalse;
 		}
@@ -1253,11 +1244,11 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 UI_PlayerInfo_SetModel
 =======================================================================================================================================
 */
-void UI_PlayerInfo_SetModel(uiPlayerInfo_t *pi, const char *model, const char *headmodel, char *teamName) {
+void UI_PlayerInfo_SetModel(playerInfo_t *pi, const char *model, const char *headmodel, char *teamName) {
 
 	memset(pi, 0, sizeof(*pi));
 
-	UI_RegisterPlayerModelname(pi, model, headmodel, teamName);
+	UI_RegisterClientModelname(pi, model, headmodel, teamName);
 
 	pi->weapon = WP_MACHINEGUN;
 	pi->currentWeapon = pi->weapon;
@@ -1275,9 +1266,9 @@ void UI_PlayerInfo_SetModel(uiPlayerInfo_t *pi, const char *model, const char *h
 UI_PlayerInfo_UpdateColor
 =======================================================================================================================================
 */
-void UI_PlayerInfo_UpdateColor(uiPlayerInfo_t *pi) {
+void UI_PlayerInfo_UpdateColor(playerInfo_t *pi) {
 
-	CG_PlayerColorFromIndex(trap_Cvar_VariableIntegerValue("color1"), pi->color1);
+	UI_ColorFromIndex(trap_Cvar_VariableIntegerValue("color1"), pi->color1);
 
 	pi->c1RGBA[0] = 255 * pi->color1[0];
 	pi->c1RGBA[1] = 255 * pi->color1[1];
@@ -1290,7 +1281,7 @@ void UI_PlayerInfo_UpdateColor(uiPlayerInfo_t *pi) {
 UI_PlayerInfo_SetInfo
 =======================================================================================================================================
 */
-void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNumber, qboolean chat) {
+void UI_PlayerInfo_SetInfo(playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNumber, qboolean chat) {
 	int currentAnim;
 	weapon_t weaponNum;
 

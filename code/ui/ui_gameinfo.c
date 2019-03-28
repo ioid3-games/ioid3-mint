@@ -200,6 +200,10 @@ void UI_LoadArenasIntoMapList(void) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_TOURNAMENT);
 			}
 
+			if (strstr(type, "team")) {
+				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_TEAM);
+			}
+
 			if (strstr(type, "ctf")) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_CTF);
 			}

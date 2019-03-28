@@ -293,9 +293,7 @@ void SV_DirectConnect(netadr_t from) {
 	int count;
 	int playerCount;
 	int maxLocalPlayers;
-#ifdef LEGACY_PROTOCOL
-	qboolean compat = qfalse;
-#endif
+
 	Com_DPrintf("SVC_DirectConnect()\n");
 	// check whether this client is banned
 	if (SV_IsBanned(&from, qfalse)) {
@@ -315,17 +313,11 @@ void SV_DirectConnect(netadr_t from) {
 	}
 
 	version = atoi(Info_ValueForKey(userinfo, "protocol"));
-#ifdef LEGACY_PROTOCOL
-	if (version > 0 && com_legacyprotocol->integer == version) {
-		compat = qtrue;
-	} else
-#endif
-	{
-		if (version != com_protocol->integer) {
-			NET_OutOfBandPrint(NS_SERVER, from, "print\nServer uses protocol version %i (yours is %i).\n", com_protocol->integer, version);
-			Com_DPrintf("    rejected connect from version %i\n", version);
-			return;
-		}
+
+	if (version != com_protocol->integer) {
+		NET_OutOfBandPrint(NS_SERVER, from, "print\nServer uses protocol version %i (yours is %i).\n", com_protocol->integer, version);
+		Com_DPrintf("    rejected connect from version %i\n", version);
+		return;
 	}
 
 	challenge = atoi(Info_ValueForKey(userinfo, "challenge"));
@@ -467,13 +459,7 @@ gotnewcl:
 	// save the challenge
 	newcl->challenge = challenge;
 	// save the address
-#ifdef LEGACY_PROTOCOL
-	newcl->compat = compat;
-
-	Netchan_Setup(NS_SERVER, &newcl->netchan, from, qport, challenge, compat);
-#else
 	Netchan_Setup(NS_SERVER, &newcl->netchan, from, qport, challenge, qfalse);
-#endif
 	// init the netchan queue
 	newcl->netchan_end_queue = &newcl->netchan_start_queue;
 	// add the players

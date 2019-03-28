@@ -91,10 +91,12 @@ SV_SvEntityForGentity
 =======================================================================================================================================
 */
 svEntity_t *SV_SvEntityForGentity(sharedEntity_t *gEnt) {
+
 	if (!gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES) {
 		Com_Error(ERR_DROP, "SV_SvEntityForGentity: bad gEnt");
 	}
-	return &sv.svEntities[ gEnt->s.number ];
+
+	return &sv.svEntities[gEnt->s.number];
 }
 
 /*
@@ -103,7 +105,7 @@ SV_GEntityForSvEntity
 =======================================================================================================================================
 */
 sharedEntity_t *SV_GEntityForSvEntity(svEntity_t *svEnt) {
-	int		num;
+	int num;
 
 	num = svEnt - sv.svEntities;
 	return SV_GentityNum(num);
@@ -123,7 +125,8 @@ void SV_GameSendServerCommand(int clientNum, int localPlayerNum, const char *tex
 		if (clientNum < 0 || clientNum >= sv_maxclients->integer) {
 			return;
 		}
-		SV_SendServerCommand(svs.clients + clientNum, localPlayerNum, "%s", text);	
+
+		SV_SendServerCommand(svs.clients + clientNum, localPlayerNum, "%s", text);
 	}
 }
 
@@ -138,6 +141,7 @@ void SV_GameDropPlayer(int clientNum, const char *reason) {
 	if (clientNum < 0 || clientNum >= sv_maxclients->integer) {
 		return;
 	}
+
 	SV_DropPlayer(svs.players + clientNum, reason, qtrue);
 }
 
@@ -149,7 +153,7 @@ Sets mins and maxs for inline bmodels.
 =======================================================================================================================================
 */
 void SV_GetBrushBounds(int modelindex, vec3_t mins, vec3_t maxs) {
-	clipHandle_t	h;
+	clipHandle_t h;
 
 	if (!mins || !maxs) {
 		Com_Error(ERR_DROP, "SV_GetBrushBounds: NULL");
@@ -166,21 +170,20 @@ SV_inPVS
 Also checks portalareas so that doors block sight.
 =======================================================================================================================================
 */
-qboolean SV_inPVS (const vec3_t p1, const vec3_t p2)
-{
-	int		leafnum;
-	int		cluster;
-	int		area1, area2;
-	byte	*mask;
+qboolean SV_inPVS(const vec3_t p1, const vec3_t p2) {
+	int leafnum;
+	int cluster;
+	int area1, area2;
+	byte *mask;
 
-	leafnum = CM_PointLeafnum (p1);
-	cluster = CM_LeafCluster (leafnum);
-	area1 = CM_LeafArea (leafnum);
-	mask = CM_ClusterPVS (cluster);
+	leafnum = CM_PointLeafnum(p1);
+	cluster = CM_LeafCluster(leafnum);
+	area1 = CM_LeafArea(leafnum);
+	mask = CM_ClusterPVS(cluster);
+	leafnum = CM_PointLeafnum(p2);
+	cluster = CM_LeafCluster(leafnum);
+	area2 = CM_LeafArea(leafnum);
 
-	leafnum = CM_PointLeafnum (p2);
-	cluster = CM_LeafCluster (leafnum);
-	area2 = CM_LeafArea (leafnum);
 	if (mask && (!(mask[cluster>>3] & (1<<(cluster&7)))))
 		return qfalse;
 	if (!CM_AreasConnected (area1, area2))

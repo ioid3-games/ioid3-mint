@@ -1,31 +1,25 @@
 /*
-===========================================================================
+=======================================================================================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
-===========================================================================
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+=======================================================================================================================================
 */
 
 #ifndef __UI_LOCAL_H__
@@ -36,56 +30,56 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include "ui_shared.h"
 
 // global display context
-extern vmCvar_t	ui_arenasFile;
-extern vmCvar_t	ui_botsFile;
-extern vmCvar_t	ui_spSkill;
-extern vmCvar_t	ui_browserShowFull;
-extern vmCvar_t	ui_browserShowEmpty;
-extern vmCvar_t	ui_browserShowBots;
-extern vmCvar_t	ui_browserSeparateMasters;
-extern vmCvar_t	ui_brassTime;
-extern vmCvar_t	ui_drawCrosshair;
-extern vmCvar_t	ui_drawCrosshairNames;
-extern vmCvar_t	ui_marks;
-extern vmCvar_t	ui_captureLimit;
-extern vmCvar_t	ui_fragLimit;
-extern vmCvar_t	ui_gameType;
-extern vmCvar_t	ui_netGameType;
-extern vmCvar_t	ui_actualNetGameType;
-extern vmCvar_t	ui_joinGameType;
-extern vmCvar_t	ui_netSource;
-extern vmCvar_t	ui_serverFilterType;
-extern vmCvar_t	ui_dedicated;
-extern vmCvar_t	ui_opponentName;
-extern vmCvar_t	ui_menuFiles;
-extern vmCvar_t	ui_currentTier;
-extern vmCvar_t	ui_currentMap;
-extern vmCvar_t	ui_currentNetMap;
-extern vmCvar_t	ui_mapIndex;
-extern vmCvar_t	ui_currentOpponent;
-extern vmCvar_t	ui_selectedPlayer;
-extern vmCvar_t	ui_selectedPlayerName;
-extern vmCvar_t	ui_lastServerRefresh_0;
-extern vmCvar_t	ui_lastServerRefresh_1;
-extern vmCvar_t	ui_lastServerRefresh_2;
-extern vmCvar_t	ui_lastServerRefresh_3;
-extern vmCvar_t	ui_singlePlayerActive;
-extern vmCvar_t	ui_scoreAccuracy;
-extern vmCvar_t	ui_scoreImpressives;
-extern vmCvar_t	ui_scoreExcellents;
-extern vmCvar_t	ui_scoreDefends;
-extern vmCvar_t	ui_scoreAssists;
-extern vmCvar_t	ui_scoreGauntlets;
-extern vmCvar_t	ui_scoreScore;
-extern vmCvar_t	ui_scorePerfect;
-extern vmCvar_t	ui_scoreTeam;
-extern vmCvar_t	ui_scoreBase;
-extern vmCvar_t	ui_scoreTimeBonus;
-extern vmCvar_t	ui_scoreSkillBonus;
-extern vmCvar_t	ui_scoreShutoutBonus;
-extern vmCvar_t	ui_scoreTime;
-extern vmCvar_t	ui_smallFont;
-extern vmCvar_t	ui_bigFont;
+extern vmCvar_t ui_arenasFile;
+extern vmCvar_t ui_botsFile;
+extern vmCvar_t ui_spSkill;
+extern vmCvar_t ui_browserShowFull;
+extern vmCvar_t ui_browserShowEmpty;
+extern vmCvar_t ui_browserShowBots;
+extern vmCvar_t ui_browserSeparateMasters;
+extern vmCvar_t ui_brassTime;
+extern vmCvar_t ui_drawCrosshair;
+extern vmCvar_t ui_drawCrosshairNames;
+extern vmCvar_t ui_marks;
+extern vmCvar_t ui_captureLimit;
+extern vmCvar_t ui_fragLimit;
+extern vmCvar_t ui_gameType;
+extern vmCvar_t ui_netGameType;
+extern vmCvar_t ui_actualNetGameType;
+extern vmCvar_t ui_joinGameType;
+extern vmCvar_t ui_netSource;
+extern vmCvar_t ui_serverFilterType;
+extern vmCvar_t ui_dedicated;
+extern vmCvar_t ui_opponentName;
+extern vmCvar_t ui_menuFiles;
+extern vmCvar_t ui_currentTier;
+extern vmCvar_t ui_currentMap;
+extern vmCvar_t ui_currentNetMap;
+extern vmCvar_t ui_mapIndex;
+extern vmCvar_t ui_currentOpponent;
+extern vmCvar_t ui_selectedPlayer;
+extern vmCvar_t ui_selectedPlayerName;
+extern vmCvar_t ui_lastServerRefresh_0;
+extern vmCvar_t ui_lastServerRefresh_1;
+extern vmCvar_t ui_lastServerRefresh_2;
+extern vmCvar_t ui_lastServerRefresh_3;
+extern vmCvar_t ui_singlePlayerActive;
+extern vmCvar_t ui_scoreAccuracy;
+extern vmCvar_t ui_scoreImpressives;
+extern vmCvar_t ui_scoreExcellents;
+extern vmCvar_t ui_scoreDefends;
+extern vmCvar_t ui_scoreAssists;
+extern vmCvar_t ui_scoreGauntlets;
+extern vmCvar_t ui_scoreScore;
+extern vmCvar_t ui_scorePerfect;
+extern vmCvar_t ui_scoreTeam;
+extern vmCvar_t ui_scoreBase;
+extern vmCvar_t ui_scoreTimeBonus;
+extern vmCvar_t ui_scoreSkillBonus;
+extern vmCvar_t ui_scoreShutoutBonus;
+extern vmCvar_t ui_scoreTime;
+extern vmCvar_t ui_smallFont;
+extern vmCvar_t ui_bigFont;
 extern vmCvar_t ui_serverStatusTimeOut;
 extern vmCvar_t ui_defaultMaleTeamModel;
 extern vmCvar_t ui_defaultFemaleTeamModel;
@@ -168,13 +162,14 @@ typedef struct {
 	float barrelAngle;
 	int barrelTime;
 	int realWeapon;
-} uiPlayerInfo_t;
+} playerInfo_t;
 
-void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int time);
-void UI_PlayerInfo_SetModel(uiPlayerInfo_t *pi, const char *model, const char *headmodel, char *teamName);
-void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat);
-void UI_PlayerInfo_UpdateColor(uiPlayerInfo_t *pi);
-qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinName, const char *headName, const char *teamName);
+void UI_DrawPlayer(float x, float y, float w, float h, playerInfo_t *pi, int time);
+void UI_PlayerInfo_SetModel(playerInfo_t *pi, const char *model, const char *headmodel, char *teamName);
+void UI_PlayerInfo_SetInfo(playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat);
+void UI_ColorFromIndex(int val, vec3_t color);
+void UI_PlayerInfo_UpdateColor(playerInfo_t *pi);
+qboolean UI_RegisterClientModelname(playerInfo_t *pi, const char *modelSkinName, const char *headName, const char *teamName);
 
 // new ui stuff
 #define UI_NUMFX 7
@@ -201,9 +196,12 @@ qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinNam
 
 #define GAMES_ALL		0
 #define GAMES_FFA		1
-#define GAMES_TEAMPLAY	2
-#define GAMES_TOURNEY	3
+#define GAMES_TOURNEY	2
+#define GAMES_TEAMPLAY	3
 #define GAMES_CTF		4
+#define GAMES_1FCTF		5
+#define GAMES_OBELISK	6
+#define GAMES_HARVESTER	7
 
 #define MAPS_PER_TIER 3
 #define MAX_TIERS 16

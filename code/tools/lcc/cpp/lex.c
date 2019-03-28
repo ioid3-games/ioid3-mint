@@ -470,7 +470,7 @@ trigraph(Source *s)
 	if (s->inp[1]!='?')
 		return 0;
 	c = 0;
-	switch (s->inp[2]) {
+	switch(s->inp[2]) {
 	case '=':
 		c = '#'; break;
 	case '(':
