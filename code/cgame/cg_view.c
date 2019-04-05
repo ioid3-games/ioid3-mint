@@ -765,6 +765,7 @@ static void CG_DamageBlendBlob(void) {
 	if (!cg.damageValue) {
 		return;
 	}
+
 	//if (cg.cameraMode) {
 	//	return;
 	//}
