@@ -851,23 +851,23 @@ static qboolean CG_RegisterClientModelname(clientInfo_t *ci, const char *modelNa
 
 /*
 =======================================================================================================================================
-CG_PlayerColorFromString
+CG_ColorFromString
 =======================================================================================================================================
 */
-static void CG_PlayerColorFromString(const char *v, vec3_t color) {
+static void CG_ColorFromString(const char *v, vec3_t color) {
 	int val;
 
 	val = atoi(v);
 
-	CG_PlayerColorFromIndex(val, color);
+	CG_ColorFromIndex(val, color);
 }
 
 /*
 =======================================================================================================================================
-CG_PlayerColorFromIndex
+CG_ColorFromIndex
 =======================================================================================================================================
 */
-void CG_PlayerColorFromIndex(int val, vec3_t color) {
+void CG_ColorFromIndex(int val, vec3_t color) {
 
 	switch (val) {
 		case 1: // blue
@@ -918,7 +918,7 @@ void CG_PlayerColorFromIndex(int val, vec3_t color) {
 
 /*
 =======================================================================================================================================
-CG_LoadPlayerInfo
+CG_LoadClientInfo
 
 Load it now, taking the disk hits. This will usually be deferred to a safe time.
 =======================================================================================================================================
@@ -1092,7 +1092,10 @@ static void CG_SetDeferredClientInfo(int clientNum, clientInfo_t *ci) {
 			continue;
 		}
 
-		if (Q_stricmp(ci->skinName, match->skinName) || Q_stricmp(ci->modelName, match->modelName) || (cgs.gametype > GT_TOURNAMENT && ci->team != match->team)) {
+		if (Q_stricmp(ci->skinName, match->skinName) || Q_stricmp(ci->modelName, match->modelName) ||
+//			Q_stricmp(ci->headModelName, match->headModelName) ||
+//			Q_stricmp(ci->headSkinName, match->headSkinName) ||
+			(cgs.gametype > GT_TOURNAMENT && ci->team != match->team)) {
 			continue;
 		}
 		// just load the real info cause it uses the same models and skins
@@ -1285,7 +1288,7 @@ void CG_NewClientInfo(int clientNum) {
 	}
 	// colors
 	v = Info_ValueForKey(configstring, "c1");
-	CG_PlayerColorFromString(v, newInfo.color1);
+	CG_ColorFromString(v, newInfo.color1);
 
 	newInfo.c1RGBA[0] = 255 * newInfo.color1[0];
 	newInfo.c1RGBA[1] = 255 * newInfo.color1[1];
@@ -1293,7 +1296,7 @@ void CG_NewClientInfo(int clientNum) {
 	newInfo.c1RGBA[3] = 255;
 
 	v = Info_ValueForKey(configstring, "c2");
-	CG_PlayerColorFromString(v, newInfo.color2);
+	CG_ColorFromString(v, newInfo.color2);
 
 	newInfo.c2RGBA[0] = 255 * newInfo.color2[0];
 	newInfo.c2RGBA[1] = 255 * newInfo.color2[1];
