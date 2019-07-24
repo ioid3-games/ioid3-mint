@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -40,9 +46,10 @@ void S_QueueStreamingSound(int stream, const char *filename, float volume);
 int S_GetStreamPlayCount(int stream);
 void S_SetStreamVolume(int stream, float volume);
 
-// cinematics and voice-over-network will send raw samples
+// cinematics and voice - over - network will send raw samples
 // 1.0 volume will be direct output of source samples
-void S_RawSamples(int stream, int samples, int rate, int width, int channels, const byte *data, float volume, int entityNum);
+void S_RawSamples(int stream, int samples, int rate, int width, int channels,
+				   const byte *data, float volume, int entityNum);
 
 // stop all sounds and the background track
 void S_StopAllSounds(void);
@@ -70,7 +77,6 @@ void S_BeginRegistration(void);
 // has to create a placeholder.  This prevents continuous filesystem
 // checks for missing files
 sfxHandle_t S_RegisterSound(const char *sample, qboolean compressed);
-
 int S_SoundDuration(sfxHandle_t handle);
 
 void S_DisplayFreeMemory(void);
@@ -80,6 +86,8 @@ void S_ClearSoundBuffer(void);
 void SNDDMA_Activate(void);
 
 void S_UpdateStreamingSounds(void);
+
+
 #ifdef USE_VOIP
 void S_StartCapture(void);
 int S_AvailableCaptureSamples(void);

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -39,12 +45,10 @@ CON_LogSize
 =======================================================================================================================================
 */
 unsigned int CON_LogSize(void) {
-
-	if (readPos <= writePos) {
+	if (readPos <= writePos)
 		return writePos - readPos;
-	} else {
+	else
 		return writePos + MAX_LOG - readPos;
-	}
 }
 
 /*
@@ -67,17 +71,16 @@ unsigned int CON_LogWrite(const char *in) {
 	unsigned int secondChunk;
 
 	while (CON_LogFree() < length && CON_LogSize() > 0) {
-		// free enough space
-		while (consoleLog[readPos] != '\n' && CON_LogSize() > 1) {
-			readPos = (readPos + 1) % MAX_LOG;
-		}
-		// skip past the '\n'
-		readPos = (readPos + 1) % MAX_LOG;
+		// Free enough space
+		while (consoleLog[readPos] != '\n' && CON_LogSize() > 1)
+			readPos = (readPos + 1)% MAX_LOG;
+
+		// Skip past the '\n'
+		readPos = (readPos + 1)% MAX_LOG;
 	}
 
-	if (CON_LogFree() < length) {
+	if (CON_LogFree() < length)
 		return 0;
-	}
 
 	if (writePos + length > MAX_LOG) {
 		firstChunk = MAX_LOG - writePos;
@@ -90,7 +93,7 @@ unsigned int CON_LogWrite(const char *in) {
 	Com_Memcpy(consoleLog + writePos, in, firstChunk);
 	Com_Memcpy(consoleLog, in + firstChunk, secondChunk);
 
-	writePos = (writePos + length) % MAX_LOG;
+	writePos = (writePos + length)% MAX_LOG;
 
 	return length;
 }
@@ -104,9 +107,8 @@ unsigned int CON_LogRead(char *out, unsigned int outSize) {
 	unsigned int firstChunk;
 	unsigned int secondChunk;
 
-	if (CON_LogSize() < outSize) {
+	if (CON_LogSize() < outSize)
 		outSize = CON_LogSize();
-	}
 
 	if (readPos + outSize > MAX_LOG) {
 		firstChunk = MAX_LOG - readPos;
@@ -119,7 +121,7 @@ unsigned int CON_LogRead(char *out, unsigned int outSize) {
 	Com_Memcpy(out, consoleLog + readPos, firstChunk);
 	Com_Memcpy(out + firstChunk, consoleLog, secondChunk);
 
-	readPos = (readPos + outSize) % MAX_LOG;
+	readPos = (readPos + outSize)% MAX_LOG;
 
 	return outSize;
 }
@@ -141,3 +143,4 @@ CON_LogRestoreReadPos
 void CON_LogRestoreReadPos(void) {
 	readPos = savedReadPos;
 }
+

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -31,14 +37,17 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 static WORD qconsole_attrib;
 static WORD qconsole_backgroundAttrib;
+
 // saved console status
 static DWORD qconsole_orig_mode;
 static CONSOLE_CURSOR_INFO qconsole_orig_cursorinfo;
+
 // cmd history
 static char qconsole_history[QCONSOLE_HISTORY][MAX_EDIT_LINE];
 static int qconsole_history_pos = -1;
 static int qconsole_history_lines = 0;
 static int qconsole_history_oldest = 0;
+
 // current edit buffer
 static char qconsole_line[MAX_EDIT_LINE];
 static int qconsole_linelen = 0;
@@ -52,7 +61,7 @@ static HANDLE qconsole_hin;
 =======================================================================================================================================
 CON_ColorCharToAttrib
 
-Convert Quake color character to Windows text attrib.
+Convert Quake color character to Windows text attrib
 =======================================================================================================================================
 */
 static WORD CON_ColorCharToAttrib(char color) {
@@ -65,7 +74,11 @@ static WORD CON_ColorCharToAttrib(char color) {
 		float *rgba = g_color_table[ColorIndex(color)];
 
 		// set foreground color
-		attrib = (rgba[0] >= 0.5 ? FOREGROUND_RED : 0)|(rgba[1] >= 0.5 ? FOREGROUND_GREEN : 0)|(rgba[2] >= 0.5 ? FOREGROUND_BLUE : 0)|(rgba[3] >= 0.5 ? FOREGROUND_INTENSITY : 0);
+		attrib = (rgba[0] >= 0.5 ? FOREGROUND_RED : 0)|
+				(rgba[1] >= 0.5 ? FOREGROUND_GREEN : 0)|
+				(rgba[2] >= 0.5 ? FOREGROUND_BLUE : 0)|
+				(rgba[3] >= 0.5 ? FOREGROUND_INTENSITY : 0);
+
 		// use console's background color
 		attrib |= qconsole_backgroundAttrib;
 	}
@@ -77,13 +90,15 @@ static WORD CON_ColorCharToAttrib(char color) {
 =======================================================================================================================================
 CON_CtrlHandler
 
-The Windows Console doesn't use signals for terminating the application with Ctrl-C, logging off, window closing, etc. Instead it uses
-a special handler routine. Fortunately, the values for Ctrl signals don't seem to overlap with true signal codes that Windows provides,
-so calling Sys_SigHandler() with those numbers should be safe for generating unique shutdown messages.
+The Windows Console doesn't use signals for terminating the application
+with Ctrl - C, logging off, window closing, etc.  Instead it uses a special
+handler routine.  Fortunately, the values for Ctrl signals don't seem to
+overlap with true signal codes that Windows provides, so calling
+Sys_SigHandler()with those numbers should be safe for generating unique
+shutdown messages.
 =======================================================================================================================================
 */
 static BOOL WINAPI CON_CtrlHandler(DWORD sig) {
-
 	Sys_SigHandler(sig);
 	return TRUE;
 }
@@ -94,18 +109,16 @@ CON_HistAdd
 =======================================================================================================================================
 */
 static void CON_HistAdd(void) {
+	Q_strncpyz(qconsole_history[qconsole_history_oldest], qconsole_line,
+		sizeof(qconsole_history[qconsole_history_oldest]));
 
-	Q_strncpyz(qconsole_history[qconsole_history_oldest], qconsole_line, sizeof(qconsole_history[qconsole_history_oldest]));
-
-	if (qconsole_history_lines < QCONSOLE_HISTORY) {
+	if (qconsole_history_lines < QCONSOLE_HISTORY)
 		qconsole_history_lines++;
-	}
 
-	if (qconsole_history_oldest >= QCONSOLE_HISTORY - 1) {
+	if (qconsole_history_oldest >= QCONSOLE_HISTORY - 1)
 		qconsole_history_oldest = 0;
-	} else {
+	else
 		qconsole_history_oldest++;
-	}
 
 	qconsole_history_pos = qconsole_history_oldest;
 }
@@ -118,16 +131,15 @@ CON_HistPrev
 static void CON_HistPrev(void) {
 	int pos;
 
-	pos = (qconsole_history_pos < 1) ? (QCONSOLE_HISTORY - 1) : (qconsole_history_pos - 1);
+	pos = (qconsole_history_pos < 1) ? (QCONSOLE_HISTORY - 1): (qconsole_history_pos - 1);
+
 	// don' t allow looping through history
-	if (pos == qconsole_history_oldest || pos >= qconsole_history_lines) {
+	if (pos == qconsole_history_oldest || pos >= qconsole_history_lines)
 		return;
-	}
 
 	qconsole_history_pos = pos;
-
-	Q_strncpyz(qconsole_line, qconsole_history[qconsole_history_pos], sizeof(qconsole_line));
-
+	Q_strncpyz(qconsole_line, qconsole_history[qconsole_history_pos],
+		sizeof(qconsole_line));
 	qconsole_linelen = strlen(qconsole_line);
 	qconsole_cursor = qconsole_linelen;
 }
@@ -141,11 +153,11 @@ static void CON_HistNext(void) {
 	int pos;
 
 	// don' t allow looping through history
-	if (qconsole_history_pos == qconsole_history_oldest) {
+	if (qconsole_history_pos == qconsole_history_oldest)
 		return;
-	}
 
 	pos = (qconsole_history_pos >= QCONSOLE_HISTORY - 1) ? 0 : (qconsole_history_pos + 1);
+
 	// clear the edit buffer if they try to advance to a future command
 	if (pos == qconsole_history_oldest) {
 		qconsole_history_pos = pos;
@@ -156,12 +168,12 @@ static void CON_HistNext(void) {
 	}
 
 	qconsole_history_pos = pos;
-
-	Q_strncpyz(qconsole_line, qconsole_history[qconsole_history_pos], sizeof(qconsole_line));
-
+	Q_strncpyz(qconsole_line, qconsole_history[qconsole_history_pos],
+		sizeof(qconsole_line));
 	qconsole_linelen = strlen(qconsole_line);
 	qconsole_cursor = qconsole_linelen;
 }
+
 
 /*
 =======================================================================================================================================
@@ -170,49 +182,58 @@ CON_Show
 */
 static void CON_Show(void) {
 	CONSOLE_SCREEN_BUFFER_INFO binfo;
-	COORD writeSize = {MAX_EDIT_LINE, 1};
-	COORD writePos = {0, 0};
-	SMALL_RECT writeArea = {0, 0, 0, 0};
+	COORD writeSize = { MAX_EDIT_LINE, 1 };
+	COORD writePos = { 0, 0 };
+	SMALL_RECT writeArea = { 0, 0, 0, 0 };
 	COORD cursorPos;
 	int i;
 	CHAR_INFO line[MAX_EDIT_LINE];
 	WORD attrib;
 
 	GetConsoleScreenBufferInfo(qconsole_hout, &binfo);
+
 	// if we're in the middle of printf, don't bother writing the buffer
-	if (!qconsole_drawinput) {
+	if (!qconsole_drawinput)
 		return;
-	}
 
 	writeArea.Left = 0;
 	writeArea.Top = binfo.dwCursorPosition.Y;
 	writeArea.Bottom = binfo.dwCursorPosition.Y;
 	writeArea.Right = MAX_EDIT_LINE;
+
 	// set color to white
 	attrib = CON_ColorCharToAttrib(COLOR_WHITE);
-	// build a space-padded CHAR_INFO array
+
+	// build a space - padded CHAR_INFO array
 	for (i = 0; i < MAX_EDIT_LINE; i++) {
 		if (i < qconsole_linelen) {
-			if (i + 1 < qconsole_linelen && Q_IsColorString(qconsole_line + i)) {
+			if (i + 1 < qconsole_linelen && Q_IsColorString(qconsole_line + i))
 				attrib = CON_ColorCharToAttrib(*(qconsole_line + i + 1));
-			}
 
 			line[i].Char.AsciiChar = qconsole_line[i];
-		} else {
-			line[i].Char.AsciiChar = ' ';
 		}
+
+		else
+			line[i].Char.AsciiChar = ' ';
 
 		line[i].Attributes = attrib;
 	}
 
 	if (qconsole_linelen > binfo.srWindow.Right) {
-		WriteConsoleOutput(qconsole_hout, line + (qconsole_linelen - binfo.srWindow.Right), writeSize, writePos, &writeArea);
+		WriteConsoleOutput(qconsole_hout,
+			line + (qconsole_linelen - binfo.srWindow.Right),
+			writeSize, writePos, &writeArea);
 	} else {
-		WriteConsoleOutput(qconsole_hout, line, writeSize, writePos, &writeArea);
+		WriteConsoleOutput(qconsole_hout, line, writeSize,
+			writePos, &writeArea);
 	}
 	// set curor position
 	cursorPos.Y = binfo.dwCursorPosition.Y;
-	cursorPos.X = qconsole_cursor < qconsole_linelen ? qconsole_cursor : qconsole_linelen > binfo.srWindow.Right ? binfo.srWindow.Right : qconsole_linelen;
+	cursorPos.X = qconsole_cursor < qconsole_linelen
+					? qconsole_cursor
+ : qconsole_linelen > binfo.srWindow.Right
+						? binfo.srWindow.Right
+ : qconsole_linelen;
 
 	SetConsoleCursorPosition(qconsole_hout, cursorPos);
 }
@@ -226,13 +247,14 @@ static void CON_Hide(void) {
 	int realLen;
 
 	realLen = qconsole_linelen;
+
 	// remove input line from console output buffer
 	qconsole_linelen = 0;
-
 	CON_Show();
 
 	qconsole_linelen = realLen;
 }
+
 
 /*
 =======================================================================================================================================
@@ -240,13 +262,10 @@ CON_Shutdown
 =======================================================================================================================================
 */
 void CON_Shutdown(void) {
-
 	CON_Hide();
-
 	SetConsoleMode(qconsole_hin, qconsole_orig_mode);
 	SetConsoleCursorInfo(qconsole_hout, &qconsole_orig_cursorinfo);
 	SetConsoleTextAttribute(qconsole_hout, qconsole_attrib);
-
 	CloseHandle(qconsole_hout);
 	CloseHandle(qconsole_hin);
 }
@@ -261,36 +280,37 @@ void CON_Init(void) {
 	char consoleTitle[128];
 	int i;
 
-	// handle Ctrl-C or other console termination
+	// handle Ctrl - C or other console termination
 	SetConsoleCtrlHandler(CON_CtrlHandler, TRUE);
 
 	qconsole_hin = GetStdHandle(STD_INPUT_HANDLE);
-
-	if (qconsole_hin == INVALID_HANDLE_VALUE) {
+	if (qconsole_hin == INVALID_HANDLE_VALUE)
 		return;
-	}
 
 	qconsole_hout = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	if (qconsole_hout == INVALID_HANDLE_VALUE) {
+	if (qconsole_hout == INVALID_HANDLE_VALUE)
 		return;
-	}
 
 	GetConsoleMode(qconsole_hin, &qconsole_orig_mode);
-	// allow mouse wheel scrolling
-	SetConsoleMode(qconsole_hin, qconsole_orig_mode & ~ENABLE_MOUSE_INPUT);
-	FlushConsoleInputBuffer(qconsole_hin);
-	GetConsoleScreenBufferInfo(qconsole_hout, &info);
 
+	// allow mouse wheel scrolling
+	SetConsoleMode(qconsole_hin,
+		qconsole_orig_mode & ~ENABLE_MOUSE_INPUT);
+
+	FlushConsoleInputBuffer(qconsole_hin);
+
+	GetConsoleScreenBufferInfo(qconsole_hout, &info);
 	qconsole_attrib = info.wAttributes;
 	qconsole_backgroundAttrib = qconsole_attrib &(BACKGROUND_BLUE|BACKGROUND_GREEN|BACKGROUND_RED|BACKGROUND_INTENSITY);
 
+	// ZTM: FIXME: com_productName isn't initialized or set to game title yet.
 	Com_sprintf(consoleTitle, sizeof(consoleTitle), "%s Dedicated Server Console", com_productName ? com_productName->string : PRODUCT_NAME);
 	SetConsoleTitle(consoleTitle);
+
 	// initialize history
-	for (i = 0; i < QCONSOLE_HISTORY; i++) {
+	for (i = 0; i < QCONSOLE_HISTORY; i++)
 		qconsole_history[i][0] = '\0';
-	}
+
 	// set text color to white
 	SetConsoleTextAttribute(qconsole_hout, CON_ColorCharToAttrib(COLOR_WHITE));
 }
@@ -307,33 +327,29 @@ char *CON_Input(void) {
 	int i;
 	int newlinepos = -1;
 
-	if (!GetNumberOfConsoleInputEvents(qconsole_hin, &events)) {
+	if (!GetNumberOfConsoleInputEvents(qconsole_hin, &events))
 		return NULL;
-	}
 
-	if (events < 1) {
+	if (events < 1)
 		return NULL;
-	}
+  
 	// if we have overflowed, start dropping oldest input events
 	if (events >= MAX_EDIT_LINE) {
 		ReadConsoleInput(qconsole_hin, buff, 1, &events);
 		return NULL;
-	}
+	} 
 
-	if (!ReadConsoleInput(qconsole_hin, buff, events, &count)) {
+	if (!ReadConsoleInput(qconsole_hin, buff, events, &count))
 		return NULL;
-	}
 
 	FlushConsoleInputBuffer(qconsole_hin);
 
 	for (i = 0; i < count; i++) {
-		if (buff[i].EventType != KEY_EVENT) {
+		if (buff[i].EventType != KEY_EVENT)
 			continue;
-		}
 
-		if (!buff[i].Event.KeyEvent.bKeyDown) {
+		if (!buff[i].Event.KeyEvent.bKeyDown)
 			continue;
-		}
 
 		key = buff[i].Event.KeyEvent.wVirtualKeyCode;
 
@@ -341,41 +357,54 @@ char *CON_Input(void) {
 			newlinepos = i;
 			qconsole_cursor = 0;
 			break;
-		} else if (key == VK_UP) {
+		}
+
+		else if (key == VK_UP) {
 			CON_HistPrev();
 			break;
-		} else if (key == VK_DOWN) {
+		}
+
+		else if (key == VK_DOWN) {
 			CON_HistNext();
 			break;
-		} else if (key == VK_LEFT) {
-			qconsole_cursor--;
+		}
 
+		else if (key == VK_LEFT) {
+			qconsole_cursor --;
 			if (qconsole_cursor < 0) {
 				qconsole_cursor = 0;
 			}
 
 			break;
-		} else if (key == VK_RIGHT) {
-			qconsole_cursor++;
+		}
 
+		else if (key == VK_RIGHT) {
+			qconsole_cursor++;
 			if (qconsole_cursor > qconsole_linelen) {
 				qconsole_cursor = qconsole_linelen;
 			}
 
 			break;
-		} else if (key == VK_HOME) {
+		}
+
+		else if (key == VK_HOME) {
 			qconsole_cursor = 0;
 			break;
-		} else if (key == VK_END) {
+		}
+
+		else if (key == VK_END) {
 			qconsole_cursor = qconsole_linelen;
 			break;
-		} else if (key == VK_TAB) {
+		}
+
+		else if (key == VK_TAB) {
 			field_t f;
 
-			Q_strncpyz(f.buffer, qconsole_line, sizeof(f.buffer));
+			Q_strncpyz(f.buffer, qconsole_line,
+				sizeof(f.buffer));
 			Field_AutoComplete(&f);
-			Q_strncpyz(qconsole_line, f.buffer, sizeof(qconsole_line));
-
+			Q_strncpyz(qconsole_line, f.buffer,
+				sizeof(qconsole_line));
 			qconsole_linelen = strlen(qconsole_line);
 			qconsole_cursor = qconsole_linelen;
 			break;
@@ -387,21 +416,28 @@ char *CON_Input(void) {
 			if (key == VK_BACK) {
 				if (qconsole_cursor > 0) {
 					int newlen = (qconsole_linelen > 0) ? qconsole_linelen - 1 : 0;
-
-					if (qconsole_cursor < qconsole_linelen) {
-						memmove(qconsole_line + qconsole_cursor - 1, qconsole_line + qconsole_cursor, qconsole_linelen - qconsole_cursor);
+					if (qconsole_cursor < qconsole_linelen)
+					{
+						memmove(qconsole_line + qconsole_cursor - 1,
+									qconsole_line + qconsole_cursor,
+									qconsole_linelen - qconsole_cursor);
 					}
 
 					qconsole_line[newlen] = '\0';
 					qconsole_linelen = newlen;
-					qconsole_cursor--;
+					qconsole_cursor --;
 				}
-			} else if (c) {
+			}
+
+			else if (c) {
 				if (qconsole_linelen > qconsole_cursor) {
-					memmove(qconsole_line + qconsole_cursor + 1, qconsole_line + qconsole_cursor, qconsole_linelen - qconsole_cursor);
+					memmove(qconsole_line + qconsole_cursor + 1,
+								qconsole_line + qconsole_cursor,
+								qconsole_linelen - qconsole_cursor);
 				}
 
 				qconsole_line[qconsole_cursor++] = c;
+
 				qconsole_linelen++;
 				qconsole_line[qconsole_linelen] = '\0';
 			}
@@ -420,8 +456,8 @@ char *CON_Input(void) {
 	}
 
 	qconsole_linelen = 0;
-
 	CON_Show();
+
 	CON_HistAdd();
 	Com_Printf("%s\n", qconsole_line);
 
@@ -432,7 +468,7 @@ char *CON_Input(void) {
 =======================================================================================================================================
 CON_WindowsColorPrint
 
-Set text colors based on Q3 color codes.
+Set text colors based on Q3 color codes
 =======================================================================================================================================
 */
 void CON_WindowsColorPrint(const char *msg) {
@@ -443,7 +479,7 @@ void CON_WindowsColorPrint(const char *msg) {
 		qconsole_drawinput = (*msg == '\n');
 
 		if (Q_IsColorString(msg) || *msg == '\n') {
-			// first empty the buffer
+			// First empty the buffer
 			if (length > 0) {
 				buffer[length] = '\0';
 				fputs(buffer, stderr);
@@ -451,26 +487,30 @@ void CON_WindowsColorPrint(const char *msg) {
 			}
 
 			if (*msg == '\n') {
-				// reset color and then add the newline
+				// Reset color and then add the newline
 				SetConsoleTextAttribute(qconsole_hout, CON_ColorCharToAttrib(COLOR_WHITE));
 				fputs("\n", stderr);
 				msg++;
-			} else {
-				// set the color
+			}
+
+			else
+			{
+				// Set the color
 				SetConsoleTextAttribute(qconsole_hout, CON_ColorCharToAttrib(*(msg + 1)));
 				msg += 2;
 			}
-		} else {
-			if (length >= MAXPRINTMSG - 1) {
+		}
+
+		else {
+			if (length >= MAXPRINTMSG - 1)
 				break;
-			}
 
 			buffer[length] = *msg;
 			length++;
 			msg++;
 		}
 	}
-	// empty anything still left in the buffer
+	// Empty anything still left in the buffer
 	if (length > 0) {
 		buffer[length] = '\0';
 		fputs(buffer, stderr);
@@ -483,8 +523,9 @@ CON_Print
 =======================================================================================================================================
 */
 void CON_Print(const char *msg) {
-
 	CON_Hide();
+
 	CON_WindowsColorPrint(msg);
+
 	CON_Show();
 }

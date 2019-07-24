@@ -1,32 +1,37 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
-/**************************************************************************************************************************************
- This file acts on changes in a new playerState_t.
- With normal play, this will be done after local prediction, but when following another player or playing back a demo, it will be
- checked when the snapshot transitions like all the other entities.
-**************************************************************************************************************************************/
+//
+// cg_playerstate.c -- this file acts on changes in a new playerState_t
+// With normal play, this will be done after local prediction, but when
+// following another player or playing back a demo, it will be checked
+// when the snapshot transitions like all the other entities
 
 #include "cg_local.h"
 
@@ -34,7 +39,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 CG_CheckAmmo
 
-If the ammo has gone low enough to generate the warning, play a sound.
+If the ammo has gone low enough to generate the warning, play a sound
 =======================================================================================================================================
 */
 void CG_CheckAmmo(void) {
@@ -44,47 +49,48 @@ void CG_CheckAmmo(void) {
 	int weapons;
 
 	// see about how many seconds of ammo we have remaining
-	weapons = cg.snap->ps.stats[STAT_WEAPONS];
+	weapons = cg.cur_ps->stats[STAT_WEAPONS];
 	total = 0;
 
 	for (i = WP_MACHINEGUN; i < WP_NUM_WEAPONS; i++) {
-		if (!(weapons & (1 << i))) {
+		if (!(weapons &(1 << i))) {
 			continue;
 		}
 
-		if (cg.snap->ps.ammo[i] < 0) {
+		if (cg.cur_ps->ammo[i] < 0) {
 			continue;
 		}
 
-		switch (i) {
-			case WP_SHOTGUN:
-			case WP_PROXLAUNCHER:
-			case WP_GRENADELAUNCHER:
-			case WP_NAPALMLAUNCHER:
-			case WP_ROCKETLAUNCHER:
-			case WP_RAILGUN:
-				total += cg.snap->ps.ammo[i] * 1000;
-				break;
-			default:
-				total += cg.snap->ps.ammo[i] * 200;
-				break;
+		switch(i) {
+		case WP_ROCKET_LAUNCHER:
+		case WP_GRENADE_LAUNCHER:
+		case WP_RAILGUN:
+		case WP_SHOTGUN:
+#ifdef MISSIONPACK
+		case WP_PROX_LAUNCHER:
+#endif
+			total += cg.cur_ps->ammo[i] * 1000;
+			break;
+		default:
+			total += cg.cur_ps->ammo[i] * 200;
+			break;
 		}
 
 		if (total >= 5000) {
-			cg.lowAmmoWarning = 0;
+			cg.cur_lc->lowAmmoWarning = 0;
 			return;
 		}
 	}
 
-	previous = cg.lowAmmoWarning;
+	previous = cg.cur_lc->lowAmmoWarning;
 
 	if (total == 0) {
-		cg.lowAmmoWarning = 2;
+		cg.cur_lc->lowAmmoWarning = 2;
 	} else {
-		cg.lowAmmoWarning = 1;
+		cg.cur_lc->lowAmmoWarning = 1;
 	}
 	// play a sound on transitions
-	if (cg.lowAmmoWarning != previous) {
+	if (cg.cur_lc->lowAmmoWarning != previous) {
 		trap_S_StartLocalSound(cgs.media.noAmmoSound, CHAN_LOCAL_SOUND);
 	}
 }
@@ -105,9 +111,10 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 	float yaw, pitch;
 
 	// show the attacking player's head and name in corner
-	cg.attackerTime = cg.time;
+	cg.cur_lc->attackerTime = cg.time;
+
 	// the lower on health you are, the greater the view kick will be
-	health = cg.snap->ps.stats[STAT_HEALTH];
+	health = cg.cur_ps->stats[STAT_HEALTH];
 
 	if (health < 40) {
 		scale = 1;
@@ -117,19 +124,18 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 
 	kick = damage * scale;
 
-	if (kick < 5) {
+	if (kick < 5)
 		kick = 5;
-	}
 
-	if (kick > 10) {
+	if (kick > 10)
 		kick = 10;
-	}
-	// if yaw and pitch are both 255, make the damage always centered (falling, etc.)
+
+	// if yaw and pitch are both 255, make the damage always centered(falling, etc)
 	if (yawByte == 255 && pitchByte == 255) {
-		cg.damageX = 0;
-		cg.damageY = 0;
-		cg.v_dmg_roll = 0;
-		cg.v_dmg_pitch = -kick;
+		cg.cur_lc->damageX = 0;
+		cg.cur_lc->damageY = 0;
+		cg.cur_lc->v_dmg_roll = 0;
+		cg.cur_lc->v_dmg_pitch = -kick;
 	} else {
 		// positional
 		pitch = pitchByte / 255.0 * 360;
@@ -139,7 +145,7 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 		angles[YAW] = yaw;
 		angles[ROLL] = 0;
 
-		AngleVectorsForward(angles, dir);
+		AngleVectors(angles, dir, NULL, NULL);
 		VectorSubtract(vec3_origin, dir, dir);
 
 		front = DotProduct(dir, cg.refdef.viewaxis[0]);
@@ -155,63 +161,65 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 			dist = 0.1f;
 		}
 
-		cg.v_dmg_roll = kick * left;
-		cg.v_dmg_pitch = -kick * front;
+		cg.cur_lc->v_dmg_roll = kick * left;
+		
+		cg.cur_lc->v_dmg_pitch = -kick * front;
 
 		if (front <= 0.1) {
 			front = 0.1f;
 		}
 
-		cg.damageX = -left / front;
-		cg.damageY = up / dist;
+		cg.cur_lc->damageX = -left / front;
+		cg.cur_lc->damageY = up / dist;
 	}
 	// clamp the position
-	if (cg.damageX > 1.0) {
-		cg.damageX = 1.0;
+	if (cg.cur_lc->damageX > 1.0) {
+		cg.cur_lc->damageX = 1.0;
 	}
 
-	if (cg.damageX < -1.0) {
-		cg.damageX = -1.0;
+	if (cg.cur_lc->damageX < -1.0) {
+		cg.cur_lc->damageX = -1.0;
 	}
 
-	if (cg.damageY > 1.0) {
-		cg.damageY = 1.0;
+	if (cg.cur_lc->damageY > 1.0) {
+		cg.cur_lc->damageY = 1.0;
 	}
 
-	if (cg.damageY < -1.0) {
-		cg.damageY = -1.0;
+	if (cg.cur_lc->damageY < -1.0) {
+		cg.cur_lc->damageY = -1.0;
 	}
 	// don't let the screen flashes vary as much
 	if (kick > 10) {
 		kick = 10;
 	}
 
-	cg.damageValue = kick;
-	cg.v_dmg_time = cg.time + DAMAGE_TIME;
-	cg.damageTime = cg.snap->serverTime;
+	cg.cur_lc->damageValue = kick;
+	cg.cur_lc->v_dmg_time = cg.time + DAMAGE_TIME;
+	cg.cur_lc->damageTime = cg.snap->serverTime;
 }
 
 /*
 =======================================================================================================================================
 CG_Respawn
 
-A respawn happened this snapshot.
+A respawn happened this snapshot
 =======================================================================================================================================
 */
-void CG_Respawn(int clientNum) {
+void CG_Respawn(int playerNum) {
 	int i;
 	qboolean allLocalPlayers;
 
 	// no error decay on player movement
 	cg.thisFrameTeleport = qtrue;
-	allLocalPlayers = (clientNum == -1);
+
+	allLocalPlayers = (playerNum == -1);
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		if (cg.localPlayers[i].clientNum == -1) {
+		if (cg.localPlayers[i].playerNum == -1) {
 			continue;
 		}
 
-		if (!allLocalPlayers && cg.snap->pss[i].clientNum != clientNum) {
+		if (!allLocalPlayers && cg.snap->pss[i].playerNum != playerNum) {
 			continue;
 		}
 		// display weapons available
@@ -222,6 +230,7 @@ void CG_Respawn(int clientNum) {
 }
 
 extern char *eventnames[];
+
 /*
 =======================================================================================================================================
 CG_CheckPlayerstateEvents
@@ -233,26 +242,29 @@ void CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops) {
 	centity_t *cent;
 
 	if (ps->externalEvent && ps->externalEvent != ops->externalEvent) {
-		cent = &cg_entities[ps->clientNum];
+		cent = &cg_entities[ps->playerNum];
 		cent->currentState.event = ps->externalEvent;
 		cent->currentState.eventParm = ps->externalEventParm;
 		CG_EntityEvent(cent, cent->lerpOrigin);
 	}
 
-	cent = &cg.predictedPlayerEntity; // cg_entities[ps->clientNum];
+	cent = &cg.cur_lc->predictedPlayerEntity; // cg_entities[ps->playerNum];
 	// go through the predictable events buffer
 	for (i = ps->eventSequence - MAX_PS_EVENTS; i < ps->eventSequence; i++) {
-		// if we have a new predictable event or the server told us to play another event instead of a predicted event we already issued
-		// or something the server told us changed our prediction causing a different event
-		if (i >= ops->eventSequence || (i > ops->eventSequence - MAX_PS_EVENTS && ps->events[i & (MAX_PS_EVENTS - 1)] != ops->events[i & (MAX_PS_EVENTS - 1)])) {
-			event = ps->events[i & (MAX_PS_EVENTS - 1)];
-			cent->currentState.event = event;
-			cent->currentState.eventParm = ps->eventParms[i & (MAX_PS_EVENTS - 1)];
+		// if we have a new predictable event
+		if (i >= ops->eventSequence
+			// or the server told us to play another event instead of a predicted event we already issued
+			// or something the server told us changed our prediction causing a different event
+			||(i > ops->eventSequence - MAX_PS_EVENTS && ps->events[i &(MAX_PS_EVENTS - 1)] != ops->events[i &(MAX_PS_EVENTS - 1)])) {
 
+			event = ps->events[i &(MAX_PS_EVENTS - 1)];
+			cent->currentState.event = event;
+			cent->currentState.eventParm = ps->eventParms[i &(MAX_PS_EVENTS - 1)];
 			CG_EntityEvent(cent, cent->lerpOrigin);
 
-			cg.predictableEvents[i & (MAX_PREDICTED_EVENTS - 1)] = event;
-			cg.eventSequence++;
+			cg.cur_lc->predictableEvents[i &(MAX_PREDICTED_EVENTS - 1)] = event;
+
+			cg.cur_lc->eventSequence++;
 		}
 	}
 }
@@ -267,23 +279,23 @@ void CG_CheckChangedPredictableEvents(playerState_t *ps) {
 	int event;
 	centity_t *cent;
 
-	cent = &cg.predictedPlayerEntity;
+	cent = &cg.cur_lc->predictedPlayerEntity;
 
 	for (i = ps->eventSequence - MAX_PS_EVENTS; i < ps->eventSequence; i++) {
-		if (i >= cg.eventSequence) {
+		if (i >= cg.cur_lc->eventSequence) {
 			continue;
 		}
 		// if this event is not further back in than the maximum predictable events we remember
-		if (i > cg.eventSequence - MAX_PREDICTED_EVENTS) {
+		if (i > cg.cur_lc->eventSequence - MAX_PREDICTED_EVENTS) {
 			// if the new playerstate event is different from a previously predicted one
-			if (ps->events[i & (MAX_PS_EVENTS - 1)] != cg.predictableEvents[i & (MAX_PREDICTED_EVENTS - 1)]) {
-				event = ps->events[i & (MAX_PS_EVENTS - 1)];
-				cent->currentState.event = event;
-				cent->currentState.eventParm = ps->eventParms[i & (MAX_PS_EVENTS - 1)];
+			if (ps->events[i &(MAX_PS_EVENTS - 1)] != cg.cur_lc->predictableEvents[i &(MAX_PREDICTED_EVENTS - 1)]) {
 
+				event = ps->events[i &(MAX_PS_EVENTS - 1)];
+				cent->currentState.event = event;
+				cent->currentState.eventParm = ps->eventParms[i &(MAX_PS_EVENTS - 1)];
 				CG_EntityEvent(cent, cent->lerpOrigin);
 
-				cg.predictableEvents[i & (MAX_PREDICTED_EVENTS - 1)] = event;
+				cg.cur_lc->predictableEvents[i &(MAX_PREDICTED_EVENTS - 1)] = event;
 
 				if (cg_showmiss.integer) {
 					CG_Printf("WARNING: changed predicted event\n");
@@ -295,11 +307,28 @@ void CG_CheckChangedPredictableEvents(playerState_t *ps) {
 
 /*
 =======================================================================================================================================
+pushReward
+=======================================================================================================================================
+*/
+static void pushReward(sfxHandle_t sfx, qhandle_t shader, int rewardCount) {
+	if (cg.cur_lc->rewardStack < (MAX_REWARDSTACK - 1)) {
+		cg.cur_lc->rewardStack++;
+		cg.cur_lc->rewardSound[cg.cur_lc->rewardStack] = sfx;
+		cg.cur_lc->rewardShader[cg.cur_lc->rewardStack] = shader;
+		cg.cur_lc->rewardCount[cg.cur_lc->rewardStack] = rewardCount;
+	}
+}
+
+/*
+=======================================================================================================================================
 CG_CheckLocalSounds
 =======================================================================================================================================
 */
 void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
+	int reward;
+#ifdef MISSIONPACK
 	int health, armor;
+#endif
 	sfxHandle_t sfx;
 
 	// don't play the sounds if the player just changed teams
@@ -308,6 +337,7 @@ void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
 	}
 	// hit changes
 	if (ps->persistant[PERS_HITS] > ops->persistant[PERS_HITS]) {
+#ifdef MISSIONPACK
 		armor = ps->persistant[PERS_ATTACKEE_ARMOR] & 0xff;
 		health = ps->persistant[PERS_ATTACKEE_ARMOR] >> 8;
 
@@ -318,13 +348,16 @@ void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
 		} else {
 			trap_S_StartLocalSound(cgs.media.hitSound, CHAN_LOCAL_SOUND);
 		}
+#else
+		trap_S_StartLocalSound(cgs.media.hitSound, CHAN_LOCAL_SOUND);
+#endif
 	} else if (ps->persistant[PERS_HITS] < ops->persistant[PERS_HITS]) {
 		trap_S_StartLocalSound(cgs.media.hitTeamSound, CHAN_LOCAL_SOUND);
 	}
-	// health changes of more than -1 should make pain sounds
+	// health changes of more than - 1 should make pain sounds
 	if (ps->stats[STAT_HEALTH] < ops->stats[STAT_HEALTH] - 1) {
 		if (ps->stats[STAT_HEALTH] > 0) {
-			CG_PainEvent(&cg.predictedPlayerEntity, ps->stats[STAT_HEALTH]);
+			CG_PainEvent(&cg.cur_lc->predictedPlayerEntity, ps->stats[STAT_HEALTH]);
 		}
 	}
 	// if we are going into the intermission, don't start any voices
@@ -398,11 +431,14 @@ void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
 	}
 	// if any of the player event bits changed
 	if (ps->persistant[PERS_PLAYEREVENTS] != ops->persistant[PERS_PLAYEREVENTS]) {
-		if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD) != (ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD)) {
+		if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD) != 
+				(ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD)) {
 			trap_S_StartLocalSound(cgs.media.deniedSound, CHAN_ANNOUNCER);
-		} else if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_GAUNTLETREWARD) != (ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_GAUNTLETREWARD)) {
+		} else if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_GAUNTLETREWARD) != 
+				(ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_GAUNTLETREWARD)) {
 			trap_S_StartLocalSound(cgs.media.humiliationSound, CHAN_ANNOUNCER);
-		} else if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_HOLYSHIT) != (ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_HOLYSHIT)) {
+		} else if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_HOLYSHIT) != 
+				(ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_HOLYSHIT)) {
 			trap_S_StartLocalSound(cgs.media.holyShitSound, CHAN_ANNOUNCER);
 		}
 
@@ -410,7 +446,9 @@ void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
 	}
 	// check for flag pickup
 	if (cgs.gametype > GT_TEAM) {
-		if ((ps->powerups[PW_REDFLAG] != ops->powerups[PW_REDFLAG] && ps->powerups[PW_REDFLAG]) || (ps->powerups[PW_BLUEFLAG] != ops->powerups[PW_BLUEFLAG] && ps->powerups[PW_BLUEFLAG]) || (ps->powerups[PW_NEUTRALFLAG] != ops->powerups[PW_NEUTRALFLAG] && ps->powerups[PW_NEUTRALFLAG])) {
+		if ((ps->powerups[PW_REDFLAG] != ops->powerups[PW_REDFLAG] && ps->powerups[PW_REDFLAG]) ||
+			(ps->powerups[PW_BLUEFLAG] != ops->powerups[PW_BLUEFLAG] && ps->powerups[PW_BLUEFLAG]) ||
+			(ps->powerups[PW_NEUTRALFLAG] != ops->powerups[PW_NEUTRALFLAG] && ps->powerups[PW_NEUTRALFLAG])) {
 			trap_S_StartLocalSound(cgs.media.youHaveFlagSound, CHAN_ANNOUNCER);
 		}
 	}
@@ -457,7 +495,7 @@ void CG_CheckGameSounds(void) {
 		return;
 	}
 	// lead changes
-	switch (cg.bestLeadChange) {
+	switch(cg.bestLeadChange) {
 		case LEAD_TAKEN:
 			CG_AddBufferedSound(cgs.media.takenLeadSound);
 			break;
@@ -472,6 +510,7 @@ void CG_CheckGameSounds(void) {
 	}
 	// reset lead change
 	cg.bestLeadChange = LEAD_NONE;
+
 	// timelimit warnings
 	if (cgs.timelimit > 0) {
 		int msec;
@@ -513,23 +552,23 @@ void CG_CheckGameSounds(void) {
 /*
 =======================================================================================================================================
 CG_TransitionPlayerState
+
 =======================================================================================================================================
 */
 void CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops) {
-
 	// check for changing follow mode
-	if (ps->clientNum != ops->clientNum) {
+	if (ps->playerNum != ops->playerNum) {
 		cg.thisFrameTeleport = qtrue;
 		// make sure we don't get any unwanted transition effects
 		*ops = *ps;
 	}
-	// damage events (player is getting wounded)
+	// damage events(player is getting wounded)
 	if (ps->damageEvent != ops->damageEvent && ps->damageCount) {
 		CG_DamageFeedback(ps->damageYaw, ps->damagePitch, ps->damageCount);
 	}
 	// respawning
 	if (ps->persistant[PERS_SPAWN_COUNT] != ops->persistant[PERS_SPAWN_COUNT]) {
-		CG_Respawn(ps->clientNum);
+		CG_Respawn(ps->playerNum);
 	}
 
 	if (cg.mapRestart) {
@@ -537,16 +576,20 @@ void CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops) {
 		cg.mapRestart = qfalse;
 	}
 
-	if (cg.snap->ps.pm_type != PM_INTERMISSION && ps->persistant[PERS_TEAM] != TEAM_SPECTATOR) {
+	if (cg.cur_ps->pm_type != PM_INTERMISSION 
+		&& ps->persistant[PERS_TEAM] != TEAM_SPECTATOR) {
 		CG_CheckLocalSounds(ps, ops);
 	}
 	// check for going low on ammo
 	CG_CheckAmmo();
+
 	// run events
 	CG_CheckPlayerstateEvents(ps, ops);
+
 	// smooth the ducking viewheight change
 	if (ps->viewheight != ops->viewheight) {
-		cg.duckChange = ps->viewheight - ops->viewheight;
-		cg.duckTime = cg.time;
+		cg.cur_lc->duckChange = ps->viewheight - ops->viewheight;
+		cg.cur_lc->duckTime = cg.time;
 	}
 }
+

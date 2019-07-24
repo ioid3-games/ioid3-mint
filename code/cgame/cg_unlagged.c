@@ -15,7 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
 In addition, Spearmint Source Code is also subject to certain additional terms.
 You should have received a copy of these additional terms immediately following
@@ -31,15 +31,17 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include "cg_local.h"
 
 #if 0
+
 // we'll need this
-#define MACHINEGUN_SPREAD 200
+#define MACHINEGUN_SPREAD	200
 
 /*
 =======================================================================================================================================
 CG_PredictWeaponEffects
 
-Draws predicted effects for the railgun, shotgun, and machinegun. The lightning gun is done in CG_LightningBolt, since it was just a
-matter of setting the right origin and angles.
+Draws predicted effects for the railgun, shotgun, and machinegun.  The
+lightning gun is done in CG_LightningBolt, since it was just a matter
+of setting the right origin and angles.
 =======================================================================================================================================
 */
 void CG_PredictWeaponEffects(centity_t *cent) {
@@ -50,17 +52,18 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 	if (cent->currentState.number != cg.predictedPlayerState.clientNum) {
 		return;
 	}
-	// if it's not switched on server-side, forget it
+	// if it's not switched on server - side, forget it
 	if (!cgs.delagHitscan) {
 		return;
 	}
 	// get the muzzle point
 	VectorCopy(cg.predictedPlayerState.origin, muzzlePoint);
-
 	muzzlePoint[2] += cg.predictedPlayerState.viewheight;
+
 	// get forward, right, and up
 	AngleVectors(cg.predictedPlayerState.viewangles, forward, right, up);
 	VectorMA(muzzlePoint, 14, forward, muzzlePoint);
+
 	// was it a rail attack?
 	if (ent->weapon == WP_RAILGUN) {
 		// do we have it on for the rail gun?
@@ -70,6 +73,7 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 
 			// trace forward
 			VectorMA(muzzlePoint, 8192, forward, endPoint);
+
 			// THIS IS FOR DEBUGGING!
 			// you definitely *will* want something like this to test the backward reconciliation
 			// to make sure it's working *exactly* right
@@ -87,13 +91,20 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 						// figure the two origins used for interpolation
 						BG_EvaluateTrajectory(&c->currentState.pos, cg.snap->serverTime, origin1);
 						BG_EvaluateTrajectory(&c->nextState.pos, cg.nextSnap->serverTime, origin2);
+
 						// print some debugging stuff exactly like what the server does
+
 						// it starts with "Int:" to let you know the target was interpolated
-						CG_Printf("^3Int: time: %d, j: %d, k: %d, origin: %0.2f %0.2f %0.2f\n", cg.oldTime, cg.snap->serverTime, cg.nextSnap->serverTime, c->lerpOrigin[0], c->lerpOrigin[1], c->lerpOrigin[2]);
-						CG_Printf("^5frac: %0.4f, origin1: %0.2f %0.2f %0.2f, origin2: %0.2f %0.2f %0.2f\n", cg.frameInterpolation, origin1[0], origin1[1], origin1[2], origin2[0], origin2[1], origin2[2]);
-					} else {
+						CG_Printf("^3Int: time: %d, j: %d, k: %d, origin: %0.2f %0.2f %0.2f\n",
+								cg.oldTime, cg.snap->serverTime, cg.nextSnap->serverTime,
+								c->lerpOrigin[0], c->lerpOrigin[1], c->lerpOrigin[2]);
+						CG_Printf("^5frac: %0.4f, origin1: %0.2f %0.2f %0.2f, origin2: %0.2f %0.2f %0.2f\n",
+							cg.frameInterpolation, origin1[0], origin1[1], origin1[2], origin2[0], origin2[1], origin2[2]);
+					}
+					else {
 						// we haven't got a next snapshot
-						// the client clock has either drifted ahead (seems to happen once per server frame when you play locally) or the client is using timenudge
+						// the client clock has either drifted ahead(seems to happen once per server frame
+						// when you play locally)or the client is using timenudge
 						// in any case, CG_CalcEntityLerpPositions extrapolated rather than interpolated
 						centity_t *c = &cg_entities[trace.entityNum];
 						vec3_t origin1, origin2;
@@ -104,21 +115,29 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 
 						BG_EvaluateTrajectory(&c->currentState.pos, cg.snap->serverTime, origin1);
 						BG_EvaluateTrajectory(&c->currentState.pos, cg.snap->serverTime + 1000 / sv_fps.integer, origin2);
+
 						// print some debugging stuff exactly like what the server does
+
 						// it starts with "Ext:" to let you know the target was extrapolated
-						CG_Printf("^3Ext: time: %d, j: %d, k: %d, origin: %0.2f %0.2f %0.2f\n", cg.oldTime, cg.snap->serverTime, cg.snap->serverTime, c->lerpOrigin[0], c->lerpOrigin[1], c->lerpOrigin[2]);
-						CG_Printf("^5frac: %0.4f, origin1: %0.2f %0.2f %0.2f, origin2: %0.2f %0.2f %0.2f\n", cg.frameInterpolation, origin1[0], origin1[1], origin1[2], origin2[0], origin2[1], origin2[2]);
+						CG_Printf("^3Ext: time: %d, j: %d, k: %d, origin: %0.2f %0.2f %0.2f\n",
+								cg.oldTime, cg.snap->serverTime, cg.snap->serverTime,
+								c->lerpOrigin[0], c->lerpOrigin[1], c->lerpOrigin[2]);
+						CG_Printf("^5frac: %0.4f, origin1: %0.2f %0.2f %0.2f, origin2: %0.2f %0.2f %0.2f\n",
+							cg.frameInterpolation, origin1[0], origin1[1], origin1[2], origin2[0], origin2[1], origin2[2]);
 					}
 				}
 			}
 			// find the rail's end point
 			CG_Trace(&trace, muzzlePoint, vec3_origin, vec3_origin, endPoint, cg.predictedPlayerState.clientNum, CONTENTS_SOLID);
-			// do the magic-number adjustment
+
+			// do the magic - number adjustment
 			VectorMA(muzzlePoint, 4, right, muzzlePoint);
 			VectorMA(muzzlePoint, -1, up, muzzlePoint);
+
 			// draw a rail trail
 			CG_RailTrail(&cgs.clientinfo[cent->currentState.number], muzzlePoint, trace.endpos);
 			//Com_Printf("Predicted rail trail\n");
+
 			// explosion at end if not SURF_NOIMPACT
 			if (!(trace.surfaceFlags & SURF_NOIMPACT)) {
 				// predict an explosion
@@ -134,7 +153,9 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 			vec3_t endPoint, v;
 
 			// do everything like the server does
+
 			SnapVector(muzzlePoint);
+
 			VectorScale(forward, 4096, endPoint);
 			SnapVector(endPoint);
 
@@ -158,8 +179,9 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 			CG_ShotgunPattern(muzzlePoint, endPoint, cg.oldTime % 256, cg.predictedPlayerState.clientNum);
 			//Com_Printf("Predicted shotgun pattern\n");
 		}
+	}
 	// was it a machinegun attack?
-	} else if (ent->weapon == WP_MACHINEGUN) {
+	else if (ent->weapon == WP_MACHINEGUN) {
 		// do we have it on for the machinegun?
 		if (cg_delag.integer & 1 || cg_delag.integer & 2) {
 			// the server will use this exact time(it'll be serverTime on that end)
@@ -171,6 +193,7 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 			vec3_t endPoint;
 
 			// do everything exactly like the server does
+
 			r = Q_random(&seed) * M_PI * 2.0f;
 			u = sin(r) * Q_crandom(&seed) * MACHINEGUN_SPREAD * 16;
 			r = cos(r) * Q_crandom(&seed) * MACHINEGUN_SPREAD * 16;
@@ -186,6 +209,7 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 			}
 			// snap the endpos to integers, but nudged towards the line
 			SnapVectorTowards(tr.endpos, muzzlePoint);
+
 			// do bullet impact
 			if (tr.entityNum < MAX_CLIENTS) {
 				flesh = qtrue;
@@ -201,6 +225,7 @@ void CG_PredictWeaponEffects(centity_t *cent) {
 }
 
 #endif
+
 /*
 =======================================================================================================================================
 CG_DrawBBox
@@ -222,10 +247,12 @@ void CG_DrawBBox(centity_t *cent, float *color) {
 
 	VectorCopy(cent->currentState.mins, mins);
 	VectorCopy(cent->currentState.maxs, maxs);
+
 	// get the extents(size)
 	extx = maxs[0] - mins[0];
 	exty = maxs[1] - mins[1];
 	extz = maxs[2] - mins[2];
+
 	// set the polygon's texture coordinates
 	verts[0].st[0] = 0;
 	verts[0].st[1] = 0;
@@ -235,6 +262,7 @@ void CG_DrawBBox(centity_t *cent, float *color) {
 	verts[2].st[1] = 1;
 	verts[3].st[0] = 1;
 	verts[3].st[1] = 0;
+
 	// set the polygon's vertex colors
 	for (i = 0; i < 4; i++) {
 		verts[i].modulate[0] = 0xFF * color[0];
@@ -264,30 +292,35 @@ void CG_DrawBBox(centity_t *cent, float *color) {
 	VectorCopy(corners[2], verts[2].xyz);
 	VectorCopy(corners[3], verts[3].xyz);
 	trap_R_AddPolyToScene(cgs.media.whiteDynamicShader, 4, verts, 0, 0);
+
 	// bottom
 	VectorCopy(corners[7], verts[0].xyz);
 	VectorCopy(corners[6], verts[1].xyz);
 	VectorCopy(corners[5], verts[2].xyz);
 	VectorCopy(corners[4], verts[3].xyz);
 	trap_R_AddPolyToScene(cgs.media.whiteDynamicShader, 4, verts, 0, 0);
+
 	// top side
 	VectorCopy(corners[3], verts[2].xyz);
 	VectorCopy(corners[2], verts[3].xyz);
 	VectorCopy(corners[6], verts[0].xyz);
 	VectorCopy(corners[7], verts[1].xyz);
 	trap_R_AddPolyToScene(cgs.media.whiteDynamicShader, 4, verts, 0, 0);
+
 	// left side
 	VectorCopy(corners[2], verts[2].xyz);
 	VectorCopy(corners[1], verts[3].xyz);
 	VectorCopy(corners[5], verts[0].xyz);
 	VectorCopy(corners[6], verts[1].xyz);
 	trap_R_AddPolyToScene(cgs.media.whiteDynamicShader, 4, verts, 0, 0);
+
 	// right side
 	VectorCopy(corners[0], verts[2].xyz);
 	VectorCopy(corners[3], verts[3].xyz);
 	VectorCopy(corners[7], verts[0].xyz);
 	VectorCopy(corners[4], verts[1].xyz);
 	trap_R_AddPolyToScene(cgs.media.whiteDynamicShader, 4, verts, 0, 0);
+
 	// bottom side
 	VectorCopy(corners[1], verts[2].xyz);
 	VectorCopy(corners[0], verts[3].xyz);
@@ -295,3 +328,4 @@ void CG_DrawBBox(centity_t *cent, float *color) {
 	VectorCopy(corners[5], verts[1].xyz);
 	trap_R_AddPolyToScene(cgs.media.whiteDynamicShader, 4, verts, 0, 0);
 }
+

@@ -1,42 +1,45 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
-/**************************************************************************************************************************************
- Text commands typed in at the local console, or executed by a key binding.
-**************************************************************************************************************************************/
+//
+// cg_consolecmds.c -- text commands typed in at the local console, or
+// executed by a key binding
 
 #include "cg_local.h"
 #include "../ui/ui_public.h"
+#ifdef MISSIONPACK
 #include "../ui/ui_shared.h"
-
+#endif
+#ifdef MISSIONPACK_HUD
 extern menuDef_t *menuScoreboard;
+#endif
 
-/*
-=======================================================================================================================================
-CG_TargetCommand_f
-=======================================================================================================================================
-*/
 void CG_TargetCommand_f(int localPlayerNum) {
 	int targetNum;
 	char test[4];
@@ -55,19 +58,19 @@ void CG_TargetCommand_f(int localPlayerNum) {
 =======================================================================================================================================
 CG_SizeUp_f
 
-Keybinding command.
+Keybinding command
 =======================================================================================================================================
 */
 static void CG_SizeUp_f(void) {
 	// manually clamp here so cvar range warning isn't shown
-	trap_Cvar_SetValue("cg_viewsize", Com_Clamp(30, 100, (int)(cg_viewsize.integer + 10)));
+	trap_Cvar_SetValue("cg_viewsize", Com_Clamp(30, 100, (int)(cg_viewsize.integer+10)));
 }
 
 /*
 =======================================================================================================================================
 CG_SizeDown_f
 
-Keybinding command.
+Keybinding command
 =======================================================================================================================================
 */
 static void CG_SizeDown_f(void) {
@@ -81,15 +84,11 @@ CG_MessageMode_f
 =======================================================================================================================================
 */
 void CG_MessageMode_f(void) {
-
 	Q_strncpyz(cg.messageCommand, "say", sizeof(cg.messageCommand));
 	Q_strncpyz(cg.messagePrompt, "Say: ", sizeof(cg.messagePrompt));
-
 	MField_Clear(&cg.messageField);
-
 	cg.messageField.widthInChars = 30;
-
-	Key_SetCatcher(Key_GetCatcher() ^ KEYCATCH_MESSAGE);
+	Key_SetCatcher(Key_GetCatcher()^ KEYCATCH_MESSAGE);
 }
 
 /*
@@ -98,15 +97,11 @@ CG_MessageMode2_f
 =======================================================================================================================================
 */
 void CG_MessageMode2_f(void) {
-
 	Q_strncpyz(cg.messageCommand, "say_team", sizeof(cg.messageCommand));
 	Q_strncpyz(cg.messagePrompt, "Team Say: ", sizeof(cg.messagePrompt));
-
 	MField_Clear(&cg.messageField);
-
 	cg.messageField.widthInChars = 25;
-
-	Key_SetCatcher(Key_GetCatcher() ^ KEYCATCH_MESSAGE);
+	Key_SetCatcher(Key_GetCatcher()^ KEYCATCH_MESSAGE);
 }
 
 /*
@@ -115,20 +110,17 @@ CG_MessageMode3_f
 =======================================================================================================================================
 */
 void CG_MessageMode3_f(void) {
-	int clientNum = CG_CrosshairPlayer(0);
+	int playerNum = CG_CrosshairPlayer(0);
 
-	if (clientNum < 0 || clientNum >= MAX_CLIENTS) {
+	if (playerNum < 0 || playerNum >= MAX_CLIENTS) {
 		return;
 	}
 
-	Com_sprintf(cg.messageCommand, sizeof(cg.messageCommand), "tell %d", clientNum);
-	Com_sprintf(cg.messagePrompt, sizeof(cg.messagePrompt), "Tell %s:", cgs.clientinfo[clientNum].name);
-
+	Com_sprintf(cg.messageCommand, sizeof(cg.messageCommand), "tell %d", playerNum);
+	Com_sprintf(cg.messagePrompt, sizeof(cg.messagePrompt), "Tell %s: ", cgs.playerinfo[playerNum].name);
 	MField_Clear(&cg.messageField);
-
 	cg.messageField.widthInChars = 30;
-
-	Key_SetCatcher(Key_GetCatcher() ^ KEYCATCH_MESSAGE);
+	Key_SetCatcher(Key_GetCatcher()^ KEYCATCH_MESSAGE);
 }
 
 /*
@@ -137,20 +129,17 @@ CG_MessageMode4_f
 =======================================================================================================================================
 */
 void CG_MessageMode4_f(void) {
-	int clientNum = CG_LastAttacker(0);
+	int playerNum = CG_LastAttacker(0);
 
-	if (clientNum < 0 || clientNum >= MAX_CLIENTS) {
+	if (playerNum < 0 || playerNum >= MAX_CLIENTS) {
 		return;
 	}
 
-	Com_sprintf(cg.messageCommand, sizeof(cg.messageCommand), "tell %d", clientNum);
-	Com_sprintf(cg.messagePrompt, sizeof(cg.messagePrompt), "Tell %s:", cgs.clientinfo[clientNum].name);
-
+	Com_sprintf(cg.messageCommand, sizeof(cg.messageCommand), "tell %d", playerNum);
+	Com_sprintf(cg.messagePrompt, sizeof(cg.messagePrompt), "Tell %s: ", cgs.playerinfo[playerNum].name);
 	MField_Clear(&cg.messageField);
-
 	cg.messageField.widthInChars = 30;
-
-	Key_SetCatcher(Key_GetCatcher() ^ KEYCATCH_MESSAGE);
+	Key_SetCatcher(Key_GetCatcher()^ KEYCATCH_MESSAGE);
 }
 
 /*
@@ -162,7 +151,9 @@ void CG_CenterEcho_f(int localPlayerNum) {
 	char text[1024];
 
 	trap_Args(text, sizeof(text));
+
 	CG_ReplaceCharacter(text, '\\', '\n');
+
 	CG_CenterPrint(localPlayerNum, text, SCREEN_HEIGHT * 0.30, 0.5);
 }
 
@@ -170,37 +161,43 @@ void CG_CenterEcho_f(int localPlayerNum) {
 =======================================================================================================================================
 CG_Viewpos_f
 
-Debugging command to print the current position.
+Debugging command to print the current position
 =======================================================================================================================================
 */
 static void CG_Viewpos_f(int localPlayerNum) {
-	CG_Printf("(%i %i %i) : %i\n", (int)cg.localPlayers[localPlayerNum].lastViewPos[0], (int)cg.localPlayers[localPlayerNum].lastViewPos[1], (int)cg.localPlayers[localPlayerNum].lastViewPos[2], (int)cg.localPlayers[localPlayerNum].lastViewAngles[YAW]);
+	CG_Printf("(%i %i %i): %i\n", (int)cg.localPlayers[localPlayerNum].lastViewPos[0],
+		(int)cg.localPlayers[localPlayerNum].lastViewPos[1],
+		(int)cg.localPlayers[localPlayerNum].lastViewPos[2],
+		(int)cg.localPlayers[localPlayerNum].lastViewAngles[YAW]);
 }
 
 /*
 =======================================================================================================================================
-CG_ScoresDown_f
+CG_ScoresDown
 =======================================================================================================================================
 */
 static void CG_ScoresDown_f(int localPlayerNum) {
 	localPlayer_t *player = &cg.localPlayers[localPlayerNum];
 
+#ifdef MISSIONPACK_HUD
 	CG_BuildSpectatorString();
-
+#endif
 	if (cg.scoresRequestTime + 2000 < cg.time) {
-		// the scores are more than two seconds out of data, so request new ones
+		// the scores are more than two seconds out of data,
+		// so request new ones
 		cg.scoresRequestTime = cg.time;
-
 		trap_SendClientCommand("score");
-		// leave the current scores up if they were already displayed, but if this is the first hit, clear them out
+		// leave the current scores up if they were already
+		// displayed, but if this is the first hit, clear them out
 		if (!CG_AnyScoreboardShowing()) {
 			cg.numScores = 0;
 		}
 
-		cgs.showScores = qtrue;
+		player->showScores = qtrue;
 	} else {
-		// show the cached contents even if they just pressed if it is within two seconds
-		cg.showScores = qtrue;
+		// show the cached contents even if they just pressed if it
+		// is within two seconds
+		player->showScores = qtrue;
 	}
 }
 
@@ -212,9 +209,9 @@ CG_ScoresUp_f
 static void CG_ScoresUp_f(int localPlayerNum) {
 	localPlayer_t *player = &cg.localPlayers[localPlayerNum];
 
-	if (cg.showScores) {
-		cg.showScores = qfalse;
-		cg.scoreFadeTime = cg.time;
+	if (player->showScores) {
+		player->showScores = qfalse;
+		player->scoreFadeTime = cg.time;
 	}
 }
 
@@ -320,9 +317,9 @@ static void CG_Field_CompletePlayerModel(int argNum, qboolean lookingForHead, ch
 	char filelist[2048];
 	char skinname[MAX_QPATH];
 	int skinnameLength;
-	char* dirptr;
-	char* fileptr;
-	char* skinptr;
+	char *dirptr;
+	char *fileptr;
+	char *skinptr;
 	int i;
 	int j;
 	int dirlen;
@@ -339,8 +336,10 @@ static void CG_Field_CompletePlayerModel(int argNum, qboolean lookingForHead, ch
 	int skinTeamSuffixLength;
 
 	trap_Argv(argNum - 1, completeModel, sizeof(completeModel));
+
 	// remove skin
 	completeModelLength = 0;
+
 	while (completeModel[completeModelLength] != '\0' && completeModel[completeModelLength] != '/') {
 		completeModelLength++;
 	}
@@ -362,10 +361,13 @@ static void CG_Field_CompletePlayerModel(int argNum, qboolean lookingForHead, ch
 	}
 #endif
 	teamNameLength = strlen(teamName);
-	skinPrefix =(lookingForHead) ? "head_" : "up)r_";
-	skinPrefixLength =(lookingForHead) ? 5 : 6;
-	skinTeamSuffix =(lookingForTeam == TEAM_BLUE) ? "_blue" : "_red";
-	skinTeamSuffixLength =(lookingForTeam == TEAM_BLUE) ? 5 : 6;
+
+	skinPrefix = (lookingForHead) ? "head_" : "upper_";
+	skinPrefixLength = (lookingForHead) ? 5 : 6;
+
+	skinTeamSuffix = (lookingForTeam == TEAM_BLUE) ? "_blue" : "_red";
+	skinTeamSuffixLength = (lookingForTeam == TEAM_BLUE) ? 5 : 6;
+
 	// ZTM: FIXME: have to clear whole list because BG_AddStringToList doesn't properly terminate list
 	memset(list, 0, sizeof(list));
 	listTotalLength = 0;
@@ -374,33 +376,29 @@ static void CG_Field_CompletePlayerModel(int argNum, qboolean lookingForHead, ch
 		// iterate directory of all player models
 		numdirs = trap_FS_GetFileList("models/players", "/", dirlist, 2048);
 		dirptr = dirlist;
-
-		for (i = 0; i < numdirs; i++, dirptr += dirlen + 1) {
+		for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 			dirlen = strlen(dirptr);
 
-			if (dirlen == 0) {
+			if (dirlen == 0)
 				continue;
-			}
 
-			if (dirptr[dirlen - 1] == '/') {
+			if (dirptr[dirlen - 1] == '/')
 				dirptr[dirlen - 1] = '\0';
-			}
 
-			if (!strcmp(dirptr,".") || !strcmp(dirptr,"..") || !strcmp(dirptr,"heads")) {
+			if (!strcmp(dirptr, ".") || !strcmp(dirptr, "..") || !strcmp(dirptr, "heads"))
 				continue;
-			}
+
 			// not a partial match
 			if (completeModelLength > 0 && Q_stricmpn(completeModel, dirptr, completeModelLength) != 0) {
 				continue;
 			}
-
 			// iterate all skin files in directory
-			numfiles = trap_FS_GetFileList(va("models/players/%s",dirptr), "skin", filelist, 2048);
-			fileptr  = filelist;
-
-			for (j = 0; j < numfiles; j++, fileptr += filelen + 1) {
+			numfiles = trap_FS_GetFileList(va("models/players/%s", dirptr), "skin", filelist, 2048);
+			fileptr = filelist;
+			for (j = 0; j < numfiles; j++, fileptr += filelen+1) {
 				filelen = strlen(fileptr);
 				skinptr = fileptr;
+
 				// models/players/example/stroggs/upper_lily_red.skin
 				if (teamNameLength > 0 && Q_stricmpn(skinptr, teamName, teamNameLength) == 0) {
 					skinptr += teamNameLength;
@@ -412,7 +410,7 @@ static void CG_Field_CompletePlayerModel(int argNum, qboolean lookingForHead, ch
 
 				COM_StripExtension(skinptr + skinPrefixLength, skinname, sizeof(skinname));
 
-				if (Q_stricmp(skinname, lookingForSkin)== 0) {
+				if (Q_stricmp(skinname, lookingForSkin) == 0) {
 					// models/players/example/upper_default.skin
 					// add default skin as just the model name
 					// for team models this is red or blue
@@ -422,7 +420,8 @@ static void CG_Field_CompletePlayerModel(int argNum, qboolean lookingForHead, ch
 					// for team model add lily_red skin as lily
 					skinnameLength = strlen(skinname);
 
-					if (skinnameLength - skinPrefixLength > skinTeamSuffixLength && COM_CompareExtension(skinname, skinTeamSuffix)) {
+					if (skinnameLength - skinPrefixLength > skinTeamSuffixLength
+							&& COM_CompareExtension(skinname, skinTeamSuffix)) {
 						// remove _red
 						skinname[skinnameLength - 1 - skinTeamSuffixLength] = '\0';
 						BG_AddStringToList(list, sizeof(list), &listTotalLength, va("%s/%s", dirptr, skinname));
@@ -439,32 +438,28 @@ static void CG_Field_CompletePlayerModel(int argNum, qboolean lookingForHead, ch
 	if (lookingForHead && (completeModelLength == 0 || completeModel[0] == '*')) {
 		// iterate directory of all head models
 		numdirs = trap_FS_GetFileList("models/players/heads", "/", dirlist, 2048);
-		dirptr  = dirlist;
-
-		for (i = 0; i < numdirs; i++, dirptr += dirlen + 1) {
+		dirptr = dirlist;
+		for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 			dirlen = strlen(dirptr);
 
-			if (dirlen == 0) {
+			if (dirlen == 0)
 				continue;
-			}
 
-			if (dirptr[dirlen - 1] == '/') {
+			if (dirptr[dirlen - 1] == '/')
 				dirptr[dirlen - 1] = '\0';
-			}
 
-			if (!strcmp(dirptr,".") || !strcmp(dirptr,"..")) {
+			if (!strcmp(dirptr, ".") || !strcmp(dirptr, ".."))
 				continue;
-			}
+
 			// not a partial match
 			// completeModel[0] is '*' which means heads directory
-			if (completeModelLength > 1 && Q_stricmpn(completeModel + 1, dirptr, completeModelLength - 1) != 0) {
+			if (completeModelLength > 1 && Q_stricmpn(completeModel+1, dirptr, completeModelLength - 1) != 0) {
 				continue;
 			}
 			// iterate all skin files in directory
-			numfiles = trap_FS_GetFileList(va("models/players/heads/%s",dirptr), "skin", filelist, 2048);
-			fileptr  = filelist;
-
-			for (j = 0; j < numfiles; j++, fileptr += filelen + 1) {
+			numfiles = trap_FS_GetFileList(va("models/players/heads/%s", dirptr), "skin", filelist, 2048);
+			fileptr = filelist;
+			for (j = 0; j < numfiles; j++, fileptr += filelen+1) {
 				filelen = strlen(fileptr);
 				skinptr = fileptr;
 
@@ -489,7 +484,8 @@ static void CG_Field_CompletePlayerModel(int argNum, qboolean lookingForHead, ch
 					// for team model add lily_red skin as lily
 					skinnameLength = strlen(skinname);
 
-					if (skinnameLength - skinPrefixLength > skinTeamSuffixLength && COM_CompareExtension(skinname, skinTeamSuffix)) {
+					if (skinnameLength - skinPrefixLength > skinTeamSuffixLength
+							&& COM_CompareExtension(skinname, skinTeamSuffix)) {
 						// remove _red
 						skinname[skinnameLength - 1 - skinTeamSuffixLength] = '\0';
 						BG_AddStringToList(list, sizeof(list), &listTotalLength, va("*%s/%s", dirptr, skinname));
@@ -515,7 +511,6 @@ CG_ModelComplete
 =======================================================================================================================================
 */
 static void CG_ModelComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		CG_Field_CompletePlayerModel(argNum, qfalse, "default", TEAM_FREE);
 	}
@@ -527,7 +522,6 @@ CG_HeadmodelComplete
 =======================================================================================================================================
 */
 static void CG_HeadmodelComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		CG_Field_CompletePlayerModel(argNum, qtrue, "default", TEAM_FREE);
 	}
@@ -539,7 +533,6 @@ CG_TeamModelComplete
 =======================================================================================================================================
 */
 static void CG_TeamModelComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		CG_Field_CompletePlayerModel(argNum, qfalse, "red", TEAM_RED);
 	}
@@ -551,32 +544,38 @@ CG_TeamHeadmodelComplete
 =======================================================================================================================================
 */
 static void CG_TeamHeadmodelComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		CG_Field_CompletePlayerModel(argNum, qtrue, "red", TEAM_RED);
 	}
 }
 
+#ifdef MISSIONPACK_HUD
 extern menuDef_t *menuScoreboard;
 extern displayContextDef_t cgDC;
-void Menu_Reset(void); // FIXME: add to right include file
+void Menu_Reset(void); 			// FIXME: add to right include file
+#ifdef MISSIONPACK
 void UI_Load(void);
-/*
-=======================================================================================================================================
-CG_LoadHud_f
-=======================================================================================================================================
-*/
+#endif
+
 static void CG_LoadHud_f(void) {
 	char buff[1024];
 	const char *hudSet;
+  memset(buff, 0, sizeof(buff));
 
-	memset(buff, 0, sizeof(buff));
+#ifdef MISSIONPACK
 	// must reload both ui and hud at once, they share the string memory pool
 	UI_Load();
-	Init_Display(&cgDC);
-	Menu_Reset();
-	trap_Cvar_VariableStringBuffer("cg_hudFiles", buff, sizeof(buff));
 
+	Init_Display(&cgDC);
+#else
+	Init_Display(&cgDC);
+
+	String_Init();
+#endif
+
+	Menu_Reset();
+	
+	trap_Cvar_VariableStringBuffer("cg_hudFiles", buff, sizeof(buff));
 	hudSet = buff;
 
 	if (hudSet[0] == '\0') {
@@ -585,33 +584,24 @@ static void CG_LoadHud_f(void) {
 
 	CG_LoadMenus(hudSet);
 	CG_HudMenuHacks();
-
-	menuScoreboard = NULL;
+  menuScoreboard = NULL;
 }
 
-/*
-=======================================================================================================================================
-CG_ScrollScores
-
-In team gametypes skip spectators and scroll through entire team.
-First time through list only use red player then switch to only blue players, etc.
-=======================================================================================================================================
-*/
+// In team gametypes skip spectators and scroll through entire team.
+// First time through list only use red player then switch to only blue players, etc.
 static int CG_ScrollScores(int scoreIndex, int dir) {
 	int i, team;
 
-	if (cg.numScores == 0) {
+	if (cg.numScores == 0)
 		return 0;
-	}
 
 	if (cgs.gametype < GT_TEAM) {
 		scoreIndex += dir;
 
-		if (scoreIndex < 0) {
+		if (scoreIndex < 0)
 			scoreIndex = cg.numScores - 1;
-		} else if (scoreIndex >= cg.numScores) {
+		else if (scoreIndex >= cg.numScores)
 			scoreIndex = 0;
-		}
 
 		return scoreIndex;
 	}
@@ -627,8 +617,9 @@ static int CG_ScrollScores(int scoreIndex, int dir) {
 			return i;
 		}
 	}
-	// didn't find any more players on this team in this direction, wrap around and switch teams
-	if (cgs.gametype > GT_TOURNAMENT) {
+	// didn't find any more players on this team in this direction,
+	// wrap around and switch teams
+	if (cgs.gametype >= GT_TEAM) {
 		if (team == TEAM_RED) {
 			team = TEAM_BLUE;
 		} else {
@@ -636,11 +627,10 @@ static int CG_ScrollScores(int scoreIndex, int dir) {
 		}
 	}
 
-	if (dir > 0) {
+	if (dir > 0)
 		i = 0;
-	} else {
+	else
 		i = cg.numScores - 1;
-	}
 
 	for (/**/; i < cg.numScores && i >= 0; i += dir) {
 		if (cg.scores[i].team == team) {
@@ -651,13 +641,7 @@ static int CG_ScrollScores(int scoreIndex, int dir) {
 	return scoreIndex;
 }
 
-/*
-=======================================================================================================================================
-CG_ScrollScoresDown_f
-=======================================================================================================================================
-*/
 static void CG_ScrollScoresDown_f(int localPlayerNum) {
-
 	if (cg.snap && cg.snap->pss[localPlayerNum].pm_type == PM_INTERMISSION) {
 		cg.intermissionSelectedScore = CG_ScrollScores(cg.intermissionSelectedScore, 1);
 	}
@@ -667,13 +651,7 @@ static void CG_ScrollScoresDown_f(int localPlayerNum) {
 	}
 }
 
-/*
-=======================================================================================================================================
-CG_ScrollScoresUp_f
-=======================================================================================================================================
-*/
 static void CG_ScrollScoresUp_f(int localPlayerNum) {
-
 	if (cg.snap && cg.snap->pss[localPlayerNum].pm_type == PM_INTERMISSION) {
 		cg.intermissionSelectedScore = CG_ScrollScores(cg.intermissionSelectedScore, -1);
 	}
@@ -682,253 +660,192 @@ static void CG_ScrollScoresUp_f(int localPlayerNum) {
 		cg.localPlayers[localPlayerNum].selectedScore = CG_ScrollScores(cg.localPlayers[localPlayerNum].selectedScore, -1);
 	}
 }
+#endif
 
-/*
-=======================================================================================================================================
-CG_CameraOrbit
-=======================================================================================================================================
-*/
 static void CG_CameraOrbit(int localPlayerNum, float speed) {
 	localPlayer_t *player;
 
 	player = &cg.localPlayers[localPlayerNum];
 
-	cgs.cameraOrbit = speed;
-	cgs.cameraOrbitAngle = 0;
-	cgs.cameraOrbitRange = 100;
+	player->cameraOrbit = speed;
+	player->cameraOrbitAngle = 0;
+	player->cameraOrbitRange = 100;
 }
 
-/*
-=======================================================================================================================================
-CG_spWin_f
-=======================================================================================================================================
-*/
+#ifdef MISSIONPACK
 static void CG_spWin_f(void) {
-
 	CG_CameraOrbit(0, 30);
 	CG_AddBufferedSound(cgs.media.winnerSound);
 	//trap_S_StartLocalSound(cgs.media.winnerSound, CHAN_ANNOUNCER);
-	CG_GlobalCenterPrint("YOU WIN!", SCREEN_HEIGHT / 2, 2.0);
+	CG_GlobalCenterPrint("YOU WIN!", SCREEN_HEIGHT/2, 2.0);
 }
 
-/*
-=======================================================================================================================================
-CG_spLose_f
-=======================================================================================================================================
-*/
 static void CG_spLose_f(void) {
-
 	CG_CameraOrbit(0, 30);
 	CG_AddBufferedSound(cgs.media.loserSound);
 	//trap_S_StartLocalSound(cgs.media.loserSound, CHAN_ANNOUNCER);
-	CG_GlobalCenterPrint("YOU LOSE...", SCREEN_HEIGHT / 2, 2.0);
+	CG_GlobalCenterPrint("YOU LOSE...", SCREEN_HEIGHT/2, 2.0);
 }
 
-/*
-=======================================================================================================================================
-CG_TellTarget_f
-=======================================================================================================================================
-*/
+#endif
+
 static void CG_TellTarget_f(int localPlayerNum) {
-	int clientNum;
-	char command[128];
-	char message[128];
+	int playerNum;
+	char command[MAX_SAY_TEXT + 16];
+	char message[MAX_SAY_TEXT];
 
-	clientNum = CG_CrosshairPlayer(localPlayerNum);
+	playerNum = CG_CrosshairPlayer(localPlayerNum);
 
-	if (clientNum == -1) {
+	if (playerNum == -1) {
 		return;
 	}
 
-	trap_Args(message, 128);
-	Com_sprintf(command, 128, "%s %i %s", Com_LocalPlayerCvarName(localPlayerNum, "tell"), clientNum, message);
+	trap_Args(message, sizeof(message));
+	Com_sprintf(command, sizeof(command), "%s %i %s", Com_LocalPlayerCvarName(localPlayerNum, "tell"), playerNum, message);
 	trap_SendClientCommand(command);
 }
 
-/*
-=======================================================================================================================================
-CG_TellAttacker_f
-=======================================================================================================================================
-*/
 static void CG_TellAttacker_f(int localPlayerNum) {
-	int clientNum;
+	int playerNum;
 	char command[MAX_SAY_TEXT + 16];
 	char message[MAX_SAY_TEXT];
 
-	clientNum = CG_LastAttacker(localPlayerNum);
+	playerNum = CG_LastAttacker(localPlayerNum);
 
-	if (clientNum == -1) {
+	if (playerNum == -1) {
 		return;
 	}
 
 	trap_Args(message, sizeof(message));
-	Com_sprintf(command, sizeof(command), "%s %i %s", Com_LocalPlayerCvarName(localPlayerNum, "tell"), clientNum, message);
+	Com_sprintf(command, sizeof(command), "%s %i %s", Com_LocalPlayerCvarName(localPlayerNum, "tell"), playerNum, message);
 	trap_SendClientCommand(command);
 }
 
-/*
-=======================================================================================================================================
-CG_VoiceTellTarget_f
-=======================================================================================================================================
-*/
+#ifdef MISSIONPACK
 static void CG_VoiceTellTarget_f(int localPlayerNum) {
-	int clientNum;
+	int playerNum;
 	char command[MAX_SAY_TEXT + 16];
 	char message[MAX_SAY_TEXT];
 
-	clientNum = CG_CrosshairPlayer(localPlayerNum);
+	playerNum = CG_CrosshairPlayer(localPlayerNum);
 
-	if (clientNum == -1) {
+	if (playerNum == -1) {
 		return;
 	}
 
 	trap_Args(message, sizeof(message));
-	Com_sprintf(command, sizeof(command), "%s %i %s", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), clientNum, message);
+	Com_sprintf(command, sizeof(command), "%s %i %s", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), playerNum, message);
 	trap_SendClientCommand(command);
 }
 
-/*
-=======================================================================================================================================
-CG_VoiceTellAttacker_f
-=======================================================================================================================================
-*/
 static void CG_VoiceTellAttacker_f(int localPlayerNum) {
-	int clientNum;
+	int playerNum;
 	char command[MAX_SAY_TEXT + 16];
 	char message[MAX_SAY_TEXT];
 
-	clientNum = CG_LastAttacker(localPlayerNum);
+	playerNum = CG_LastAttacker(localPlayerNum);
 
-	if (clientNum == -1) {
+	if (playerNum == -1) {
 		return;
 	}
 
 	trap_Args(message, sizeof(message));
-	Com_sprintf(command, sizeof(command), "%s %i %s", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), clientNum, message);
+	Com_sprintf(command, sizeof(command), "%s %i %s", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), playerNum, message);
 	trap_SendClientCommand(command);
 }
 
-/*
-=======================================================================================================================================
-CG_NextTeamMember_f
-=======================================================================================================================================
-*/
 static void CG_NextTeamMember_f(int localPlayerNum) {
-	CG_SelectNextPlayer(localPlayerNum);
+  CG_SelectNextPlayer(localPlayerNum);
 }
 
-/*
-=======================================================================================================================================
-CG_PrevTeamMember_f
-=======================================================================================================================================
-*/
 static void CG_PrevTeamMember_f(int localPlayerNum) {
-	CG_SelectPrevPlayer(localPlayerNum);
+  CG_SelectPrevPlayer(localPlayerNum);
 }
 
-/*
-=======================================================================================================================================
-CG_NextOrder_f
-
-ASS U ME's enumeration order as far as task specific orders, OFFENSE is zero, PATROL is last.
-=======================================================================================================================================
-*/
+// ASS U ME's enumeration order as far as task specific orders, OFFENSE is zero, CAMP is last
+//
 static void CG_NextOrder_f(int localPlayerNum) {
 	localPlayer_t *player;
-	clientInfo_t *ci;
-	int clientNum;
+	playerInfo_t *pi;
+	int playerNum;
 	int team;
 
 	player = &cg.localPlayers[localPlayerNum];
 
-	if (cgs.clientNum == -1) {
+	if (player->playerNum == -1) {
 		return;
 	}
 
-	clientNum = cg.snap->pss[localPlayerNum].clientNum;
+	playerNum = cg.snap->pss[localPlayerNum].playerNum;
 	team = cg.snap->pss[localPlayerNum].persistant[PERS_TEAM];
-	ci = cgs.clientinfo + clientNum;
 
-	if (ci) {
-		if (!ci->teamLeader && sortedTeamPlayers[team][cg_currentSelectedPlayer[localPlayerNum].integer] != clientNum) {
+	pi = cgs.playerinfo + playerNum;
+
+	if (pi) {
+		if (!pi->teamLeader && sortedTeamPlayers[team][cg_currentSelectedPlayer[localPlayerNum].integer] != playerNum) {
 			return;
 		}
 	}
 
-	if (cgs.currentOrder < TEAMTASK_PATROL) {
-		cgs.currentOrder++;
+	if (player->currentOrder < TEAMTASK_CAMP) {
+		player->currentOrder++;
 
-		if (cgs.currentOrder == TEAMTASK_RETRIEVE) {
+		if (player->currentOrder == TEAMTASK_RETRIEVE) {
 			if (!CG_OtherTeamHasFlag()) {
-				cgs.currentOrder++;
+				player->currentOrder++;
 			}
 		}
 
-		if (cgs.currentOrder == TEAMTASK_ESCORT) {
+		if (player->currentOrder == TEAMTASK_ESCORT) {
 			if (!CG_YourTeamHasFlag()) {
-				cgs.currentOrder++;
+				player->currentOrder++;
 			}
 		}
+
 	} else {
-		cgs.currentOrder = TEAMTASK_OFFENSE;
+		player->currentOrder = TEAMTASK_OFFENSE;
 	}
 
-	cgs.orderPending = qtrue;
-	cgs.orderTime = cg.time + 3000;
+	player->orderPending = qtrue;
+	player->orderTime = cg.time + 3000;
 }
 
-/*
-=======================================================================================================================================
-CG_ConfirmOrder_f
-=======================================================================================================================================
-*/
 static void CG_ConfirmOrder_f(int localPlayerNum) {
 	localPlayer_t *player;
 
 	player = &cg.localPlayers[localPlayerNum];
 
-	if (cgs.clientNum == -1) {
+	if (player->playerNum == -1) {
 		return;
 	}
 
-	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %d %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), cgs.acceptLeader, VOICECHAT_YES));
-	trap_Cmd_ExecuteText(EXEC_NOW, "+button5; wait; -button5");
+	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %d %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), player->acceptLeader, VOICECHAT_YES));
+	trap_Cmd_ExecuteText(EXEC_NOW, "+button5; wait; - button5");
 
-	if (cg.time < cgs.acceptOrderTime) {
-		trap_SendClientCommand(va("teamtask %d\n", cgs.acceptTask));
-		cgs.acceptOrderTime = 0;
+	if (cg.time < player->acceptOrderTime) {
+		trap_SendClientCommand(va("teamtask %d\n", player->acceptTask));
+		player->acceptOrderTime = 0;
 	}
 }
 
-/*
-=======================================================================================================================================
-CG_DenyOrder_f
-=======================================================================================================================================
-*/
 static void CG_DenyOrder_f(int localPlayerNum) {
 	localPlayer_t *player;
 
 	player = &cg.localPlayers[localPlayerNum];
 
-	if (cgs.clientNum == -1) {
+	if (player->playerNum == -1) {
 		return;
 	}
 
-	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %d %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), cgs.acceptLeader, VOICECHAT_NO));
+	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %d %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vtell"), player->acceptLeader, VOICECHAT_NO));
 	trap_Cmd_ExecuteText(EXEC_NOW, va("%s; wait; %s", Com_LocalPlayerCvarName(localPlayerNum, "+button6"), Com_LocalPlayerCvarName(localPlayerNum, "-button6")));
 
-	if (cg.time < cgs.acceptOrderTime) {
-		cgs.acceptOrderTime = 0;
+	if (cg.time < player->acceptOrderTime) {
+		player->acceptOrderTime = 0;
 	}
 }
 
-/*
-=======================================================================================================================================
-CG_TaskOffense_f
-=======================================================================================================================================
-*/
 static void CG_TaskOffense_f(int localPlayerNum) {
-
 	if (cgs.gametype == GT_CTF || cgs.gametype == GT_1FCTF) {
 		trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONGETFLAG));
 	} else {
@@ -938,136 +855,71 @@ static void CG_TaskOffense_f(int localPlayerNum) {
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_OFFENSE));
 }
 
-/*
-=======================================================================================================================================
-CG_TaskDefense_f
-=======================================================================================================================================
-*/
 static void CG_TaskDefense_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONDEFENSE));
 	trap_SendClientCommand(va("teamtask %d\n", TEAMTASK_DEFENSE));
 }
 
-/*
-=======================================================================================================================================
-CG_TaskPatrol_f
-=======================================================================================================================================
-*/
 static void CG_TaskPatrol_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONPATROL));
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_PATROL));
 }
 
-/*
-=======================================================================================================================================
-CG_TaskCamp_f
-=======================================================================================================================================
-*/
 static void CG_TaskCamp_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONCAMPING));
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_CAMP));
 }
 
-/*
-=======================================================================================================================================
-CG_TaskFollow_f
-=======================================================================================================================================
-*/
 static void CG_TaskFollow_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONFOLLOW));
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_FOLLOW));
 }
 
-/*
-=======================================================================================================================================
-CG_TaskRetrieve_f
-=======================================================================================================================================
-*/
 static void CG_TaskRetrieve_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONRETURNFLAG));
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_RETRIEVE));
 }
 
-/*
-=======================================================================================================================================
-CG_TaskEscort_f
-=======================================================================================================================================
-*/
 static void CG_TaskEscort_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONFOLLOWCARRIER));
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_ESCORT));
 }
 
-/*
-=======================================================================================================================================
-CG_TaskOwnFlag_f
-=======================================================================================================================================
-*/
 static void CG_TaskOwnFlag_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_IHAVEFLAG));
 }
 
-/*
-=======================================================================================================================================
-CG_TauntKillInsult_f
-=======================================================================================================================================
-*/
 static void CG_TauntKillInsult_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay"), VOICECHAT_KILLINSULT));
 }
 
-/*
-=======================================================================================================================================
-CG_TauntPraise_f
-=======================================================================================================================================
-*/
 static void CG_TauntPraise_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay"), VOICECHAT_PRAISE));
 }
 
-/*
-=======================================================================================================================================
-CG_TauntTaunt_f
-=======================================================================================================================================
-*/
 static void CG_TauntTaunt_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vtaunt")));
 }
 
-/*
-=======================================================================================================================================
-CG_TauntDeathInsult_f
-=======================================================================================================================================
-*/
 static void CG_TauntDeathInsult_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay"), VOICECHAT_DEATHINSULT));
 }
 
-/*
-=======================================================================================================================================
-CG_TauntGauntlet_f
-=======================================================================================================================================
-*/
 static void CG_TauntGauntlet_f(int localPlayerNum) {
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay"), VOICECHAT_KILLGAUNTLET));
 }
 
-/*
-=======================================================================================================================================
-CG_TaskSuicide_f
-=======================================================================================================================================
-*/
 static void CG_TaskSuicide_f(int localPlayerNum) {
-	int clientNum;
+	int playerNum;
 	char command[128];
 
-	clientNum = CG_CrosshairPlayer(0);
+	playerNum = CG_CrosshairPlayer(0);
 
-	if (clientNum == -1) {
+	if (playerNum == -1) {
 		return;
 	}
 
-	Com_sprintf(command, 128, "%s %i suicide", Com_LocalPlayerCvarName(localPlayerNum, "tell"), clientNum);
+	Com_sprintf(command, 128, "%s %i suicide", Com_LocalPlayerCvarName(localPlayerNum, "tell"), playerNum);
 	trap_SendClientCommand(command);
 }
 
@@ -1078,16 +930,16 @@ CG_TeamMenu_f
 */
 /*
 static void CG_TeamMenu_f(void) {
-
-	if (trap_Key_GetCatcher() & KEYCATCH_CGAME) {
-		CG_EventHandling(CGAME_EVENT_NONE);
-		trap_Key_SetCatcher(0);
-	} else {
-		CG_EventHandling(CGAME_EVENT_TEAMMENU);
-		//trap_Key_SetCatcher(KEYCATCH_CGAME);
-	}
+  if (Key_GetCatcher()& KEYCATCH_CGAME) {
+    CG_EventHandling(CGAME_EVENT_NONE);
+    Key_SetCatcher(0);
+  } else {
+    CG_EventHandling(CGAME_EVENT_TEAMMENU);
+    //Key_SetCatcher(KEYCATCH_CGAME);
+  }
 }
 */
+
 /*
 =======================================================================================================================================
 CG_EditHud_f
@@ -1095,12 +947,13 @@ CG_EditHud_f
 */
 /*
 static void CG_EditHud_f(void) {
-
-	//cls.keyCatchers ^= KEYCATCH_CGAME;
-
-	//VM_Call(cgvm, CG_EVENT_HANDLING, (cls.keyCatchers & KEYCATCH_CGAME) ? CGAME_EVENT_EDITHUD : CGAME_EVENT_NONE);
+  //cls.keyCatchers ^ = KEYCATCH_CGAME;
+  //VM_Call(cgvm, CG_EVENT_HANDLING, (cls.keyCatchers & KEYCATCH_CGAME) ? CGAME_EVENT_EDITHUD : CGAME_EVENT_NONE);
 }
 */
+
+#endif
+
 /*
 =======================================================================================================================================
 CG_VstrDown_f
@@ -1110,7 +963,7 @@ static void CG_VstrDown_f(void) {
 	const char *cvarName;
 
 	if (trap_Argc() < 3) {
-		Com_Printf("+vstr <press variable name> <release variable name> : execute a variable command on key press and release\n");
+		Com_Printf("+vstr < press variable name > < release variable name > : execute a variable command on key press and release\n");
 		return;
 	}
 
@@ -1130,7 +983,7 @@ static void CG_VstrUp_f(void) {
 	const char *cvarName;
 
 	if (trap_Argc() < 3) {
-		Com_Printf("-vstr <press variable name> <release variable name> : execute a variable command on key press and release\n");
+		Com_Printf("-vstr < press variable name > < release variable name > : execute a variable command on key press and release\n");
 		return;
 	}
 
@@ -1145,18 +998,16 @@ static void CG_VstrUp_f(void) {
 =======================================================================================================================================
 CG_VstrComplete
 
-Complete cvar name for second and third arguments for +vstr and -vstr.
+complete cvar name for second and third arguments for +vstr and - vstr
 =======================================================================================================================================
 */
 static void CG_VstrComplete(char *args, int argNum) {
-
 	if (argNum == 2 || argNum == 3) {
-		// skip "<cmd>"
+		// Skip "<cmd>"
 		char *p = Com_SkipTokens(args, argNum - 1, " ");
 
-		if (p > args) {
+		if (p > args)
 			trap_Field_CompleteCommand(p, qfalse, qtrue);
-		}
 	}
 }
 
@@ -1165,6 +1016,7 @@ static void CG_VstrComplete(char *args, int argNum) {
 CG_StartOrbit_f
 =======================================================================================================================================
 */
+
 static void CG_StartOrbit_f(void) {
 	int i;
 
@@ -1178,14 +1030,8 @@ static void CG_StartOrbit_f(void) {
 }
 
 /*
-=======================================================================================================================================
-CG_Camera_f
-=======================================================================================================================================
-*/
-/*
 static void CG_Camera_f(void) {
 	char name[1024];
-
 	trap_Argv(1, name, sizeof(name));
 
 	if (trap_loadCamera(name)) {
@@ -1196,11 +1042,7 @@ static void CG_Camera_f(void) {
 	}
 }
 */
-/*
-=======================================================================================================================================
-CG_GenerateTracemap
-=======================================================================================================================================
-*/
+
 void CG_GenerateTracemap(void) {
 	bgGenTracemap_t gen;
 
@@ -1231,7 +1073,7 @@ static void CG_RemapShader_f(void) {
 	}
 
 	if (trap_Argc() < 2 || trap_Argc() > 4) {
-		CG_Printf("Usage: %s <original shader> [new shader] [time offset]\n", CG_Argv(0));
+		CG_Printf("Usage: %s < original shader > [new shader] [time offset]\n", CG_Argv(0));
 		return;
 	}
 
@@ -1244,6 +1086,7 @@ static void CG_RemapShader_f(void) {
 	}
 
 	Q_strncpyz(timeoffset, CG_Argv(3), sizeof(timeoffset));
+
 	trap_R_RemapShader(shader1, shader2, timeoffset);
 }
 
@@ -1253,14 +1096,14 @@ CG_Play_f
 =======================================================================================================================================
 */
 void CG_Play_f(void) {
-	int i;
+	int 		i;
 	int c;
 	sfxHandle_t h;
 
 	c = trap_Argc();
 
 	if (c < 2) {
-		Com_Printf("Usage: play <sound filename> [sound filename] [sound filename] ...\n");
+		Com_Printf("Usage: play < sound filename > [sound filename] [sound filename] ...\n");
 		return;
 	}
 
@@ -1297,7 +1140,7 @@ void CG_Music_f(void) {
 	c = trap_Argc();
 
 	if (c < 2 || c > 5) {
-		Com_Printf("Usage: music <musicfile> [loopfile] [volume] [loopvolume]\n");
+		Com_Printf("Usage: music < musicfile > [loopfile] [volume] [loopvolume]\n");
 		return;
 	}
 
@@ -1319,6 +1162,17 @@ void CG_Music_f(void) {
 
 /*
 =======================================================================================================================================
+CG_MusicComplete
+=======================================================================================================================================
+*/
+static void CG_MusicComplete(char *args, int argNum) {
+	if (argNum == 2 || argNum == 3) {
+		trap_Field_CompleteFilename("", "$sounds", qfalse, qfalse);
+	}
+}
+
+/*
+=======================================================================================================================================
 CG_StopMusic_f
 =======================================================================================================================================
 */
@@ -1332,7 +1186,6 @@ CG_StopCinematic_f
 =======================================================================================================================================
 */
 void CG_StopCinematic_f(void) {
-
 	if (!cg.cinematicPlaying) {
 		return;
 	}
@@ -1359,7 +1212,7 @@ void CG_Cinematic_f(void) {
 	c = trap_Argc();
 
 	if (c < 2 || c > 3) {
-		Com_Printf("Usage: cinematic <videofile> [hold|loop]\n");
+		Com_Printf("Usage: cinematic < videofile > [hold|loop]\n");
 		return;
 	}
 
@@ -1370,11 +1223,11 @@ void CG_Cinematic_f(void) {
 	trap_Argv(1, arg, sizeof(arg));
 	trap_Argv(2, s, sizeof(s));
 
-	if (s[0] == '1' || Q_stricmp(s,"hold") == 0 || Q_stricmp(arg,"demoend.roq") == 0 || Q_stricmp(arg,"end.roq") == 0) {
+	if (s[0] == '1' || Q_stricmp(s, "hold") == 0 || Q_stricmp(arg, "demoend.roq") == 0 || Q_stricmp(arg, "end.roq") == 0) {
 		bits |= CIN_hold;
 	}
 
-	if (s[0] == '2' || Q_stricmp(s,"loop") == 0) {
+	if (s[0] == '2' || Q_stricmp(s, "loop") == 0) {
 		bits |= CIN_loop;
 	}
 
@@ -1384,7 +1237,6 @@ void CG_Cinematic_f(void) {
 	y = 0;
 	width = SCREEN_WIDTH;
 	height = SCREEN_HEIGHT;
-
 	CG_SetScreenPlacement(PLACE_CENTER, PLACE_CENTER);
 	CG_AdjustFrom640(&x, &y, &width, &height);
 
@@ -1401,7 +1253,6 @@ CG_CinematicComplete
 =======================================================================================================================================
 */
 static void CG_CinematicComplete(char *args, int argNum) {
-
 	if (argNum == 2) {
 		trap_Field_CompleteFilename("", "$videos", qfalse, qfalse);
 	}
@@ -1413,7 +1264,6 @@ CG_ToggleMenu_f
 =======================================================================================================================================
 */
 void CG_ToggleMenu_f(void) {
-
 	CG_DistributeKeyEvent(K_ESCAPE, qtrue, trap_Milliseconds(), cg.connState, -1, 0);
 	CG_DistributeKeyEvent(K_ESCAPE, qfalse, trap_Milliseconds(), cg.connState, -1, 0);
 }
@@ -1440,7 +1290,7 @@ CG_Field_CompletePlayerName
 */
 static void CG_Field_CompletePlayerName(int team, qboolean excludeTeam, qboolean excludeLocalPlayers) {
 	int i;
-	clientInfo_t *ci;
+	playerInfo_t *pi;
 	char name[MAX_QPATH];
 	char list[MAX_CLIENTS * MAX_QPATH];
 	int listTotalLength;
@@ -1450,17 +1300,16 @@ static void CG_Field_CompletePlayerName(int team, qboolean excludeTeam, qboolean
 	}
 	// ZTM: FIXME: have to clear whole list because BG_AddStringToList doesn't properly terminate list
 	memset(list, 0, sizeof(list));
-
 	listTotalLength = 0;
 
-	for (i = 0; i < cgs.maxclients; i++) {
-		ci = &cgs.clientinfo[i];
+	for (i = 0; i < cgs.maxplayers; i++) {
+		pi = &cgs.playerinfo[i];
 
 		if (!pi->infoValid) {
 			continue;
 		}
 
-		if (team != -1 && ((excludeTeam && ci->team == team) || (!excludeTeam && ci->team != team))) {
+		if (team != -1 && ((excludeTeam && pi->team == team) ||(!excludeTeam && pi->team != team))) {
 			continue;
 		}
 
@@ -1468,9 +1317,9 @@ static void CG_Field_CompletePlayerName(int team, qboolean excludeTeam, qboolean
 			continue;
 		}
 
-		Q_strncpyz(name, ci->name, sizeof(name));
+		Q_strncpyz(name, pi->name, sizeof(name));
 		Q_CleanStr(name);
-		// use quotes if there is a space in the name
+		// Use quotes if there is a space in the name
 		if (strchr(name, ' ') != NULL) {
 			BG_AddStringToList(list, sizeof(list), &listTotalLength, va("\"%s\"", name));
 		} else {
@@ -1490,7 +1339,6 @@ CG_TellComplete
 =======================================================================================================================================
 */
 static void CG_TellComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		CG_Field_CompletePlayerName(-1, qfalse, qfalse);
 	}
@@ -1503,7 +1351,6 @@ CG_Field_CompleteVoiceChat
 =======================================================================================================================================
 */
 static void CG_Field_CompleteVoiceChat(void) {
-
 	trap_Field_CompleteList(
 		VOICECHAT_BASEATTACK "\0"
 		VOICECHAT_CAMP "\0"
@@ -1548,7 +1395,6 @@ CG_VoiceSayComplete
 =======================================================================================================================================
 */
 static void CG_VoiceSayComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		CG_Field_CompleteVoiceChat();
 	}
@@ -1560,7 +1406,6 @@ CG_VoiceTellComplete
 =======================================================================================================================================
 */
 static void CG_VoiceTellComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		CG_Field_CompletePlayerName(-1, qfalse, qfalse);
 	}
@@ -1570,6 +1415,7 @@ static void CG_VoiceTellComplete(int localPlayerNum, char *args, int argNum) {
 	}
 }
 #endif
+
 /*
 =======================================================================================================================================
 CG_GiveComplete
@@ -1586,14 +1432,13 @@ static void CG_GiveComplete(int localPlayerNum, char *args, int argNum) {
 
 	// ZTM: FIXME: have to clear whole list because BG_AddStringToList doesn't properly terminate list
 	memset(list, 0, sizeof(list));
-
 	listTotalLength = 0;
 
 	if (argNum == 2) {
 		memcpy(list, builtinNames, ARRAY_LEN(builtinNames) - 1);
 		listTotalLength = ARRAY_LEN(builtinNames) - 1;
 	}
-	// skip "give" or NULL if no space character
+	// skip "give " or NULL if no space character
 	typedName = strchr(args, ' ');
 
 	if (typedName) {
@@ -1606,7 +1451,10 @@ static void CG_GiveComplete(int localPlayerNum, char *args, int argNum) {
 	for (i = 1; i < BG_NumItems(); i++) {
 		item = BG_ItemForItemNum(i);
 		name = item->pickup_name;
+
 		// complete item names with spaces across multiple arguments instead of adding quotes
+		//
+
 		// check if matches previously typed words
 		if (typedName && Q_stricmpn(typedName, name, typedNameLength)) {
 			continue;
@@ -1637,7 +1485,6 @@ CG_FollowComplete
 =======================================================================================================================================
 */
 static void CG_FollowComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		CG_Field_CompletePlayerName(TEAM_SPECTATOR, qtrue, qtrue);
 	}
@@ -1649,7 +1496,6 @@ CG_TeamComplete
 =======================================================================================================================================
 */
 static void CG_TeamComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		trap_Field_CompleteList("blue\0follow1\0follow2\0free\0red\0scoreboard\0spectator\0");
 	}
@@ -1661,7 +1507,6 @@ CG_CallVoteComplete
 =======================================================================================================================================
 */
 static void CG_CallVoteComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		trap_Field_CompleteList("capturelimit\0fraglimit\0g_doWarmup\0g_gametype\0g_instagib\0kick\0kicknum\0map\0map_restart\0nextmap\0timelimit\0");
 	}
@@ -1681,7 +1526,6 @@ CG_VoteComplete
 =======================================================================================================================================
 */
 static void CG_VoteComplete(int localPlayerNum, char *args, int argNum) {
-
 	if (argNum == 2) {
 		trap_Field_CompleteList("no\0yes\0");
 	}
@@ -1693,26 +1537,26 @@ CG_CallTeamVoteComplete
 =======================================================================================================================================
 */
 static void CG_CallTeamVoteComplete(int localPlayerNum, char *args, int argNum) {
-	int clientNum, team;
-	clientInfo_t *ci;
+	int playerNum, team;
+	playerInfo_t *pi;
 
 	if (!cg.snap) {
 		return;
 	}
 
-	clientNum = cg.localPlayers[localPlayerNum].clientNum;
+	playerNum = cg.localPlayers[localPlayerNum].playerNum;
 
-	if (clientNum == -1) {
+	if (playerNum == -1) {
 		return;
 	}
 
-	ci = &cgs.clientinfo[clientNum];
+	pi = &cgs.playerinfo[playerNum];
 
 	if (!pi->infoValid) {
 		return;
 	}
 
-	team = ci->team;
+	team = pi->team;
 
 	if (team != TEAM_BLUE && team != TEAM_RED) {
 		return;
@@ -1746,7 +1590,7 @@ static consoleCommand_t cg_commands[] = {
 #endif
 #endif
 	{"startOrbit", CG_StartOrbit_f, CMD_INGAME},
-	//{"camera", CG_Camera_f, CMD_INGAME},
+	//{ "camera", CG_Camera_f, CMD_INGAME},
 	{"loaddeferred", CG_LoadDeferredPlayers, CMD_INGAME},
 	{"generateTracemap", CG_GenerateTracemap, CMD_INGAME},
 	{"remapShader", CG_RemapShader_f, 0},
@@ -1761,14 +1605,14 @@ static consoleCommand_t cg_commands[] = {
 	{"messageMode4", CG_MessageMode4_f},
 	{"clear", Con_ClearConsole_f},
 	{"toggleconsole", Con_ToggleConsole_f},
-	{"togglemenu", CG_ToggleMenu_f}
+	{"togglemenu", CG_ToggleMenu_f }
 };
 
 static int cg_numCommands = ARRAY_LEN(cg_commands);
 
 typedef struct {
 	char *cmd;
-	void(*function)(int);
+	void (*function)(int);
 	int flags;
 	void (*complete)(int, char *, int);
 } playerConsoleCommand_t;
@@ -1776,8 +1620,8 @@ typedef struct {
 static playerConsoleCommand_t playerCommands[] = {
 	{"+attack", IN_Button0Down, 0},
 	{"-attack", IN_Button0Up, 0},
-	{"+back",IN_BackDown, 0},
-	{"-back",IN_BackUp, 0},
+	{"+back", IN_BackDown, 0},
+	{"-back", IN_BackUp, 0},
 	{"+button0", IN_Button0Down, 0},
 	{"-button0", IN_Button0Up, 0},
 	{"+button10", IN_Button10Down, 0},
@@ -1808,36 +1652,36 @@ static playerConsoleCommand_t playerCommands[] = {
 	{"-button8", IN_Button8Up, 0},
 	{"+button9", IN_Button9Down, 0},
 	{"-button9", IN_Button9Up, 0},
-	{"+forward",IN_ForwardDown, 0},
-	{"-forward",IN_ForwardUp, 0},
-	{"+gesture",IN_Button3Down, 0},
-	{"-gesture",IN_Button3Up, 0},
-	{"+left",IN_LeftDown, 0},
-	{"-left",IN_LeftUp, 0},
+	{"+forward", IN_ForwardDown, 0},
+	{"-forward", IN_ForwardUp, 0},
+	{"+gesture", IN_Button3Down, 0},
+	{"-gesture", IN_Button3Up, 0},
+	{"+left", IN_LeftDown, 0},
+	{"-left", IN_LeftUp, 0},
 	{"+lookdown", IN_LookdownDown, 0},
 	{"-lookdown", IN_LookdownUp, 0},
 	{"+lookup", IN_LookupDown, 0},
 	{"-lookup", IN_LookupUp, 0},
 	{"+mlook", IN_MLookDown, 0},
 	{"-mlook", IN_MLookUp, 0},
-	{"+movedown",IN_DownDown, 0},
-	{"-movedown",IN_DownUp, 0},
+	{"+movedown", IN_DownDown, 0},
+	{"-movedown", IN_DownUp, 0},
 	{"+moveleft", IN_MoveleftDown, 0},
 	{"-moveleft", IN_MoveleftUp, 0},
 	{"+moveright", IN_MoverightDown, 0},
 	{"-moveright", IN_MoverightUp, 0},
-	{"+moveup",IN_UpDown, 0},
-	{"-moveup",IN_UpUp, 0},
-	{"+right",IN_RightDown, 0},
-	{"-right",IN_RightUp, 0},
+	{"+moveup", IN_UpDown, 0},
+	{"-moveup", IN_UpUp, 0},
+	{"+right", IN_RightDown, 0},
+	{"-right", IN_RightUp, 0},
 	{"+scores", CG_ScoresDown_f, CMD_INGAME},
 	{"-scores", CG_ScoresUp_f, CMD_INGAME},
 	{"+speed", IN_SpeedDown, 0},
 	{"-speed", IN_SpeedUp, 0},
 	{"+strafe", IN_StrafeDown, 0},
 	{"-strafe", IN_StrafeUp, 0},
-	{"+useitem",IN_Button2Down, 0},
-	{"-useitem",IN_Button2Up, 0},
+	{"+useitem", IN_Button2Down, 0},
+	{"-useitem", IN_Button2Up, 0},
 	{"+zoom", CG_ZoomDown_f, CMD_INGAME},
 	{"-zoom", CG_ZoomUp_f, CMD_INGAME},
 	{"centerecho", CG_CenterEcho_f, CMD_INGAME},
@@ -1848,6 +1692,7 @@ static playerConsoleCommand_t playerCommands[] = {
 	{"team_headmodel", CG_SetTeamHeadmodel_f, 0, CG_TeamHeadmodelComplete},
 	{"tell_target", CG_TellTarget_f, CMD_INGAME},
 	{"tell_attacker", CG_TellAttacker_f, CMD_INGAME},
+#ifdef MISSIONPACK
 	{"vtell_target", CG_VoiceTellTarget_f, CMD_INGAME, CG_VoiceSayComplete},
 	{"vtell_attacker", CG_VoiceTellAttacker_f, CMD_INGAME, CG_VoiceSayComplete},
 	{"nextTeamMember", CG_NextTeamMember_f, CMD_INGAME},
@@ -1869,18 +1714,23 @@ static playerConsoleCommand_t playerCommands[] = {
 	{"tauntTaunt", CG_TauntTaunt_f, CMD_INGAME},
 	{"tauntDeathInsult", CG_TauntDeathInsult_f, CMD_INGAME},
 	{"tauntGauntlet", CG_TauntGauntlet_f, CMD_INGAME},
+#endif
+#ifdef MISSIONPACK_HUD
 	{"scoresDown", CG_ScrollScoresDown_f, CMD_INGAME},
 	{"scoresUp", CG_ScrollScoresUp_f, CMD_INGAME},
+#endif
 	{"model", CG_SetModel_f, 0, CG_ModelComplete},
 	{"viewpos", CG_Viewpos_f, CMD_INGAME},
 	{"weapnext", CG_NextWeapon_f, CMD_INGAME},
 	{"weapprev", CG_PrevWeapon_f, CMD_INGAME},
 	{"weapon", CG_Weapon_f, CMD_INGAME},
 	{"weaponToggle", CG_WeaponToggle_f, CMD_INGAME},
-	// these commands will be forwarded to the server and interpret by the Game VM
+
+	// These commands will be forwarded to the server and interpret by the Game VM.
 	{"say", CG_ForwardToServer_f, CMD_INGAME},
 	{"say_team", CG_ForwardToServer_f, CMD_INGAME},
 	{"tell", CG_ForwardToServer_f, CMD_INGAME, CG_TellComplete},
+#ifdef MISSIONPACK
 	{"vsay", CG_ForwardToServer_f, CMD_INGAME, CG_VoiceSayComplete},
 	{"vsay_team", CG_ForwardToServer_f, CMD_INGAME, CG_VoiceSayComplete},
 	{"vtell", CG_ForwardToServer_f, CMD_INGAME, CG_VoiceTellComplete},
@@ -1888,6 +1738,7 @@ static playerConsoleCommand_t playerCommands[] = {
 	{"vosay_team", CG_ForwardToServer_f, CMD_INGAME, CG_VoiceSayComplete},
 	{"votell", CG_ForwardToServer_f, CMD_INGAME, CG_VoiceTellComplete},
 	{"vtaunt", CG_ForwardToServer_f, CMD_INGAME},
+#endif
 	{"give", CG_ForwardToServer_f, CMD_INGAME, CG_GiveComplete},
 	{"god", CG_ForwardToServer_f, CMD_INGAME},
 	{"notarget", CG_ForwardToServer_f, CMD_INGAME},
@@ -1916,7 +1767,6 @@ CG_CheckCmdFlags
 =======================================================================================================================================
 */
 static qboolean CG_CheckCmdFlags(const char *cmd, int flags) {
-
 	if ((flags & CMD_INGAME) && !cg.snap) {
 		CG_Printf("Must be in game to use command \"%s\"\n", cmd);
 		return qtrue;
@@ -1934,7 +1784,8 @@ static qboolean CG_CheckCmdFlags(const char *cmd, int flags) {
 =======================================================================================================================================
 CG_ConsoleCommand
 
-The string has been tokenized and can be retrieved with Cmd_Argc()/Cmd_Argv().
+The string has been tokenized and can be retrieved with
+Cmd_Argc() / Cmd_Argv()
 =======================================================================================================================================
 */
 qboolean CG_ConsoleCommand(connstate_t state, int realTime) {
@@ -1944,10 +1795,12 @@ qboolean CG_ConsoleCommand(connstate_t state, int realTime) {
 	const char *baseCmd;
 
 	cg.connState = state;
+
 	// update UI frame time
 	UI_ConsoleCommand(realTime);
 
 	cmd = CG_Argv(0);
+
 	localPlayerNum = Com_LocalPlayerForCvarName(cmd);
 	baseCmd = Com_LocalPlayerBaseCvarName(cmd);
 
@@ -1962,10 +1815,10 @@ qboolean CG_ConsoleCommand(connstate_t state, int realTime) {
 		}
 	}
 
-	if ( localPlayerNum == 0 ) {
-		for ( i = 0; i < cg_numCommands; i++ ) {
-			if ( !Q_stricmp( cmd, cg_commands[i].cmd )) {
-				if ( CG_CheckCmdFlags( cmd, cg_commands[i].flags ) ) {
+	if (localPlayerNum == 0) {
+		for (i = 0; i < cg_numCommands; i++) {
+			if (!Q_stricmp(cmd, cg_commands[i].cmd)) {
+				if (CG_CheckCmdFlags(cmd, cg_commands[i].flags)) {
 					return qtrue;
 				}
 				cg_commands[i].function();
@@ -1973,9 +1826,9 @@ qboolean CG_ConsoleCommand(connstate_t state, int realTime) {
 			}
 		}
 
-		for ( i = 0; i < ui_numCommands; i++ ) {
-			if ( !Q_stricmp( cmd, ui_commands[i].cmd )) {
-				if ( CG_CheckCmdFlags( cmd, ui_commands[i].flags ) ) {
+		for (i = 0; i < ui_numCommands; i++) {
+			if (!Q_stricmp(cmd, ui_commands[i].cmd)) {
+				if (CG_CheckCmdFlags(cmd, ui_commands[i].flags)) {
 					return qtrue;
 				}
 				ui_commands[i].function();
@@ -1991,7 +1844,8 @@ qboolean CG_ConsoleCommand(connstate_t state, int realTime) {
 =======================================================================================================================================
 CG_ConsoleCompleteArgument
 
-The string has been tokenized and can be retrieved with Cmd_Argc()/Cmd_Argv().
+The string has been tokenized and can be retrieved with
+Cmd_Argc() / Cmd_Argv()
 =======================================================================================================================================
 */
 qboolean CG_ConsoleCompleteArgument(connstate_t state, int realTime, int completeArgument) {
@@ -2017,7 +1871,7 @@ qboolean CG_ConsoleCompleteArgument(connstate_t state, int realTime, int complet
 	}
 
 	if (localPlayerNum == 0) {
-		for (i = 0; i < cg_numCommands; i++ ) {
+		for (i = 0; i < cg_numCommands; i++) {
 			if (cg_commands[i].complete && !Q_stricmp(cmd, cg_commands[i].cmd)) {
 				cg_commands[i].complete(args, completeArgument);
 				return qtrue;
@@ -2039,7 +1893,8 @@ qboolean CG_ConsoleCompleteArgument(connstate_t state, int realTime, int complet
 =======================================================================================================================================
 CG_InitConsoleCommands
 
-Let the client system know about all of our commands so it can perform tab completion.
+Let the client system know about all of our commands
+so it can perform tab completion
 =======================================================================================================================================
 */
 void CG_InitConsoleCommands(void) {

@@ -1,55 +1,68 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com).
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)2005 Stuart Dalton(badcdev@gmail.com)
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
+
 #ifndef __QAL_H__
 #define __QAL_H__
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
+
 #ifdef USE_OPENAL_DLOPEN
 #define AL_NO_PROTOTYPES
 #define ALC_NO_PROTOTYPES
 #endif
+
 #ifdef USE_LOCAL_HEADERS
 #include "../AL/al.h"
 #include "../AL/alc.h"
 #else
 #if defined(_MSC_VER) || defined(__APPLE__)
-// MSVC users must install the OpenAL SDK which doesn't use the AL/*.h scheme. OSX framework also needs this
-#include <al.h>
-#include <alc.h>
+  // MSVC users must install the OpenAL SDK which doesn't use the AL/*.h scheme.
+  // OSX framework also needs this
+  #include <al.h>
+  #include <alc.h>
 #else
-#include <AL/al.h>
-#include <AL/alc.h>
+  #include <AL/al.h>
+  #include <AL/alc.h>
 #endif
 #endif
-// hack to enable compiling both on OpenAL SDK and OpenAL-soft.
+
+/* Hack to enable compiling both on OpenAL SDK and OpenAL - soft. */
 #ifndef ALC_ENUMERATE_ALL_EXT
 #define ALC_ENUMERATE_ALL_EXT 1
-#define ALC_DEFAULT_ALL_DEVICES_SPECIFIER	0x1012
-#define ALC_ALL_DEVICES_SPECIFIER			0x1013
+#define ALC_DEFAULT_ALL_DEVICES_SPECIFIER        0x1012
+#define ALC_ALL_DEVICES_SPECIFIER                0x1013
 #endif
+
 #ifdef USE_OPENAL_DLOPEN
 extern LPALENABLE qalEnable;
 extern LPALDISABLE qalDisable;
@@ -123,6 +136,7 @@ extern LPALGETBUFFERIV qalGetBufferiv;
 extern LPALDOPPLERFACTOR qalDopplerFactor;
 extern LPALSPEEDOFSOUND qalSpeedOfSound;
 extern LPALDISTANCEMODEL qalDistanceModel;
+
 extern LPALCCREATECONTEXT qalcCreateContext;
 extern LPALCMAKECONTEXTCURRENT qalcMakeContextCurrent;
 extern LPALCPROCESSCONTEXT qalcProcessContext;
@@ -216,6 +230,7 @@ extern LPALCCAPTURESAMPLES qalcCaptureSamples;
 #define qalDopplerFactor alDopplerFactor
 #define qalSpeedOfSound alSpeedOfSound
 #define qalDistanceModel alDistanceModel
+
 #define qalcCreateContext alcCreateContext
 #define qalcMakeContextCurrent alcMakeContextCurrent
 #define qalcProcessContext alcProcessContext
@@ -237,6 +252,8 @@ extern LPALCCAPTURESAMPLES qalcCaptureSamples;
 #define qalcCaptureStop alcCaptureStop
 #define qalcCaptureSamples alcCaptureSamples
 #endif
+
 qboolean QAL_Init(const char *libname);
 void QAL_Shutdown(void);
-#endif // __QAL_H__
+
+#endif	// __QAL_H__

@@ -1,30 +1,34 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
-/**************************************************************************************************************************************
- Misc utility functions for game module.
-**************************************************************************************************************************************/
+//
+// g_utils.c -- misc utility functions for game module
 
 #include "g_local.h"
 
@@ -39,11 +43,6 @@ typedef struct {
 int remapCount = 0;
 shaderRemap_t remappedShaders[MAX_SHADER_REMAPS];
 
-/*
-=======================================================================================================================================
-AddRemap
-=======================================================================================================================================
-*/
 void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	int i;
 
@@ -64,20 +63,15 @@ void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	}
 }
 
-/*
-=======================================================================================================================================
-BuildShaderStateConfig
-=======================================================================================================================================
-*/
 const char *BuildShaderStateConfig(void) {
-	static char buff[MAX_STRING_CHARS * 4];
-	char out[(MAX_QPATH * 2) + 5];
+	static char buff[MAX_STRING_CHARS*4];
+	char out[(MAX_QPATH * 2) +  5];
 	int i;
-
+  
 	memset(buff, 0, MAX_STRING_CHARS);
 
 	for (i = 0; i < remapCount; i++) {
-		Com_sprintf(out, (MAX_QPATH * 2) + 5, "%s=%s:%5.2f@", remappedShaders[i].oldShader, remappedShaders[i].newShader, remappedShaders[i].timeOffset);
+		Com_sprintf(out, (MAX_QPATH * 2) +  5, "%s = %s:%5.2f@", remappedShaders[i].oldShader, remappedShaders[i].newShader, remappedShaders[i].timeOffset);
 		Q_strcat(buff, sizeof(buff), out);
 	}
 
@@ -87,7 +81,7 @@ const char *BuildShaderStateConfig(void) {
 /*
 =======================================================================================================================================
 
-	Model/Sound configstring indexes.
+model / sound configstring indexes
 
 =======================================================================================================================================
 */
@@ -95,6 +89,7 @@ const char *BuildShaderStateConfig(void) {
 /*
 =======================================================================================================================================
 G_FindConfigstringIndex
+
 =======================================================================================================================================
 */
 int G_FindConfigstringIndex(char *name, int start, int max, qboolean create) {
@@ -130,38 +125,30 @@ int G_FindConfigstringIndex(char *name, int start, int max, qboolean create) {
 	return i;
 }
 
-/*
-=======================================================================================================================================
-G_ModelIndex
-=======================================================================================================================================
-*/
 int G_ModelIndex(char *name) {
 	return G_FindConfigstringIndex(name, CS_MODELS, MAX_MODELS, qtrue);
 }
 
-/*
-=======================================================================================================================================
-G_SoundIndex
-=======================================================================================================================================
-*/
 int G_SoundIndex(char *name) {
 	return G_FindConfigstringIndex(name, CS_SOUNDS, MAX_SOUNDS, qtrue);
 }
+
+//=====================================================================
 
 /*
 =======================================================================================================================================
 trap_SendServerCommand
 
 Broadcasts a command to only a specific plsyer.
+
 ZTM: NOTE: Function name kept to reduce source code changes.
 =======================================================================================================================================
 */
-void trap_SendServerCommand(int clientNum, char *cmd) {
-
-	if (clientNum == -1) {
+void trap_SendServerCommand(int playerNum, char *cmd) {
+	if (playerNum == -1) {
 		trap_SendServerCommandEx(-1, -1, cmd);
 	} else {
-		trap_SendServerCommandEx(level.players[clientNum].pers.connectionNum, level.players[clientNum].pers.localPlayerNum, cmd);
+		trap_SendServerCommandEx(level.players[playerNum].pers.connectionNum, level.players[playerNum].pers.localPlayerNum, cmd);
 	}
 }
 
@@ -169,32 +156,30 @@ void trap_SendServerCommand(int clientNum, char *cmd) {
 =======================================================================================================================================
 G_TeamCommand
 
-Broadcasts a command to only a specific team.
+Broadcasts a command to only a specific team
 =======================================================================================================================================
 */
 void G_TeamCommand(team_t team, char *cmd) {
 	gconnection_t *connection;
-	int i, j, clientNum;
+	int i, j, playerNum;
 
 	for (i = 0; i < level.maxconnections; i++) {
 		connection = &level.connections[i];
 
 		for (j = 0; j < MAX_SPLITVIEW; j++) {
-			if (level.connections[i].localPlayerNums[j] == -1) {
+			if (level.connections[i].localPlayerNums[j] == -1)
 				continue;
-			}
 
-			clientNum = connection->localPlayerNums[j];
+			playerNum = connection->localPlayerNums[j];
 
-			if (level.players[clientNum].sess.sessionTeam == team) {
+			if (level.players[playerNum].sess.sessionTeam == team) {
 				if (connection->numLocalPlayers == 1) {
-					trap_SendServerCommand(clientNum, cmd);
+					trap_SendServerCommand(playerNum, cmd);
 				}
-
 				break;
 			}
 		}
-		// include team when there are multiple local players
+		// Include team when there are multiple local players
 		if (connection->numLocalPlayers > 1 && j < MAX_SPLITVIEW) {
 			trap_SendServerCommandEx(i, -1, va("[%s] %s", TeamName(team), cmd));
 		}
@@ -205,47 +190,46 @@ void G_TeamCommand(team_t team, char *cmd) {
 =======================================================================================================================================
 G_Find
 
-Searches all active entities for the next one that holds the matching string at fieldofs (use the FOFS() macro) in the structure.
-Searches beginning at the entity after from, or the beginning if NULL.
+Searches all active entities for the next one that holds
+the matching string at fieldofs(use the FOFS()macro)in the structure.
+
+Searches beginning at the entity after from, or the beginning if NULL
 NULL will be returned if the end of the list is reached.
+
 =======================================================================================================================================
 */
 gentity_t *G_Find(gentity_t *from, int fieldofs, const char *match) {
 	char *s;
 
-	if (!from) {
+	if (!from)
 		from = g_entities;
-	} else {
+	else
 		from++;
-	}
 
 	for (; from < &g_entities[level.num_entities]; from++) {
-		if (!from->inuse) {
+		if (!from->inuse)
 			continue;
-		}
+		s = * (char **)((byte *)from + fieldofs);
 
-		s = *(char **)((byte *)from + fieldofs);
-
-		if (!s) {
+		if (!s)
 			continue;
-		}
 
-		if (!Q_stricmp(s, match)) {
+		if (!Q_stricmp(s, match))
 			return from;
-		}
 	}
 
 	return NULL;
 }
 
-#define MAXCHOICES 32
 /*
 =======================================================================================================================================
 G_PickTarget
 
-Selects a random entity from among the targets.
+Selects a random entity from among the targets
 =======================================================================================================================================
 */
+#define MAXCHOICES	32
+
 gentity_t *G_PickTarget(char *targetname) {
 	gentity_t *ent = NULL;
 	int num_choices = 0;
@@ -259,15 +243,12 @@ gentity_t *G_PickTarget(char *targetname) {
 	while (1) {
 		ent = G_Find(ent, FOFS(targetname), targetname);
 
-		if (!ent) {
+		if (!ent)
 			break;
-		}
-
 		choice[num_choices++] = ent;
 
-		if (num_choices == MAXCHOICES) {
+		if (num_choices == MAXCHOICES)
 			break;
-		}
 	}
 
 	if (!num_choices) {
@@ -275,7 +256,7 @@ gentity_t *G_PickTarget(char *targetname) {
 		return NULL;
 	}
 
-	return choice[rand() % num_choices];
+	return choice[rand()% num_choices];
 }
 
 /*
@@ -283,19 +264,21 @@ gentity_t *G_PickTarget(char *targetname) {
 G_UseTargets
 
 "activator" should be set to the entity that initiated the firing.
-Search for (string) targetname in all entities that match (string) self.target and call their .use function.
+
+Search for(string)targetname in all entities that
+match(string)self.target and call their .use function
+
 =======================================================================================================================================
 */
 void G_UseTargets(gentity_t *ent, gentity_t *activator) {
 	gentity_t *t;
-
+	
 	if (!ent) {
 		return;
 	}
 
 	if (ent->targetShaderName && ent->targetShaderNewName) {
 		float f = level.time * 0.001;
-
 		AddRemap(ent->targetShaderName, ent->targetShaderNewName, f);
 		trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 	}
@@ -326,15 +309,17 @@ void G_UseTargets(gentity_t *ent, gentity_t *activator) {
 =======================================================================================================================================
 TempVector
 
-This is just a convenience function for making temporary vectors for function calls.
+This is just a convenience function
+for making temporary vectors for function calls
 =======================================================================================================================================
 */
-float *TempVector(float x, float y, float z) {
+float *tv(float x, float y, float z) {
 	static int index;
 	static vec3_t vecs[8];
 	float *v;
 
-	// use an array so that multiple vectors won't collide for a while
+	// use an array so that multiple tempvectors won't collide
+	// for a while
 	v = vecs[index];
 	index = (index + 1)&7;
 
@@ -349,19 +334,21 @@ float *TempVector(float x, float y, float z) {
 =======================================================================================================================================
 VectorToString
 
-This is just a convenience function for printing vectors.
+This is just a convenience function
+for printing vectors
 =======================================================================================================================================
 */
-char *VectorToString(const vec3_t v) {
+char *vtos(const vec3_t v) {
 	static int index;
 	static char str[8][32];
 	char *s;
 
-	// use an array so that multiple vectors won't collide
+	// use an array so that multiple vtos won't collide
 	s = str[index];
 	index = (index + 1)&7;
 
 	Com_sprintf(s, 32, "(%i %i %i)", (int)v[0], (int)v[1], (int)v[2]);
+
 	return s;
 }
 
@@ -386,46 +373,43 @@ void G_SetBrushModel(gentity_t *ent, const char *name) {
 	trap_GetBrushBounds(ent->s.modelindex, mins, maxs);
 	VectorCopy(mins, ent->s.mins);
 	VectorCopy(maxs, ent->s.maxs);
-
 	ent->s.collisionType = CT_SUBMODEL;
-	ent->s.contents = -1; // we don't know exactly what is in the brushes
 
-	trap_LinkEntity(ent); // FIXME: remove
+	ent->s.contents = -1; 		// we don't know exactly what is in the brushes
+
+	trap_LinkEntity(ent); 		// FIXME: remove
 }
 
 /*
 =======================================================================================================================================
 G_SetMovedir
 
-The editor only specifies a single value for angles (yaw), but we have special constants to generate an up or down direction.
-Angles will be cleared, because it is being used to represent a direction instead of an orientation.
+The editor only specifies a single value for angles(yaw),
+but we have special constants to generate an up or down direction.
+Angles will be cleared, because it is being used to represent a direction
+instead of an orientation.
 =======================================================================================================================================
 */
 void G_SetMovedir(vec3_t angles, vec3_t movedir) {
-	static vec3_t VEC_UP = {0, -1, 0};
-	static vec3_t MOVEDIR_UP = {0, 0, 1};
-	static vec3_t VEC_DOWN = {0, -2, 0};
-	static vec3_t MOVEDIR_DOWN = {0, 0, -1};
+	static vec3_t VEC_UP		 = {0, -1, 0};
+	static vec3_t MOVEDIR_UP	 = {0, 0, 1};
+	static vec3_t VEC_DOWN		 = {0, -2, 0};
+	static vec3_t MOVEDIR_DOWN	 = {0, 0, -1};
 
 	if (VectorCompare(angles, VEC_UP)) {
 		VectorCopy(MOVEDIR_UP, movedir);
 	} else if (VectorCompare(angles, VEC_DOWN)) {
 		VectorCopy(MOVEDIR_DOWN, movedir);
 	} else {
-		AngleVectorsForward(angles, movedir);
+		AngleVectors(angles, movedir, NULL, NULL);
 	}
 
 	VectorClear(angles);
 }
 
-/*
-=======================================================================================================================================
-VectorToYaw
-=======================================================================================================================================
-*/
-float VectorToYaw(const vec3_t vec) {
+float vectoyaw(const vec3_t vec) {
 	float yaw;
-
+	
 	if (vec[YAW] == 0 && vec[PITCH] == 0) {
 		yaw = 0;
 	} else {
@@ -445,13 +429,7 @@ float VectorToYaw(const vec3_t vec) {
 	return yaw;
 }
 
-/*
-=======================================================================================================================================
-G_InitGentity
-=======================================================================================================================================
-*/
 void G_InitGentity(gentity_t *e) {
-
 	e->inuse = qtrue;
 	e->classname = "noclass";
 	e->s.number = e - g_entities;
@@ -463,26 +441,31 @@ void G_InitGentity(gentity_t *e) {
 G_Spawn
 
 Either finds a free entity, or allocates a new one.
-The slots from 0 to MAX_CLIENTS - 1 are always reserved for clients, and will never be used by anything else.
-Try to avoid reusing an entity that was recently freed, because it can cause the client to think the entity morphed into something else
-instead of being removed and recreated, which can cause interpolated angles and bad trails.
+
+  The slots from 0 to MAX_CLIENTS - 1 are always reserved for players, and will
+never be used by anything else.
+
+Try to avoid reusing an entity that was recently freed, because it
+can cause the client to think the entity morphed into something else
+instead of being removed and recreated, which can cause interpolated
+angles and bad trails.
 =======================================================================================================================================
 */
 gentity_t *G_Spawn(void) {
 	int i, force;
 	gentity_t *e;
 
-	e = NULL; // shut up warning
-
+	e = NULL; 	// shut up warning
 	for (force = 0; force < 2; force++) {
-		// if we go through all entities and can't find one to free, override the normal minimum times before use
+		// if we go through all entities and can't find one to free,
+		// override the normal minimum times before use
 		e = &g_entities[MAX_CLIENTS];
-
 		for (i = MAX_CLIENTS; i < level.num_entities; i++, e++) {
 			if (e->inuse) {
 				continue;
 			}
-			// the first couple seconds of server time can involve a lot of freeing and allocating, so relax the replacement policy
+			// the first couple seconds of server time can involve a lot of
+			// freeing and allocating, so relax the replacement policy
 			if (!force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000) {
 				continue;
 			}
@@ -503,10 +486,14 @@ gentity_t *G_Spawn(void) {
 
 		G_Error("G_Spawn: no free entities");
 	}
+	
 	// open up a new slot
 	level.num_entities++;
+
 	// let the server system know that there are more entities
-	trap_LocateGameData(level.gentities, level.num_entities, sizeof(gentity_t), &level.clients[0].ps, sizeof(level.clients[0]));
+	trap_LocateGameData(level.gentities, level.num_entities, sizeof(gentity_t),
+		&level.players[0].ps, sizeof(level.players[0]));
+
 	G_InitGentity(e);
 	return e;
 }
@@ -542,19 +529,17 @@ qboolean G_EntitiesFree(void) {
 =======================================================================================================================================
 G_FreeEntity
 
-Marks the entity as free.
+Marks the entity as free
 =======================================================================================================================================
 */
 void G_FreeEntity(gentity_t *ed) {
-
-	trap_UnlinkEntity(ed); // unlink from world
+	trap_UnlinkEntity(ed); 		// unlink from world
 
 	if (ed->neverFree) {
 		return;
 	}
 
 	memset(ed, 0, sizeof(*ed));
-
 	ed->classname = "freed";
 	ed->freetime = level.time;
 	ed->inuse = qfalse;
@@ -564,8 +549,9 @@ void G_FreeEntity(gentity_t *ed) {
 =======================================================================================================================================
 G_TempEntity
 
-Spawns an event entity that will be auto-removed. The origin will be snapped to save net bandwidth, so care must be taken if the origin
-is right on a surface (snap towards start vector first).
+Spawns an event entity that will be auto - removed
+The origin will be snapped to save net bandwidth, so care
+must be taken if the origin is right on a surface(snap towards start vector first)
 =======================================================================================================================================
 */
 gentity_t *G_TempEntity(vec3_t origin, int event) {
@@ -574,13 +560,15 @@ gentity_t *G_TempEntity(vec3_t origin, int event) {
 
 	e = G_Spawn();
 	e->s.eType = ET_EVENTS + event;
+
 	e->classname = "tempEntity";
 	e->eventTime = level.time;
 	e->freeAfterEvent = qtrue;
 
 	VectorCopy(origin, snapped);
-	SnapVector(snapped); // save network bandwidth
+	SnapVector(snapped); 		// save network bandwidth
 	G_SetOrigin(e, snapped);
+
 	// find cluster for PVS
 	trap_LinkEntity(e);
 
@@ -589,9 +577,18 @@ gentity_t *G_TempEntity(vec3_t origin, int event) {
 
 /*
 =======================================================================================================================================
+
+Kill box
+
+=======================================================================================================================================
+*/
+
+/*
+=======================================================================================================================================
 G_KillBox
 
-Kills all entities that would touch the proposed new positioning of ent. Ent should be unlinked before calling this!
+Kills all entities that would touch the proposed new positioning
+of ent.  Ent should be unlinked before calling this!
 =======================================================================================================================================
 */
 void G_KillBox(gentity_t *ent) {
@@ -600,44 +597,46 @@ void G_KillBox(gentity_t *ent) {
 	gentity_t *hit;
 	vec3_t mins, maxs;
 
-	VectorAdd(ent->client->ps.origin, ent->s.mins, mins);
-	VectorAdd(ent->client->ps.origin, ent->s.maxs, maxs);
-
+	VectorAdd(ent->player->ps.origin, ent->s.mins, mins);
+	VectorAdd(ent->player->ps.origin, ent->s.maxs, maxs);
 	num = trap_EntitiesInBox(mins, maxs, touch, MAX_GENTITIES);
 
 	for (i = 0; i < num; i++) {
 		hit = &g_entities[touch[i]];
 
-		if (!hit->client) {
+		if (!hit->player) {
 			continue;
 		}
 		// nail it
-		G_Damage(hit, ent, ent, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
+		G_Damage(hit, ent, ent, NULL, NULL,
+			100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG);
 	}
 }
+
+//==============================================================================
 
 /*
 =======================================================================================================================================
 G_AddPredictableEvent
 
-Use for non-pmove events that would also be predicted on the client side: jumppads and item pickups.
-Adds an event + parm and twiddles the event counter.
+Use for non - pmove events that would also be predicted on the
+client side: jumppads and item pickups
+Adds an event+parm and twiddles the event counter
 =======================================================================================================================================
 */
 void G_AddPredictableEvent(gentity_t *ent, int event, int eventParm) {
-
-	if (!ent->client) {
+	if (!ent->player) {
 		return;
 	}
 
-	BG_AddPredictableEventToPlayerstate(event, eventParm, &ent->client->ps);
+	BG_AddPredictableEventToPlayerstate(event, eventParm, &ent->player->ps);
 }
 
 /*
 =======================================================================================================================================
 G_AddEvent
 
-Adds an event + parm and twiddles the event counter.
+Adds an event+parm and twiddles the event counter
 =======================================================================================================================================
 */
 void G_AddEvent(gentity_t *ent, int event, int eventParm) {
@@ -647,17 +646,15 @@ void G_AddEvent(gentity_t *ent, int event, int eventParm) {
 		G_Printf("G_AddEvent: zero event added for entity %i\n", ent->s.number);
 		return;
 	}
-	// clients need to add the event in playerState_t instead of entityState_t
-	if (ent->client) {
-		bits = ent->client->ps.externalEvent & EV_EVENT_BITS;
-		bits = (bits + EV_EVENT_BIT1) & EV_EVENT_BITS;
-
-		ent->client->ps.externalEvent = event|bits;
-		ent->client->ps.externalEventParm = eventParm;
+	// players need to add the event in playerState_t instead of entityState_t
+	if (ent->player) {
+		bits = ent->player->ps.externalEvent & EV_EVENT_BITS;
+		bits = (bits + EV_EVENT_BIT1)& EV_EVENT_BITS;
+		ent->player->ps.externalEvent = event|bits;
+		ent->player->ps.externalEventParm = eventParm;
 	} else {
 		bits = ent->s.event & EV_EVENT_BITS;
-		bits = (bits + EV_EVENT_BIT1) & EV_EVENT_BITS;
-
+		bits = (bits + EV_EVENT_BIT1)& EV_EVENT_BITS;
 		ent->s.event = event|bits;
 		ent->s.eventParm = eventParm;
 	}
@@ -677,22 +674,22 @@ void G_Sound(gentity_t *ent, int channel, int soundIndex) {
 	te->s.eventParm = soundIndex;
 }
 
+//==============================================================================
+
 /*
 =======================================================================================================================================
 G_SetOrigin
 
-Sets the pos trajectory for a fixed position.
+Sets the pos trajectory for a fixed position
 =======================================================================================================================================
 */
 void G_SetOrigin(gentity_t *ent, vec3_t origin) {
-
 	VectorCopy(origin, ent->s.pos.trBase);
-
 	ent->s.pos.trType = TR_STATIONARY;
 	ent->s.pos.trTime = 0;
 	ent->s.pos.trDuration = 0;
-
 	VectorClear(ent->s.pos.trDelta);
+
 	VectorCopy(origin, ent->r.currentOrigin);
 }
 
@@ -700,7 +697,8 @@ void G_SetOrigin(gentity_t *ent, vec3_t origin) {
 =======================================================================================================================================
 DebugLine
 
-Debug polygons only work when running a local game with r_debugSurface set to 2.
+  debug polygons only work when running a local game
+  with r_debugSurface set to 2
 =======================================================================================================================================
 */
 int DebugLine(vec3_t start, vec3_t end, int color) {
@@ -713,16 +711,13 @@ int DebugLine(vec3_t start, vec3_t end, int color) {
 	VectorCopy(end, points[2]);
 	//points[2][2] -= 2;
 	VectorCopy(end, points[3]);
+
 	VectorSubtract(end, start, dir);
 	VectorNormalize(dir);
-
 	dot = DotProduct(dir, up);
 
-	if (dot > 0.99 || dot < -0.99) {
-		VectorSet(cross, 1, 0, 0);
-	} else {
-		CrossProduct(dir, up, cross);
-	}
+	if (dot > 0.99 || dot < -0.99)VectorSet(cross, 1, 0, 0);
+	else CrossProduct(dir, up, cross);
 
 	VectorNormalize(cross);
 

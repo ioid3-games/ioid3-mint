@@ -1,35 +1,42 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2005 Stuart Dalton (badcdev@gmail.com).
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)2005 Stuart Dalton(badcdev@gmail.com)
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/**************************************************************************************************************************************
- Dynamically loads OpenAL.
-**************************************************************************************************************************************/
+// Dynamically loads OpenAL
 
 #ifdef USE_OPENAL
+
 #include "qal.h"
+
 #ifdef USE_OPENAL_DLOPEN
+
 #include "../sys/sys_loadlib.h"
 
 LPALENABLE qalEnable;
@@ -86,6 +93,7 @@ LPALGETBUFFERI qalGetBufferi;
 LPALDOPPLERFACTOR qalDopplerFactor;
 LPALSPEEDOFSOUND qalSpeedOfSound;
 LPALDISTANCEMODEL qalDistanceModel;
+
 LPALCCREATECONTEXT qalcCreateContext;
 LPALCMAKECONTEXTCURRENT qalcMakeContextCurrent;
 LPALCPROCESSCONTEXT qalcProcessContext;
@@ -108,6 +116,7 @@ LPALCCAPTURESTOP qalcCaptureStop;
 LPALCCAPTURESAMPLES qalcCaptureSamples;
 
 static void *OpenALLib = NULL;
+
 static qboolean alinit_fail = qfalse;
 
 /*
@@ -119,14 +128,13 @@ static void *GPA(char *str) {
 	void *rv;
 
 	rv = Sys_LoadFunction(OpenALLib, str);
-
 	if (!rv) {
 		Com_Printf(" Can't load symbol %s\n", str);
 		alinit_fail = qtrue;
 		return NULL;
 	} else {
-		Com_DPrintf(" Loaded symbol %s (%p)\n", str, rv);
-		return rv;
+		Com_DPrintf(" Loaded symbol %s(%p)\n", str, rv);
+        return rv;
 	}
 }
 
@@ -136,14 +144,11 @@ QAL_Init
 =======================================================================================================================================
 */
 qboolean QAL_Init(const char *libname) {
-
-	if (OpenALLib) {
+	if (OpenALLib)
 		return qtrue;
-	}
 
-	if (!(OpenALLib = Sys_LoadDll(libname, qtrue))) {
+	if (!(OpenALLib = Sys_LoadDll(libname, qtrue)))
 		return qfalse;
-	}
 
 	alinit_fail = qfalse;
 
@@ -201,6 +206,7 @@ qboolean QAL_Init(const char *libname) {
 	qalDopplerFactor = GPA("alDopplerFactor");
 	qalSpeedOfSound = GPA("alSpeedOfSound");
 	qalDistanceModel = GPA("alDistanceModel");
+
 	qalcCreateContext = GPA("alcCreateContext");
 	qalcMakeContextCurrent = GPA("alcMakeContextCurrent");
 	qalcProcessContext = GPA("alcProcessContext");
@@ -237,7 +243,6 @@ QAL_Shutdown
 =======================================================================================================================================
 */
 void QAL_Shutdown(void) {
-
 	if (OpenALLib) {
 		Sys_UnloadLibrary(OpenALLib);
 		OpenALLib = NULL;
@@ -297,6 +302,7 @@ void QAL_Shutdown(void) {
 	qalDopplerFactor = NULL;
 	qalSpeedOfSound = NULL;
 	qalDistanceModel = NULL;
+
 	qalcCreateContext = NULL;
 	qalcMakeContextCurrent = NULL;
 	qalcProcessContext = NULL;
@@ -319,22 +325,10 @@ void QAL_Shutdown(void) {
 	qalcCaptureSamples = NULL;
 }
 #else
-/*
-=======================================================================================================================================
-QAL_Init
-=======================================================================================================================================
-*/
 qboolean QAL_Init(const char *libname) {
 	return qtrue;
 }
-
-/*
-=======================================================================================================================================
-QAL_Shutdown
-=======================================================================================================================================
-*/
 void QAL_Shutdown(void) {
-
 }
 #endif
 #endif

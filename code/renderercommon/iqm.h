@@ -1,11 +1,11 @@
 /*
-===========================================================================
+=======================================================================================================================================
 This file is part of Spearmint Source Code.
 
 Spearmint Source Code is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 3 of the License,
-or (at your option) any later version.
+or(at your option)any later version.
 
 Spearmint Source Code is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,7 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
 In addition, Spearmint Source Code is also subject to certain additional terms.
 You should have received a copy of these additional terms immediately following
@@ -23,7 +23,7 @@ request a copy in writing from id Software at the address below.
 If you have questions concerning this license or the applicable additional
 terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
 Suite 120, Rockville, Maryland 20850 USA.
-===========================================================================
+=======================================================================================================================================
 */
 
 #ifndef __IQM_H__
@@ -32,11 +32,11 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define IQM_MAGIC "INTERQUAKEMODEL"
 #define IQM_VERSION 2
 
-#define	IQM_MAX_JOINTS		128
+#define IQM_MAX_JOINTS		128
 
 typedef struct iqmheader
 {
-    char magic[16];
+  	char magic[16];
     unsigned int version;
     unsigned int filesize;
     unsigned int flags;
@@ -62,26 +62,26 @@ typedef struct iqmmesh
 
 enum
 {
-    IQM_POSITION     = 0,
-    IQM_TEXCOORD     = 1,
-    IQM_NORMAL       = 2,
-    IQM_TANGENT      = 3,
+    IQM_POSITION = 0,
+    IQM_TEXCOORD = 1,
+    IQM_NORMAL = 2,
+    IQM_TANGENT = 3,
     IQM_BLENDINDEXES = 4,
     IQM_BLENDWEIGHTS = 5,
-    IQM_COLOR        = 6,
-    IQM_CUSTOM       = 0x10
+    IQM_COLOR = 6,
+    IQM_CUSTOM = 0x10
 };
 
 enum
 {
-    IQM_BYTE   = 0,
-    IQM_UBYTE  = 1,
-    IQM_SHORT  = 2,
+    IQM_BYTE = 0,
+    IQM_UBYTE = 1,
+    IQM_SHORT = 2,
     IQM_USHORT = 3,
-    IQM_INT    = 4,
-    IQM_UINT   = 5,
-    IQM_HALF   = 6,
-    IQM_FLOAT  = 7,
+    IQM_INT = 4,
+    IQM_UINT = 5,
+    IQM_HALF = 6,
+    IQM_FLOAT = 7,
     IQM_DOUBLE = 8,
 };
 
@@ -93,29 +93,29 @@ typedef struct iqmtriangle
 typedef struct iqmjoint
 {
     unsigned int name;
-    int parent;
-    float translate[3], rotate[4], scale[3];
+  	int parent;
+  	float translate[3], rotate[4], scale[3];
 } iqmJoint_t;
 
 typedef struct iqmpose
 {
-    int parent;
+  	int parent;
     unsigned int mask;
-    float channeloffset[10];
-    float channelscale[10];
+  	float channeloffset[10];
+  	float channelscale[10];
 } iqmPose_t;
 
 typedef struct iqmanim
 {
     unsigned int name;
     unsigned int first_frame, num_frames;
-    float framerate;
+  	float framerate;
     unsigned int flags;
 } iqmAnim_t;
 
 enum
 {
-    IQM_LOOP = 1<<0
+    IQM_LOOP = 1 << 0
 };
 
 typedef struct iqmvertexarray
@@ -129,8 +129,8 @@ typedef struct iqmvertexarray
 
 typedef struct iqmbounds
 {
-    float bbmin[3], bbmax[3];
-    float xyradius, radius;
+  	float bbmin[3], bbmax[3];
+  	float xyradius, radius;
 } iqmBounds_t;
 
 #endif

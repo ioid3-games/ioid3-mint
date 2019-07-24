@@ -1,38 +1,46 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
 #include "client.h"
 
-qboolean key_overstrikeMode;
+qboolean	key_overstrikeMode;
 int anykeydown;
 qkey_t keys[MAX_KEYS];
+
 
 typedef struct {
 	char *name;
 	int keynum;
 	int keynum2;
 } keyname_t;
+
+
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 keyname_t keynames[] = {
 	{"TAB", K_TAB},
@@ -44,6 +52,7 @@ keyname_t keynames[] = {
 	{"DOWNARROW", K_DOWNARROW},
 	{"LEFTARROW", K_LEFTARROW},
 	{"RIGHTARROW", K_RIGHTARROW},
+
 	{"LEFTALT", K_LEFTALT},
 	{"RIGHTALT", K_RIGHTALT},
 	{"LEFTCTRL", K_LEFTCTRL},
@@ -54,14 +63,17 @@ keyname_t keynames[] = {
 	{"RIGHTWINDOWS", K_RIGHTSUPER},
 	{"LEFTCOMMAND", K_LEFTCOMMAND},
 	{"RIGHTCOMMAND", K_RIGHTCOMMAND},
-	// these are after LEFTALT, etc., so Key_KeynumToString() returns correct name
+
+	// These are after LEFTALT, etc so Key_KeynumToString()returns correct name.
 	{"ALT", K_LEFTALT, K_RIGHTALT},
 	{"CTRL", K_LEFTCTRL, K_RIGHTCTRL},
 	{"SHIFT", K_LEFTSHIFT, K_RIGHTSHIFT},
 	{"WINDOWS", K_LEFTSUPER, K_RIGHTSUPER},
 	{"COMMAND", K_LEFTCOMMAND, K_RIGHTCOMMAND},
+
 	{"CAPSLOCK", K_CAPSLOCK},
 
+	
 	{"F1", K_F1},
 	{"F2", K_F2},
 	{"F3", K_F3},
@@ -91,10 +103,11 @@ keyname_t keynames[] = {
 	{"MOUSE4", K_MOUSE4},
 	{"MOUSE5", K_MOUSE5},
 
-	{"MWHEELUP",	K_MWHEELUP },
-	{"MWHEELDOWN",	K_MWHEELDOWN },
-	{"MWHEELLEFT",	K_MWHEELLEFT },
-	{"MWHEELRIGHT",	K_MWHEELRIGHT },
+	{"MWHEELUP", K_MWHEELUP },
+	{"MWHEELDOWN", K_MWHEELDOWN },
+	{"MWHEELLEFT", K_MWHEELLEFT },
+	{"MWHEELRIGHT", K_MWHEELRIGHT },
+
 	// player 1
 	{"JOY_A", K_JOY_A},
 	{"JOY_B", K_JOY_B},
@@ -103,24 +116,31 @@ keyname_t keynames[] = {
 	{"JOY_BACK", K_JOY_BACK},
 	{"JOY_GUIDE", K_JOY_GUIDE},
 	{"JOY_START", K_JOY_START},
+
 	{"JOY_DPAD_UP", K_JOY_DPAD_UP},
 	{"JOY_DPAD_RIGHT", K_JOY_DPAD_RIGHT},
 	{"JOY_DPAD_DOWN", K_JOY_DPAD_DOWN},
 	{"JOY_DPAD_LEFT", K_JOY_DPAD_LEFT},
+
 	{"JOY_LEFTSHOULDER", K_JOY_LEFTSHOULDER},
 	{"JOY_RIGHTSHOULDER", K_JOY_RIGHTSHOULDER},
+
 	{"JOY_LEFTTRIGGER", K_JOY_LEFTTRIGGER},
 	{"JOY_RIGHTTRIGGER", K_JOY_RIGHTTRIGGER},
+
 	{"JOY_LEFTSTICK", K_JOY_LEFTSTICK},
 	{"JOY_RIGHTSTICK", K_JOY_RIGHTSTICK},
+
 	{"JOY_LEFTSTICK_UP", K_JOY_LEFTSTICK_UP},
 	{"JOY_LEFTSTICK_RIGHT", K_JOY_LEFTSTICK_RIGHT},
 	{"JOY_LEFTSTICK_DOWN", K_JOY_LEFTSTICK_DOWN},
 	{"JOY_LEFTSTICK_LEFT", K_JOY_LEFTSTICK_LEFT},
+
 	{"JOY_RIGHTSTICK_UP", K_JOY_RIGHTSTICK_UP},
 	{"JOY_RIGHTSTICK_RIGHT", K_JOY_RIGHTSTICK_RIGHT},
 	{"JOY_RIGHTSTICK_DOWN", K_JOY_RIGHTSTICK_DOWN},
 	{"JOY_RIGHTSTICK_LEFT", K_JOY_RIGHTSTICK_LEFT},
+
 	// player 2
 	{"2JOY_A", K_2JOY_A},
 	{"2JOY_B", K_2JOY_B},
@@ -129,24 +149,31 @@ keyname_t keynames[] = {
 	{"2JOY_BACK", K_2JOY_BACK},
 	{"2JOY_GUIDE", K_2JOY_GUIDE},
 	{"2JOY_START", K_2JOY_START},
+
 	{"2JOY_DPAD_UP", K_2JOY_DPAD_UP},
 	{"2JOY_DPAD_RIGHT", K_2JOY_DPAD_RIGHT},
 	{"2JOY_DPAD_DOWN", K_2JOY_DPAD_DOWN},
 	{"2JOY_DPAD_LEFT", K_2JOY_DPAD_LEFT},
+
 	{"2JOY_LEFTSHOULDER", K_2JOY_LEFTSHOULDER},
 	{"2JOY_RIGHTSHOULDER", K_2JOY_RIGHTSHOULDER},
+
 	{"2JOY_LEFTTRIGGER", K_2JOY_LEFTTRIGGER},
 	{"2JOY_RIGHTTRIGGER", K_2JOY_RIGHTTRIGGER},
+
 	{"2JOY_LEFTSTICK", K_2JOY_LEFTSTICK},
 	{"2JOY_RIGHTSTICK", K_2JOY_RIGHTSTICK},
+
 	{"2JOY_LEFTSTICK_UP", K_2JOY_LEFTSTICK_UP},
 	{"2JOY_LEFTSTICK_RIGHT", K_2JOY_LEFTSTICK_RIGHT},
 	{"2JOY_LEFTSTICK_DOWN", K_2JOY_LEFTSTICK_DOWN},
 	{"2JOY_LEFTSTICK_LEFT", K_2JOY_LEFTSTICK_LEFT},
+
 	{"2JOY_RIGHTSTICK_UP", K_2JOY_RIGHTSTICK_UP},
 	{"2JOY_RIGHTSTICK_RIGHT", K_2JOY_RIGHTSTICK_RIGHT},
 	{"2JOY_RIGHTSTICK_DOWN", K_2JOY_RIGHTSTICK_DOWN},
 	{"2JOY_RIGHTSTICK_LEFT", K_2JOY_RIGHTSTICK_LEFT},
+
 	// player 3
 	{"3JOY_A", K_3JOY_A},
 	{"3JOY_B", K_3JOY_B},
@@ -155,24 +182,31 @@ keyname_t keynames[] = {
 	{"3JOY_BACK", K_3JOY_BACK},
 	{"3JOY_GUIDE", K_3JOY_GUIDE},
 	{"3JOY_START", K_3JOY_START},
+
 	{"3JOY_DPAD_UP", K_3JOY_DPAD_UP},
 	{"3JOY_DPAD_RIGHT", K_3JOY_DPAD_RIGHT},
 	{"3JOY_DPAD_DOWN", K_3JOY_DPAD_DOWN},
 	{"3JOY_DPAD_LEFT", K_3JOY_DPAD_LEFT},
+
 	{"3JOY_LEFTSHOULDER", K_3JOY_LEFTSHOULDER},
 	{"3JOY_RIGHTSHOULDER", K_3JOY_RIGHTSHOULDER},
+
 	{"3JOY_LEFTTRIGGER", K_3JOY_LEFTTRIGGER},
 	{"3JOY_RIGHTTRIGGER", K_3JOY_RIGHTTRIGGER},
+
 	{"3JOY_LEFTSTICK", K_3JOY_LEFTSTICK},
 	{"3JOY_RIGHTSTICK", K_3JOY_RIGHTSTICK},
+
 	{"3JOY_LEFTSTICK_UP", K_3JOY_LEFTSTICK_UP},
 	{"3JOY_LEFTSTICK_RIGHT", K_3JOY_LEFTSTICK_RIGHT},
 	{"3JOY_LEFTSTICK_DOWN", K_3JOY_LEFTSTICK_DOWN},
 	{"3JOY_LEFTSTICK_LEFT", K_3JOY_LEFTSTICK_LEFT},
+
 	{"3JOY_RIGHTSTICK_UP", K_3JOY_RIGHTSTICK_UP},
 	{"3JOY_RIGHTSTICK_RIGHT", K_3JOY_RIGHTSTICK_RIGHT},
 	{"3JOY_RIGHTSTICK_DOWN", K_3JOY_RIGHTSTICK_DOWN},
 	{"3JOY_RIGHTSTICK_LEFT", K_3JOY_RIGHTSTICK_LEFT},
+
 	// player 4
 	{"4JOY_A", K_4JOY_A},
 	{"4JOY_B", K_4JOY_B},
@@ -181,24 +215,31 @@ keyname_t keynames[] = {
 	{"4JOY_BACK", K_4JOY_BACK},
 	{"4JOY_GUIDE", K_4JOY_GUIDE},
 	{"4JOY_START", K_4JOY_START},
+
 	{"4JOY_DPAD_UP", K_4JOY_DPAD_UP},
 	{"4JOY_DPAD_RIGHT", K_4JOY_DPAD_RIGHT},
 	{"4JOY_DPAD_DOWN", K_4JOY_DPAD_DOWN},
 	{"4JOY_DPAD_LEFT", K_4JOY_DPAD_LEFT},
+
 	{"4JOY_LEFTSHOULDER", K_4JOY_LEFTSHOULDER},
 	{"4JOY_RIGHTSHOULDER", K_4JOY_RIGHTSHOULDER},
+
 	{"4JOY_LEFTTRIGGER", K_4JOY_LEFTTRIGGER},
 	{"4JOY_RIGHTTRIGGER", K_4JOY_RIGHTTRIGGER},
+
 	{"4JOY_LEFTSTICK", K_4JOY_LEFTSTICK},
 	{"4JOY_RIGHTSTICK", K_4JOY_RIGHTSTICK},
+
 	{"4JOY_LEFTSTICK_UP", K_4JOY_LEFTSTICK_UP},
 	{"4JOY_LEFTSTICK_RIGHT", K_4JOY_LEFTSTICK_RIGHT},
 	{"4JOY_LEFTSTICK_DOWN", K_4JOY_LEFTSTICK_DOWN},
 	{"4JOY_LEFTSTICK_LEFT", K_4JOY_LEFTSTICK_LEFT},
+
 	{"4JOY_RIGHTSTICK_UP", K_4JOY_RIGHTSTICK_UP},
 	{"4JOY_RIGHTSTICK_RIGHT", K_4JOY_RIGHTSTICK_RIGHT},
 	{"4JOY_RIGHTSTICK_DOWN", K_4JOY_RIGHTSTICK_DOWN},
 	{"4JOY_RIGHTSTICK_LEFT", K_4JOY_RIGHTSTICK_LEFT},
+
 	{"AUX1", K_AUX1},
 	{"AUX2", K_AUX2},
 	{"AUX3", K_AUX3},
@@ -216,27 +257,28 @@ keyname_t keynames[] = {
 	{"AUX15", K_AUX15},
 	{"AUX16", K_AUX16},
 
-	{"KP_HOME", K_KP_HOME},
-	{"KP_UPARROW", K_KP_UPARROW},
-	{"KP_PGUP", K_KP_PGUP},
-	{"KP_LEFTARROW", K_KP_LEFTARROW},
-	{"KP_5", K_KP_5},
-	{"KP_RIGHTARROW", K_KP_RIGHTARROW},
-	{"KP_END", K_KP_END},
-	{"KP_DOWNARROW", K_KP_DOWNARROW},
-	{"KP_PGDN", K_KP_PGDN},
-	{"KP_ENTER", K_KP_ENTER},
-	{"KP_INS", K_KP_INS},
-	{"KP_DEL", K_KP_DEL},
-	{"KP_SLASH", K_KP_SLASH},
-	{"KP_MINUS", K_KP_MINUS},
-	{"KP_PLUS", K_KP_PLUS},
-	{"KP_NUMLOCK", K_KP_NUMLOCK},
-	{"KP_STAR", K_KP_STAR},
-	{"KP_EQUALS", K_KP_EQUALS},
+	{"KP_HOME", K_KP_HOME },
+	{"KP_UPARROW", K_KP_UPARROW },
+	{"KP_PGUP", K_KP_PGUP },
+	{"KP_LEFTARROW", K_KP_LEFTARROW },
+	{"KP_5", K_KP_5 },
+	{"KP_RIGHTARROW", K_KP_RIGHTARROW },
+	{"KP_END", K_KP_END },
+	{"KP_DOWNARROW", K_KP_DOWNARROW },
+	{"KP_PGDN", K_KP_PGDN },
+	{"KP_ENTER", K_KP_ENTER },
+	{"KP_INS", K_KP_INS },
+	{"KP_DEL", K_KP_DEL },
+	{"KP_SLASH", K_KP_SLASH },
+	{"KP_MINUS", K_KP_MINUS },
+	{"KP_PLUS", K_KP_PLUS },
+	{"KP_NUMLOCK", K_KP_NUMLOCK },
+	{"KP_STAR", K_KP_STAR },
+	{"KP_EQUALS", K_KP_EQUALS },
 
 	{"PAUSE", K_PAUSE},
-	{"SEMICOLON", ';'}, // because a raw semicolon separates commands
+	
+	{"SEMICOLON", '; '}, // because a raw semicolon separates commands
 
 	{"WORLD_0", K_WORLD_0},
 	{"WORLD_1", K_WORLD_1},
@@ -494,37 +536,34 @@ keyname_t keynames[] = {
 	{"WORLD_253", K_WORLD_253},
 	{"WORLD_254", K_WORLD_254},
 	{"WORLD_255", K_WORLD_255},
+
 	{"COMPOSE", K_COMPOSE},
 	{"MODE", K_MODE},
 	{"HELP", K_HELP},
 	{"PRINT", K_PRINT},
 	{"SYSREQ", K_SYSREQ},
-	{"SCROLLOCK", K_SCROLLOCK},
+	{"SCROLLOCK", K_SCROLLOCK },
 	{"BREAK", K_BREAK},
 	{"MENU", K_MENU},
 	{"POWER", K_POWER},
 	{"EURO", K_EURO},
 	{"UNDO", K_UNDO},
-	{NULL,0}
+
+	{NULL, 0}
 };
 
-/*
-=======================================================================================================================================
-Key_GetOverstrikeMode
-=======================================================================================================================================
-*/
+//============================================================================
+
+
 qboolean Key_GetOverstrikeMode(void) {
 	return key_overstrikeMode;
 }
 
-/*
-=======================================================================================================================================
-Key_SetOverstrikeMode
-=======================================================================================================================================
-*/
+
 void Key_SetOverstrikeMode(qboolean state) {
 	key_overstrikeMode = state;
 }
+
 
 /*
 =======================================================================================================================================
@@ -532,7 +571,6 @@ Key_IsDown
 =======================================================================================================================================
 */
 qboolean Key_IsDown(int keynum) {
-
 	if (keynum < 0 || keynum >= MAX_KEYS) {
 		return qfalse;
 	}
@@ -544,28 +582,31 @@ qboolean Key_IsDown(int keynum) {
 =======================================================================================================================================
 Key_StringToKeynum
 
-Returns a key number to be used to index keys[] by looking at the given string.
-Single ascii characters return themselves, while the K_* names are matched up.
-0x11 will be interpreted as raw hex, which will allow new controlers to be configured even if they don't have defined names.
+Returns a key number to be used to index keys[] by looking at
+the given string.  Single ascii characters return themselves, while
+the K_* names are matched up.
+
+0x11 will be interpreted as raw hex, which will allow new controlers
+
+to be configured even if they don't have defined names.
 =======================================================================================================================================
 */
 qboolean Key_StringToKeynum(char *str, int keynums[KEYNUMS_PER_STRING]) {
 	keyname_t *kn;
 	int n;
-
+	
 	if (!str || !str[0]) {
 		keynums[0] = keynums[1] = -1;
 		return qfalse;
 	}
 
-	if (!str[1] ) {
+	if (!str[1]) {
 		keynums[0] = tolower(str[0]);
 		keynums[1] = -1;
 		return qtrue;
 	}
 	// check for hex code
 	n = Com_HexStrToInt(str);
-
 	if (n >= 0 && n < MAX_KEYS) {
 		keynums[0] = n;
 		keynums[1] = -1;
@@ -573,9 +614,9 @@ qboolean Key_StringToKeynum(char *str, int keynums[KEYNUMS_PER_STRING]) {
 	}
 	// scan for a text match
 	for (kn = keynames; kn->name; kn++) {
-		if (!Q_stricmp(str,kn->name)) {
+		if (!Q_stricmp(str, kn->name)) {
 			keynums[0] = kn->keynum;
-			keynums[1] = kn->keynum2 ? kn->keynum2 : -1;
+			keynums[1] = kn->keynum2 ? kn->keynum2 : - 1;
 			return qtrue;
 		}
 	}
@@ -588,11 +629,12 @@ qboolean Key_StringToKeynum(char *str, int keynums[KEYNUMS_PER_STRING]) {
 =======================================================================================================================================
 Key_KeynumToString
 
-Returns a string (either a single ascii char, a K_* name, or a 0x11 hex string) for the given keynum.
+Returns a string(either a single ascii char, a K_* name, or a 0x11 hex string)for the
+given keynum.
 =======================================================================================================================================
 */
 char *Key_KeynumToString(int keynum) {
-	keyname_t *kn;
+	keyname_t *kn; 	
 	static char tinystr[5];
 	int i, j;
 
@@ -603,8 +645,8 @@ char *Key_KeynumToString(int keynum) {
 	if (keynum < 0 || keynum >= MAX_KEYS) {
 		return "<OUT OF RANGE>";
 	}
-	// check for printable ascii (don't use quote)
-	if (keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';') {
+	// check for printable ascii(don't use quote)
+	if (keynum > 32 && keynum < 127 && keynum != '"' && keynum != '; ') {
 		tinystr[0] = keynum;
 		tinystr[1] = 0;
 		return tinystr;
@@ -628,13 +670,13 @@ char *Key_KeynumToString(int keynum) {
 	return tinystr;
 }
 
+
 /*
 =======================================================================================================================================
 Key_SetBinding
 =======================================================================================================================================
 */
 void Key_SetBinding(int keynum, const char *binding) {
-
 	if (keynum < 0 || keynum >= MAX_KEYS) {
 		return;
 	}
@@ -642,11 +684,15 @@ void Key_SetBinding(int keynum, const char *binding) {
 	if (keys[keynum].binding) {
 		Z_Free(keys[keynum].binding);
 	}
+		
 	// allocate memory for new binding
 	keys[keynum].binding = CopyString(binding);
-	// consider this like modifying an archived cvar, so the file write will be triggered at the next opportunity
+
+	// consider this like modifying an archived cvar, so the
+	// file write will be triggered at the next opportunity
 	cvar_modifiedFlags |= CVAR_ARCHIVE;
 }
+
 
 /*
 =======================================================================================================================================
@@ -654,7 +700,6 @@ Key_GetBinding
 =======================================================================================================================================
 */
 char *Key_GetBinding(int keynum) {
-
 	if (keynum < 0 || keynum >= MAX_KEYS) {
 		return "";
 	}
@@ -662,23 +707,23 @@ char *Key_GetBinding(int keynum) {
 	return keys[keynum].binding;
 }
 
-/*
-=======================================================================================================================================
+/* 
+===================
 Key_GetKey
 =======================================================================================================================================
 */
+
 int Key_GetKey(const char *binding, int startKey) {
 	int i;
 
-	if (binding) {
-		for (i = startKey; i < MAX_KEYS; i++) {
-			if (keys[i].binding && Q_stricmp(binding, keys[i].binding) == 0) {
-				return i;
-			}
-		}
-	}
-
-	return -1;
+  if (binding) {
+  	for (i = startKey; i < MAX_KEYS; i++) {
+      if (keys[i].binding && Q_stricmp(binding, keys[i].binding) == 0) {
+        return i;
+      }
+    }
+  }
+  return - 1;
 }
 
 /*
@@ -690,20 +735,18 @@ void Key_Unbind_f(void) {
 	int i, b[KEYNUMS_PER_STRING];
 
 	if (Cmd_Argc() != 2) {
-		Com_Printf("unbind <key> : remove commands from a key\n");
+		Com_Printf("unbind < key > : remove commands from a key\n");
 		return;
 	}
-
+	
 	if (!Key_StringToKeynum(Cmd_Argv(1), b)) {
 		Com_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
 		return;
 	}
 
 	for (i = 0; i < KEYNUMS_PER_STRING; i++) {
-		if (b[i] == -1) {
+		if (b[i] == -1)
 			break;
-		}
-
 		Key_SetBinding(b[i], "");
 	}
 }
@@ -715,13 +758,12 @@ Key_Unbindall_f
 */
 void Key_Unbindall_f(void) {
 	int i;
-
-	for (i = 0; i < MAX_KEYS; i++) {
-		if (keys[i].binding) {
+	
+	for (i = 0; i < MAX_KEYS; i++)
+		if (keys[i].binding)
 			Key_SetBinding(i, "");
-		}
-	}
 }
+
 
 /*
 =======================================================================================================================================
@@ -731,11 +773,11 @@ Key_Bind_f
 void Key_Bind_f(void) {
 	int i, c, b[KEYNUMS_PER_STRING];
 	char cmd[1024];
-
+	
 	c = Cmd_Argc();
 
 	if (c < 2) {
-		Com_Printf("bind <key> [command] : attach a command to a key\n");
+		Com_Printf("bind < key > [command] : attach a command to a key\n");
 		return;
 	}
 
@@ -746,35 +788,30 @@ void Key_Bind_f(void) {
 
 	if (c == 2) {
 		for (i = 0; i < KEYNUMS_PER_STRING; i++) {
-			if (b[i] == -1 ) {
+			if (b[i] == -1)
 				break;
-			}
 
-			if (keys[b[i]].binding && keys[b[i]].binding[0]) {
+			if (keys[b[i]].binding && keys[b[i]].binding[0])
 				Com_Printf("\"%s\" = \"%s\"\n", Key_KeynumToString(b[i]), keys[b[i]].binding);
-			} else {
+			else
 				Com_Printf("\"%s\" is not bound\n", Key_KeynumToString(b[i]));
-			}
 		}
 
 		return;
 	}
-	// copy the rest of the command line
-	cmd[0] = 0; // start out with a null string
-
+	
+// copy the rest of the command line
+	cmd[0] = 0; 		// start out with a null string
 	for (i = 2; i < c; i++) {
 		strcat(cmd, Cmd_Argv(i));
 
-		if (i != (c - 1)) {
+		if (i != (c - 1))
 			strcat(cmd, " ");
-		}
 	}
 
 	for (i = 0; i < KEYNUMS_PER_STRING; i++) {
-		if (b[i] == -1) {
+		if (b[i] == -1)
 			break;
-		}
-
 		Key_SetBinding(b[i], cmd);
 	}
 }
@@ -783,7 +820,7 @@ void Key_Bind_f(void) {
 =======================================================================================================================================
 Key_WriteBindings
 
-Writes lines containing "bind key value".
+Writes lines containing "bind key value"
 =======================================================================================================================================
 */
 void Key_WriteBindings(fileHandle_t f) {
@@ -794,13 +831,17 @@ void Key_WriteBindings(fileHandle_t f) {
 	for (i = 0; i < MAX_KEYS; i++) {
 		if (keys[i].binding && keys[i].binding[0]) {
 			FS_Printf(f, "bind %s \"%s\"\n", Key_KeynumToString(i), keys[i].binding);
+
 		}
+
 	}
 }
+
 
 /*
 =======================================================================================================================================
 Key_Bindlist_f
+
 =======================================================================================================================================
 */
 void Key_Bindlist_f(void) {
@@ -821,9 +862,8 @@ Key_KeynameCompletion
 void Key_KeynameCompletion(void(*callback)(const char *s)) {
 	int i;
 
-	for (i = 0; keynames[i].name != NULL; i++) {
+	for (i = 0; keynames[i].name != NULL; i++)
 		callback(keynames[i].name);
-	}
 }
 
 /*
@@ -832,14 +872,12 @@ Key_CompleteUnbind
 =======================================================================================================================================
 */
 static void Key_CompleteUnbind(char *args, int argNum) {
-
 	if (argNum == 2) {
-		// skip "unbind"
+		// Skip "unbind "
 		char *p = Com_SkipTokens(args, 1, " ");
 
-		if (p > args) {
+		if (p > args)
 			Field_CompleteKeyname();
-		}
 	}
 }
 
@@ -852,19 +890,17 @@ static void Key_CompleteBind(char *args, int argNum) {
 	char *p;
 
 	if (argNum == 2) {
-		// skip "bind"
+		// Skip "bind "
 		p = Com_SkipTokens(args, 1, " ");
 
-		if (p > args) {
+		if (p > args)
 			Field_CompleteKeyname();
-		}
 	} else if (argNum >= 3) {
-		// skip "bind <key>"
+		// Skip "bind < key>"
 		p = Com_SkipTokens(args, 2, " ");
 
-		if (p > args) {
+		if (p > args)
 			Field_CompleteCommand(p, qtrue, qtrue);
-		}
 	}
 }
 
@@ -874,30 +910,27 @@ CL_InitKeyCommands
 =======================================================================================================================================
 */
 void CL_InitKeyCommands(void) {
-
 	// register our functions
-	Cmd_AddCommand("bind",Key_Bind_f);
+	Cmd_AddCommand("bind", Key_Bind_f);
 	Cmd_SetCommandCompletionFunc("bind", Key_CompleteBind);
-	Cmd_AddCommand("unbind",Key_Unbind_f);
+	Cmd_AddCommand("unbind", Key_Unbind_f);
 	Cmd_SetCommandCompletionFunc("unbind", Key_CompleteUnbind);
-	Cmd_AddCommand("unbindall",Key_Unbindall_f);
-	Cmd_AddCommand("bindlist",Key_Bindlist_f);
+	Cmd_AddCommand("unbindall", Key_Unbindall_f);
+	Cmd_AddCommand("bindlist", Key_Bindlist_f);
 }
 
 /*
 =======================================================================================================================================
 CL_KeyDownEvent
 
-Called by CL_KeyEvent to handle a keypress.
+Called by CL_KeyEvent to handle a keypress
 =======================================================================================================================================
 */
 void CL_KeyDownEvent(int key, unsigned time) {
 	keys[key].down = qtrue;
 	keys[key].repeats++;
-
-	if (keys[key].repeats == 1) {
+	if (keys[key].repeats == 1)
 		anykeydown++;
-	}
 
 	if ((keys[K_LEFTALT].down || keys[K_RIGHTALT].down) && key == K_ENTER) {
 		// don't repeat fullscreen toggle when keys are held down
@@ -905,7 +938,8 @@ void CL_KeyDownEvent(int key, unsigned time) {
 			return;
 		}
 
-		Cvar_SetValue("r_fullscreen", !Cvar_VariableIntegerValue("r_fullscreen"));
+		Cvar_SetValue("r_fullscreen",
+			!Cvar_VariableIntegerValue("r_fullscreen"));
 		return;
 	}
 
@@ -918,15 +952,13 @@ void CL_KeyDownEvent(int key, unsigned time) {
 =======================================================================================================================================
 CL_KeyUpEvent
 
-Called by CL_KeyEvent to handle a keyrelease.
+Called by CL_KeyEvent to handle a keyrelease
 =======================================================================================================================================
 */
 void CL_KeyUpEvent(int key, unsigned time) {
-
 	keys[key].repeats = 0;
 	keys[key].down = qfalse;
-
-	anykeydown--;
+	anykeydown --;
 
 	if (anykeydown < 0) {
 		anykeydown = 0;
@@ -941,28 +973,26 @@ void CL_KeyUpEvent(int key, unsigned time) {
 =======================================================================================================================================
 CL_KeyEvent
 
-Called by the system for both key up and key down events.
+Called by the system for both key up and key down events
 =======================================================================================================================================
 */
 void CL_KeyEvent(int key, qboolean down, unsigned time) {
-
-	if (down) {
+	if (down)
 		CL_KeyDownEvent(key, time);
-	} else {
+	else
 		CL_KeyUpEvent(key, time);
-	}
 }
 
 /*
 =======================================================================================================================================
 CL_CharEvent
 
-Normal keyboard characters, already shifted/capslocked/etc.
+Normal keyboard characters, already shifted / capslocked / etc
 =======================================================================================================================================
 */
 void CL_CharEvent(int character) {
-
-	// delete is not a printable character and is otherwise handled by Field_KeyDownEvent
+	// delete is not a printable character and is
+	// otherwise handled by Field_KeyDownEvent
 	if (character == 127) {
 		return;
 	}
@@ -971,6 +1001,7 @@ void CL_CharEvent(int character) {
 		VM_Call(cgvm, CG_CHAR_EVENT, character, clc.state);
 	}
 }
+
 
 /*
 =======================================================================================================================================
@@ -985,6 +1016,7 @@ void Key_ClearStates(void) {
 	for (i = 0; i < MAX_KEYS; i++) {
 		if (keys[i].down) {
 			CL_KeyEvent(i, qfalse, 0);
+
 		}
 
 		keys[i].down = 0;
@@ -1010,7 +1042,6 @@ void Key_GetBindingBuf(int keynum, char *buf, int buflen) {
 	char *value;
 
 	value = Key_GetBinding(keynum);
-
 	if (value) {
 		Q_strncpyz(buf, value, buflen);
 	} else {
@@ -1037,3 +1068,4 @@ Key_SetRepeat
 void Key_SetRepeat(qboolean repeat) {
 	keyRepeat = repeat;
 }
+

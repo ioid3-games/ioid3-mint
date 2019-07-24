@@ -1,32 +1,46 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
+//
+//
+// gameinfo.c
+//
 
 #include "ui_local.h"
 
+//
 // arena and bot info
+//
+
 int ui_numBots;
 static char *ui_botInfos[MAX_BOTS];
+
 static int ui_numArenas;
 static char *ui_arenaInfos[MAX_ARENAS];
 
@@ -61,7 +75,6 @@ int UI_ParseInfos(char *buf, int max, char *infos[]) {
 		}
 
 		info[0] = '\0';
-
 		while (1) {
 			token = COM_ParseExt(&buf, qtrue);
 
@@ -84,8 +97,8 @@ int UI_ParseInfos(char *buf, int max, char *infos[]) {
 
 			Info_SetValueForKey(info, key, token);
 		}
-		// NOTE: extra space for arena number
-		infos[count] = UI_Alloc(strlen(info) + strlen("\\num\\") + strlen(va("%d", MAX_ARENAS)) + 1);
+		//NOTE: extra space for arena number
+		infos[count] = UI_Alloc(strlen(info) +  strlen("\\num\\") +  strlen(va("%d", MAX_ARENAS)) +  1);
 
 		if (infos[count]) {
 			strcpy(infos[count], info);
@@ -120,9 +133,7 @@ static void UI_LoadArenasFromFile(char *filename) {
 	}
 
 	trap_FS_Read(buf, len, f);
-
 	buf[len] = 0;
-
 	trap_FS_FCloseFile(f);
 
 	ui_numArenas += UI_ParseInfos(buf, MAX_ARENAS - ui_numArenas, &ui_arenaInfos[ui_numArenas]);
@@ -155,7 +166,7 @@ void UI_LoadArenas(void) {
 	numdirs = trap_FS_GetFileList("scripts", ".arena", dirlist, 1024);
 	dirptr = dirlist;
 
-	for (i = 0; i < numdirs; i++, dirptr += dirlen + 1) {
+	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
 		strcpy(filename, "scripts/");
 		strcat(filename, dirptr);
@@ -165,7 +176,7 @@ void UI_LoadArenas(void) {
 	Com_DPrintf("%i arenas parsed\n", ui_numArenas);
 
 	if (UI_OutOfMemory()) {
-		trap_Print(S_COLOR_YELLOW "WARNING: not enough memory in pool to load all arenas\n");
+		trap_Print(S_COLOR_YELLOW"WARNING: not enough memory in pool to load all arenas\n");
 	}
 }
 
@@ -182,6 +193,7 @@ void UI_LoadArenasIntoMapList(void) {
 
 	for (n = 0; n < ui_numArenas; n++) {
 		// determine type
+
 		uiInfo.mapList[uiInfo.mapCount].cinematic = -1;
 		uiInfo.mapList[uiInfo.mapCount].mapLoadName = String_Alloc(Info_ValueForKey(ui_arenaInfos[n], "map"));
 		uiInfo.mapList[uiInfo.mapCount].mapName = String_Alloc(Info_ValueForKey(ui_arenaInfos[n], "longname"));
@@ -198,10 +210,6 @@ void UI_LoadArenasIntoMapList(void) {
 
 			if (strstr(type, "tourney")) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_TOURNAMENT);
-			}
-
-			if (strstr(type, "team")) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_TEAM);
 			}
 
 			if (strstr(type, "ctf")) {
@@ -258,10 +266,9 @@ static void UI_LoadBotsFromFile(char *filename) {
 	}
 
 	trap_FS_Read(buf, len, f);
-
 	buf[len] = 0;
-
 	trap_FS_FCloseFile(f);
+
 	COM_Compress(buf);
 
 	ui_numBots += UI_ParseInfos(buf, MAX_BOTS - ui_numBots, &ui_botInfos[ui_numBots]);
@@ -294,7 +301,7 @@ void UI_LoadBots(void) {
 	numdirs = trap_FS_GetFileList("scripts", ".bot", dirlist, 1024);
 	dirptr = dirlist;
 
-	for (i = 0; i < numdirs; i++, dirptr += dirlen + 1) {
+	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
 		strcpy(filename, "scripts/");
 		strcat(filename, dirptr);
@@ -310,7 +317,6 @@ UI_GetBotInfoByNumber
 =======================================================================================================================================
 */
 char *UI_GetBotInfoByNumber(int num) {
-
 	if (num < 0 || num >= ui_numBots) {
 		trap_Print(va(S_COLOR_RED "Invalid bot number: %i\n", num));
 		return NULL;
@@ -339,20 +345,10 @@ char *UI_GetBotInfoByName(const char *name) {
 	return NULL;
 }
 
-/*
-=======================================================================================================================================
-UI_GetNumBots
-=======================================================================================================================================
-*/
 int UI_GetNumBots(void) {
 	return ui_numBots;
 }
 
-/*
-=======================================================================================================================================
-UI_GetBotNameByNumber
-=======================================================================================================================================
-*/
 char *UI_GetBotNameByNumber(int num) {
 	char *info = UI_GetBotInfoByNumber(num);
 

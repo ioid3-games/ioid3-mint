@@ -1,27 +1,33 @@
 /*
-=======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+ = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
-=======================================================================================================================================
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
+ = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 */
-
+//
 #ifndef __UI_LOCAL_H__
 #define __UI_LOCAL_H__
 
@@ -30,17 +36,21 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "ui_shared.h"
 
 // global display context
+
 extern vmCvar_t ui_arenasFile;
 extern vmCvar_t ui_botsFile;
 extern vmCvar_t ui_spSkill;
+
 extern vmCvar_t ui_browserShowFull;
 extern vmCvar_t ui_browserShowEmpty;
 extern vmCvar_t ui_browserShowBots;
 extern vmCvar_t ui_browserSeparateMasters;
+
 extern vmCvar_t ui_brassTime;
 extern vmCvar_t ui_drawCrosshair;
 extern vmCvar_t ui_drawCrosshairNames;
 extern vmCvar_t ui_marks;
+
 extern vmCvar_t ui_captureLimit;
 extern vmCvar_t ui_fragLimit;
 extern vmCvar_t ui_gameType;
@@ -84,6 +94,7 @@ extern vmCvar_t ui_serverStatusTimeOut;
 extern vmCvar_t ui_defaultMaleTeamModel;
 extern vmCvar_t ui_defaultFemaleTeamModel;
 extern vmCvar_t ui_menuFont;
+
 extern sfxHandle_t menu_in_sound;
 extern sfxHandle_t menu_move_sound;
 extern sfxHandle_t menu_out_sound;
@@ -110,10 +121,14 @@ extern vec4_t listbar_color;
 extern vec4_t text_color_disabled;
 extern vec4_t text_color_normal;
 extern vec4_t text_color_highlight;
+
 extern char *ui_medalNames[];
 extern char *ui_medalPicNames[];
 extern char *ui_medalSounds[];
+
+//
 // ui_main.c
+//
 void UI_Report(void);
 void UI_Load(void);
 void UI_LoadMenus(const char *menuFile, qboolean reset);
@@ -124,29 +139,44 @@ void UI_LoadArenas(void);
 void UI_LoadArenasIntoMapList(void);
 void UI_RegisterCvars(void);
 void UI_UpdateCvars(void);
+
+//
 // ui_players.c
+//
+
 typedef struct {
 	// model info
 	qhandle_t legsModel;
 	lerpFrame_t legs;
+
 	qhandle_t torsoModel;
 	lerpFrame_t torso;
+
 	qhandle_t headModel;
+
 	cgSkin_t modelSkin;
+
 	animation_t animations[MAX_TOTALANIMATIONS];
+
+	qboolean fixedlegs; 		// true if legs yaw is always the same as torso yaw
+	qboolean fixedtorso; 		// true if torso never changes yaw
+
 	qhandle_t weaponModel;
 	qhandle_t barrelModel;
 	qhandle_t flashModel;
 	vec3_t flashDlightColor;
 	int muzzleFlashTime;
+
 	vec3_t color1;
 	byte c1RGBA[4];
+
 	// currently in use drawing parms
 	vec3_t viewAngles;
 	vec3_t moveAngles;
 	weapon_t currentWeapon;
 	int legsAnim;
 	int torsoAnim;
+
 	// animation vars
 	weapon_t weapon;
 	weapon_t lastWeapon;
@@ -156,53 +186,49 @@ typedef struct {
 	int torsoAnimationTimer;
 	int pendingTorsoAnim;
 	int legsAnimationTimer;
+
 	qboolean chat;
 	qboolean newModel;
+
 	qboolean barrelSpinning;
 	float barrelAngle;
 	int barrelTime;
 	int realWeapon;
-} playerInfo_t;
+} uiPlayerInfo_t;
 
-void UI_DrawPlayer(float x, float y, float w, float h, playerInfo_t *pi, int time);
-void UI_PlayerInfo_SetModel(playerInfo_t *pi, const char *model, const char *headmodel, char *teamName);
-void UI_PlayerInfo_SetInfo(playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat);
-void UI_ColorFromIndex(int val, vec3_t color);
-void UI_PlayerInfo_UpdateColor(playerInfo_t *pi);
-qboolean UI_RegisterClientModelname(playerInfo_t *pi, const char *modelSkinName, const char *headName, const char *teamName);
+void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int time);
+void UI_PlayerInfo_SetModel(uiPlayerInfo_t *pi, const char *model, const char *headmodel, char *teamName);
+void UI_PlayerInfo_SetInfo(uiPlayerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat);
+void UI_PlayerInfo_UpdateColor(uiPlayerInfo_t *pi);
+qboolean UI_RegisterPlayerModelname(uiPlayerInfo_t *pi, const char *modelSkinName , const char *headName, const char *teamName);
 
 // new ui stuff
 #define UI_NUMFX 7
 #define MAX_HEADS 64
 #define MAX_ALIASES 64
-#define MAX_HEADNAME 32
+#define MAX_HEADNAME  32
 #define MAX_TEAMS 64
 #define MAX_GAMETYPES 16
 #define MAX_MAPS 128
 #define MAX_SPMAPS 16
 #define PLAYERS_PER_TEAM 5
-#define MAX_PINGREQUESTS 32
-#define MAX_ADDRESSLENGTH 64
-#define MAX_HOSTNAMELENGTH 22
-#define MAX_MAPNAMELENGTH 16
-#define MAX_STATUSLENGTH 64
-#define MAX_LISTBOXWIDTH 59
-#define UI_FONT_THRESHOLD 0.1
-#define MAX_DISPLAY_SERVERS 2048
-#define MAX_SERVERSTATUS_LINES 128
-#define MAX_SERVERSTATUS_TEXT 1024
-#define MAX_FOUNDPLAYER_SERVERS 16
+#define MAX_PINGREQUESTS		32
+#define MAX_ADDRESSLENGTH		64
+#define MAX_HOSTNAMELENGTH		22
+#define MAX_MAPNAMELENGTH		16
+#define MAX_STATUSLENGTH		64
+#define MAX_LISTBOXWIDTH		59
+#define UI_FONT_THRESHOLD		0.1
+#define MAX_DISPLAY_SERVERS		2048
+#define MAX_SERVERSTATUS_LINES	128
+#define MAX_SERVERSTATUS_TEXT	1024
+#define MAX_FOUNDPLAYER_SERVERS	16
 #define TEAM_MEMBERS 5
-
-#define GAMES_ALL		0
-#define GAMES_FFA		1
-#define GAMES_TOURNEY	2
-#define GAMES_TEAMPLAY	3
-#define GAMES_CTF		4
-#define GAMES_1FCTF		5
-#define GAMES_OBELISK	6
-#define GAMES_HARVESTER	7
-
+#define GAMES_ALL			0
+#define GAMES_FFA			1
+#define GAMES_TEAMPLAY		2
+#define GAMES_TOURNEY		3
+#define GAMES_CTF			4
 #define MAPS_PER_TIER 3
 #define MAX_TIERS 16
 #define MAX_MODS 64
@@ -211,9 +237,9 @@ qboolean UI_RegisterClientModelname(playerInfo_t *pi, const char *modelSkinName,
 #define MAX_PLAYERMODELS 256
 
 typedef struct {
-	const char *name;
+  const char *name;
 	const char *imageName;
-	qhandle_t headImage;
+  qhandle_t headImage;
 	const char *base;
 	qboolean active;
 	int reference;
@@ -226,23 +252,23 @@ typedef struct {
 } aliasInfo;
 
 typedef struct {
-	const char *teamName;
+  const char *teamName;
 	const char *imageName;
 	const char *teamMembers[TEAM_MEMBERS];
-	qhandle_t teamIcon;
-	qhandle_t teamIcon_Metal;
-	qhandle_t teamIcon_Name;
+  qhandle_t teamIcon;
+  qhandle_t teamIcon_Metal;
+  qhandle_t teamIcon_Name;
 	int cinematic;
 } teamInfo;
 
 typedef struct {
-	const char *gameType;
+  const char *gameType;
 	int gtEnum;
 } gameTypeInfo;
 
 typedef struct {
-	const char *mapName;
-	const char *mapLoadName;
+  const char *mapName;
+  const char *mapLoadName;
 	const char *imageName;
 	const char *opponentName;
 	int teamMembers;
@@ -329,6 +355,7 @@ typedef struct {
 	qboolean newHighScore;
 	qboolean demoAvailable;
 	qboolean soundHighScore;
+	
 	int characterCount;
 	int botIndex;
 	characterInfo characterList[MAX_HEADS];
@@ -357,21 +384,27 @@ typedef struct {
 	int tierCount;
 	tierInfo tierList[MAX_TIERS];
 	int skillIndex;
+
 	modInfo_t modList[MAX_MODS];
 	int modCount;
 	int modIndex;
+
 	const char *demoList[MAX_DEMOS];
 	int demoCount;
 	int demoIndex;
+
 	const char *movieList[MAX_MOVIES];
 	int movieCount;
 	int movieIndex;
 	int previewMovie;
+
 	serverStatus_t serverStatus;
+
 	// for the showing the status of a server
 	char serverStatusAddress[MAX_ADDRESSLENGTH];
 	serverStatusInfo_t serverStatusInfo;
 	int nextServerStatusRefresh;
+
 	// to retrieve the status of server to find a player
 	pendingServerStatus_t pendingServerStatus;
 	char findPlayerName[MAX_STRING_CHARS];
@@ -388,32 +421,40 @@ typedef struct {
 	qhandle_t q3HeadIcons[MAX_PLAYERMODELS];
 	int q3SelectedHead;
 	int effectsColor;
+
 	qboolean inGameLoad;
 	int maxSplitView;
-} uiInfo_t;
+
+}	uiInfo_t;
 
 extern uiInfo_t uiInfo;
 
 extern void UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
 extern void UI_DrawBannerString(int x, int y, const char *str, int style, vec4_t color);
-extern float UI_ProportionalSizeScale(int style);
+extern float 	UI_ProportionalSizeScale(int style);
 extern void UI_DrawProportionalString(int x, int y, const char *str, int style, vec4_t color);
 extern int UI_ProportionalStringWidth(const char *str);
 extern void UI_DrawString(int x, int y, const char *str, int style, vec4_t color);
 extern void UI_DrawChar(int x, int y, int ch, int style, vec4_t color);
-extern qboolean UI_CursorInRect(int x, int y, int width, int height);
+extern qboolean 	UI_CursorInRect(int x, int y, int width, int height);
 extern qboolean UI_IsFullscreen(void);
 extern void UI_SetActiveMenu(uiMenuCommand_t menu);
 extern void UI_ForceMenuOff(void);
 void UI_LoadBestScores(const char *map, int game);
+
+//
 // ui_gameinfo.c
+//
 char *UI_GetBotInfoByNumber(int num);
 char *UI_GetBotInfoByName(const char *name);
 int UI_GetNumBots(void);
 void UI_LoadBots(void);
 char *UI_GetBotNameByNumber(int num);
-// new ui
+
+// new ui 
+
 #define ASSET_BACKGROUND "uiBackground"
+
 // for tracking sp game info in Team Arena
 typedef struct postGameInfo_s {
 	int score;
@@ -433,4 +474,5 @@ typedef struct postGameInfo_s {
 	int skillBonus;
 	int baseScore;
 } postGameInfo_t;
+
 #endif

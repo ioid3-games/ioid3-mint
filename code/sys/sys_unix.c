@@ -1,30 +1,37 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
+
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -41,12 +48,15 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include <sys/wait.h>
 
 qboolean stdinIsATTY;
-// used to determine where to store user-specific files
-static char homePath[MAX_OSPATH] = {0};
-// used to store the Steam Quake 3 installation path
-static char steamPath[MAX_OSPATH] = {0};
-// used to store the GOG Quake 3 installation path
-static char gogPath[MAX_OSPATH] = {0};
+
+// Used to determine where to store user - specific files
+static char homePath[MAX_OSPATH] = { 0 };
+
+// Used to store the Steam Quake 3 installation path
+static char steamPath[MAX_OSPATH] = { 0 };
+
+// Used to store the GOG Quake 3 installation path
+static char gogPath[MAX_OSPATH] = { 0 };
 
 /*
 =======================================================================================================================================
@@ -66,13 +76,16 @@ char *Sys_DefaultHomePath(void) {
 		char *s;
 
 		Q_strncpyz(directory, com_homepath->string, sizeof(directory));
+
 		// convert home directory name to lower case and replace spaces with hyphens
 		s = directory;
-
 		while (*s) {
 			if (*s == ' ') {
-				*s = '-';
-			} else {
+				*s = ' - ';
+			}
+
+			else
+			{
 				*s = tolower(*s);
 			}
 
@@ -81,10 +94,13 @@ char *Sys_DefaultHomePath(void) {
 
 		if ((p = getenv("XDG_DATA_HOME")) != NULL && *p != '\0') {
 			Com_sprintf(homePath, sizeof(homePath), "%s%c%s", p, PATH_SEP, directory);
-		} else if ((p = getenv("HOME")) != NULL && *p != '\0') {
+		}
+
+		else if ((p = getenv("HOME")) != NULL && *p != '\0') {
 			Com_sprintf(homePath, sizeof(homePath), "%s%c.local%cshare%c%s", p, PATH_SEP, PATH_SEP, PATH_SEP, directory);
 		}
 #endif
+
 		if (!*homePath) {
 			Com_Printf("Unable to detect home path\n");
 			return NULL;
@@ -100,7 +116,7 @@ Sys_SteamPath
 =======================================================================================================================================
 */
 char *Sys_SteamPath(void) {
-	// disabled since Steam doesn't let you install Quake 3 on Mac/Linux
+	// Disabled since Steam doesn't let you install Quake 3 on Mac/Linux
 #if 0 //#ifdef STEAMPATH_NAME
 	char *p;
 
@@ -113,6 +129,7 @@ char *Sys_SteamPath(void) {
 		Com_sprintf(steamPath, sizeof(steamPath), "%s%s", p, steamPathEnd);
 	}
 #endif
+
 	return steamPath;
 }
 
@@ -127,23 +144,20 @@ char *Sys_GogPath(void) {
 }
 
 /*
- base time in seconds, that's our origin
- timeval:tv_sec is an int:
- assuming this wraps every 0x7fffffff - ~68 years since the Epoch (1970) - we're safe till 2038
-*/
-unsigned long sys_timeBase = 0;
-/*
- current time in ms, using sys_timeBase as origin
- NOTE: sys_timeBase * 1000 + curtime -> ms since the Epoch
- 0x7fffffff ms - ~24 days
- although timeval:tv_usec is an int, I'm not sure whether it is actually used as an unsigned int (which would affect the wrap period)
-*/
-int curtime;
-/*
 =======================================================================================================================================
 Sys_Milliseconds
 =======================================================================================================================================
 */
+/* base time in seconds, that's our origin
+   timeval:tv_sec is an int:
+   assuming this wraps every 0x7fffffff - ~68 years since the Epoch(1970) - we're safe till 2038 */
+unsigned long sys_timeBase = 0;
+/* current time in ms, using sys_timeBase as origin
+   NOTE: sys_timeBase*1000 + curtime->ms since the Epoch
+     0x7fffffff ms - ~24 days
+   although timeval:tv_usec is an int, I'm not sure wether it is actually used as an unsigned int
+    (which would affect the wrap period) */
+int curtime;
 int Sys_Milliseconds(void) {
 	struct timeval tp;
 
@@ -151,10 +165,10 @@ int Sys_Milliseconds(void) {
 
 	if (!sys_timeBase) {
 		sys_timeBase = tp.tv_sec;
-		return tp.tv_usec / 1000;
+		return tp.tv_usec/1000;
 	}
 
-	curtime = (tp.tv_sec - sys_timeBase) * 1000 + tp.tv_usec / 1000;
+	curtime = (tp.tv_sec - sys_timeBase) *1000 + tp.tv_usec/1000;
 
 	return curtime;
 }
@@ -168,10 +182,8 @@ qboolean Sys_RandomBytes(byte *string, int len) {
 	FILE *fp;
 
 	fp = fopen("/dev/urandom", "r");
-
-	if (!fp) {
+	if (!fp)
 		return qfalse;
-	}
 
 	setvbuf(fp, NULL, _IONBF, 0); // don't buffer reads from /dev/urandom
 
@@ -199,7 +211,7 @@ char *Sys_GetCurrentUser(void) {
 	return p->pw_name;
 }
 
-#define MEM_THRESHOLD 96 * 1024 * 1024
+#define MEM_THRESHOLD 96*1024*1024
 
 /*
 =======================================================================================================================================
@@ -239,9 +251,8 @@ FILE *Sys_FOpen(const char *ospath, const char *mode) {
 	struct stat buf;
 
 	// check if path exists and is a directory
-	if (!stat(ospath, &buf) && S_ISDIR(buf.st_mode)) {
+	if (!stat(ospath, &buf) && S_ISDIR(buf.st_mode))
 		return NULL;
-	}
 
 	return fopen(ospath, mode);
 }
@@ -254,9 +265,8 @@ Sys_Mkdir
 qboolean Sys_Mkdir(const char *path) {
 	int result = mkdir(path, 0750);
 
-	if (result != 0) {
+	if (result != 0)
 		return errno == EEXIST;
-	}
 
 	return qtrue;
 }
@@ -269,9 +279,8 @@ Sys_Rmdir
 qboolean Sys_Rmdir(const char *path) {
 	int result = rmdir(path);
 
-	if (result != 0) {
+	if (result != 0)
 		return qfalse;
-	}
 
 	return qtrue;
 }
@@ -282,24 +291,20 @@ Sys_Mkfifo
 =======================================================================================================================================
 */
 FILE *Sys_Mkfifo(const char *ospath) {
-	FILE *fifo;
+	FILE	*fifo;
 	int result;
 	int fn;
-	struct stat buf;
+	struct	stat buf;
 
 	// if file already exists AND is a pipefile, remove it
-	if (!stat(ospath, &buf) && S_ISFIFO(buf.st_mode)) {
+	if (!stat(ospath, &buf) && S_ISFIFO(buf.st_mode))
 		FS_Remove(ospath);
-	}
 
 	result = mkfifo(ospath, 0600);
-
-	if (result != 0) {
+	if (result != 0)
 		return NULL;
-	}
 
 	fifo = fopen(ospath, "w+");
-
 	if (fifo) {
 		fn = fileno(fifo);
 		fcntl(fn, F_SETFL, O_NONBLOCK);
@@ -320,9 +325,8 @@ returns 0 otherwise
 */
 int Sys_StatFile(char *ospath) {
 	struct stat stat_buf;
-
 	if (stat(ospath, &stat_buf) == -1) {
-		return -1;
+		return - 1;
 	}
 
 	if (S_ISDIR(stat_buf.st_mode)) {
@@ -341,10 +345,8 @@ char *Sys_Cwd(void) {
 	static char cwd[MAX_OSPATH];
 
 	char *result = getcwd(cwd, sizeof(cwd) - 1);
-
-	if (result != cwd) {
+	if (result != cwd)
 		return NULL;
-	}
 
 	cwd[MAX_OSPATH - 1] = 0;
 
@@ -354,7 +356,7 @@ char *Sys_Cwd(void) {
 /*
 =======================================================================================================================================
 
-	DIRECTORY SCANNING
+DIRECTORY SCANNING
 
 =======================================================================================================================================
 */
@@ -369,9 +371,9 @@ Sys_ListFilteredFiles
 void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, char **list, int *numfiles) {
 	char search[MAX_OSPATH], newsubdirs[MAX_OSPATH];
 	char filename[MAX_OSPATH];
-	DIR *fdir;
+	DIR           *fdir;
 	struct dirent *d;
-	struct stat st;
+	struct stat   st;
 
 	if (*numfiles >= MAX_FOUND_FILES - 1) {
 		return;
@@ -390,18 +392,17 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 	while ((d = readdir(fdir)) != NULL) {
 		Com_sprintf(filename, sizeof(filename), "%s/%s", search, d->d_name);
 
-		if (stat(filename, &st) == -1) {
+		if (stat(filename, &st) == -1)
 			continue;
-		}
 
 		if (st.st_mode & S_IFDIR) {
 			if (Q_stricmp(d->d_name, ".") && Q_stricmp(d->d_name, "..")) {
 				if (strlen(subdirs)) {
 					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s/%s", subdirs, d->d_name);
-				} else {
+				}
+				else {
 					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s", d->d_name);
 				}
-
 				Sys_ListFilteredFiles(basedir, newsubdirs, filter, list, numfiles);
 			}
 		}
@@ -412,10 +413,8 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 
 		Com_sprintf(filename, sizeof(filename), "%s/%s", subdirs, d->d_name);
 
-		if (!Com_FilterPath(filter, filename, qfalse)) {
+		if (!Com_FilterPath(filter, filename, qfalse))
 			continue;
-		}
-
 		list[*numfiles] = CopyString(filename);
 		(*numfiles)++;
 	}
@@ -430,30 +429,29 @@ Sys_ListFiles
 */
 char **Sys_ListFiles(const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs) {
 	struct dirent *d;
-	DIR *fdir;
+	DIR           *fdir;
 	qboolean dironly = wantsubs;
 	char search[MAX_OSPATH];
 	int nfiles;
 	char **listCopy;
 	char *list[MAX_FOUND_FILES];
 	int i;
-	struct stat st;
+	struct stat   st;
+
 	int extLen;
 
 	if (filter) {
-		nfiles = 0;
 
+		nfiles = 0;
 		Sys_ListFilteredFiles(directory, "", filter, list, &nfiles);
 
 		list[nfiles] = NULL;
 		*numfiles = nfiles;
 
-		if (!nfiles) {
+		if (!nfiles)
 			return NULL;
-		}
 
 		listCopy = Z_Malloc((nfiles + 1) * sizeof(*listCopy));
-
 		for (i = 0; i < nfiles; i++) {
 			listCopy[i] = list[i];
 		}
@@ -463,9 +461,8 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 		return listCopy;
 	}
 
-	if (!extension) {
+	if (!extension)
 		extension = "";
-	}
 
 	if (extension[0] == '/' && extension[1] == 0) {
 		extension = "";
@@ -473,6 +470,7 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	}
 
 	extLen = strlen(extension);
+
 	// search
 	nfiles = 0;
 
@@ -484,24 +482,24 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	while ((d = readdir(fdir)) != NULL) {
 		Com_sprintf(search, sizeof(search), "%s/%s", directory, d->d_name);
 
-		if (stat(search, &st) == -1) {
+		if (stat(search, &st) == -1)
 			continue;
-		}
 
-		if ((dironly && !(st.st_mode & S_IFDIR)) || (!dironly && (st.st_mode & S_IFDIR))) {
+		if ((dironly && !(st.st_mode & S_IFDIR)) ||
+			(!dironly && (st.st_mode & S_IFDIR)))
 			continue;
-		}
 
 		if (*extension) {
-			if (strlen(d->d_name) < extLen || Q_stricmp(d->d_name + strlen(d->d_name) - extLen, extension)) {
+			if (strlen(d->d_name) < extLen ||
+				Q_stricmp(
+					d->d_name + strlen(d->d_name) - extLen,
+					extension)) {
 				continue; // didn't match
 			}
 		}
 
-		if (nfiles == MAX_FOUND_FILES - 1) {
+		if (nfiles == MAX_FOUND_FILES - 1)
 			break;
-		}
-
 		list[nfiles] = CopyString(d->d_name);
 		nfiles++;
 	}
@@ -509,6 +507,7 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	list[nfiles] = NULL;
 
 	closedir(fdir);
+
 	// return a copy of the list
 	*numfiles = nfiles;
 
@@ -554,10 +553,8 @@ Block execution for msec or until input is received.
 =======================================================================================================================================
 */
 void Sys_Sleep(int msec) {
-
-	if (msec == 0) {
+	if (msec == 0)
 		return;
-	}
 
 	if (stdinIsATTY) {
 		fd_set fdset;
@@ -567,18 +564,19 @@ void Sys_Sleep(int msec) {
 
 		if (msec < 0) {
 			select(STDIN_FILENO + 1, &fdset, NULL, NULL, NULL);
-		} else {
+		}
+
+		else {
 			struct timeval timeout;
 
-			timeout.tv_sec = msec / 1000;
-			timeout.tv_usec = (msec % 1000) * 1000;
+			timeout.tv_sec = msec/1000;
+			timeout.tv_usec = (msec%1000) *1000;
 			select(STDIN_FILENO + 1, &fdset, NULL, NULL, &timeout);
 		}
 	} else {
-		// with nothing to select() on, we can't wait indefinitely
-		if (msec < 0) {
+		// With nothing to select()on, we can't wait indefinitely
+		if (msec < 0)
 			msec = 10;
-		}
 
 		usleep(msec * 1000);
 	}
@@ -588,7 +586,7 @@ void Sys_Sleep(int msec) {
 =======================================================================================================================================
 Sys_ErrorDialog
 
-Display an error message.
+Display an error message
 =======================================================================================================================================
 */
 void Sys_ErrorDialog(const char *error) {
@@ -602,10 +600,13 @@ void Sys_ErrorDialog(const char *error) {
 	char *ospath = FS_BuildOSPath(homepath, gamedir, fileName);
 
 	Sys_Print(va("%s\n", error));
+
 #ifndef DEDICATED
 	Sys_Dialog(DT_ERROR, va("%s. See \"%s\" for details.", error, ospath), "Error");
 #endif
-	// make sure the write path for the crashlog exists...
+
+	// Make sure the write path for the crashlog exists...
+
 	if (!Sys_Mkdir(homepath)) {
 		Com_Printf("ERROR: couldn't create path '%s' for crash log.\n", homepath);
 		return;
@@ -615,15 +616,15 @@ void Sys_ErrorDialog(const char *error) {
 		Com_Printf("ERROR: couldn't create path '%s' for crash log.\n", dirpath);
 		return;
 	}
-	// we might be crashing because we maxed out the Quake MAX_FILE_HANDLES, which will come through here, so we don't want to recurse
-	// forever by calling FS_FOpenFileWrite() ...use the Unix system APIs instead.
+	// We might be crashing because we maxed out the Quake MAX_FILE_HANDLES,
+	// which will come through here, so we don't want to recurse forever by
+	// calling FS_FOpenFileWrite()...use the Unix system APIs instead.
 	f = open(ospath, O_CREAT|O_TRUNC|O_WRONLY, 0640);
-
 	if (f == -1) {
 		Com_Printf("ERROR: couldn't open %s\n", fileName);
 		return;
 	}
-	// we're crashing, so we don't care much if write() or close() fails.
+	// We're crashing, so we don't care much if write()or close()fails.
 	while ((size = CON_LogRead(buffer, sizeof(buffer))) > 0) {
 		if (write(f, buffer, size) != size) {
 			Com_Printf("ERROR: couldn't fully write to %s\n", fileName);
@@ -633,6 +634,7 @@ void Sys_ErrorDialog(const char *error) {
 
 	close(f);
 }
+
 #ifndef __APPLE__
 static char execBuffer[1024];
 static char *execBufferPointer;
@@ -645,11 +647,8 @@ Sys_ClearExecBuffer
 =======================================================================================================================================
 */
 static void Sys_ClearExecBuffer(void) {
-
 	execBufferPointer = execBuffer;
-
 	Com_Memset(execArgv, 0, sizeof(execArgv));
-
 	execArgc = 0;
 }
 
@@ -660,15 +659,14 @@ Sys_AppendToExecBuffer
 */
 static void Sys_AppendToExecBuffer(const char *text) {
 	size_t size = sizeof(execBuffer) - (execBufferPointer - execBuffer);
-	int length = strlen(text) + 1;
+	int length = strlen(text) +  1;
 
-	if (length > size || execArgc >= ARRAY_LEN(execArgv)) {
+	if (length > size || execArgc >= ARRAY_LEN(execArgv))
 		return;
-	}
 
 	Q_strncpyz(execBufferPointer, text, size);
-
 	execArgv[execArgc++] = execBufferPointer;
+
 	execBufferPointer += length;
 }
 
@@ -680,24 +678,24 @@ Sys_Exec
 static int Sys_Exec(void) {
 	pid_t pid = fork();
 
-	if (pid < 0) {
-		return -1;
-	}
+	if (pid < 0)
+		return - 1;
 
 	if (pid) {
-		// parent
+		// Parent
 		int exitCode;
 
 		wait(&exitCode);
 
 		return WEXITSTATUS(exitCode);
 	} else {
-		// child
+		// Child
 		execvp(execArgv[0], execArgv);
-		// failed to execute
+
+		// Failed to execute
 		exit(-1);
 
-		return -1;
+		return - 1;
 	}
 }
 
@@ -707,26 +705,20 @@ Sys_ZenityCommand
 =======================================================================================================================================
 */
 static void Sys_ZenityCommand(dialogType_t type, const char *message, const char *title) {
-
 	Sys_ClearExecBuffer();
 	Sys_AppendToExecBuffer("zenity");
 
-	switch (type) {
+	switch(type) {
 		default:
-		case DT_INFO:
-			Sys_AppendToExecBuffer("--info");
-			break;
-		case DT_WARNING:
-			Sys_AppendToExecBuffer("--warning");
-			break;
-		case DT_ERROR:
-			Sys_AppendToExecBuffer("--error");
-			break;
+		case DT_INFO:      Sys_AppendToExecBuffer("--info"); break;
+		case DT_WARNING:   Sys_AppendToExecBuffer("--warning"); break;
+		case DT_ERROR:     Sys_AppendToExecBuffer("--error"); break;
 		case DT_YES_NO:
 			Sys_AppendToExecBuffer("--question");
 			Sys_AppendToExecBuffer("--ok - label = Yes");
 			Sys_AppendToExecBuffer("--cancel - label = No");
 			break;
+
 		case DT_OK_CANCEL:
 			Sys_AppendToExecBuffer("--question");
 			Sys_AppendToExecBuffer("--ok - label = OK");
@@ -744,27 +736,16 @@ Sys_KdialogCommand
 =======================================================================================================================================
 */
 static void Sys_KdialogCommand(dialogType_t type, const char *message, const char *title) {
-
 	Sys_ClearExecBuffer();
 	Sys_AppendToExecBuffer("kdialog");
 
-	switch (type) {
+	switch(type) {
 		default:
-		case DT_INFO:
-			Sys_AppendToExecBuffer("--msgbox");
-			break;
-		case DT_WARNING:
-			Sys_AppendToExecBuffer("--sorry");
-			break;
-		case DT_ERROR:
-			Sys_AppendToExecBuffer("--error");
-			break;
-		case DT_YES_NO:
-			Sys_AppendToExecBuffer("--warningyesno");
-			break;
-		case DT_OK_CANCEL:
-			Sys_AppendToExecBuffer("--warningcontinuecancel");
-			break;
+		case DT_INFO:      Sys_AppendToExecBuffer("--msgbox"); break;
+		case DT_WARNING:   Sys_AppendToExecBuffer("--sorry"); break;
+		case DT_ERROR:     Sys_AppendToExecBuffer("--error"); break;
+		case DT_YES_NO:    Sys_AppendToExecBuffer("--warningyesno"); break;
+		case DT_OK_CANCEL: Sys_AppendToExecBuffer("--warningcontinuecancel"); break;
 	}
 
 	Sys_AppendToExecBuffer(message);
@@ -777,21 +758,14 @@ Sys_XmessageCommand
 =======================================================================================================================================
 */
 static void Sys_XmessageCommand(dialogType_t type, const char *message, const char *title) {
-
 	Sys_ClearExecBuffer();
 	Sys_AppendToExecBuffer("xmessage");
 	Sys_AppendToExecBuffer("-buttons");
 
-	switch (type) {
-		default:
-			Sys_AppendToExecBuffer("OK:0");
-			break;
-		case DT_YES_NO:
-			Sys_AppendToExecBuffer("Yes:0, No:1");
-			break;
-		case DT_OK_CANCEL:
-			Sys_AppendToExecBuffer("OK:0, Cancel:1");
-			break;
+	switch(type) {
+		default:           Sys_AppendToExecBuffer("OK:0"); break;
+		case DT_YES_NO:    Sys_AppendToExecBuffer("Yes:0, No:1"); break;
+		case DT_OK_CANCEL: Sys_AppendToExecBuffer("OK:0, Cancel:1"); break;
 	}
 
 	Sys_AppendToExecBuffer("-center");
@@ -802,38 +776,39 @@ static void Sys_XmessageCommand(dialogType_t type, const char *message, const ch
 =======================================================================================================================================
 Sys_Dialog
 
-Display a *nix dialog box.
+Display a *nix dialog box
 =======================================================================================================================================
 */
 dialogResult_t Sys_Dialog(dialogType_t type, const char *message, const char *title) {
-	typedef enum {
+	typedef enum
+	{
 		NONE = 0,
 		ZENITY,
 		KDIALOG,
 		XMESSAGE,
 		NUM_DIALOG_PROGRAMS
 	} dialogCommandType_t;
-	typedef void (*dialogCommandBuilder_t)(dialogType_t, const char *, const char *);
+	typedef void(*dialogCommandBuilder_t)(dialogType_t, const char *, const char *);
+
 	const char *session = getenv("DESKTOP_SESSION");
-	qboolean tried[NUM_DIALOG_PROGRAMS] = {qfalse};
-	dialogCommandBuilder_t commands[NUM_DIALOG_PROGRAMS] = {NULL};
+	qboolean tried[NUM_DIALOG_PROGRAMS] = { qfalse };
+	dialogCommandBuilder_t commands[NUM_DIALOG_PROGRAMS] = { NULL };
 	dialogCommandType_t preferredCommandType = NONE;
 	int i;
 
 	commands[ZENITY] = &Sys_ZenityCommand;
 	commands[KDIALOG] = &Sys_KdialogCommand;
 	commands[XMESSAGE] = &Sys_XmessageCommand;
-	// this may not be the best way
-	if (!Q_stricmp(session, "gnome")) {
+
+	// This may not be the best way
+	if (!Q_stricmp(session, "gnome"))
 		preferredCommandType = ZENITY;
-	} else if (!Q_stricmp(session, "kde")) {
+	else if (!Q_stricmp(session, "kde"))
 		preferredCommandType = KDIALOG;
-	}
 
 	for (i = NONE + 1; i < NUM_DIALOG_PROGRAMS; i++) {
-		if (preferredCommandType != NONE && preferredCommandType != i) {
+		if (preferredCommandType != NONE && preferredCommandType != i)
 			continue;
-		}
 
 		if (!tried[i]) {
 			int exitCode;
@@ -842,18 +817,16 @@ dialogResult_t Sys_Dialog(dialogType_t type, const char *message, const char *ti
 			exitCode = Sys_Exec();
 
 			if (exitCode >= 0) {
-				switch (type) {
-					case DT_YES_NO:
-						return exitCode ? DR_NO : DR_YES;
-					case DT_OK_CANCEL:
-						return exitCode ? DR_CANCEL : DR_OK;
-					default:
-						return DR_OK;
+				switch(type) {
+					case DT_YES_NO:    return exitCode ? DR_NO : DR_YES;
+					case DT_OK_CANCEL: return exitCode ? DR_CANCEL : DR_OK;
+					default:           return DR_OK;
 				}
 			}
 
 			tried[i] = qtrue;
-			// the preference failed, so start again in order
+
+			// The preference failed, so start again in order
 			if (preferredCommandType != NONE) {
 				preferredCommandType = NONE;
 				i = NONE + 1;
@@ -865,11 +838,12 @@ dialogResult_t Sys_Dialog(dialogType_t type, const char *message, const char *ti
 	return DR_OK;
 }
 #endif
+
 /*
 =======================================================================================================================================
 Sys_GLimpSafeInit
 
-Unix specific "safe" GL implementation initialisation.
+Unix specific "safe" GL implementation initialisation
 =======================================================================================================================================
 */
 void Sys_GLimpSafeInit(void) {
@@ -880,18 +854,13 @@ void Sys_GLimpSafeInit(void) {
 =======================================================================================================================================
 Sys_GLimpInit
 
-Unix specific GL implementation initialisation.
+Unix specific GL implementation initialisation
 =======================================================================================================================================
 */
 void Sys_GLimpInit(void) {
 	// NOP
 }
 
-/*
-=======================================================================================================================================
-Sys_SetFloatEnv
-=======================================================================================================================================
-*/
 void Sys_SetFloatEnv(void) {
 	// rounding toward nearest
 	fesetround(FE_TONEAREST);
@@ -901,7 +870,7 @@ void Sys_SetFloatEnv(void) {
 =======================================================================================================================================
 Sys_PlatformInit
 
-Unix specific initialisation.
+Unix specific initialisation
 =======================================================================================================================================
 */
 void Sys_PlatformInit(void) {
@@ -915,34 +884,33 @@ void Sys_PlatformInit(void) {
 
 	Sys_SetFloatEnv();
 
-	stdinIsATTY = isatty(STDIN_FILENO) && !(term && (!strcmp(term, "raw") || !strcmp(term, "dumb")));
+	stdinIsATTY = isatty(STDIN_FILENO) &&
+		!(term && (!strcmp(term, "raw") || !strcmp(term, "dumb")));
 }
 
 /*
 =======================================================================================================================================
 Sys_PlatformExit
 
-Unix specific deinitialisation.
+Unix specific deinitialisation
 =======================================================================================================================================
 */
 void Sys_PlatformExit(void) {
-
 }
 
 /*
 =======================================================================================================================================
 Sys_SetEnv
 
-Set/unset environment variables (empty value removes it).
+set/unset environment variables(empty value removes it)
 =======================================================================================================================================
 */
-void Sys_SetEnv(const char *name, const char *value) {
 
-	if (value && *value) {
+void Sys_SetEnv(const char *name, const char *value) {
+	if (value && *value)
 		setenv(name, value, 1);
-	} else {
+	else
 		unsetenv(name);
-	}
 }
 
 /*
@@ -977,18 +945,22 @@ qboolean Sys_DllExtension(const char *name) {
 	if (COM_CompareExtension(name, DLL_EXT)) {
 		return qtrue;
 	}
+
 #ifdef __APPLE__
-	// allow system frameworks without dylib extensions, i.e.: /System/Library/Frameworks/OpenAL.framework/OpenAL
+	// Allow system frameworks without dylib extensions
+	// i.e., /System/Library/Frameworks/OpenAL.framework/OpenAL
 	if (strncmp(name, "/System/Library/Frameworks/", 27) == 0) {
 		return qtrue;
 	}
 #endif
-	// check for format of filename.so.1.2.3
+
+	// Check for format of filename.so.1.2.3
 	p = strstr(name, DLL_EXT ".");
 
 	if (p) {
 		p += strlen(DLL_EXT);
-		// check if .so is only followed for periods and numbers.
+
+		// Check if .so is only followed for periods and numbers.
 		while (*p) {
 			c = *p;
 
@@ -998,7 +970,7 @@ qboolean Sys_DllExtension(const char *name) {
 
 			p++;
 		}
-		// don't allow filename to end in a period. file.so., file.so.0., etc.
+		// Don't allow filename to end in a period. file.so., file.so.0., etc
 		if (c != '.') {
 			return qtrue;
 		}
@@ -1015,10 +987,9 @@ Check if filename is an absolute path.
 =======================================================================================================================================
 */
 qboolean Sys_PathIsAbsolute(const char *path) {
-
 	if (!path) {
 		return qfalse;
 	}
 
-	return (path[0] == '/');
+	return(path[0] == '/');
 }

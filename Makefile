@@ -92,7 +92,7 @@ endif
 export CROSS_COMPILING
 
 ifndef VERSION
-VERSION=0.4
+VERSION=1.0.1
 endif
 
 ifndef CLIENTBIN
@@ -109,7 +109,7 @@ APPBUNDLE=Spearmint.app
 endif
 
 ifndef RENDERER_PREFIX
-RENDERER_PREFIX=mint-renderer-
+RENDERER_PREFIX=spearmint-renderer-
 endif
 
 ifndef BASEGAME
@@ -165,6 +165,10 @@ ifndef USE_CURL_DLOPEN
   endif
 endif
 
+ifndef USE_CODEC_MP3
+USE_CODEC_MP3=1
+endif
+
 ifndef USE_CODEC_VORBIS
 USE_CODEC_VORBIS=1
 endif
@@ -187,6 +191,10 @@ endif
 
 ifndef USE_INTERNAL_LIBS
 USE_INTERNAL_LIBS=1
+endif
+
+ifndef USE_INTERNAL_MP3
+USE_INTERNAL_MP3=$(USE_INTERNAL_LIBS)
 endif
 
 ifndef USE_INTERNAL_OGG
@@ -249,12 +257,13 @@ SYSDIR=$(MOUNT_DIR)/sys
 BLIBDIR=$(MOUNT_DIR)/botlib
 NDIR=$(MOUNT_DIR)/null
 JPDIR=$(MOUNT_DIR)/jpeg-8c
-OGGDIR=$(MOUNT_DIR)/libogg-1.3.2
-VORBISDIR=$(MOUNT_DIR)/libvorbis-1.3.5
-OPUSDIR=$(MOUNT_DIR)/opus-1.1.4
-OPUSFILEDIR=$(MOUNT_DIR)/opusfile-0.8
+OGGDIR=$(MOUNT_DIR)/libogg-1.3.3
+VORBISDIR=$(MOUNT_DIR)/libvorbis-1.3.6
+OPUSDIR=$(MOUNT_DIR)/opus-1.2.1
+OPUSFILEDIR=$(MOUNT_DIR)/opusfile-0.9
+MADDIR=$(MOUNT_DIR)/libmad-0.15.1b
 ZDIR=$(MOUNT_DIR)/zlib
-FTDIR=$(MOUNT_DIR)/freetype-2.7.1
+FTDIR=$(MOUNT_DIR)/freetype-2.9
 AUTOUPDATERSRCDIR=$(MOUNT_DIR)/autoupdater
 LIBTOMCRYPTSRCDIR=$(AUTOUPDATERSRCDIR)/rsa_tools/libtomcrypt-1.17
 TOMSFASTMATHSRCDIR=$(AUTOUPDATERSRCDIR)/rsa_tools/tomsfastmath-0.13.1
@@ -267,15 +276,28 @@ bin_path=$(shell which $(1) 2> /dev/null)
 # The autoupdater uses curl, so figure out its flags no matter what.
 # We won't need this if we only build the server
 
-# set PKG_CONFIG_PATH to influence this, e.g.
-# PKG_CONFIG_PATH=/opt/cross/i386-mingw32msvc/lib/pkgconfig
-ifneq ($(call bin_path, pkg-config),)
-  CURL_CFLAGS ?= $(shell pkg-config --silence-errors --cflags libcurl)
-  CURL_LIBS ?= $(shell pkg-config --silence-errors --libs libcurl)
-  OPENAL_CFLAGS ?= $(shell pkg-config --silence-errors --cflags openal)
-  OPENAL_LIBS ?= $(shell pkg-config --silence-errors --libs openal)
-  SDL_CFLAGS ?= $(shell pkg-config --silence-errors --cflags sdl2|sed 's/-Dmain=SDL_main//')
-  SDL_LIBS ?= $(shell pkg-config --silence-errors --libs sdl2)
+# set PKG_CONFIG_PATH or PKG_CONFIG to influence this, e.g.
+# PKG_CONFIG_PATH=/opt/cross/i386-mingw32msvc/lib/pkgconfig or
+# PKG_CONFIG=arm-linux-gnueabihf-pkg-config
+ifeq ($(CROSS_COMPILING),0)
+  PKG_CONFIG ?= pkg-config
+else
+ifneq ($(PKG_CONFIG_PATH),)
+  PKG_CONFIG ?= pkg-config
+else
+  # Don't use host pkg-config when cross-compiling.
+  # (unknown-pkg-config is meant to be a non-existant command.)
+  PKG_CONFIG ?= unknown-pkg-config
+endif
+endif
+
+ifneq ($(call bin_path, $(PKG_CONFIG)),)
+  CURL_CFLAGS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags libcurl)
+  CURL_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs libcurl)
+  OPENAL_CFLAGS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags openal)
+  OPENAL_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs openal)
+  SDL_CFLAGS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags sdl2|sed 's/-Dmain=SDL_main//')
+  SDL_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs sdl2)
 else
   # assume they're in the system default paths (no -I or -L needed)
   CURL_LIBS ?= -lcurl
@@ -285,8 +307,8 @@ endif
 # Use sdl2-config if all else fails
 ifeq ($(SDL_CFLAGS),)
   ifneq ($(call bin_path, sdl2-config),)
-    SDL_CFLAGS ?= $(shell sdl2-config --cflags)
-    SDL_LIBS ?= $(shell sdl2-config --libs)
+    SDL_CFLAGS = $(shell sdl2-config --cflags)
+    SDL_LIBS = $(shell sdl2-config --libs)
   endif
 endif
 
@@ -295,9 +317,9 @@ ifneq ($(BUILD_FINAL),1)
 # Add git version info
 USE_GIT=
 ifeq ($(wildcard .git),.git)
-  GIT_REV=$(shell git show -s --pretty=format:%h-%ad --date=short)
+  GIT_REV=$(shell git show -s --pretty=format:%ad+%h --date=short | tr -d '-')
   ifneq ($(GIT_REV),)
-    VERSION:=$(VERSION)_GIT_$(GIT_REV)
+    VERSION:=$(VERSION)+$(GIT_REV)
     USE_GIT=1
   endif
 endif
@@ -310,7 +332,7 @@ endif
 #############################################################################
 
 INSTALL=install
-MKDIR=mkdir
+MKDIR=mkdir -p
 EXTRA_FILES=
 CLIENT_EXTRA_FILES=
 
@@ -337,11 +359,11 @@ ifneq (,$(findstring "$(PLATFORM)", "linux" "gnu_kfreebsd" "kfreebsd-gnu" "gnu")
     HAVE_VM_COMPILED=true
   else
   ifeq ($(ARCH),ppc)
-    BASE_CFLAGS += -maltivec
+    ALTIVEC_CFLAGS = -maltivec
     HAVE_VM_COMPILED=true
   endif
   ifeq ($(ARCH),ppc64)
-    BASE_CFLAGS += -maltivec
+    ALTIVEC_CFLAGS = -maltivec
     HAVE_VM_COMPILED=true
   endif
   ifeq ($(ARCH),sparc)
@@ -369,10 +391,10 @@ ifneq (,$(findstring "$(PLATFORM)", "linux" "gnu_kfreebsd" "kfreebsd-gnu" "gnu")
   AUTOUPDATER_LIBS += -ldl
 
   CLIENT_LIBS=$(SDL_LIBS)
-  RENDERER_LIBS = $(SDL_LIBS) -lGL
+  RENDERER_LIBS = $(SDL_LIBS)
 
   ifeq ($(USE_PORTABLE_RPATH),1)
-    # $ is escaped using two, so this is litterly $ORIGIN
+    # $ is escaped using two, so this is literally $ORIGIN
     CLIENT_LIBS+=-Wl,-rpath,'$$ORIGIN/lib/$(ARCH)'
     RENDERER_LIBS+=-Wl,-rpath,'$$ORIGIN/lib/$(ARCH)'
   endif
@@ -413,26 +435,34 @@ ifeq ($(PLATFORM),darwin)
   LIBS = -framework Cocoa
   CLIENT_LIBS=
   RENDERER_LIBS=
-  OPTIMIZEVM=
+  OPTIMIZEVM = -O3
 
   # Default minimum Mac OS X version
   ifeq ($(MACOSX_VERSION_MIN),)
     MACOSX_VERSION_MIN=10.7
   endif
 
-  # Multiply by 100 and then remove decimal. 10.7 -> 1070.0 -> 1070
-  MAC_OS_X_VERSION_MIN_REQUIRED=$(shell echo '$(MACOSX_VERSION_MIN) * 100' | bc | cut -d. -f1)
+  MACOSX_MAJOR=$(shell echo $(MACOSX_VERSION_MIN) | cut -d. -f1)
+  MACOSX_MINOR=$(shell echo $(MACOSX_VERSION_MIN) | cut -d. -f2)
+  ifeq ($(shell test $(MACOSX_MINOR) -gt 9; echo $$?),0)
+    # Multiply and then remove decimal. 10.10 -> 101000.0 -> 101000
+    MAC_OS_X_VERSION_MIN_REQUIRED=$(shell echo "$(MACOSX_MAJOR) * 10000 + $(MACOSX_MINOR) * 100" | bc | cut -d. -f1)
+  else
+    # Multiply by 100 and then remove decimal. 10.7 -> 1070.0 -> 1070
+    MAC_OS_X_VERSION_MIN_REQUIRED=$(shell echo "$(MACOSX_VERSION_MIN) * 100" | bc | cut -d. -f1)
+  endif
 
   LDFLAGS += -mmacosx-version-min=$(MACOSX_VERSION_MIN)
   BASE_CFLAGS += -mmacosx-version-min=$(MACOSX_VERSION_MIN) \
                  -DMAC_OS_X_VERSION_MIN_REQUIRED=$(MAC_OS_X_VERSION_MIN_REQUIRED)
 
   ifeq ($(ARCH),ppc)
-    BASE_CFLAGS += -arch ppc -faltivec
-    OPTIMIZEVM += -O3
+    BASE_CFLAGS += -arch ppc
+    ALTIVEC_CFLAGS = -faltivec
   endif
   ifeq ($(ARCH),ppc64)
-    BASE_CFLAGS += -arch ppc64 -faltivec
+    BASE_CFLAGS += -arch ppc64
+    ALTIVEC_CFLAGS = -faltivec
   endif
   ifeq ($(ARCH),x86)
     OPTIMIZEVM += -march=prescott -mfpmath=sse
@@ -469,6 +499,9 @@ ifeq ($(PLATFORM),darwin)
   BASE_CFLAGS += -fno-strict-aliasing -fno-common -pipe -DUSE_ICON
 
   ifeq ($(USE_OPENAL),1)
+    ifneq ($(USE_LOCAL_HEADERS),1)
+      CLIENT_CFLAGS += -I/System/Library/Frameworks/OpenAL.framework/Headers
+    endif
     ifneq ($(USE_OPENAL_DLOPEN),1)
       CLIENT_LIBS += -framework OpenAL
     endif
@@ -483,18 +516,29 @@ ifeq ($(PLATFORM),darwin)
 
   BASE_CFLAGS += -D_THREAD_SAFE=1
 
-  ifeq ($(USE_LOCAL_HEADERS),1)
-    BASE_CFLAGS += -I$(SDLHDIR)/include
-  endif
+  CLIENT_LIBS += -framework IOKit
+  RENDERER_LIBS += -framework OpenGL
 
-  # We copy sdlmain before ranlib'ing it so that subversion doesn't think
-  #  the file has been modified by each build.
-  LIBSDLMAIN=$(B)/libSDL2main.a
-  LIBSDLMAINSRC=$(LIBSDIR)/macosx/libSDL2main.a
-  CLIENT_LIBS += -framework IOKit \
-    $(LIBSDIR)/macosx/libSDL2-2.0.0.dylib
-  RENDERER_LIBS += -framework OpenGL $(LIBSDIR)/macosx/libSDL2-2.0.0.dylib
-  CLIENT_EXTRA_FILES += $(LIBSDIR)/macosx/libSDL2-2.0.0.dylib
+  ifeq ($(USE_LOCAL_HEADERS),1)
+    # libSDL2-2.0.0.dylib for PPC is SDL 2.0.1 + changes to compile
+    ifneq ($(findstring $(ARCH),ppc ppc64),)
+      BASE_CFLAGS += -I$(SDLHDIR)/include-macppc
+    else
+      BASE_CFLAGS += -I$(SDLHDIR)/include
+    endif
+
+    # We copy sdlmain before ranlib'ing it so that subversion doesn't think
+    #  the file has been modified by each build.
+    LIBSDLMAIN=$(B)/libSDL2main.a
+    LIBSDLMAINSRC=$(LIBSDIR)/macosx/libSDL2main.a
+    CLIENT_LIBS += $(LIBSDIR)/macosx/libSDL2-2.0.0.dylib
+    RENDERER_LIBS += $(LIBSDIR)/macosx/libSDL2-2.0.0.dylib
+    CLIENT_EXTRA_FILES += $(LIBSDIR)/macosx/libSDL2-2.0.0.dylib
+  else
+    BASE_CFLAGS += -I/Library/Frameworks/SDL2.framework/Headers
+    CLIENT_LIBS += -framework SDL2
+    RENDERER_LIBS += -framework SDL2
+  endif
 
   OPTIMIZE = $(OPTIMIZEVM) -ffast-math
 
@@ -596,7 +640,7 @@ ifdef MINGW
     TOOLS_CC=$(CC)
   endif
 
-  LIBS= -lws2_32 -lwinmm -lpsapi
+  LIBS= -lws2_32 -lwinmm -lpsapi -lshlwapi
   AUTOUPDATER_LIBS += -lwininet
 
   # clang 3.4 doesn't support this
@@ -604,7 +648,7 @@ ifdef MINGW
     CLIENT_LDFLAGS += -mwindows
   endif
   CLIENT_LIBS = -lgdi32 -lole32
-  RENDERER_LIBS = -lgdi32 -lole32 -lopengl32
+  RENDERER_LIBS = -lgdi32 -lole32 -static-libgcc
 
   ifeq ($(USE_FREETYPE),1)
     ifneq ($(USE_INTERNAL_FREETYPE),1)
@@ -618,9 +662,9 @@ ifdef MINGW
       ifeq ($(USE_LOCAL_HEADERS),1)
         CLIENT_CFLAGS += -DCURL_STATICLIB
         ifeq ($(ARCH),x86_64)
-          CLIENT_LIBS += $(LIBSDIR)/win64/libcurl.a
+          CLIENT_LIBS += $(LIBSDIR)/win64/libcurl.a -lcrypt32
         else
-          CLIENT_LIBS += $(LIBSDIR)/win32/libcurl.a
+          CLIENT_LIBS += $(LIBSDIR)/win32/libcurl.a -lcrypt32
         endif
       else
         CLIENT_LIBS += $(CURL_LIBS)
@@ -692,7 +736,7 @@ ifeq ($(PLATFORM),freebsd)
   CLIENT_LIBS =
 
   CLIENT_LIBS += $(SDL_LIBS)
-  RENDERER_LIBS = $(SDL_LIBS) -lGL
+  RENDERER_LIBS = $(SDL_LIBS)
 
   # optional features/libraries
   ifeq ($(USE_OPENAL),1)
@@ -745,11 +789,11 @@ ifeq ($(PLATFORM),openbsd)
     HAVE_VM_COMPILED=true
   else
   ifeq ($(ARCH),ppc)
-    BASE_CFLAGS += -maltivec
+    ALTIVEC_CFLAGS = -maltivec
     HAVE_VM_COMPILED=true
   endif
   ifeq ($(ARCH),ppc64)
-    BASE_CFLAGS += -maltivec
+    ALTIVEC_CFLAGS = -maltivec
     HAVE_VM_COMPILED=true
   endif
   ifeq ($(ARCH),sparc64)
@@ -783,7 +827,7 @@ ifeq ($(PLATFORM),openbsd)
   CLIENT_LIBS =
 
   CLIENT_LIBS += $(SDL_LIBS)
-  RENDERER_LIBS = $(SDL_LIBS) -lGL
+  RENDERER_LIBS = $(SDL_LIBS)
 
   ifeq ($(USE_OPENAL),1)
     ifneq ($(USE_OPENAL_DLOPEN),1)
@@ -829,7 +873,6 @@ ifeq ($(PLATFORM),irix64)
   ARCH=mips
 
   CC = c99
-  MKDIR = mkdir -p
 
   BASE_CFLAGS=-Dstricmp=strcasecmp -Xcpluscomm -woff 1185 \
     -I. -I$(ROOT)/usr/include
@@ -846,7 +889,7 @@ ifeq ($(PLATFORM),irix64)
   # FIXME: The X libraries probably aren't necessary?
   CLIENT_LIBS=-L/usr/X11/$(LIB) $(SDL_LIBS) \
     -lX11 -lXext -lm
-  RENDERER_LIBS = $(SDL_LIBS) -lGL
+  RENDERER_LIBS = $(SDL_LIBS)
 
 else # ifeq IRIX
 
@@ -858,7 +901,7 @@ ifeq ($(PLATFORM),sunos)
 
   CC=gcc
   INSTALL=ginstall
-  MKDIR=gmkdir
+  MKDIR=gmkdir -p
   COPYDIR="/usr/local/share/games/spearmint"
 
   ifneq ($(ARCH),x86)
@@ -902,7 +945,7 @@ ifeq ($(PLATFORM),sunos)
   BOTCFLAGS=-O0
 
   CLIENT_LIBS +=$(SDL_LIBS) -lX11 -lXext -liconv -lm
-  RENDERER_LIBS = $(SDL_LIBS) -lGL
+  RENDERER_LIBS = $(SDL_LIBS)
 
 else # ifeq sunos
 
@@ -989,6 +1032,45 @@ ifeq ($(USE_CURL),1)
   endif
 endif
 
+ifeq ($(USE_CODEC_MP3),1)
+  CLIENT_CFLAGS += -DUSE_CODEC_MP3
+
+  ifeq ($(USE_INTERNAL_MP3),1)
+    MAD_CFLAGS = -DUSE_INTERNAL_MP3 -I$(MADDIR)/include
+    ifeq ($(ARCH),x86)
+      MAD_CFLAGS += -DFPM_INTEL
+    else
+    ifeq ($(ARCH),x86_64)
+      MAD_CFLAGS += -DFPM_64BIT
+    else
+    ifeq ($(ARCH),ppc)
+      MAD_CFLAGS += -DFPM_PPC
+    else
+    ifeq ($(ARCH),arm)
+      MAD_CFLAGS += -DFPM_ARM
+    else
+    ifeq ($(ARCH),mips)
+      MAD_CFLAGS += -DFPM_MIPS
+    else
+    ifeq ($(ARCH),sparc)
+      MAD_CFLAGS += -DFPM_SPARC
+    else
+      MAD_CFLAGS += -DFPM_DEFAULT
+    endif
+    endif
+    endif
+    endif
+    endif
+    endif
+  else
+    MAD_CFLAGS ?= $(shell pkg-config --silence-errors --cflags mad || true)
+    MAD_LIBS ?= $(shell pkg-config --silence-errors --libs mad || echo -lmad)
+  endif
+
+  CLIENT_CFLAGS += $(MAD_CFLAGS)
+  CLIENT_LIBS += $(MAD_LIBS)
+endif
+
 ifeq ($(USE_VOIP),1)
   CLIENT_CFLAGS += -DUSE_VOIP
   SERVER_CFLAGS += -DUSE_VOIP
@@ -1006,8 +1088,8 @@ ifeq ($(NEED_OPUS),1)
       -I$(OPUSDIR)/include -I$(OPUSDIR)/celt -I$(OPUSDIR)/silk \
       -I$(OPUSDIR)/silk/float -I$(OPUSFILEDIR)/include
   else
-    OPUS_CFLAGS ?= $(shell pkg-config --silence-errors --cflags opusfile opus || true)
-    OPUS_LIBS ?= $(shell pkg-config --silence-errors --libs opusfile opus || echo -lopusfile -lopus)
+    OPUS_CFLAGS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags opusfile opus || true)
+    OPUS_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs opusfile opus || echo -lopusfile -lopus)
   endif
   CLIENT_CFLAGS += $(OPUS_CFLAGS)
   CLIENT_LIBS += $(OPUS_LIBS)
@@ -1019,8 +1101,8 @@ ifeq ($(USE_CODEC_VORBIS),1)
   ifeq ($(USE_INTERNAL_VORBIS),1)
     CLIENT_CFLAGS += -I$(VORBISDIR)/include -I$(VORBISDIR)/lib
   else
-    VORBIS_CFLAGS ?= $(shell pkg-config --silence-errors --cflags vorbisfile vorbis || true)
-    VORBIS_LIBS ?= $(shell pkg-config --silence-errors --libs vorbisfile vorbis || echo -lvorbisfile -lvorbis)
+    VORBIS_CFLAGS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags vorbisfile vorbis || true)
+    VORBIS_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs vorbisfile vorbis || echo -lvorbisfile -lvorbis)
   endif
   CLIENT_CFLAGS += $(VORBIS_CFLAGS)
   CLIENT_LIBS += $(VORBIS_LIBS)
@@ -1031,8 +1113,8 @@ ifeq ($(NEED_OGG),1)
   ifeq ($(USE_INTERNAL_OGG),1)
     OGG_CFLAGS = -I$(OGGDIR)/include
   else
-    OGG_CFLAGS ?= $(shell pkg-config --silence-errors --cflags ogg || true)
-    OGG_LIBS ?= $(shell pkg-config --silence-errors --libs ogg || echo -logg)
+    OGG_CFLAGS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags ogg || true)
+    OGG_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs ogg || echo -logg)
   endif
   CLIENT_CFLAGS += $(OGG_CFLAGS)
   CLIENT_LIBS += $(OGG_LIBS)
@@ -1053,8 +1135,8 @@ endif
 ifeq ($(USE_INTERNAL_ZLIB),1)
   ZLIB_CFLAGS = -DNO_GZIP -I$(ZDIR)
 else
-  ZLIB_CFLAGS ?= $(shell pkg-config --silence-errors --cflags zlib || true)
-  ZLIB_LIBS ?= $(shell pkg-config --silence-errors --libs zlib || echo -lz)
+  ZLIB_CFLAGS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags zlib || true)
+  ZLIB_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs zlib || echo -lz)
 endif
 BASE_CFLAGS += $(ZLIB_CFLAGS)
 LIBS += $(ZLIB_LIBS)
@@ -1065,20 +1147,20 @@ ifeq ($(USE_INTERNAL_JPEG),1)
 else
   # IJG libjpeg doesn't have pkg-config, but libjpeg-turbo uses libjpeg.pc;
   # we fall back to hard-coded answers if libjpeg.pc is unavailable
-  JPEG_CFLAGS ?= $(shell pkg-config --silence-errors --cflags libjpeg || true)
-  JPEG_LIBS ?= $(shell pkg-config --silence-errors --libs libjpeg || echo -ljpeg)
+  JPEG_CFLAGS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags libjpeg || true)
+  JPEG_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs libjpeg || echo -ljpeg)
   BASE_CFLAGS += $(JPEG_CFLAGS)
   RENDERER_LIBS += $(JPEG_LIBS)
 endif
 
 ifeq ($(USE_FREETYPE),1)
   ifeq ($(USE_INTERNAL_FREETYPE),1)
-    FREETYPE_CFLAGS += -I$(FTDIR)/include \
-					-DFT2_BUILD_LIBRARY
+    FREETYPE_CFLAGS += -I$(FTDIR)/include -DFT2_BUILD_LIBRARY
   else
-    FREETYPE_CFLAGS ?= $(shell pkg-config --silence-errors --cflags freetype2 || true)
-    FREETYPE_LIBS ?= $(shell pkg-config --silence-errors --libs freetype2 || echo -lfreetype)
+    FREETYPE_CFLAGS ?= $(shell $(PKG_CONFIG) --silence-errors --cflags freetype2 || true)
+    FREETYPE_LIBS ?= $(shell $(PKG_CONFIG) --silence-errors --libs freetype2 || echo -lfreetype)
   endif
+
   BASE_CFLAGS += -DBUILD_FREETYPE $(FREETYPE_CFLAGS)
   RENDERER_LIBS += $(FREETYPE_LIBS)
 endif
@@ -1118,17 +1200,20 @@ endif
 
 # https://reproducible-builds.org/specs/source-date-epoch/
 ifdef SOURCE_DATE_EPOCH
-  BASE_CFLAGS += -DPRODUCT_DATE=\\\"$(shell date --date="@$$SOURCE_DATE_EPOCH" "+%b %_d %Y" | sed -e 's/ /\\\ /'g)\\\"
+  BASE_BUILD_DEFINES += -DPRODUCT_DATE=\\\"$(shell date --date="@$$SOURCE_DATE_EPOCH" "+%b %_d %Y" | sed -e 's/ /\\\ /g')\\\"
 endif
 
-BASE_CFLAGS += -DPRODUCT_VERSION=\\\"$(VERSION)\\\"
+BASE_BUILD_DEFINES += -DPRODUCT_VERSION=\\\"$(VERSION)\\\"
+ifeq ($(USE_GIT),1)
+  BASE_BUILD_DEFINES += -DPRODUCT_VERSION_HAS_DATE
+endif
+
 BASE_CFLAGS += -DBASEGAME=\\\"$(BASEGAME)\\\"
+BASE_CFLAGS += -DRENDERER_PREFIX=\\\"$(RENDERER_PREFIX)\\\"
 BASE_CFLAGS += -Wformat=2 -Wno-format-zero-length -Wformat-security -Wno-format-nonliteral
 BASE_CFLAGS += -Wstrict-aliasing=2 -Wmissing-format-attribute
 BASE_CFLAGS += -Wdisabled-optimization
 BASE_CFLAGS += -Werror-implicit-function-declaration
-
-BASE_CFLAGS += $(BUILD_DEFINES)
 
 ifeq ($(V),1)
 echo_cmd=@:
@@ -1143,16 +1228,26 @@ $(echo_cmd) "CC $<"
 $(Q)$(CC) $(NOTSHLIBCFLAGS) $(CFLAGS) $(CLIENT_CFLAGS) $(OPTIMIZE) -o $@ -c $<
 endef
 
+define DO_CC_ALTIVEC
+$(echo_cmd) "CC $<"
+$(Q)$(CC) $(NOTSHLIBCFLAGS) $(CFLAGS) $(CLIENT_CFLAGS) $(OPTIMIZE) $(ALTIVEC_CFLAGS) -o $@ -c $<
+endef
+
 define DO_REF_CC
 $(echo_cmd) "REF_CC $<"
 $(Q)$(CC) $(SHLIBCFLAGS) $(CFLAGS) $(CLIENT_CFLAGS) $(OPTIMIZE) -o $@ -c $<
+endef
+
+define DO_REF_CC_ALTIVEC
+$(echo_cmd) "REF_CC $<"
+$(Q)$(CC) $(SHLIBCFLAGS) $(CFLAGS) $(CLIENT_CFLAGS) $(OPTIMIZE) $(ALTIVEC_CFLAGS) -o $@ -c $<
 endef
 
 define DO_REF_STR
 $(echo_cmd) "REF_STR $<"
 $(Q)rm -f $@
 $(Q)echo "const char *fallbackShader_$(notdir $(basename $<)) =" >> $@
-$(Q)cat $< | sed 's/^/\"/;s/$$/\\n\"/' >> $@
+$(Q)cat $< | sed -e 's/^/\"/;s/$$/\\n\"/' | tr -d '\r' >> $@
 $(Q)echo ";" >> $@
 endef
 
@@ -1185,14 +1280,16 @@ default: release
 all: debug release
 
 debug:
-	@$(MAKE) targets B=$(BD) CFLAGS="$(CFLAGS) $(BASE_CFLAGS) $(DEPEND_CFLAGS)" \
+	@$(MAKE) targets B=$(BD) CFLAGS="$(CFLAGS) $(BASE_BUILD_DEFINES) $(BASE_CFLAGS) $(BUILD_DEFINES) $(DEPEND_CFLAGS)" \
 	  OPTIMIZE="$(DEBUG_CFLAGS)" OPTIMIZEVM="$(DEBUG_CFLAGS)" \
-	  CLIENT_CFLAGS="$(CLIENT_CFLAGS)" SERVER_CFLAGS="$(SERVER_CFLAGS)" V=$(V)
+	  CLIENT_CFLAGS="$(CLIENT_CFLAGS)" SERVER_CFLAGS="$(SERVER_CFLAGS)" V=$(V) \
+	  QVM_CFLAGS="$(BASE_BUILD_DEFINES) $(BUILD_DEFINES)"
 
 release:
-	@$(MAKE) targets B=$(BR) CFLAGS="$(CFLAGS) $(BASE_CFLAGS) $(DEPEND_CFLAGS)" \
+	@$(MAKE) targets B=$(BR) CFLAGS="$(CFLAGS) $(BASE_BUILD_DEFINES) $(BASE_CFLAGS) $(BUILD_DEFINES) $(DEPEND_CFLAGS)" \
 	  OPTIMIZE="-DNDEBUG $(OPTIMIZE)" OPTIMIZEVM="-DNDEBUG $(OPTIMIZEVM)" \
-	  CLIENT_CFLAGS="$(CLIENT_CFLAGS)" SERVER_CFLAGS="$(SERVER_CFLAGS)" V=$(V)
+	  CLIENT_CFLAGS="$(CLIENT_CFLAGS)" SERVER_CFLAGS="$(SERVER_CFLAGS)" V=$(V) \
+	  QVM_CFLAGS="-DNDEBUG $(BASE_BUILD_DEFINES) $(BUILD_DEFINES)"
 
 ifneq ($(call bin_path, tput),)
   TERM_COLUMNS=$(shell if c=`tput cols`; then echo $$(($$c-4)); else echo 76; fi)
@@ -1247,6 +1344,7 @@ targets: makedirs
 	@echo "  COMPILE_PLATFORM: $(COMPILE_PLATFORM)"
 	@echo "  COMPILE_ARCH: $(COMPILE_ARCH)"
 	@echo "  HAVE_VM_COMPILED: $(HAVE_VM_COMPILED)"
+	@echo "  PKG_CONFIG: $(PKG_CONFIG)"
 	@echo "  CC: $(CC)"
 ifeq ($(PLATFORM),mingw32)
 	@echo "  WINDRES: $(WINDRES)"
@@ -1296,16 +1394,14 @@ ifneq ($(PLATFORM),darwin)
 endif
 
 makedirs:
-	@if [ ! -d $(BUILD_DIR) ];then $(MKDIR) $(BUILD_DIR);fi
-	@if [ ! -d $(B) ];then $(MKDIR) $(B);fi
-	@if [ ! -d $(B)/autoupdater ];then $(MKDIR) $(B)/autoupdater;fi
-	@if [ ! -d $(B)/client ];then $(MKDIR) $(B)/client;fi
-	@if [ ! -d $(B)/client/opus ];then $(MKDIR) $(B)/client/opus;fi
-	@if [ ! -d $(B)/client/vorbis ];then $(MKDIR) $(B)/client/vorbis;fi
-	@if [ ! -d $(B)/renderergl1 ];then $(MKDIR) $(B)/renderergl1;fi
-	@if [ ! -d $(B)/renderergl2 ];then $(MKDIR) $(B)/renderergl2;fi
-	@if [ ! -d $(B)/renderergl2/glsl ];then $(MKDIR) $(B)/renderergl2/glsl;fi
-	@if [ ! -d $(B)/ded ];then $(MKDIR) $(B)/ded;fi
+	@$(MKDIR) $(B)/autoupdater
+	@$(MKDIR) $(B)/client/libmad
+	@$(MKDIR) $(B)/client/opus
+	@$(MKDIR) $(B)/client/vorbis
+	@$(MKDIR) $(B)/renderergl1
+	@$(MKDIR) $(B)/renderergl2
+	@$(MKDIR) $(B)/renderergl2/glsl
+	@$(MKDIR) $(B)/ded
 
 
 #############################################################################
@@ -1370,6 +1466,7 @@ Q3OBJ = \
   $(B)/client/net_ip.o \
   $(B)/client/huffman.o \
   \
+  $(B)/client/snd_altivec.o \
   $(B)/client/snd_adpcm.o \
   $(B)/client/snd_dma.o \
   $(B)/client/snd_mem.o \
@@ -1379,6 +1476,7 @@ Q3OBJ = \
   $(B)/client/snd_main.o \
   $(B)/client/snd_codec.o \
   $(B)/client/snd_codec_wav.o \
+  $(B)/client/snd_codec_mp3.o \
   $(B)/client/snd_codec_ogg.o \
   $(B)/client/snd_codec_opus.o \
   \
@@ -1406,22 +1504,6 @@ Q3OBJ = \
   $(B)/client/vm.o \
   $(B)/client/vm_interpreted.o \
   \
-  $(B)/client/be_aas_bspq3.o \
-  $(B)/client/be_aas_cluster.o \
-  $(B)/client/be_aas_debug.o \
-  $(B)/client/be_aas_entity.o \
-  $(B)/client/be_aas_file.o \
-  $(B)/client/be_aas_main.o \
-  $(B)/client/be_aas_move.o \
-  $(B)/client/be_aas_optimize.o \
-  $(B)/client/be_aas_reach.o \
-  $(B)/client/be_aas_route.o \
-  $(B)/client/be_aas_routealt.o \
-  $(B)/client/be_aas_sample.o \
-  $(B)/client/be_interface.o \
-  $(B)/client/l_crc.o \
-  $(B)/client/l_libvar.o \
-  $(B)/client/l_log.o \
   $(B)/client/l_memory.o \
   $(B)/client/l_precomp.o \
   $(B)/client/l_script.o \
@@ -1518,6 +1600,7 @@ Q3R2STRINGOBJ = \
   $(B)/renderergl2/glsl/tonemap_vp.o
 
 Q3ROBJ = \
+  $(B)/renderergl1/tr_altivec.o \
   $(B)/renderergl1/tr_animation.o \
   $(B)/renderergl1/tr_animation_mds.o \
   $(B)/renderergl1/tr_animation_mdm.o \
@@ -1624,12 +1707,14 @@ endif
 ifeq ($(USE_FREETYPE),1)
 ifneq ($(USE_INTERNAL_FREETYPE),0)
   FTOBJ += \
-    $(B)/renderergl1/ftinit.o \
-    $(B)/renderergl1/ftsystem.o \
     $(B)/renderergl1/ftbase.o \
-    $(B)/renderergl1/ftstroke.o \
-    $(B)/renderergl1/ftglyph.o \
     $(B)/renderergl1/ftbitmap.o \
+    $(B)/renderergl1/ftfntfmt.o \
+    $(B)/renderergl1/ftglyph.o \
+    $(B)/renderergl1/ftinit.o \
+    $(B)/renderergl1/ftlcdfil.o \
+    $(B)/renderergl1/ftstroke.o \
+    $(B)/renderergl1/ftsystem.o \
 	\
     $(B)/renderergl1/ftbzip2.o \
     $(B)/renderergl1/ftgzip.o \
@@ -1665,6 +1750,23 @@ ifeq ($(ARCH),x86_64)
   Q3OBJ += \
     $(B)/client/snapvector.o \
     $(B)/client/ftola.o
+endif
+
+ifeq ($(USE_CODEC_MP3),1)
+ifeq ($(USE_INTERNAL_MP3),1)
+Q3OBJ += \
+  $(B)/client/libmad/bit.o \
+  $(B)/client/libmad/decoder.o \
+  $(B)/client/libmad/fixed.o \
+  $(B)/client/libmad/frame.o \
+  $(B)/client/libmad/huffman.o \
+  $(B)/client/libmad/layer3.o \
+  $(B)/client/libmad/layer12.o \
+  $(B)/client/libmad/stream.o \
+  $(B)/client/libmad/synth.o \
+  $(B)/client/libmad/timer.o \
+  $(B)/client/libmad/version.o
+endif
 endif
 
 ifeq ($(NEED_OPUS),1)
@@ -1755,6 +1857,7 @@ Q3OBJ += \
   $(B)/client/opus/lin2log.o \
   $(B)/client/opus/log2lin.o \
   $(B)/client/opus/LPC_analysis_filter.o \
+  $(B)/client/opus/LPC_fit.o \
   $(B)/client/opus/LPC_inv_pred_gain.o \
   $(B)/client/opus/table_LSF_cos.o \
   $(B)/client/opus/NLSF2A.o \
@@ -1788,11 +1891,9 @@ Q3OBJ += \
   $(B)/client/opus/LTP_analysis_filter_FLP.o \
   $(B)/client/opus/LTP_scale_ctrl_FLP.o \
   $(B)/client/opus/noise_shape_analysis_FLP.o \
-  $(B)/client/opus/prefilter_FLP.o \
   $(B)/client/opus/process_gains_FLP.o \
   $(B)/client/opus/regularize_correlations_FLP.o \
   $(B)/client/opus/residual_energy_FLP.o \
-  $(B)/client/opus/solve_LS_FLP.o \
   $(B)/client/opus/warped_autocorrelation_FLP.o \
   $(B)/client/opus/wrappers_FLP.o \
   $(B)/client/opus/autocorrelation_FLP.o \
@@ -1801,7 +1902,6 @@ Q3OBJ += \
   $(B)/client/opus/energy_FLP.o \
   $(B)/client/opus/inner_product_FLP.o \
   $(B)/client/opus/k2a_FLP.o \
-  $(B)/client/opus/levinsondurbin_FLP.o \
   $(B)/client/opus/LPC_inv_pred_gain_FLP.o \
   $(B)/client/opus/pitch_analysis_core_FLP.o \
   $(B)/client/opus/scale_copy_vector_FLP.o \
@@ -1987,22 +2087,6 @@ Q3DOBJ = \
   $(B)/ded/vm.o \
   $(B)/ded/vm_interpreted.o \
   \
-  $(B)/ded/be_aas_bspq3.o \
-  $(B)/ded/be_aas_cluster.o \
-  $(B)/ded/be_aas_debug.o \
-  $(B)/ded/be_aas_entity.o \
-  $(B)/ded/be_aas_file.o \
-  $(B)/ded/be_aas_main.o \
-  $(B)/ded/be_aas_move.o \
-  $(B)/ded/be_aas_optimize.o \
-  $(B)/ded/be_aas_reach.o \
-  $(B)/ded/be_aas_route.o \
-  $(B)/ded/be_aas_routealt.o \
-  $(B)/ded/be_aas_sample.o \
-  $(B)/ded/be_interface.o \
-  $(B)/ded/l_crc.o \
-  $(B)/ded/l_libvar.o \
-  $(B)/ded/l_log.o \
   $(B)/ded/l_memory.o \
   $(B)/ded/l_precomp.o \
   $(B)/ded/l_script.o \
@@ -2096,6 +2180,9 @@ $(B)/client/%.o: $(ASMDIR)/%.s
 $(B)/client/%.o: $(ASMDIR)/%.c
 	$(DO_CC) -march=k8
 
+$(B)/client/snd_altivec.o: $(CDIR)/snd_altivec.c
+	$(DO_CC_ALTIVEC)
+
 $(B)/client/%.o: $(CDIR)/%.c
 	$(DO_CC)
 
@@ -2109,6 +2196,9 @@ $(B)/client/%.o: $(BLIBDIR)/%.c
 	$(DO_BOT_CC)
 
 $(B)/client/%.o: $(OGGDIR)/src/%.c
+	$(DO_CC)
+
+$(B)/client/libmad/%.o: $(MADDIR)/%.c
 	$(DO_CC)
 
 $(B)/client/vorbis/%.o: $(VORBISDIR)/lib/%.c
@@ -2159,6 +2249,9 @@ $(B)/renderergl1/%.o: $(RCOMMONDIR)/%.c
 
 $(B)/renderergl1/%.o: $(RGL1DIR)/%.c
 	$(DO_REF_CC)
+
+$(B)/renderergl1/tr_altivec.o: $(RGL1DIR)/tr_altivec.c
+	$(DO_REF_CC_ALTIVEC)
 
 $(B)/renderergl2/glsl/%.c: $(RGL2DIR)/glsl/%.glsl
 	$(DO_REF_STR)

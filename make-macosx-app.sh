@@ -146,7 +146,7 @@ RENDERER_OPENGL2_NAME="${RENDERER_OPENGL}2.dylib"
 
 ICNSDIR="misc"
 ICNS="spearmint.icns"
-PKGINFO="APPLIOQ3"
+PKGINFO="APPL????"
 
 OBJROOT="build"
 #BUILT_PRODUCTS_DIR="${OBJROOT}/${TARGET_NAME}-darwin-${CURRENT_ARCH}"
@@ -229,29 +229,78 @@ done
 echo ""
 
 # make the application bundle directories
-if [ ! -d ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH} ]; then
-	mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH} || exit 1;
+if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" ]; then
+	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" || exit 1;
 fi
-if [ ! -d ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH} ]; then
-	mkdir -p ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH} || exit 1;
+if [ ! -d "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" ]; then
+	mkdir -p "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" || exit 1;
 fi
 
 # copy and generate some application bundle resources
-cp code/libs/macosx/*.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
-cp ${ICNSDIR}/${ICNS} ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/$ICNS || exit 1;
-echo -n ${PKGINFO} > ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/PkgInfo || exit 1;
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+cp code/libs/macosx/*.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}"
+cp ${ICNSDIR}/${ICNS} "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/$ICNS" || exit 1;
+echo -n ${PKGINFO} > "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/PkgInfo" || exit 1;
+
+# create Info.Plist
+PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
 <dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>LSHandlerRank</key>
+            <string>Alternate</string>
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>public.data</string>
+            </array>
+        </dict>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>Spearmint Demo</string>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>LSHandlerRank</key>
+            <string>Owner</string>
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>moe.clover.spearmintdemo</string>
+            </array>
+        </dict>
+    </array>
+    <key>UTExportedTypeDeclarations</key>
+    <array>
+        <dict>
+            <key>UTTypeConformsTo</key>
+            <array>
+                <string>public.data</string>
+            </array>
+            <key>UTTypeIdentifier</key>
+            <string>moe.clover.spearmintdemo</string>
+            <key>UTTypeDescription</key>
+            <string>Spearmint Demo</string>
+            <key>UTTypeIconFile</key>
+            <string>spearmint</string>
+            <key>UTTypeReferenceURL</key>
+            <string>https://clover.moe/spearmint</string>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key>
+                <string>mintdemo</string>
+            </dict>
+        </dict>
+    </array>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleIconFile</key>
     <string>spearmint</string>
     <key>CFBundleIdentifier</key>
-    <string>org.ioquake.${PRODUCT_NAME}</string>
+    <string>moe.clover.${PRODUCT_NAME}</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
@@ -267,14 +316,44 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <key>CGDisableCoalescedUpdates</key>
     <true/>
     <key>LSMinimumSystemVersion</key>
-    <string>${MACOSX_DEPLOYMENT_TARGET}</string>
+    <string>${MACOSX_DEPLOYMENT_TARGET}</string>"
+
+if [ -n "${MACOSX_DEPLOYMENT_TARGET_PPC}" ] || [ -n "${MACOSX_DEPLOYMENT_TARGET_X86}" ] || [ -n "${MACOSX_DEPLOYMENT_TARGET_X86_64}" ]; then
+	PLIST="${PLIST}
+    <key>LSMinimumSystemVersionByArchitecture</key>
+    <dict>"
+
+	if [ -n "${MACOSX_DEPLOYMENT_TARGET_PPC}" ]; then
+	PLIST="${PLIST}
+        <key>ppc</key>
+        <string>${MACOSX_DEPLOYMENT_TARGET_PPC}</string>"
+	fi
+
+	if [ -n "${MACOSX_DEPLOYMENT_TARGET_X86}" ]; then
+	PLIST="${PLIST}
+        <key>i386</key>
+        <string>${MACOSX_DEPLOYMENT_TARGET_X86}</string>"
+	fi
+
+	if [ -n "${MACOSX_DEPLOYMENT_TARGET_X86_64}" ]; then
+	PLIST="${PLIST}
+        <key>x86_64</key>
+        <string>${MACOSX_DEPLOYMENT_TARGET_X86_64}</string>"
+	fi
+
+	PLIST="${PLIST}
+    </dict>"
+fi
+
+PLIST="${PLIST}
     <key>NSHumanReadableCopyright</key>
-    <string>Copyright © 1999-2015 id Software LLC, Dark Legion Development, Padworld Entertainment, ioquake3 contributors, Spearmint contributors.</string>
+    <string>Copyright © 1999-2017 id Software LLC, ioquake3 contributors, Spearmint contributors.</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 </dict>
 </plist>
-" > ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist
+"
+echo -e "${PLIST}" > "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 
 # action takes care of generating universal binaries if lipo is available
 # otherwise, it falls back to using a simple copy, expecting the first item in
@@ -306,12 +385,12 @@ function action()
 #
 
 # executables
-action ${BUNDLEBINDIR}/${EXECUTABLE_NAME}				"${IOQ3_CLIENT_ARCHS}"
-action ${BUNDLEBINDIR}/${DEDICATED_NAME}				"${IOQ3_SERVER_ARCHS}"
+action "${BUNDLEBINDIR}/${EXECUTABLE_NAME}"				"${IOQ3_CLIENT_ARCHS}"
+action "${BUNDLEBINDIR}/${DEDICATED_NAME}"				"${IOQ3_SERVER_ARCHS}"
 
 # renderers
-action ${BUNDLEBINDIR}/${RENDERER_OPENGL1_NAME}		"${IOQ3_RENDERER_GL1_ARCHS}"
-action ${BUNDLEBINDIR}/${RENDERER_OPENGL2_NAME}		"${IOQ3_RENDERER_GL2_ARCHS}"
+action "${BUNDLEBINDIR}/${RENDERER_OPENGL1_NAME}"		"${IOQ3_RENDERER_GL1_ARCHS}"
+action "${BUNDLEBINDIR}/${RENDERER_OPENGL2_NAME}"		"${IOQ3_RENDERER_GL2_ARCHS}"
 symlinkArch "${RENDERER_OPENGL}1" "${RENDERER_OPENGL}1" "_" "${BUNDLEBINDIR}"
 symlinkArch "${RENDERER_OPENGL}2" "${RENDERER_OPENGL}2" "_" "${BUNDLEBINDIR}"
 

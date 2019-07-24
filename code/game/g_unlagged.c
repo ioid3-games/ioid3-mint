@@ -15,7 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
 In addition, Spearmint Source Code is also subject to certain additional terms.
 You should have received a copy of these additional terms immediately following
@@ -34,7 +34,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 G_ResetHistory
 
-Clear out the given client's history (should be called when the teleport bit is flipped).
+Clear out the given client's history(should be called when the teleport bit is flipped)
 =======================================================================================================================================
 */
 void G_ResetHistory(gentity_t *ent) {
@@ -43,7 +43,7 @@ void G_ResetHistory(gentity_t *ent) {
 	// fill up the history with data(assume the current position)
 	ent->player->topMarker = MAX_PLAYER_MARKERS - 1;
 
-	for (i = ent->player->topMarker, time = level.time; i >= 0; i--, time -= 50) {
+	for (i = ent->player->topMarker, time = level.time; i >= 0; i -- , time -= 50) {
 		VectorCopy(ent->s.mins, ent->player->playerMarkers[i].mins);
 		VectorCopy(ent->s.maxs, ent->player->playerMarkers[i].maxs);
 		VectorCopy(ent->r.currentOrigin, ent->player->playerMarkers[i].origin);
@@ -55,7 +55,7 @@ void G_ResetHistory(gentity_t *ent) {
 =======================================================================================================================================
 G_StoreHistory
 
-Keep track of where the client's been.
+Keep track of where the client's been
 =======================================================================================================================================
 */
 void G_StoreHistory(gentity_t *ent) {
@@ -69,7 +69,7 @@ void G_StoreHistory(gentity_t *ent) {
 
 	head = ent->player->topMarker;
 
-	// store all the collision-detection info and the time
+	// store all the collision - detection info and the time
 	VectorCopy(ent->s.mins, ent->player->playerMarkers[head].mins);
 	VectorCopy(ent->s.maxs, ent->player->playerMarkers[head].maxs);
 	VectorCopy(ent->s.pos.trBase, ent->player->playerMarkers[head].origin);
@@ -81,8 +81,8 @@ void G_StoreHistory(gentity_t *ent) {
 =======================================================================================================================================
 TimeShiftLerp
 
-Used below to interpolate between two previous vectors.
-Returns a vector "frac" times the distance between "start" and "end".
+Used below to interpolate between two previous vectors
+Returns a vector "frac" times the distance between "start" and "end"
 =======================================================================================================================================
 */
 static void TimeShiftLerp(float frac, vec3_t start, vec3_t end, vec3_t result) {
@@ -92,7 +92,7 @@ static void TimeShiftLerp(float frac, vec3_t start, vec3_t end, vec3_t result) {
 	cent->lerpOrigin[1] = current[1] + f * (next[1] - current[1]);
 	cent->lerpOrigin[2] = current[2] + f * (next[2] - current[2]);
 */
-// Making these exactly the same should avoid floating-point error
+// Making these exactly the same should avoid floating - point error
 
 	result[0] = start[0] + frac * (end[0] - start[0]);
 	result[1] = start[1] + frac * (end[1] - start[1]);
@@ -103,7 +103,7 @@ static void TimeShiftLerp(float frac, vec3_t start, vec3_t end, vec3_t result) {
 =======================================================================================================================================
 G_TimeShiftClient
 
-Move a client back to where he was at the specified "time".
+Move a client back to where he was at the specified "time"
 =======================================================================================================================================
 */
 void G_TimeShiftClient(gentity_t *ent, int time, qboolean debug, gentity_t *debugger) {
@@ -115,7 +115,25 @@ void G_TimeShiftClient(gentity_t *ent, int time, qboolean debug, gentity_t *debu
 	if (debug) {
 		char str[MAX_STRING_CHARS];
 
-		Com_sprintf(str, sizeof(str), "print \"head: %d, %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\"", ent->client->topMarker, ent->client->playerMarkers[0].time, ent->client->playerMarkers[1].time, ent->client->playerMarkers[2].time, ent->client->playerMarkers[3].time, ent->client->playerMarkers[4].time, ent->client->playerMarkers[5].time, ent->client->playerMarkers[6].time, ent->client->playerMarkers[7].time, ent->client->playerMarkers[8].time, ent->client->playerMarkers[9].time, ent->client->playerMarkers[10].time, ent->client->playerMarkers[11].time, ent->client->playerMarkers[12].time, ent->client->playerMarkers[13].time, ent->client->playerMarkers[14].time, ent->client->playerMarkers[15].time, ent->client->playerMarkers[16].time);
+		Com_sprintf(str, sizeof(str), "print \"head: %d, %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n\"",
+			ent->client->topMarker,
+			ent->client->playerMarkers[0].time,
+			ent->client->playerMarkers[1].time,
+			ent->client->playerMarkers[2].time,
+			ent->client->playerMarkers[3].time,
+			ent->client->playerMarkers[4].time,
+			ent->client->playerMarkers[5].time,
+			ent->client->playerMarkers[6].time,
+			ent->client->playerMarkers[7].time,
+			ent->client->playerMarkers[8].time,
+			ent->client->playerMarkers[9].time,
+			ent->client->playerMarkers[10].time,
+			ent->client->playerMarkers[11].time,
+			ent->client->playerMarkers[12].time,
+			ent->client->playerMarkers[13].time,
+			ent->client->playerMarkers[14].time,
+			ent->client->playerMarkers[15].time,
+			ent->client->playerMarkers[16].time);
 
 		trap_SendServerCommand(debugger - g_entities, str);
 	}
@@ -129,8 +147,7 @@ void G_TimeShiftClient(gentity_t *ent, int time, qboolean debug, gentity_t *debu
 			break;
 
 		k = j;
-
-		j--;
+		j --;
 
 		if (j < 0) {
 			j = MAX_PLAYER_MARKERS - 1;
@@ -141,7 +158,7 @@ void G_TimeShiftClient(gentity_t *ent, int time, qboolean debug, gentity_t *debu
 
 	// if we got past the first iteration above, we've sandwiched(or wrapped)
 	if (j != k) {
-		// make sure it doesn't get re-saved
+		// make sure it doesn't get re - saved
 		if (ent->player->backupMarker.time != level.time) {
 			// save the current origin and bounding box
 			VectorCopy(ent->s.mins, ent->player->backupMarker.mins);
@@ -154,10 +171,12 @@ void G_TimeShiftClient(gentity_t *ent, int time, qboolean debug, gentity_t *debu
 		if (j != ent->player->topMarker) {
 			float frac = (float)(time - ent->player->playerMarkers[j].time) /
 				(float)(ent->player->playerMarkers[k].time - ent->player->playerMarkers[j].time);
+
 			// interpolate between the two origins to give position at time index "time"
 			TimeShiftLerp(frac,
 				ent->player->playerMarkers[j].origin, ent->player->playerMarkers[k].origin,
 				ent->r.currentOrigin);
+
 			// lerp these too, just for fun(and ducking)
 			TimeShiftLerp(frac,
 				ent->player->playerMarkers[j].mins, ent->player->playerMarkers[k].mins,
@@ -170,7 +189,7 @@ void G_TimeShiftClient(gentity_t *ent, int time, qboolean debug, gentity_t *debu
 			if (debug && debugger != NULL) {
 				// print some debugging stuff exactly like what the client does
 
-				// it starts with "Rec:" to let you know it backward-reconciled
+				// it starts with "Rec:" to let you know it backward - reconciled
 				Com_sprintf(msg, sizeof(msg),
 					"print \"^1Rec: time: %d, j: %d, k: %d, origin: %0.2f %0.2f %0.2f\n"
 					"^2frac: %0.4f, origin1: %0.2f %0.2f %0.2f, origin2: %0.2f %0.2f %0.2f\n"
@@ -180,7 +199,7 @@ void G_TimeShiftClient(gentity_t *ent, int time, qboolean debug, gentity_t *debu
 					frac,
 					ent->player->playerMarkers[j].origin[0],
 					ent->player->playerMarkers[j].origin[1],
-					ent->player->playerMarkers[j].origin[2], 
+					ent->player->playerMarkers[j].origin[2],
 					ent->player->playerMarkers[k].origin[0],
 					ent->player->playerMarkers[k].origin[1],
 					ent->player->playerMarkers[k].origin[2],
@@ -196,6 +215,7 @@ void G_TimeShiftClient(gentity_t *ent, int time, qboolean debug, gentity_t *debu
 			VectorCopy(ent->player->playerMarkers[k].origin, ent->r.currentOrigin);
 			VectorCopy(ent->player->playerMarkers[k].mins, ent->s.mins);
 			VectorCopy(ent->player->playerMarkers[k].maxs, ent->s.maxs);
+
 			// this will recalculate absmin and absmax
 			trap_LinkEntity(ent);
 		}
@@ -205,7 +225,7 @@ void G_TimeShiftClient(gentity_t *ent, int time, qboolean debug, gentity_t *debu
 
 		// print some debugging stuff exactly like what the client does
 
-		// it starts with "No rec:" to let you know it didn't backward-reconcile
+		// it starts with "No rec:" to let you know it didn't backward - reconcile
 		if (debug && debugger != NULL) {
 			Com_sprintf(msg, sizeof(msg),
 				"print \"^1No rec: time: %d, j: %d, k: %d, origin: %0.2f %0.2f %0.2f\n"
@@ -214,7 +234,7 @@ void G_TimeShiftClient(gentity_t *ent, int time, qboolean debug, gentity_t *debu
 				time, level.time, level.time,
 				ent->r.currentOrigin[0], ent->r.currentOrigin[1], ent->r.currentOrigin[2],
 				0.0f,
-				ent->r.currentOrigin[0], ent->r.currentOrigin[1], ent->r.currentOrigin[2], 
+				ent->r.currentOrigin[0], ent->r.currentOrigin[1], ent->r.currentOrigin[2],
 				ent->r.currentOrigin[0], ent->r.currentOrigin[1], ent->r.currentOrigin[2],
 				level.time, level.time + debugger->player->frameOffset,
 				level.time - time, level.time + debugger->player->frameOffset - time);
@@ -246,7 +266,7 @@ void G_TimeShiftAllClients(int time, gentity_t *skip) {
 	ent = &g_entities[0];
 
 	for (i = 0; i < MAX_CLIENTS; i++, ent++) {
-		if (ent->player && ent->inuse && ent->client->sess.sessionTeam < TEAM_SPECTATOR && ent != skip) {
+		if (ent->player && ent->inuse && ent->player->sess.sessionTeam < TEAM_SPECTATOR && ent != skip) {
 			G_TimeShiftClient(ent, time, debug, skip);
 		}
 	}
@@ -263,18 +283,19 @@ void G_DoTimeShiftFor(gentity_t *ent) {
 	int time;
 
 	// don't time shift for mistakes or bots
-	if (!ent->inuse || !ent->player || (ent->r.svFlags & SVF_BOT)) {
+	if (!ent->inuse || !ent->player ||(ent->r.svFlags & SVF_BOT)) {
 		return;
 	}
 
-	switch (ent->player->pers.antiLag) {
+	switch(ent->player->pers.antiLag) {
 		case 1:
 			// do just 50ms
 			time = level.previousTime + ent->player->frameOffset;
 			break;
+
 		case 2:
 			// do the full lag compensation, except what the client nudges
-			time = ent->player->lastCmdServerTime;// TODO + ent->player->pers.cmdTimeNudge;
+			time = ent->player->lastCmdServerTime; // TODO + ent->player->pers.cmdTimeNudge;
 			break;
 
 		default:
@@ -298,7 +319,6 @@ void G_UnTimeShiftClient(gentity_t *ent) {
 		VectorCopy(ent->player->backupMarker.mins, ent->s.mins);
 		VectorCopy(ent->player->backupMarker.maxs, ent->s.maxs);
 		VectorCopy(ent->player->backupMarker.origin, ent->r.currentOrigin);
-
 		ent->player->backupMarker.time = 0;
 		// this will recalculate absmin and absmax
 		trap_LinkEntity(ent);
@@ -320,7 +340,7 @@ void G_UnTimeShiftAllClients(gentity_t *skip) {
 	ent = &g_entities[0];
 
 	for (i = 0; i < MAX_CLIENTS; i++, ent++) {
-		if (ent->player && ent->inuse && ent->client->sess.sessionTeam < TEAM_SPECTATOR && ent != skip) {
+		if (ent->player && ent->inuse && ent->player->sess.sessionTeam < TEAM_SPECTATOR && ent != skip) {
 			G_UnTimeShiftClient(ent);
 		}
 	}
@@ -335,8 +355,8 @@ Put everyone except for this client back where they were
 */
 void G_UndoTimeShiftFor(gentity_t *ent) {
 
-	// don't un-time shift for mistakes or bots
-	if (!ent->inuse || !ent->player || (ent->r.svFlags & SVF_BOT)) {
+	// don't un - time shift for mistakes or bots
+	if (!ent->inuse || !ent->player ||(ent->r.svFlags & SVF_BOT)) {
 		return;
 	}
 
@@ -359,11 +379,11 @@ void G_PredictPlayerClipVelocity(vec3_t in, vec3_t normal, vec3_t out) {
 	// find the magnitude of the vector "in" along "normal"
 	backoff = DotProduct(in, normal);
 
-	// tilt the plane a bit to avoid floating-point error issues
+	// tilt the plane a bit to avoid floating - point error issues
 	if (backoff < 0) {
 		backoff *= OVERCLIP;
 	} else {
-		backoff /= OVERCLIP;
+		backoff / = OVERCLIP;
 	}
 	// slide along
 	VectorMA(in, -backoff, normal, out);
@@ -393,7 +413,7 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 	float into;
 	vec3_t endVelocity;
 	vec3_t endClipVelocity;
-
+	
 	numbumps = 4;
 
 	VectorCopy(ent->s.pos.trDelta, primal_velocity);
@@ -407,6 +427,7 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 	numplanes = 0;
 
 	for (bumpcount = 0; bumpcount < numbumps; bumpcount++) {
+
 		// calculate position we are trying to move to
 		VectorMA(origin, time_left, velocity, end);
 		// see if we can make it there
@@ -436,12 +457,9 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 			VectorCopy(origin, ent->s.pos.trBase);
 			return qtrue;
 		}
-
-
 		// if this is the same plane we hit before, nudge velocity
 		// out along it, which fixes some epsilon issues with
-		// non-axial planes
-
+		// non - axial planes
 		for (i = 0; i < numplanes; i++) {
 			if (DotProduct(trace.plane.normal, planes[i]) > 0.99) {
 				VectorAdd(trace.plane.normal, velocity, velocity);
@@ -454,9 +472,7 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 		}
 
 		VectorCopy(trace.plane.normal, planes[numplanes]);
-
 		numplanes++;
-
 
 		// modify velocity so it parallels all of the clip planes
 		//
@@ -466,12 +482,14 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 			into = DotProduct(velocity, planes[i]);
 
 			if (into >= 0.1) {
-				continue;		// move doesn't interact with the plane
+				continue; 		// move doesn't interact with the plane
 			}
 			// slide along the plane
 			G_PredictPlayerClipVelocity(velocity, planes[i], clipVelocity);
+
 			// slide along the plane
 			G_PredictPlayerClipVelocity(endVelocity, planes[i], endClipVelocity);
+
 			// see if there is a second plane that the new move enters
 			for (j = 0; j < numplanes; j++) {
 				if (j == i) {
@@ -479,11 +497,10 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 				}
 
 				if (DotProduct(clipVelocity, planes[j]) >= 0.1) {
-					continue;		// move doesn't interact with the plane
+					continue; 		// move doesn't interact with the plane
 				}
 				// try clipping the move to the plane
 				G_PredictPlayerClipVelocity(clipVelocity, planes[j], clipVelocity);
-
 				G_PredictPlayerClipVelocity(endClipVelocity, planes[j], endClipVelocity);
 
 				// see if it goes back into the first clip plane
@@ -492,19 +509,13 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 				}
 				// slide the original velocity along the crease
 				CrossProduct(planes[i], planes[j], dir);
-
 				VectorNormalize(dir);
-
 				d = DotProduct(dir, velocity);
-
 				VectorScale(dir, d, clipVelocity);
 
 				CrossProduct(planes[i], planes[j], dir);
-
 				VectorNormalize(dir);
-
 				d = DotProduct(dir, endVelocity);
-
 				VectorScale(dir, d, endClipVelocity);
 
 				// see if there is a third plane the the new move enters
@@ -514,8 +525,9 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 					}
 
 					if (DotProduct(clipVelocity, planes[k]) >= 0.1) {
-						continue;		// move doesn't interact with the plane
+						continue; 		// move doesn't interact with the plane
 					}
+
 					// stop dead at a tripple plane interaction
 					VectorClear(velocity);
 					VectorCopy(origin, ent->s.pos.trBase);
@@ -532,7 +544,7 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 	VectorCopy(endVelocity, velocity);
 	VectorCopy(origin, ent->s.pos.trBase);
 
-	return (bumpcount != 0);
+	return(bumpcount != 0);
 }
 
 /*
@@ -558,6 +570,7 @@ void G_PredictPlayerStepSlideMove(gentity_t *ent, float frametime) {
 		// not clipped, so forget stepping
 		return;
 	}
+
 	//VectorCopy(ent->s.pos.trBase, down_o);
 	//VectorCopy(ent->s.pos.trDelta, down_v);
 
@@ -568,7 +581,7 @@ void G_PredictPlayerStepSlideMove(gentity_t *ent, float frametime) {
 	trap_Trace(&trace, start_o, ent->s.mins, ent->s.maxs, up, ent->s.number, ent->clipmask);
 
 	if (trace.allsolid) {
-		return;		// can't step up
+		return; 		// can't step up
 	}
 
 	stepSize = trace.endpos[2] - start_o[2];
@@ -599,7 +612,7 @@ G_PredictPlayerMove
 
 Advance the given entity frametime seconds, stepping and sliding as appropriate
 
-This is the entry point to the server-side-only prediction code
+This is the entry point to the server - side - only prediction code
 =======================================================================================================================================
 */
 void G_PredictPlayerMove(gentity_t *ent, float frametime) {

@@ -1,31 +1,39 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
+//
 #ifndef __KEYCODES_H__
 #define __KEYCODES_H__
 
+//
 // these are the key numbers that should be passed to KeyEvent
+//
 
 // normal keys should be passed as lowercased ascii
 
@@ -34,14 +42,18 @@ typedef enum {
 	K_ENTER = 13,
 	K_ESCAPE = 27,
 	K_SPACE = 32,
+
 	K_BACKSPACE = 127,
+
 	K_CAPSLOCK = 128,
 	K_POWER,
 	K_PAUSE,
+
 	K_UPARROW,
 	K_DOWNARROW,
 	K_LEFTARROW,
 	K_RIGHTARROW,
+
 	K_LEFTALT,
 	K_RIGHTALT,
 	K_LEFTCTRL,
@@ -52,12 +64,14 @@ typedef enum {
 	K_RIGHTSUPER,
 	K_LEFTCOMMAND,
 	K_RIGHTCOMMAND,
+
 	K_INS,
 	K_DEL,
 	K_PGDN,
 	K_PGUP,
 	K_HOME,
 	K_END,
+
 	K_F1,
 	K_F2,
 	K_F3,
@@ -73,6 +87,7 @@ typedef enum {
 	K_F13,
 	K_F14,
 	K_F15,
+
 	K_KP_HOME,
 	K_KP_UPARROW,
 	K_KP_PGUP,
@@ -91,17 +106,21 @@ typedef enum {
 	K_KP_NUMLOCK,
 	K_KP_STAR,
 	K_KP_EQUALS,
+
 	K_MOUSE1,
 	K_MOUSE2,
 	K_MOUSE3,
 	K_MOUSE4,
 	K_MOUSE5,
+
 	K_MWHEELUP,
 	K_MWHEELDOWN,
 	K_MWHEELLEFT,
 	K_MWHEELRIGHT,
+
 	// player 1
 	K_FIRST_JOY,
+
 	K_JOY_A = K_FIRST_JOY,
 	K_JOY_B,
 	K_JOY_X,
@@ -109,27 +128,36 @@ typedef enum {
 	K_JOY_BACK,
 	K_JOY_GUIDE,
 	K_JOY_START,
+
 	K_JOY_DPAD_UP,
 	K_JOY_DPAD_RIGHT,
 	K_JOY_DPAD_DOWN,
 	K_JOY_DPAD_LEFT,
+
 	K_JOY_LEFTSHOULDER,
 	K_JOY_RIGHTSHOULDER,
+
 	K_JOY_LEFTTRIGGER,
 	K_JOY_RIGHTTRIGGER,
+
 	K_JOY_LEFTSTICK,
 	K_JOY_RIGHTSTICK,
+
 	K_JOY_LEFTSTICK_UP,
 	K_JOY_LEFTSTICK_RIGHT,
 	K_JOY_LEFTSTICK_DOWN,
 	K_JOY_LEFTSTICK_LEFT,
+
 	K_JOY_RIGHTSTICK_UP,
 	K_JOY_RIGHTSTICK_RIGHT,
 	K_JOY_RIGHTSTICK_DOWN,
 	K_JOY_RIGHTSTICK_LEFT,
+
 	K_LAST_JOY = K_JOY_RIGHTSTICK_LEFT,
+
 	// player 2
 	K_FIRST_2JOY,
+
 	K_2JOY_A = K_FIRST_2JOY,
 	K_2JOY_B,
 	K_2JOY_X,
@@ -254,6 +282,7 @@ typedef enum {
 	K_AUX14,
 	K_AUX15,
 	K_AUX16,
+
 	K_WORLD_0,
 	K_WORLD_1,
 	K_WORLD_2,
@@ -521,9 +550,11 @@ typedef enum {
 	K_MENU,
 	K_EURO,
 	K_UNDO,
-	// pseudo-key that brings the console down
+
+	// Pseudo - key that brings the console down
 	K_CONSOLE,
 
 	MAX_KEYS
 } keyNum_t;
+
 #endif

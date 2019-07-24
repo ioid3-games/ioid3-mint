@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -52,24 +58,27 @@ typedef struct {
 
 typedef struct {
 	int planeNum;
-	int children[2];	// negative numbers are - (leafs+1), not nodes
-	int mins[3];		// for frustom culling
+	int children[2]; 	// negative numbers are - (leafs+1), not nodes
+	int mins[3]; 		// for frustom culling
 	int maxs[3];
 } dnode_t;
 
 typedef struct {
-	int cluster;			// -1 = opaque cluster(do I still store these?)
+	int cluster; 			// -1 = opaque cluster(do I still store these?)
 	int area;
-	int mins[3];			// for frustum culling
+
+	int mins[3]; 			// for frustum culling
 	int maxs[3];
+
 	int firstLeafSurface;
 	int numLeafSurfaces;
+
 	int firstLeafBrush;
 	int numLeafBrushes;
 } dleaf_t;
 
 typedef struct {
-	int planeNum;			// positive plane side faces out of the leaf
+	int planeNum; 			// positive plane side faces out of the leaf
 	int shaderNum;
 	int surfaceNum;
 } dbrushside_t;
@@ -77,13 +86,13 @@ typedef struct {
 typedef struct {
 	int firstSide;
 	int numSides;
-	int shaderNum;		// the shader that determines the contents flags
+	int shaderNum; 		// the shader that determines the contents flags
 } dbrush_t;
 
 typedef struct {
 	char shader[MAX_QPATH];
 	int brushNum;
-	int visibleSide;	// the brush side that ray tests need to clip against(-1 == none)
+	int visibleSide; 	// the brush side that ray tests need to clip against(-1 == none)
 } dfog_t;
 
 typedef struct {
@@ -111,17 +120,19 @@ typedef struct {
 	int shaderNum;
 	int fogNum;
 	int surfaceType;
+
 	int firstVert;
 	int numVerts; // ydnar: num verts + foliage origins(for cleaner lighting code in q3map)
 
 	int firstIndex;
 	int numIndexes;
+
 	int lightmapNum;
 	int lightmapX, lightmapY;
 	int lightmapWidth, lightmapHeight;
 
 	vec3_t lightmapOrigin;
-	vec3_t lightmapVecs[3];	// for patches, [0] and [1] are lodbounds
+	vec3_t lightmapVecs[3]; 	// for patches, [0] and [1] are lodbounds
 
 	int patchWidth; // ydnar: num foliage instances
 	int patchHeight; // ydnar: num foliage mesh verts
@@ -148,8 +159,10 @@ typedef struct {
 
 	dleaf_t *leafs;
 	int numLeafs;
+
 	int *leafSurfaces;
 	int numLeafSurfaces;
+
 	int *leafBrushes;
 	int numLeafBrushes;
 
@@ -164,6 +177,7 @@ typedef struct {
 
 	drawVert_t *drawVerts;
 	int numDrawVerts;
+
 	int *drawIndexes;
 	int numDrawIndexes;
 
@@ -180,8 +194,9 @@ typedef struct {
 	byte *lightGridData; // each point is 8 bytes
 	int numGridPoints;
 
-	unsigned short	*lightGridArray;
+	unsigned short *lightGridArray;
 	int numGridArrayPoints;
+
 	int numClusters;
 	int clusterBytes;
 	byte *visibility;

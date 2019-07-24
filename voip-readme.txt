@@ -142,6 +142,7 @@ voip gain <clientnum> <gain>
 
 
 
+
 Actions:
 
 +voiprecord: The action you should bind to a key to record. This basically
@@ -193,3 +194,6 @@ The initial VoIP work was done by Ryan C. Gordon <icculus@icculus.org>, and
  Spearmint.
 
 // end of voip-README.txt ...
+
+
+

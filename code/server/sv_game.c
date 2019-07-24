@@ -1,30 +1,33 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
-/**************************************************************************************************************************************
- Interface to the game dll.
-**************************************************************************************************************************************/
+// sv_game.c -- interface to the game dll
 
 #include "server.h"
 
@@ -33,29 +36,19 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 define_t *game_globaldefines;
 
-void		SV_GameCommand(void);
-void		SV_GameCompleteArgument(char *args, int argNum);
+void SV_GameCommand(void);
+void SV_GameCompleteArgument(char *args, int argNum);
 
-// these functions must be used instead of pointer arithmetic, because the game allocates gentities with private information after the
-// server shared part
-
-/*
-=======================================================================================================================================
-SV_NumForGentity
-=======================================================================================================================================
-*/
+// these functions must be used instead of pointer arithmetic, because
+// the game allocates gentities with private information after the server shared part
 int SV_NumForGentity(sharedEntity_t *ent) {
 	int num;
 
 	num = ((byte *)ent - (byte *)sv.gentities) / sv.gentitySize;
+
 	return num;
 }
 
-/*
-=======================================================================================================================================
-SV_GentityNum
-=======================================================================================================================================
-*/
 sharedEntity_t *SV_GentityNum(int num) {
 	sharedEntity_t *ent;
 
@@ -64,11 +57,6 @@ sharedEntity_t *SV_GentityNum(int num) {
 	return ent;
 }
 
-/*
-=======================================================================================================================================
-SV_GameClientNum
-=======================================================================================================================================
-*/
 sharedEntityState_t *SV_GameEntityStateNum(int num) {
 	sharedEntity_t *ent;
 
@@ -85,13 +73,7 @@ sharedPlayerState_t *SV_GamePlayerNum(int num) {
 	return ps;
 }
 
-/*
-=======================================================================================================================================
-SV_SvEntityForGentity
-=======================================================================================================================================
-*/
 svEntity_t *SV_SvEntityForGentity(sharedEntity_t *gEnt) {
-
 	if (!gEnt || gEnt->s.number < 0 || gEnt->s.number >= MAX_GENTITIES) {
 		Com_Error(ERR_DROP, "SV_SvEntityForGentity: bad gEnt");
 	}
@@ -99,11 +81,6 @@ svEntity_t *SV_SvEntityForGentity(sharedEntity_t *gEnt) {
 	return &sv.svEntities[gEnt->s.number];
 }
 
-/*
-=======================================================================================================================================
-SV_GEntityForSvEntity
-=======================================================================================================================================
-*/
 sharedEntity_t *SV_GEntityForSvEntity(svEntity_t *svEnt) {
 	int num;
 
@@ -115,7 +92,7 @@ sharedEntity_t *SV_GEntityForSvEntity(svEntity_t *svEnt) {
 =======================================================================================================================================
 SV_GameSendServerCommand
 
-Sends a command string to a client.
+Sends a command string to a client
 =======================================================================================================================================
 */
 void SV_GameSendServerCommand(int clientNum, int localPlayerNum, const char *text) {
@@ -126,30 +103,32 @@ void SV_GameSendServerCommand(int clientNum, int localPlayerNum, const char *tex
 			return;
 		}
 
-		SV_SendServerCommand(svs.clients + clientNum, localPlayerNum, "%s", text);
+		SV_SendServerCommand(svs.clients + clientNum, localPlayerNum, "%s", text); 	
 	}
 }
 
+
 /*
 =======================================================================================================================================
-SV_GameDropClient
+SV_GameDropPlayer
 
-Disconnects the client with a message.
+Disconnects the player with a message
 =======================================================================================================================================
 */
-void SV_GameDropPlayer(int clientNum, const char *reason) {
-	if (clientNum < 0 || clientNum >= sv_maxclients->integer) {
+void SV_GameDropPlayer(int playerNum, const char *reason) {
+	if (playerNum < 0 || playerNum >= sv_maxclients->integer) {
 		return;
 	}
 
-	SV_DropPlayer(svs.players + clientNum, reason, qtrue);
+	SV_DropPlayer(svs.players + playerNum, reason, qtrue);
 }
+
 
 /*
 =======================================================================================================================================
-SV_SetBrushModel
+SV_GetBrushBounds
 
-Sets mins and maxs for inline bmodels.
+gets mins and maxs for inline bmodels
 =======================================================================================================================================
 */
 void SV_GetBrushBounds(int modelindex, vec3_t mins, vec3_t maxs) {
@@ -163,11 +142,13 @@ void SV_GetBrushBounds(int modelindex, vec3_t mins, vec3_t maxs) {
 	CM_ModelBounds(h, mins, maxs);
 }
 
+
+
 /*
 =======================================================================================================================================
 SV_inPVS
 
-Also checks portalareas so that doors block sight.
+Also checks portalareas so that doors block sight
 =======================================================================================================================================
 */
 qboolean SV_inPVS(const vec3_t p1, const vec3_t p2) {
@@ -180,42 +161,43 @@ qboolean SV_inPVS(const vec3_t p1, const vec3_t p2) {
 	cluster = CM_LeafCluster(leafnum);
 	area1 = CM_LeafArea(leafnum);
 	mask = CM_ClusterPVS(cluster);
+
 	leafnum = CM_PointLeafnum(p2);
 	cluster = CM_LeafCluster(leafnum);
 	area2 = CM_LeafArea(leafnum);
-
-	if (mask && (!(mask[cluster>>3] & (1<<(cluster&7)))))
+	if (mask && (!(mask[cluster >> 3] &(1 << (cluster&7)))))
 		return qfalse;
-	if (!CM_AreasConnected (area1, area2))
-		return qfalse;		// a door blocks sight
+	if (!CM_AreasConnected(area1, area2))
+		return qfalse; 		// a door blocks sight
 	return qtrue;
 }
+
 
 /*
 =======================================================================================================================================
 SV_inPVSIgnorePortals
 
-Does NOT check portalareas.
+Does NOT check portalareas
 =======================================================================================================================================
 */
-qboolean SV_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2)
-{
-	int		leafnum;
-	int		cluster;
-	byte	*mask;
+qboolean SV_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2) {
+	int leafnum;
+	int cluster;
+	byte *mask;
 
-	leafnum = CM_PointLeafnum (p1);
-	cluster = CM_LeafCluster (leafnum);
-	mask = CM_ClusterPVS (cluster);
+	leafnum = CM_PointLeafnum(p1);
+	cluster = CM_LeafCluster(leafnum);
+	mask = CM_ClusterPVS(cluster);
 
-	leafnum = CM_PointLeafnum (p2);
-	cluster = CM_LeafCluster (leafnum);
+	leafnum = CM_PointLeafnum(p2);
+	cluster = CM_LeafCluster(leafnum);
 
-	if (mask && (!(mask[cluster>>3] & (1<<(cluster&7)))))
+	if (mask && (!(mask[cluster >> 3] &(1 << (cluster&7)))))
 		return qfalse;
 
 	return qtrue;
 }
+
 
 /*
 =======================================================================================================================================
@@ -229,8 +211,10 @@ void SV_AdjustAreaPortalState(sharedEntity_t *ent, qboolean open) {
 	if (svEnt->areanum2 == -1) {
 		return;
 	}
+
 	CM_AdjustAreaPortalState(svEnt->areanum, svEnt->areanum2, open);
 }
+
 
 /*
 =======================================================================================================================================
@@ -238,36 +222,40 @@ SV_EntityContact
 =======================================================================================================================================
 */
 qboolean	SV_EntityContact(const vec3_t mins, const vec3_t maxs, const sharedEntity_t *gEnt, traceType_t type) {
-	const float	*origin, *angles;
-	clipHandle_t	ch;
-	trace_t			trace;
+	const float *origin, *angles;
+	clipHandle_t ch;
+	trace_t trace;
 
 	// check for exact collision
 	origin = gEnt->r.currentOrigin;
 	angles = gEnt->r.currentAngles;
 
 	ch = SV_ClipHandleForEntity(gEnt);
-	CM_TransformedBoxTrace (&trace, vec3_origin, vec3_origin, mins, maxs,
+	CM_TransformedBoxTrace(&trace, vec3_origin, vec3_origin, mins, maxs,
 		ch, -1, origin, angles, type);
 
 	return trace.startsolid;
 }
 
+
 /*
 =======================================================================================================================================
 SV_GetServerinfo
+
 =======================================================================================================================================
 */
 void SV_GetServerinfo(char *buffer, int bufferSize) {
 	if (bufferSize < 1) {
 		Com_Error(ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize);
 	}
+
 	Q_strncpyz(buffer, Cvar_InfoString(CVAR_SERVERINFO), bufferSize);
 }
 
 /*
 =======================================================================================================================================
 SV_LocateGameData
+
 =======================================================================================================================================
 */
 void SV_LocateGameData(sharedEntity_t *gEnts, int numGEntities, int sizeofGEntity_t,
@@ -283,10 +271,11 @@ void SV_LocateGameData(sharedEntity_t *gEnts, int numGEntities, int sizeofGEntit
 /*
 =======================================================================================================================================
 SV_SetNetFields
+
 =======================================================================================================================================
 */
 void SV_SetNetFields(int entityStateSize, int entityNetworkSize, vmNetField_t *entityStateFields, int numEntityStateFields,
-					   int playerStateSize, int playerNetworkSize, vmNetField_t *playerStateFields, int numPlayerStateFields) {
+					 	int playerStateSize, int playerNetworkSize, vmNetField_t *playerStateFields, int numPlayerStateFields) {
 	sv.gameEntityStateSize = entityStateSize;
 	sv.gamePlayerStateSize = playerStateSize;
 
@@ -297,30 +286,32 @@ void SV_SetNetFields(int entityStateSize, int entityNetworkSize, vmNetField_t *e
 /*
 =======================================================================================================================================
 SV_GetUsercmd
+
 =======================================================================================================================================
 */
-void SV_GetUsercmd(int clientNum, usercmd_t *cmd) {
-	if (clientNum < 0 || clientNum >= sv_maxclients->integer) {
-		Com_Error(ERR_DROP, "SV_GetUsercmd: bad clientNum:%i", clientNum);
+void SV_GetUsercmd(int playerNum, usercmd_t *cmd) {
+	if (playerNum < 0 || playerNum >= sv_maxclients->integer) {
+		Com_Error(ERR_DROP, "SV_GetUsercmd: bad playerNum:%i", playerNum);
 	}
-	*cmd = svs.players[clientNum].lastUsercmd;
+	*cmd = svs.players[playerNum].lastUsercmd;
 }
+
+//==============================================
 
 /*
 =======================================================================================================================================
 SV_GameSystemCalls
 
-The module is making a system call.
+The module is making a system call
 =======================================================================================================================================
 */
 intptr_t SV_GameSystemCalls(intptr_t *args) {
-
-	switch (args[0]) {
+	switch(args[0]) {
 	case G_PRINT:
-		Com_Printf("%s", (const char*)VMA(1));
+		Com_Printf("%s", (const char *)VMA(1));
 		return 0;
 	case G_ERROR:
-		Com_Error(ERR_DROP, "%s", (const char*)VMA(1));
+		Com_Error(ERR_DROP, "%s", (const char *)VMA(1));
 		return 0;
 	case G_MILLISECONDS:
 		return Sys_Milliseconds();
@@ -341,7 +332,7 @@ intptr_t SV_GameSystemCalls(intptr_t *args) {
 		return 0;
 
 	case G_CVAR_REGISTER:
-		Cvar_Register(VMA(1), VMA(2), VMA(3), args[4]); 
+		Cvar_Register(VMA(1), VMA(2), VMA(3), args[4]);
 		return 0;
 	case G_CVAR_UPDATE:
 		Cvar_Update(VMA(1));
@@ -561,17 +552,19 @@ intptr_t SV_GameSystemCalls(intptr_t *args) {
 		return SV_BotGetServerCommand(args[1], VMA(2), args[3]);
 	case G_BOT_USER_COMMAND:
 		{
-			int clientNum = args[1];
+			int playerNum = args[1];
 
-			if (clientNum >= 0 && clientNum < sv_maxclients->integer) {
-				SV_PlayerThink(&svs.players[clientNum], VMA(2));
+			if (playerNum >= 0 && playerNum < sv_maxclients->integer) {
+				SV_PlayerThink(&svs.players[playerNum], VMA(2));
 			}
 		}
+
 		return 0;
 
 	default:
-		Com_Error(ERR_DROP, "Bad game system trap: %ld", (long int) args[0]);
+		Com_Error(ERR_DROP, "Bad game system trap: %ld", (long int)args[0]);
 	}
+
 	return 0;
 }
 
@@ -592,21 +585,21 @@ void SV_GameInternalShutdown(qboolean restart) {
 =======================================================================================================================================
 SV_ShutdownGameProgs
 
-Called every time a map changes.
+Called every time a map changes
 =======================================================================================================================================
 */
 void SV_ShutdownGameProgs(void) {
-
 	if (!gvm) {
 		return;
 	}
 
 	SV_GameInternalShutdown(qfalse);
 	VM_Free(gvm);
-
 	gvm = NULL;
+
 	//remove all global defines from the pre compiler
 	PC_RemoveAllGlobalDefines(&game_globaldefines);
+
 	// print any files still open
 	PC_CheckOpenSourceHandles();
 }
@@ -615,57 +608,64 @@ void SV_ShutdownGameProgs(void) {
 =======================================================================================================================================
 SV_InitGameVM
 
-Called for both a full init and a restart.
+Called for both a full init and a restart
 =======================================================================================================================================
 */
 static void SV_InitGameVM(qboolean restart) {
-	char			apiName[64];
-	int				major, minor;
-	int				i;
+	char apiName[64];
+	int major, minor;
+	int i;
 
 	VM_GetVersion(gvm, GAME_GETAPINAME, GAME_GETAPIVERSION, apiName, sizeof(apiName), &major, &minor);
 	Com_DPrintf("Loading Game VM with API %s %d.%d\n", apiName, major, minor);
+
 	// sanity check
-	if (!strcmp(apiName, GAME_API_NAME) && major == GAME_API_MAJOR_VERSION && ((major > 0 && minor <= GAME_API_MINOR_VERSION) || (major == 0 && minor == GAME_API_MINOR_VERSION))) {
+	if (!strcmp(apiName, GAME_API_NAME) && major == GAME_API_MAJOR_VERSION
+		&& ((major > 0 && minor <= GAME_API_MINOR_VERSION)
+		  ||(major == 0 && minor == GAME_API_MINOR_VERSION))) {
 		// Supported API
 	} else {
 		// Free gvm now, so GAME_SHUTDOWN doesn't get called later.
 		VM_Free(gvm);
 		gvm = NULL;
 
-		Com_Error(ERR_DROP, "Game VM uses unsupported API %s %d.%d, %s %d.%d", apiName, major, minor, GAME_API_NAME, GAME_API_MAJOR_VERSION, GAME_API_MINOR_VERSION);
+		Com_Error(ERR_DROP, "Game VM uses unsupported API %s %d.%d, %s %d.%d",
+				  apiName, major, minor, GAME_API_NAME, GAME_API_MAJOR_VERSION, GAME_API_MINOR_VERSION);
 	}
-
 	// start the entity parsing at the beginning
 	sv.entityParsePoint = CM_EntityString();
-	// clear all gentity pointers that might still be set from a previous level
-	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=522
-	// now done before GAME_INIT call
+
+	// clear all gentity pointers that might still be set from
+	// a previous level
+	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id = 522
+	//   now done before GAME_INIT call
 	for (i = 0; i < sv_maxclients->integer; i++) {
 		svs.players[i].gentity = NULL;
 	}
+	
 	// use the current msec count for a random seed
 	// init for this gamestate
 	VM_Call(gvm, GAME_INIT, sv.time, Com_Milliseconds(), restart);
 }
 
+
+
 /*
 =======================================================================================================================================
 SV_RestartGameProgs
 
-Called on a map_restart, but not on a normal map change.
+Called on a map_restart, but not on a normal map change
 =======================================================================================================================================
 */
 void SV_RestartGameProgs(void) {
-
 	if (!gvm) {
 		return;
 	}
 
 	SV_GameInternalShutdown(qtrue);
+
 	// do a restart instead of a free
 	gvm = VM_Restart(gvm, qtrue);
-
 	if (!gvm) {
 		Com_Error(ERR_FATAL, "VM_Restart on game failed");
 	}
@@ -673,16 +673,18 @@ void SV_RestartGameProgs(void) {
 	SV_InitGameVM(qtrue);
 }
 
+
 /*
 =======================================================================================================================================
 SV_InitGameProgs
 
-Called on a normal map change, not on a map_restart.
+Called on a normal map change, not on a map_restart
 =======================================================================================================================================
 */
 void SV_InitGameProgs(void) {
 	// load the dll or bytecode
-	gvm = VM_Create(VM_PREFIX "game", SV_GameSystemCalls, Cvar_VariableValue("vm_game"), TAG_GAME, Cvar_VariableValue("vm_gameHeapMegs") * 1024 * 1024);
+	gvm = VM_Create(VM_PREFIX "game", SV_GameSystemCalls, Cvar_VariableValue("vm_game"),
+			TAG_GAME, Cvar_VariableValue("vm_gameHeapMegs") * 1024 * 1024);
 
 	if (!gvm) {
 		Com_Error(ERR_FATAL, "VM_Create on game failed");
@@ -691,15 +693,15 @@ void SV_InitGameProgs(void) {
 	SV_InitGameVM(qfalse);
 }
 
+
 /*
 =======================================================================================================================================
 SV_GameCommand
 
-See if the current console command is claimed by the game.
+Pass current console command to game VM
 =======================================================================================================================================
 */
 void SV_GameCommand(void) {
-
 	if (sv.state != SS_GAME) {
 		return;
 	}
@@ -709,11 +711,10 @@ void SV_GameCommand(void) {
 
 /*
 =======================================================================================================================================
-SV_GameCompleteArgument
+CL_GameCompleteArgument
 =======================================================================================================================================
 */
 void SV_GameCompleteArgument(char *args, int argNum) {
-
 	if (sv.state != SS_GAME) {
 		return;
 	}
@@ -725,11 +726,10 @@ void SV_GameCompleteArgument(char *args, int argNum) {
 =======================================================================================================================================
 SV_GameVidRestart
 
-Called every time client restarts renderer while running server.
+Called every time client restarts renderer while running server
 =======================================================================================================================================
 */
 void SV_GameVidRestart(void) {
-
 	if (!gvm) {
 		return;
 	}

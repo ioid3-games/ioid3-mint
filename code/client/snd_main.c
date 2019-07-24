@@ -1,6 +1,6 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 Copyright(C)2005 Stuart Dalton(badcdev@gmail.com)
 
 This file is part of Spearmint Source Code.
@@ -16,7 +16,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http:// www.gnu.org/licenses/>.
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
 In addition, Spearmint Source Code is also subject to certain additional terms.
 You should have received a copy of these additional terms immediately following
@@ -56,16 +56,12 @@ void S_ListenersInit(void) {
 
 	for (i = 0; i < MAX_LISTENERS; ++i) {
 		listeners[i].valid = qfalse;
-
 		listeners[i].updated = qfalse;
 
 		listeners[i].number = -1;
 		VectorClear(listeners[i].origin);
-
 		AxisClear(listeners[i].axis);
-
 		listeners[i].inwater = 0;
-
 		listeners[i].firstPerson = qfalse;
 	}
 }
@@ -137,10 +133,8 @@ int S_ClosestListener(const vec3_t origin) {
 	for (i = 0; i < MAX_LISTENERS; ++i) {
 		if (listeners[i].valid) {
 			dist = Distance(origin, listeners[i].origin);
-
 			if (dist < closestDist) {
 				closestDist = dist;
-
 				closestListener = i;
 			}
 		}
@@ -162,13 +156,12 @@ float S_ListenersClosestDistance(const vec3_t origin) {
 	for (i = 0; i < MAX_LISTENERS; ++i) {
 		if (listeners[i].valid) {
 			dist = Distance(origin, listeners[i].origin);
-
 			if (dist < closestDist) {
 				closestDist = dist;
 			}
 		}
 	}
-
+	
 	return closestDist;
 }
 
@@ -185,13 +178,12 @@ float S_ListenersClosestDistanceSquared(const vec3_t origin) {
 	for (i = 0; i < MAX_LISTENERS; ++i) {
 		if (listeners[i].valid) {
 			dist = DistanceSquared(origin, listeners[i].origin);
-
 			if (dist < closestDist) {
 				closestDist = dist;
 			}
 		}
 	}
-
+	
 	return closestDist;
 }
 
@@ -208,14 +200,16 @@ int S_ListenerNumForEntity(int entityNum, qboolean create) {
 		if (listeners[i].valid) {
 			if (listeners[i].number == entityNum)
 				return i;
-		} else if (create && freeListener == -1)
+		}
+
+		else if (create && freeListener == -1)
 			freeListener = i;
 	}
 
 	if (create && freeListener == -1) {
 		// Find listener that might be freed next frame, otherwise we
 		// could fail to get a slot when listener changes entityNums.
-		for (i = MAX_LISTENERS-1; i >= 0; --i) {
+		for (i = MAX_LISTENERS - 1; i >= 0; -- i) {
 			if (listeners[i].valid && !listeners[i].updated) {
 				freeListener = i;
 				break;
@@ -282,125 +276,39 @@ S_ValidateInterface
 =======================================================================================================================================
 */
 static qboolean S_ValidSoundInterface(soundInterface_t *si) {
-	if (!si->Shutdown) {
-		return qfalse;
-	}
+	if (!si->Shutdown)return qfalse;
+	if (!si->StartSound)return qfalse;
+	if (!si->StartLocalSound)return qfalse;
+	if (!si->StartBackgroundTrack)return qfalse;
+	if (!si->StopBackgroundTrack)return qfalse;
+	if (!si->StartStreamingSound)return qfalse;
+	if (!si->StopStreamingSound)return qfalse;
+	if (!si->QueueStreamingSound)return qfalse;
+	if (!si->GetStreamPlayCount)return qfalse;
+	if (!si->SetStreamVolume)return qfalse;
+	if (!si->RawSamples)return qfalse;
+	if (!si->StopAllSounds)return qfalse;
+	if (!si->ClearLoopingSounds)return qfalse;
+	if (!si->AddLoopingSound)return qfalse;
+	if (!si->AddRealLoopingSound)return qfalse;
+	if (!si->StopLoopingSound)return qfalse;
+	if (!si->Respatialize)return qfalse;
+	if (!si->UpdateEntityPosition)return qfalse;
+	if (!si->Update)return qfalse;
+	if (!si->DisableSounds)return qfalse;
+	if (!si->BeginRegistration)return qfalse;
+	if (!si->RegisterSound)return qfalse;
+	if (!si->SoundDuration)return qfalse;
+	if (!si->ClearSoundBuffer)return qfalse;
+	if (!si->SoundInfo)return qfalse;
+	if (!si->SoundList)return qfalse;
 
-	if (!si->StartSound) {
-		return qfalse;
-	}
-
-	if (!si->StartLocalSound) {
-		return qfalse;
-	}
-
-	if (!si->StartBackgroundTrack) {
-		return qfalse;
-	}
-
-	if (!si->StopBackgroundTrack) {
-		return qfalse;
-	}
-
-	if (!si->StartStreamingSound) {
-		return qfalse;
-	}
-
-	if (!si->StopStreamingSound) {
-		return qfalse;
-	}
-
-	if (!si->QueueStreamingSound) {
-		return qfalse;
-	}
-
-	if (!si->GetStreamPlayCount) {
-		return qfalse;
-	}
-
-	if (!si->SetStreamVolume) {
-		return qfalse;
-	}
-
-	if (!si->RawSamples) {
-		return qfalse;
-	}
-
-	if (!si->StopAllSounds) {
-		return qfalse;
-	}
-
-	if (!si->ClearLoopingSounds) {
-		return qfalse;
-	}
-
-	if (!si->AddLoopingSound) {
-		return qfalse;
-	}
-
-	if (!si->AddRealLoopingSound) {
-		return qfalse;
-	}
-
-	if (!si->StopLoopingSound) {
-		return qfalse;
-	}
-
-	if (!si->Respatialize) {
-		return qfalse;
-	}
-
-	if (!si->UpdateEntityPosition) {
-		return qfalse;
-	}
-
-	if (!si->Update) {
-		return qfalse;
-	}
-
-	if (!si->DisableSounds) {
-		return qfalse;
-	}
-
-	if (!si->BeginRegistration) {
-		return qfalse;
-	}
-
-	if (!si->RegisterSound) {
-		return qfalse;
-	}
-
-	if (!si->SoundDuration) {
-		return qfalse;
-	}
-
-	if (!si->ClearSoundBuffer) {
-		return qfalse;
-	}
-
-	if (!si->SoundInfo) {
-		return qfalse;
-	}
-
-	if (!si->SoundList) return qfalse;
 #ifdef USE_VOIP
-	if (!si->StartCapture) {
-		return qfalse;
-	}
-
-	if (!si->AvailableCaptureSamples) {
-		return qfalse;
-	}
-
-	if (!si->Capture) {
-		return qfalse;
-	}
-
-	if (!si->StopCapture) {
-		return qfalse;
-	}
-
-	if (!si->MasterGain) return qfalse;
+	if (!si->StartCapture)return qfalse;
+	if (!si->AvailableCaptureSamples)return qfalse;
+	if (!si->Capture)return qfalse;
+	if (!si->StopCapture)return qfalse;
+	if (!si->MasterGain)return qfalse;
 #endif
 
 	return qtrue;
@@ -506,7 +414,8 @@ void S_SetStreamVolume(int stream, float volume) {
 S_RawSamples
 =======================================================================================================================================
 */
-void S_RawSamples(int stream, int samples, int rate, int width, int channels, const byte *data, float volume, int entityNum) {
+void S_RawSamples(int stream, int samples, int rate, int width, int channels,
+		   const byte *data, float volume, int entityNum) {
 	if (si.RawSamples)
 		si.RawSamples(stream, samples, rate, width, channels, data, volume, entityNum);
 }
@@ -597,18 +506,19 @@ S_Update
 */
 void S_Update(void) {
 	if (s_muted->integer) {
-		if (!(s_muteWhenMinimized->integer && com_minimized->integer) && !(s_muteWhenUnfocused->integer && com_unfocused->integer)) {
+		if (!(s_muteWhenMinimized->integer && com_minimized->integer) &&
+		   !(s_muteWhenUnfocused->integer && com_unfocused->integer)) {
 			s_muted->integer = qfalse;
 			s_muted->modified = qtrue;
 		}
 	} else {
 		if ((s_muteWhenMinimized->integer && com_minimized->integer) ||
-		 (s_muteWhenUnfocused->integer && com_unfocused->integer)) {
+		  (s_muteWhenUnfocused->integer && com_unfocused->integer)) {
 			s_muted->integer = qtrue;
 			s_muted->modified = qtrue;
 		}
 	}
-
+	
 	if (si.Update) {
 		si.Update();
 	}
@@ -765,9 +675,9 @@ S_Init
 */
 void S_Init(void) {
 	cvar_t *cv;
-	qboolean started = qfalse;
+	qboolean	started = qfalse;
 
-	Com_Printf("------ Initializing Sound ------\n");
+	Com_Printf(" ------ Initializing Sound ------ \n");
 
 	s_volume = Cvar_Get("s_volume", "0.8", CVAR_ARCHIVE);
 	s_musicVolume = Cvar_Get("s_musicvolume", "0.25", CVAR_ARCHIVE);
@@ -778,7 +688,6 @@ void S_Init(void) {
 	s_muteWhenUnfocused = Cvar_Get("s_muteWhenUnfocused", "0", CVAR_ARCHIVE);
 
 	cv = Cvar_Get("s_initsound", "1", 0);
-
 	if (!cv->integer) {
 		Com_Printf("Sound disabled.\n");
 	} else {
@@ -787,12 +696,10 @@ void S_Init(void) {
 		S_ListenersInit();
 
 		Cmd_AddCommand("s_list", S_SoundList);
-
 		Cmd_AddCommand("s_stop", S_StopAllSounds);
-
 		Cmd_AddCommand("s_info", S_SoundInfo);
 
-		cv = Cvar_Get( "s_useOpenAL", "0", CVAR_ARCHIVE|CVAR_LATCH);
+		cv = Cvar_Get("s_useOpenAL", "0", CVAR_ARCHIVE|CVAR_LATCH);
 
 		if (cv->integer) {
 			//OpenAL
@@ -817,7 +724,7 @@ void S_Init(void) {
 		}
 	}
 
-	Com_Printf("--------------------------------\n");
+	Com_Printf(" -------------------------------- \n");
 }
 
 /*
@@ -831,6 +738,7 @@ void S_Shutdown(void) {
 	}
 
 	Com_Memset(&si, 0, sizeof(soundInterface_t));
+
 	Cmd_RemoveCommand("s_list");
 	Cmd_RemoveCommand("s_stop");
 	Cmd_RemoveCommand("s_info");

@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -29,10 +35,10 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 // major 0 means each minor is an API break.
 // major > 0 means each major is an API break and each minor extends API.
-// ZTM: FIXME: There is no way for the VM to know what the engine support API is so there is no way to add more system calls.
-#define CG_API_MAJOR_VERSION 1
-#define CG_API_MINOR_VERSION 0
-
+// ZTM: FIXME: There is no way for the VM to know what the engine support API is
+//             so there is no way to add more system calls.
+#define CG_API_MAJOR_VERSION	1
+#define CG_API_MINOR_VERSION	0
 
 #define CMD_BACKUP			64	
 #define CMD_MASK			(CMD_BACKUP - 1)
@@ -40,51 +46,47 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 // multiple commands may be combined into a single packet, so this
 // needs to be larger than PACKET_BACKUP
 
-
 // snapshots are a view of the server at a given time
 
 // Snapshots are generated at regular time intervals by the server,
 // but they may not be sent if a client's rate level is exceeded, or
 // they may be dropped by the network.
 typedef struct {
-	int snapFlags;			// SNAPFLAG_RATE_DELAYED, etc
+	int snapFlags; 			// SNAPFLAG_RATE_DELAYED, etc
 	int ping;
-	int serverTime;		// server time the message is valid for(in msec)
+	int serverTime; 		// server time the message is valid for(in msec)
 
-	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES];		// portalarea visibility bits
+	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES]; 		// portalarea visibility bits
 
-	int clientNums[MAX_SPLITVIEW];
-	int numServerCommands;		// text based server commands to execute when this
-	int serverCommandSequence;	// snapshot becomes current
+	int playerNums[MAX_SPLITVIEW];
+	int numServerCommands; 		// text based server commands to execute when this
+	int serverCommandSequence; 	// snapshot becomes current
 
 	int numEntities;
 } vmSnapshot_t;
+
 #ifdef CGAME
 #define MAX_ENTITIES_IN_SNAPSHOT	256 * MAX_SPLITVIEW
 
 typedef struct {
-
 	// Must exactly match vmSnapshot_t
-
-	int snapFlags;			// SNAPFLAG_RATE_DELAYED, etc
+	int snapFlags; 			// SNAPFLAG_RATE_DELAYED, etc
 	int ping;
-	int serverTime;		// server time the message is valid for(in msec)
+	int serverTime; 		// server time the message is valid for(in msec)
 
-	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES];		// portalarea visibility bits
+	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES]; 		// portalarea visibility bits
 
-	int clientNums[MAX_SPLITVIEW];
-	int numServerCommands;		// text based server commands to execute when this
-	int serverCommandSequence;	// snapshot becomes current
+	int playerNums[MAX_SPLITVIEW];
+	int numServerCommands; 		// text based server commands to execute when this
+	int serverCommandSequence; 	// snapshot becomes current
 
 	int numEntities;
 
-
 	// CGame specific data
-
 	entityState_t entities[MAX_ENTITIES_IN_SNAPSHOT]; // all of the entities that need to be presented
 											// at the time of this snapshot
 
-	playerState_t pss[MAX_SPLITVIEW];		// complete information about the current players at this time
+	playerState_t pss[MAX_SPLITVIEW]; 		// complete information about the current players at this time
 
 } snapshot_t;
 #endif
@@ -124,8 +126,10 @@ typedef struct {
 
 typedef enum {
 	DS_NONE,
+
 	DS_PLAYBACK,
 	DS_RECORDING,
+
 	DS_NUM_DEMO_STATES
 } demoState_t;
 
@@ -139,6 +143,7 @@ enum {
 	JOYEVENT_AXIS,
 	JOYEVENT_BUTTON,
 	JOYEVENT_HAT,
+
 	JOYEVENT_MAX
 };
 
@@ -147,12 +152,10 @@ typedef struct {
 
 	union {
 		int button;
-
 		struct {
 			int num;
-			int sign; // 1 or -1
+			int sign; // 1 or - 1
 		} axis;
-
 		struct {
 			int num;
 			int mask;
@@ -165,26 +168,29 @@ typedef struct {
 
 functions imported from the main executable
 
-also see qvmTraps_t in qcommon.h for QVM-specific system calls
+also see qvmTraps_t in qcommon.h for QVM - specific system calls
 
 =======================================================================================================================================
 */
 
 typedef enum {
-	//============== general Quake services ==================
+	//==============general Quake services==================
 
 	CG_PRINT = 0,
 	CG_ERROR,
 	CG_MILLISECONDS,
 	CG_REAL_TIME,
 	CG_SNAPVECTOR,
+
 	CG_ARGC,
 	CG_ARGV,
 	CG_ARGS,
 	CG_LITERAL_ARGS,
+
 	CG_ADDCOMMAND,
 	CG_REMOVECOMMAND,
 	CG_CMD_EXECUTETEXT,
+
 	CG_CVAR_REGISTER,
 	CG_CVAR_UPDATE,
 	CG_CVAR_SET,
@@ -197,6 +203,7 @@ typedef enum {
 	CG_CVAR_DEFAULT_VARIABLE_STRING_BUFFER,
 	CG_CVAR_INFO_STRING_BUFFER,
 	CG_CVAR_CHECK_RANGE,
+
 	CG_FS_FOPENFILE,
 	CG_FS_READ,
 	CG_FS_WRITE,
@@ -206,6 +213,7 @@ typedef enum {
 	CG_FS_GETFILELIST,
 	CG_FS_DELETE,
 	CG_FS_RENAME,
+
 	CG_PC_ADD_GLOBAL_DEFINE, // (const char *define);
 	CG_PC_REMOVE_GLOBAL_DEFINE, // (const char *define);
 	CG_PC_REMOVE_ALL_GLOBAL_DEFINES, // (void);
@@ -215,14 +223,16 @@ typedef enum {
 	CG_PC_READ_TOKEN, // (int handle, pc_token_t *pc_token);
 	CG_PC_UNREAD_TOKEN, // (int handle);
 	CG_PC_SOURCE_FILE_AND_LINE, // (int handle, char *filename, int *line);
-	CG_HEAP_MALLOC, //(int size);
-	CG_HEAP_AVAILABLE, //(void);
-	CG_HEAP_FREE, //(void *data);
+
+	CG_HEAP_MALLOC, // (int size);
+	CG_HEAP_AVAILABLE, // (void);
+	CG_HEAP_FREE, // (void *data);
+
 	CG_FIELD_COMPLETEFILENAME, // (const char *dir, const char *ext, qboolean stripExt, qboolean allowNonPureFilesOnDisk);
 	CG_FIELD_COMPLETECOMMAND, // (const char *cmd, qboolean doCommands, qboolean doCvars);
 	CG_FIELD_COMPLETELIST, // (const char *list);
 
-	//=========== client game specific functionality =============
+	//===========client game specific functionality=============
 
 	CG_GETCLIPBOARDDATA = 100,
 	CG_GETGLCONFIG,
@@ -235,6 +245,7 @@ typedef enum {
 	CG_GET_VOIP_MUTE_ALL,
 	CG_CMD_AUTOCOMPLETE,
 	CG_SV_SHUTDOWN,
+
 	// note: these were not originally available in ui
 	CG_GETGAMESTATE = 150,
 	CG_GETCURRENTSNAPSHOTNUMBER,
@@ -252,9 +263,11 @@ typedef enum {
 	CG_SETVIEWANGLES,
 	CG_GETVIEWANGLES,
 	CG_GETDEMOFILEINFO,
+
 	// note: these were not originally available in cgame
 	CG_GETCLIENTSTATE = 190,
 	CG_GETCONFIGSTRING,
+
 	// note: these were not originally available in ui
 	CG_CM_LOADMAP = 200,
 	CG_CM_NUMINLINEMODELS,
@@ -270,7 +283,6 @@ typedef enum {
 	CG_CM_TRANSFORMEDCAPSULETRACE,
 	CG_CM_BISPHERETRACE,
 	CG_CM_TRANSFORMEDBISPHERETRACE,
-
 
 	CG_R_REGISTERMODEL = 300,
 	CG_R_REGISTERSHADEREX,
@@ -303,6 +315,7 @@ typedef enum {
 	CG_R_ALLOCSKINSURFACE,
 	CG_R_ADDSKINTOFRAME,
 	CG_R_ADDPOLYREFENTITYTOSCENE,
+
 	// note: these were not originally available in ui
 	CG_R_LOADWORLDMAP = 350,
 	CG_GET_ENTITY_TOKEN,
@@ -315,7 +328,6 @@ typedef enum {
 	CG_R_GET_SHADER_FROM_MODEL,
 	CG_R_GET_SHADER_NAME,
 
-
 	CG_S_REGISTERSOUND = 400,
 	CG_S_SOUNDDURATION,
 	CG_S_STARTLOCALSOUND,
@@ -327,6 +339,7 @@ typedef enum {
 	CG_S_GETSTREAMPLAYCOUNT,
 	CG_S_SETSTREAMVOLUME,
 	CG_S_STOPALLSOUNDS,
+
 	// note: these were not originally available in ui
 	CG_S_STARTSOUND = 450,
 	CG_S_CLEARLOOPINGSOUNDS,
@@ -335,7 +348,6 @@ typedef enum {
 	CG_S_RESPATIALIZE,
 	CG_S_ADDREALLOOPINGSOUND,
 	CG_S_STOPLOOPINGSOUND,
-
 
 	CG_KEY_KEYNUMTOSTRINGBUF = 500,
 	CG_KEY_GETBINDINGBUF,
@@ -348,18 +360,20 @@ typedef enum {
 	CG_KEY_CLEARSTATES,
 	CG_KEY_GETKEY,
 	CG_KEY_SETREPEAT,
+
 	CG_MOUSE_GETSTATE,
 	CG_MOUSE_SETSTATE,
-	CG_SET_KEY_FOR_JOY_EVENT, //(int localPlayerNum, const joyevent_t *joyevent, int keynum);
-	CG_GET_KEY_FOR_JOY_EVENT, //(int localPlayerNum, const joyevent_t *joyevent);
-	CG_GET_JOY_EVENT_FOR_KEY, //(int localPlayerNum, int keynum, int startIndex, joyevent_t *joyevent);
-	CG_JOY_EVENT_TO_STRING, //(const joyevent_t *joyevent, char *buf, int size);
 
+	CG_SET_KEY_FOR_JOY_EVENT, // (int localPlayerNum, const joyevent_t *joyevent, int keynum);
+	CG_GET_KEY_FOR_JOY_EVENT, // (int localPlayerNum, const joyevent_t *joyevent);
+	CG_GET_JOY_EVENT_FOR_KEY, // (int localPlayerNum, int keynum, int startIndex, joyevent_t *joyevent);
+	CG_JOY_EVENT_TO_STRING, // (const joyevent_t *joyevent, char *buf, int size);
 
 	CG_LAN_GETPINGQUEUECOUNT = 600,
 	CG_LAN_CLEARPING,
 	CG_LAN_GETPING,
 	CG_LAN_GETPINGINFO,
+
 	CG_LAN_GETSERVERCOUNT,
 	CG_LAN_GETSERVERADDRESSSTRING,
 	CG_LAN_GETSERVERINFO,
@@ -370,12 +384,13 @@ typedef enum {
 	CG_LAN_SAVECACHEDSERVERS,
 	CG_LAN_ADDSERVER,
 	CG_LAN_REMOVESERVER,
+
 	CG_LAN_SERVERSTATUS,
 	CG_LAN_GETSERVERPING,
 	CG_LAN_SERVERISVISIBLE,
 	CG_LAN_COMPARESERVERS,
-	CG_LAN_SERVERISINFAVORITELIST,
 
+	CG_LAN_SERVERISINFAVORITELIST,
 
 	CG_CIN_PLAYCINEMATIC = 700,
 	CG_CIN_STOPCINEMATIC,
@@ -390,7 +405,6 @@ typedef enum {
 */
 } cgameImport_t;
 
-
 /*
 =======================================================================================================================================
 
@@ -402,13 +416,14 @@ functions exported to the main executable
 typedef enum {
 	CG_GETAPINAME = 100,
 	CG_GETAPIVERSION,
+
 	CG_INIT = 200,
 //	void UI_Init(connstate_t state, int maxSplitView, int playVideo);
 	// playVideo = 1 means first game to run and no start up arguments
 	// playVideo = 2 means switched to a new game/mod and not connecting to a server
 
 	CG_INGAME_INIT,
-//	void CG_Init(int serverMessageNum, int serverCommandSequence, int maxSplitView, int clientNum0, int clientNum1, int clientNum2, int clientNum3)
+//	void CG_Init(int serverMessageNum, int serverCommandSequence, int maxSplitView, int playerNum0, int playerNum1, int playerNum2, int playerNum3)
 	// called when the level loads or when the renderer is restarted
 	// all media should be registered at this time
 	// cgame will display loading status by calling SCR_Update, which
@@ -417,7 +432,7 @@ typedef enum {
 	// demos, tourney restarts, or vid_restarts
 
 	CG_SHUTDOWN,
-//	void (*CG_Shutdown)(void);
+//	void(*CG_Shutdown)(void);
 	// opportunity to flush and close any open files
 
 	CG_CONSOLE_COMMAND,
@@ -428,7 +443,7 @@ typedef enum {
 	// command is not known to the game
 
 	CG_REFRESH,
-//	void (*CG_Refresh)(int serverTime, stereoFrame_t stereoView, qboolean demoPlayback, connstate_t state, int realTime);
+//	void(*CG_Refresh)(int serverTime, stereoFrame_t stereoView, qboolean demoPlayback, connstate_t state, int realTime);
 	// Draws UI and if connected to a server, generates and draws a game scene
 	// and status information at the given time.
 	// If demoPlayback is set, local movement prediction will not be enabled
@@ -440,13 +455,13 @@ typedef enum {
 //	int(*CG_LastAttacker)(int localPlayerNum);
 
 	CG_VOIP_STRING,
-// char *(*CG_VoIPString)(void);
-	// pass voip target token unknown by client to cgame to convert into clientNums
+//	char * (*CG_VoIPString)(void);
+	// pass voip target token unknown by client to cgame to convert into playerNums
 	// use Cmd_Argc() / Cmd_Argv()to read the target token, return a
-	// string of comma-delimited clientNums based on target token or
+	// string of comma - delimited playerNums based on target token or
 	// NULL if unknown token.
 
-	CG_KEY_EVENT, 
+	CG_KEY_EVENT,
 //	void (*CG_KeyEvent)(int key, qboolean down, unsigned time, connstate_t state);
 
 	CG_CHAR_EVENT,
@@ -465,16 +480,16 @@ typedef enum {
 //	void (*CG_JoystickHatEvent)(int localPlayerNum, int hat, int state, unsigned time, connstate_t state, int upKey, int rightKey, int downKey, int leftKey);
 
 	CG_MOUSE_POSITION,
-// int (*CG_MousePosition)(int localPlayerNum);
+//  int(*CG_MousePosition)(int localPlayerNum);
 
 	CG_SET_MOUSE_POSITION,
-// void (*CG_SetMousePosition)(int localPlayerNum, int x, int y);
+//  void (*CG_SetMousePosition)(int localPlayerNum, int x, int y);
 
 	CG_SET_ACTIVE_MENU,
-//	void (*CG_SetActiveMenu)(uiMenuCommand_t menu);
+//	void(*CG_SetActiveMenu)(uiMenuCommand_t menu);
 
 	CG_CONSOLE_TEXT,
-//	void (*CG_ConsoleText)(int realTime, qboolean restoredText);
+//	void(*CG_ConsoleText)(int realTime, qboolean restoredText);
 //	pass text that has been printed to the console to cgame
 //	use Cmd_Argc() / Cmd_Argv()to read it
 //	if restoredText is qtrue, text is being added from before cgame was loaded.
@@ -487,10 +502,10 @@ typedef enum {
 //	usercmd_t *CG_CreateUserCmd(int localPlayerNum, int frameTime, int frameMsec, float mx, float my, qboolean anykeydown);
 
 	CG_UPDATE_GLCONFIG,
-//	void CG_UpdateGLConfig( void );
+//	void CG_UpdateGLConfig(void);
 
 	CG_CONSOLE_COMPLETEARGUMENT,
-//	qboolean (*CG_ConsoleCompleteArgument)(connstate_t state, int realTime, int completeArgument);
+//	qboolean(*CG_ConsoleCompleteArgument)(connstate_t state, int realTime, int completeArgument);
 
 } cgameExport_t;
 

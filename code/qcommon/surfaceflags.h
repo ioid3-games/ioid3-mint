@@ -1,37 +1,39 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
+//
+// This file must be identical in the quake and utils directories
 
-/**************************************************************************************************************************************
- This file must be identical in the Quake and utils directories!
- Contents flags are separate bits. A given brush can contribute multiple content bits.
-**************************************************************************************************************************************/
+// contents flags are separate bits
+// a given brush can contribute multiple content bits
 
-/*
-=======================================================================================================================================
-	CONTENTS
-=======================================================================================================================================
-*/
+// these definitions also need to be in q_shared.h!
 
 #define CONTENTS_SOLID			1		// an eye is never valid in a solid
 #define CONTENTS_LAVA			8
@@ -47,7 +49,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 #define CONTENTS_PLAYERCLIP		0x10000
 #define CONTENTS_MONSTERCLIP	0x20000
-// bot specific contents types
+//bot specific contents types
 #define CONTENTS_TELEPORTER		0x40000
 #define CONTENTS_JUMPPAD		0x80000
 #define CONTENTS_CLUSTERPORTAL	0x100000
@@ -76,13 +78,13 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define SURF_FLESH				0x40	// make flesh sounds and effects
 #define SURF_NODRAW				0x80	// don't generate a drawsurface at all
 #define SURF_HINT				0x100	// make a primary bsp splitter
-#define SURF_SKIP				0x200	// completely ignore, allowing non-closed brushes
+#define SURF_SKIP				0x200	// completely ignore, allowing non - closed brushes
 #define SURF_NOLIGHTMAP			0x400	// surface doesn't need a lightmap
 #define SURF_POINTLIGHT			0x800	// generate lighting info at vertexes
 #define SURF_METALSTEPS			0x1000	// clanking footsteps
 #define SURF_NOSTEPS			0x2000	// no footstep sounds
 #define SURF_NONSOLID			0x4000	// don't collide against curves with this set
-#define SURF_LIGHTFILTER		0x8000	// act as a light filter during q3map -light
-#define SURF_ALPHASHADOW		0x10000	// do per-pixel light shadow casting in q3map
+#define SURF_LIGHTFILTER		0x8000	// act as a light filter during q3map - light
+#define SURF_ALPHASHADOW		0x10000	// do per - pixel light shadow casting in q3map
 #define SURF_NODLIGHT			0x20000	// don't dlight even if solid(solid lava, skies)
 #define SURF_DUST				0x40000 // leave a dust trail when walking on this surface

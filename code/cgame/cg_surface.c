@@ -1,24 +1,30 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -33,7 +39,7 @@ CG_AddCustomSurface
 =======================================================================================================================================
 */
 qboolean CG_AddCustomSurface(const refEntity_t *re) {
-	switch (re->reType) {
+	switch(re->reType) {
 #if 0 // Disabled so that engine code is used. Allows spriteScale and spriteGen shader keywords to be used.
 		case RT_SPRITE:
 			CG_SurfaceSprite(re);
@@ -45,13 +51,12 @@ qboolean CG_AddCustomSurface(const refEntity_t *re) {
 		case RT_RAIL_CORE:
 			CG_SurfaceRailCore(re);
 			return qtrue;
-		case RT_BEAMGUN:
+		case RT_LIGHTNING:
 			CG_SurfaceLightningBolt(re);
 			return qtrue;
 		case RT_BEAM:
 			CG_SurfaceBeam(re);
 			return qtrue;
-
 		default:
 			return qfalse;
 	}
@@ -77,13 +82,10 @@ void CG_SurfaceSprite(const refEntity_t *e) {
 		VectorSet(up, 0, 0, re.radius);
 	} else {
 		float s, c;
-
 		float ang;
 
 		ang = M_PI * re.rotation / 180;
-
 		s = sin(ang);
-
 		c = cos(ang);
 
 		VectorSet(left, 0, c * re.radius, -s * re.radius);
@@ -110,10 +112,9 @@ void CG_SurfaceSprite(const refEntity_t *e) {
 	// standard square texture coordinates
 	for (j = 0; j < 4; j++) {
 		verts[j].st[0] = (j == 0 || j == 3);
-
 		verts[j].st[1] = (j < 2);
 
-		*(unsigned int *)&verts[j].modulate = *(unsigned int *)re.shaderRGBA;
+		*(unsigned int *)&verts[j].modulate = * (unsigned int *)re.shaderRGBA;
 	}
 
 	trap_R_AddPolyRefEntityToScene(&re, 4, verts, 1);
@@ -134,7 +135,7 @@ static void CG_DoRailDiscs(qhandle_t hShader, byte color[4], int numSegs, const 
 	polyVert_t verts[4];
 
 	if (numSegs > 1)
-		numSegs--;
+		numSegs --;
 
 	if (!numSegs)
 		return;
@@ -143,13 +144,9 @@ static void CG_DoRailDiscs(qhandle_t hShader, byte color[4], int numSegs, const 
 
 	for (i = 0; i < 4; i++) {
 		c = cos(DEG2RAD(45 + i * 90));
-
 		s = sin(DEG2RAD(45 + i * 90));
-
 		v[0] = (right[0] * c + up[0] * s) * scale * spanWidth;
-
 		v[1] = (right[1] * c + up[1] * s) * scale * spanWidth;
-
 		v[2] = (right[2] * c + up[2] * s) * scale * spanWidth;
 		VectorAdd(start, v, pos[i]);
 
@@ -267,8 +264,8 @@ CG_SurfaceRailCore
 */
 void CG_SurfaceRailCore(const refEntity_t *originEnt) {
 	int len;
-	vec3_t forward = {1, 0, 0};
-	vec3_t right = {0, 0, 1};
+	vec3_t forward = { 1, 0, 0 };
+	vec3_t right = { 0, 0, 1 };
 	vec3_t vec;
 	vec3_t start, end;
 	polyVert_t verts[4];
@@ -300,8 +297,8 @@ CG_SurfaceLightningBolt
 */
 void CG_SurfaceLightningBolt(const refEntity_t *originEnt) {
 	int len;
-	vec3_t forward = {1, 0, 0};
-	vec3_t right = {0, 0, 1};
+	vec3_t forward = { 1, 0, 0 };
+	vec3_t right = { 0, 0, 1 };
 	vec3_t vec;
 	vec3_t start, end;
 	int i;
@@ -385,9 +382,9 @@ void CG_SurfaceBeam(const refEntity_t *originEnt) {
 	for (i = 0; i < NUM_BEAM_SEGS; i++) {
 		for (j = 0; j < 4; j++) {
 			if (j && j != 3)
-				VectorCopy(end_points[(i+(j>1))% NUM_BEAM_SEGS], verts[numVerts].xyz);
+				VectorCopy(end_points[(i+ (j > 1))% NUM_BEAM_SEGS], verts[numVerts].xyz);
 			else
-				VectorCopy(start_points[(i+(j>1))% NUM_BEAM_SEGS], verts[numVerts].xyz);
+				VectorCopy(start_points[(i+ (j > 1))% NUM_BEAM_SEGS], verts[numVerts].xyz);
 			verts[numVerts].st[0] = (j < 2);
 			verts[numVerts].st[1] = (j && j != 3);
 			verts[numVerts].modulate[0] = 0xff;
@@ -441,7 +438,6 @@ void CG_SurfaceText(const refEntity_t *originEnt, const fontInfo_t *font, float 
 	x = 0 - Text_Width(text, font, scale, 0) / 2;
 	y = 0;
 
-
 	useScale = scale * font->glyphScale;
 
 	newColor[0] = re.shaderRGBA[0] / 255.0f;
@@ -469,9 +465,7 @@ void CG_SurfaceText(const refEntity_t *originEnt, const fontInfo_t *font, float 
 				VectorCopy(g_color_table[ColorIndex(*(s+1))], newColor);
 
 				gradientColor[0] = Com_Clamp(0, 1, newColor[0] - gradient);
-
 				gradientColor[1] = Com_Clamp(0, 1, newColor[1] - gradient);
-
 				gradientColor[2] = Com_Clamp(0, 1, newColor[2] - gradient);
 			}
 
@@ -482,36 +476,25 @@ void CG_SurfaceText(const refEntity_t *originEnt, const fontInfo_t *font, float 
 		glyph = Text_GetGlyph(font, Q_UTF8_CodePoint(&s));
 
 		yadj = useScale * glyph->top;
-
 		xadj = useScale * glyph->left;
-
 		w = glyph->imageWidth * useScale;
-
 		h = glyph->imageHeight * useScale;
 		// 0  1
 		// 3  2
 		verts[0].xyz[0] = baseline[0] + 0;
-
 		verts[0].xyz[1] = baseline[1] - (x + xadj);
-
 		verts[0].xyz[2] = baseline[2] + y + yadj;
 
 		verts[1].xyz[0] = baseline[0] + 0;
-
 		verts[1].xyz[1] = baseline[1] - (x + xadj + w);
-
 		verts[1].xyz[2] = baseline[2] + y + yadj;
 
 		verts[2].xyz[0] = baseline[0] + 0;
-
 		verts[2].xyz[1] = baseline[1] - (x + xadj + w);
-
 		verts[2].xyz[2] = baseline[2] + y + yadj - h;
 
 		verts[3].xyz[0] = baseline[0] + 0;
-
 		verts[3].xyz[1] = baseline[1] - (x + xadj);
-
 		verts[3].xyz[2] = baseline[2] + y + yadj - h;
 		// standard square texture coordinates
 		for (j = 0; j < 4; j++) {
@@ -520,36 +503,28 @@ void CG_SurfaceText(const refEntity_t *originEnt, const fontInfo_t *font, float 
 
 			if (j < 2 || gradient == 0) {
 				verts[j].modulate[0] = newColor[0] * 0xFF;
-
 				verts[j].modulate[1] = newColor[1] * 0xFF;
-
 				verts[j].modulate[2] = newColor[2] * 0xFF;
-
 				verts[j].modulate[3] = newColor[3] * 0xFF;
 			} else {
 				verts[j].modulate[0] = gradientColor[0] * 0xFF;
-
 				verts[j].modulate[1] = gradientColor[1] * 0xFF;
-
 				verts[j].modulate[2] = gradientColor[2] * 0xFF;
-
 				verts[j].modulate[3] = gradientColor[3] * 0xFF;
 			}
 		}
 
 		re.customShader = glyph->glyph;
-
 		re.radius = w / 2;
 
 		trap_R_AddPolyRefEntityToScene(&re, 4, verts, 1);
 
-		x += (glyph->xSkip * useScale) + adjust;
-
+		x += (glyph->xSkip * useScale) +  adjust;
 		count++;
 	}
 	// debug axis
-	// re.reType = RT_MODEL;
-	// re.hModel = 0;
-	// trap_R_AddRefEntityToScene(&re);
+	//re.reType = RT_MODEL;
+	//re.hModel = 0;
+	//trap_R_AddRefEntityToScene(&re);
 }
 

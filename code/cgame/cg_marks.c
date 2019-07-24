@@ -1,49 +1,47 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-
-/**************************************************************************************************************************************
- Impact marks.
-**************************************************************************************************************************************/
+//
+// cg_marks.c -- wall marks
 
 #include "cg_local.h"
 
 /*
 =======================================================================================================================================
 
-	MARK POLYS
+MARK POLYS
 
 =======================================================================================================================================
 */
 
-// doubled to support more marks if r_marksOnTriangleMeshes is on, see ioquake3 README
-#define MAX_MARK_FRAGMENTS 256
-#define MAX_MARK_POINTS 768
-#define MARK_TOTAL_TIME 10000
-#define MARK_FADE_TIME 1000
-
-markPoly_t cg_activeMarkPolys; // double linked list
-markPoly_t *cg_freeMarkPolys; // single linked list
+markPoly_t cg_activeMarkPolys; 			// double linked list
+markPoly_t *cg_freeMarkPolys; 			// single linked list
 markPoly_t cg_markPolys[MAX_MARK_POLYS];
 static int markTotal;
 
@@ -51,7 +49,7 @@ static int markTotal;
 =======================================================================================================================================
 CG_InitMarkPolys
 
-This is called at startup and for tournament restarts.
+This is called at startup and for tournement restarts
 =======================================================================================================================================
 */
 void CG_InitMarkPolys(void) {
@@ -64,7 +62,7 @@ void CG_InitMarkPolys(void) {
 	cg_freeMarkPolys = cg_markPolys;
 
 	for (i = 0; i < MAX_MARK_POLYS - 1; i++) {
-		cg_markPolys[i].nextMark = &cg_markPolys[i + 1];
+		cg_markPolys[i].nextMark = &cg_markPolys[i+1];
 	}
 }
 
@@ -74,16 +72,15 @@ CG_FreeMarkPoly
 =======================================================================================================================================
 */
 void CG_FreeMarkPoly(markPoly_t *le) {
-
 	if (!le->prevMark || !le->nextMark) {
 		CG_Error("CG_FreeLocalEntity: not active");
 	}
 	// remove from the doubly linked active list
 	le->prevMark->nextMark = le->nextMark;
 	le->nextMark->prevMark = le->prevMark;
+
 	// the free list is only singly linked
 	le->nextMark = cg_freeMarkPolys;
-
 	cg_freeMarkPolys = le;
 }
 
@@ -91,7 +88,7 @@ void CG_FreeMarkPoly(markPoly_t *le) {
 =======================================================================================================================================
 CG_AllocMark
 
-Will always succeed, even if it requires freeing an old active mark.
+Will allways succeed, even if it requires freeing an old active mark
 =======================================================================================================================================
 */
 markPoly_t *CG_AllocMark(void) {
@@ -102,7 +99,6 @@ markPoly_t *CG_AllocMark(void) {
 		// no free entities, so free the one at the end of the chain
 		// remove the oldest active entity
 		time = cg_activeMarkPolys.prevMark->time;
-
 		while (cg_activeMarkPolys.prevMark && time == cg_activeMarkPolys.prevMark->time) {
 			CG_FreeMarkPoly(cg_activeMarkPolys.prevMark);
 		}
@@ -112,10 +108,10 @@ markPoly_t *CG_AllocMark(void) {
 	cg_freeMarkPolys = cg_freeMarkPolys->nextMark;
 
 	memset(le, 0, sizeof(*le));
+
 	// link into the active list
 	le->nextMark = cg_activeMarkPolys.nextMark;
 	le->prevMark = &cg_activeMarkPolys;
-
 	cg_activeMarkPolys.nextMark->prevMark = le;
 	cg_activeMarkPolys.nextMark = le;
 	return le;
@@ -125,11 +121,19 @@ markPoly_t *CG_AllocMark(void) {
 =======================================================================================================================================
 CG_ImpactMark
 
-'origin' should be a point within a unit of the plane. 'dir' should be the plane normal.
-Temporary marks will not be stored or randomly oriented, but immediately passed to the renderer.
+origin should be a point within a unit of the plane
+dir should be the plane normal
+
+temporary marks will not be stored or randomly oriented, but immediately
+passed to the renderer.
 =======================================================================================================================================
 */
-void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, float orientation, float red, float green, float blue, float alpha, qboolean alphaFade, float markRadius, qboolean temporary) {
+#define MAX_MARK_FRAGMENTS	128
+#define MAX_MARK_POINTS		384
+
+void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir,
+				 	float orientation, float red, float green, float blue, float alpha,
+				 	qboolean alphaFade, float radius, qboolean temporary) {
 	vec3_t axis[3];
 	float texCoordScale;
 	vec3_t originalPoints[4];
@@ -144,11 +148,11 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 		return;
 	}
 
-	if (markRadius <= 0) {
+	if (radius <= 0) {
 		CG_Error("CG_ImpactMark called with <= 0 radius");
 	}
 
-	//if (markTotal >= MAX_MARK_POLYS) {
+	//if(markTotal >= MAX_MARK_POLYS) {
 	//	return;
 	//}
 	// create the texture axis
@@ -157,18 +161,20 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 	RotatePointAroundVector(axis[2], axis[0], axis[1], orientation);
 	CrossProduct(axis[0], axis[2], axis[1]);
 
-	texCoordScale = 0.5 * 1.0 / markRadius;
+	texCoordScale = 0.5 * 1.0 / radius;
+
 	// create the full polygon
 	for (i = 0; i < 3; i++) {
-		originalPoints[0][i] = origin[i] - markRadius * axis[1][i] - markRadius * axis[2][i];
-		originalPoints[1][i] = origin[i] + markRadius * axis[1][i] - markRadius * axis[2][i];
-		originalPoints[2][i] = origin[i] + markRadius * axis[1][i] + markRadius * axis[2][i];
-		originalPoints[3][i] = origin[i] - markRadius * axis[1][i] + markRadius * axis[2][i];
+		originalPoints[0][i] = origin[i] - radius * axis[1][i] - radius * axis[2][i];
+		originalPoints[1][i] = origin[i] + radius * axis[1][i] - radius * axis[2][i];
+		originalPoints[2][i] = origin[i] + radius * axis[1][i] + radius * axis[2][i];
+		originalPoints[3][i] = origin[i] - radius * axis[1][i] + radius * axis[2][i];
 	}
 	// get the fragments
 	VectorScale(dir, -20, projection);
-
-	numFragments = trap_CM_MarkFragments(4, (void *)originalPoints, projection, MAX_MARK_POINTS, markPoints[0], MAX_MARK_FRAGMENTS, markFragments);
+	numFragments = trap_CM_MarkFragments(4, (void *)originalPoints,
+					projection, MAX_MARK_POINTS, markPoints[0],
+					MAX_MARK_FRAGMENTS, markFragments);
 
 	colors[0] = red * 255;
 	colors[1] = green * 255;
@@ -181,39 +187,38 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 		markPoly_t *mark;
 		vec3_t delta;
 		vec3_t localOrigin;
-
 		// create the texture axis
 		VectorNormalize2(mf->projectionDir, axis[0]);
-		VectorScale(axis[0], -1, axis[0]); // ZTM: the dir was scaled to -20 before giving to renderer, turn it back around. :S
+		VectorScale(axis[0], -1, axis[0]); // ZTM: the dir was scaled to - 20 before giving to renderer, turn it back around. :S
 		PerpendicularVector(axis[1], axis[0]);
 		RotatePointAroundVector(axis[2], axis[0], axis[1], orientation);
 		CrossProduct(axis[0], axis[2], axis[1]);
 
 		if (mf->bmodelNum) {
 			// ZTM: TODO?: compensate for scale in the axes if necessary? see R_RotateForEntity
-			// ZTM: FIXME: cgame should be able to get origin and axis from entity!
+			// ZTM: FIXME: cgame should be able to get origin and axis from entity !
 			VectorSubtract(origin, mf->bmodelOrigin, delta);
-
 			localOrigin[0] = DotProduct(delta, mf->bmodelAxis[0]);
 			localOrigin[1] = DotProduct(delta, mf->bmodelAxis[1]);
 			localOrigin[2] = DotProduct(delta, mf->bmodelAxis[2]);
 		} else {
 			VectorCopy(origin, localOrigin);
 		}
-		// we have an upper limit on the complexity of polygons that we store persistantly
+		// we have an upper limit on the complexity of polygons
+		// that we store persistantly
 		if (mf->numPoints > MAX_VERTS_ON_POLY) {
 			mf->numPoints = MAX_VERTS_ON_POLY;
 		}
 
 		for (j = 0, v = verts; j < mf->numPoints; j++, v++) {
 			VectorCopy(markPoints[mf->firstPoint + j], v->xyz);
-			VectorSubtract(v->xyz, localOrigin, delta);
 
+			VectorSubtract(v->xyz, localOrigin, delta);
 			v->st[0] = 0.5 + DotProduct(delta, axis[1]) * texCoordScale;
 			v->st[1] = 0.5 + DotProduct(delta, axis[2]) * texCoordScale;
-			*(int *)v->modulate = *(int *)colors;
+			*(int *)v->modulate = * (int *)colors;
 		}
-		// if it is a temporary (shadow) mark, add it immediately and forget about it
+		// if it is a temporary(shadow)mark, add it immediately and forget about it
 		if (temporary) {
 			trap_R_AddPolyToScene(markShader, mf->numPoints, verts, mf->bmodelNum, 0);
 			continue;
@@ -229,9 +234,7 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 		mark->color[1] = green;
 		mark->color[2] = blue;
 		mark->color[3] = alpha;
-
 		memcpy(mark->verts, verts, mf->numPoints * sizeof(verts[0]));
-
 		markTotal++;
 	}
 }
@@ -241,6 +244,9 @@ void CG_ImpactMark(qhandle_t markShader, const vec3_t origin, const vec3_t dir, 
 CG_AddMarks
 =======================================================================================================================================
 */
+#define MARK_TOTAL_TIME		10000
+#define MARK_FADE_TIME		1000
+
 void CG_AddMarks(void) {
 	int j;
 	markPoly_t *mp, *next;
@@ -254,7 +260,8 @@ void CG_AddMarks(void) {
 	mp = cg_activeMarkPolys.nextMark;
 
 	for (; mp != &cg_activeMarkPolys; mp = next) {
-		// grab next now, so if the local entity is freed we still have it
+		// grab next now, so if the local entity is freed we
+		// still have it
 		next = mp->nextMark;
 		// see if it is time to completely remove it
 		if (cg.time > mp->time + MARK_TOTAL_TIME) {
@@ -263,6 +270,7 @@ void CG_AddMarks(void) {
 		}
 		// fade out the energy bursts
 		if (mp->markShader == cgs.media.energyMarkShader) {
+
 			fade = 450 - 450 * ((cg.time - mp->time) / 3000.0);
 
 			if (fade < 255) {

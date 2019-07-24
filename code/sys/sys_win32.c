@@ -1,30 +1,37 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
+
 #include <windows.h>
 #include <lmerr.h>
 #include <lmcons.h>
@@ -42,39 +49,52 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <shlwapi.h>
+
 #ifndef KEY_WOW64_32KEY
 #define KEY_WOW64_32KEY 0x0200
 #endif
-// used to determine where to store user-specific files
-static char homePath[MAX_OSPATH] = {0};
-// used to store the Steam Quake 3 installation path
-static char steamPath[MAX_OSPATH] = {0};
-// used to store the GOG Quake 3 installation path
-static char gogPath[MAX_OSPATH] = {0};
+
+// Used to determine where to store user - specific files
+static char homePath[MAX_OSPATH] = { 0 };
+
+// Used to store the Steam Quake 3 installation path
+static char steamPath[MAX_OSPATH] = { 0 };
+
+// Used to store the GOG Quake 3 installation path
+static char gogPath[MAX_OSPATH] = { 0 };
+
 #ifndef DEDICATED
 static UINT timerResolution = 0;
 #endif
-#ifndef _RC_CHOP
-// mingw doesn't seem to have these defined :(
-#define _MCW_EM		0x0008001fU
-#define _MCW_RC		0x00000300U
-#define _MCW_PC		0x00030000U
-#define _RC_NEAR	0x00000000U
-#define _PC_53		0x00010000U
-unsigned int _controlfp(unsigned int new, unsigned int mask);
-#endif
-#define FPUCWMASK1 (_MCW_RC|_MCW_EM)
-#define FPUCW (_RC_NEAR|_MCW_EM|_PC_53)
-#if idx64
-#define FPUCWMASK (FPUCWMASK1)
-#else
-#define FPUCWMASK (FPUCWMASK1|_MCW_PC)
-#endif
+
 /*
 =======================================================================================================================================
-Sys_SetFloatEnv
+Sys_SetFPUCW
+Set FPU control word to default value
 =======================================================================================================================================
 */
+
+#ifndef _RC_CHOP
+// mingw doesn't seem to have these defined : (
+
+  #define _MCW_EM	0x0008001fU
+  #define _MCW_RC	0x00000300U
+  #define _MCW_PC	0x00030000U
+  #define _RC_NEAR      0x00000000U
+  #define _PC_53	0x00010000U
+  
+  unsigned int _controlfp(unsigned int new, unsigned int mask);
+#endif
+
+#define FPUCWMASK1(_MCW_RC|_MCW_EM)
+#define FPUCW(_RC_NEAR|_MCW_EM|_PC_53)
+
+#if idx64
+#define FPUCWMASK	(FPUCWMASK1)
+#else
+#define FPUCWMASK	(FPUCWMASK1|_MCW_PC)
+#endif
+
 void Sys_SetFloatEnv(void) {
 	_controlfp(FPUCW, FPUCWMASK);
 }
@@ -103,12 +123,13 @@ char *Sys_DefaultHomePath(void) {
 			return NULL;
 		}
 
-		if (!SUCCEEDED(qSHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
+		if (!SUCCEEDED(qSHGetFolderPath(NULL, CSIDL_APPDATA,
+						NULL, 0, szPath))) {
 			Com_Printf("Unable to detect CSIDL_APPDATA\n");
 			FreeLibrary(shfolder);
 			return NULL;
 		}
-
+		
 		Com_sprintf(homePath, sizeof(homePath), "%s%c%s", szPath, PATH_SEP, com_homepath->string);
 	}
 
@@ -126,47 +147,45 @@ char *Sys_SteamPath(void) {
 	HKEY steamRegKey;
 	DWORD pathLen = MAX_OSPATH;
 	qboolean finishPath = qfalse;
+
 #ifdef STEAMPATH_APPID
-	// assuming Steam is a 32-bit app
+	// Assuming Steam is a 32 - bit app
 	if (!steamPath[0] && !RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App " STEAMPATH_APPID, 0, KEY_QUERY_VALUE|KEY_WOW64_32KEY, &steamRegKey)) {
 		pathLen = MAX_OSPATH;
 
-		if (RegQueryValueEx(steamRegKey, "InstallLocation", NULL, NULL, (LPBYTE)steamPath, &pathLen)) {
+		if (RegQueryValueEx(steamRegKey, "InstallLocation", NULL, NULL, (LPBYTE)steamPath, &pathLen))
 			steamPath[0] = '\0';
-		}
 
 		RegCloseKey(steamRegKey);
 	}
 #endif
+
 #ifdef STEAMPATH_NAME
 	if (!steamPath[0] && !RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Valve\\Steam", 0, KEY_QUERY_VALUE, &steamRegKey)) {
 		pathLen = MAX_OSPATH;
 
-		if (RegQueryValueEx(steamRegKey, "SteamPath", NULL, NULL, (LPBYTE)steamPath, &pathLen)) {
-			if (RegQueryValueEx(steamRegKey, "InstallPath", NULL, NULL, (LPBYTE)steamPath, &pathLen)) {
+		if (RegQueryValueEx(steamRegKey, "SteamPath", NULL, NULL, (LPBYTE)steamPath, &pathLen))
+			if (RegQueryValueEx(steamRegKey, "InstallPath", NULL, NULL, (LPBYTE)steamPath, &pathLen))
 				steamPath[0] = '\0';
-			}
-		}
 
-		if (steamPath[0]) {
+		if (steamPath[0])
 			finishPath = qtrue;
-		}
 
 		RegCloseKey(steamRegKey);
 	}
 #endif
+
 	if (steamPath[0]) {
-		if (pathLen == MAX_OSPATH) {
-			pathLen--;
-		}
+		if (pathLen == MAX_OSPATH)
+			pathLen --;
 
 		steamPath[pathLen] = '\0';
 
-		if (finishPath) {
+		if (finishPath)
 			Q_strcat(steamPath, MAX_OSPATH, "\\SteamApps\\common\\" STEAMPATH_NAME);
-		}
 	}
 #endif
+
 	return steamPath;
 }
 
@@ -183,30 +202,29 @@ char *Sys_GogPath(void) {
 	if (!gogPath[0] && !RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GOG.com\\Games\\" GOGPATH_ID, 0, KEY_QUERY_VALUE|KEY_WOW64_32KEY, &gogRegKey)) {
 		pathLen = MAX_OSPATH;
 
-		if (RegQueryValueEx(gogRegKey, "PATH", NULL, NULL, (LPBYTE)gogPath, &pathLen)) {
+		if (RegQueryValueEx(gogRegKey, "PATH", NULL, NULL, (LPBYTE)gogPath, &pathLen))
 			gogPath[0] = '\0';
-		}
 
 		RegCloseKey(gogRegKey);
 	}
 
 	if (gogPath[0]) {
-		if (pathLen == MAX_OSPATH) {
-			pathLen--;
-		}
+		if (pathLen == MAX_OSPATH)
+			pathLen --;
 
 		gogPath[pathLen] = '\0';
 	}
 #endif
+
 	return gogPath;
 }
 
-int sys_timeBase;
 /*
 =======================================================================================================================================
 Sys_Milliseconds
 =======================================================================================================================================
 */
+int sys_timeBase;
 int Sys_Milliseconds(void) {
 	int sys_curtime;
 	static qboolean initialized = qfalse;
@@ -227,9 +245,11 @@ Sys_RandomBytes
 =======================================================================================================================================
 */
 qboolean Sys_RandomBytes(byte *string, int len) {
-	HCRYPTPROV prov;
+	HCRYPTPROV  prov;
 
-	if (!CryptAcquireContext(&prov, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+	if (!CryptAcquireContext(&prov, NULL, NULL,
+		PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
+
 		return qfalse;
 	}
 
@@ -251,9 +271,8 @@ char *Sys_GetCurrentUser(void) {
 	static char s_userName[1024];
 	unsigned long size = sizeof(s_userName);
 
-	if (!GetUserName(s_userName, &size)) {
+	if (!GetUserName(s_userName, &size))
 		strcpy(s_userName, "player");
-	}
 
 	if (!s_userName[0]) {
 		strcpy(s_userName, "player");
@@ -262,7 +281,7 @@ char *Sys_GetCurrentUser(void) {
 	return s_userName;
 }
 
-#define MEM_THRESHOLD 96 * 1024 * 1024
+#define MEM_THRESHOLD 96*1024*1024
 
 /*
 =======================================================================================================================================
@@ -271,9 +290,8 @@ Sys_LowPhysicalMemory
 */
 qboolean Sys_LowPhysicalMemory(void) {
 	MEMORYSTATUS stat;
-
 	GlobalMemoryStatus(&stat);
-	return (stat.dwTotalPhys <= MEM_THRESHOLD) ? qtrue : qfalse;
+	return(stat.dwTotalPhys <= MEM_THRESHOLD) ? qtrue : qfalse;
 }
 
 /*
@@ -282,26 +300,25 @@ Sys_Basename
 =======================================================================================================================================
 */
 const char *Sys_Basename(char *path) {
-	static char base[MAX_OSPATH] = {0};
+	static char base[MAX_OSPATH] = { 0 };
 	int length;
 
 	length = strlen(path) - 1;
-	// skip trailing slashes
-	while (length > 0 && path[length] == '\\') {
-		length--;
-	}
 
-	while (length > 0 && path[length - 1] != '\\') {
-		length--;
-	}
+	// Skip trailing slashes
+	while (length > 0 && path[length] == '\\')
+		length --;
+
+	while (length > 0 && path[length - 1] != '\\')
+		length --;
 
 	Q_strncpyz(base, &path[length], sizeof(base));
 
 	length = strlen(base) - 1;
-	// strip trailing slashes
-	while (length > 0 && base[length] == '\\') {
-		base[length--] = '\0';
-	}
+
+	// Strip trailing slashes
+	while (length > 0 && base[length] == '\\')
+    base[length -- ] = '\0';
 
 	return base;
 }
@@ -312,16 +329,14 @@ Sys_Dirname
 =======================================================================================================================================
 */
 const char *Sys_Dirname(char *path) {
-	static char dir[MAX_OSPATH] = {0};
+	static char dir[MAX_OSPATH] = { 0 };
 	int length;
 
 	Q_strncpyz(dir, path, sizeof(dir));
-
 	length = strlen(dir) - 1;
 
-	while (length > 0 && dir[length] != '\\') {
-		length--;
-	}
+	while (length > 0 && dir[length] != '\\')
+		length --;
 
 	dir[length] = '\0';
 
@@ -338,7 +353,6 @@ FILE *Sys_FOpen(const char *ospath, const char *mode) {
 
 	// Windows API ignores all trailing spaces and periods which can get around Quake 3 file system restrictions.
 	length = strlen(ospath);
-
 	if (length == 0 || ospath[length - 1] == ' ' || ospath[length - 1] == '.') {
 		return NULL;
 	}
@@ -352,11 +366,9 @@ Sys_Mkdir
 =======================================================================================================================================
 */
 qboolean Sys_Mkdir(const char *path) {
-
 	if (!CreateDirectory(path, NULL)) {
-		if (GetLastError() != ERROR_ALREADY_EXISTS) {
+		if (GetLastError() != ERROR_ALREADY_EXISTS)
 			return qfalse;
-		}
 	}
 
 	return qtrue;
@@ -368,10 +380,8 @@ Sys_Rmdir
 =======================================================================================================================================
 */
 qboolean Sys_Rmdir(const char *path) {
-
-	if (RemoveDirectory(path) != 0) {
+	if (RemoveDirectory(path) != 0)
 		return qfalse;
-	}
 
 	return qtrue;
 }
@@ -379,8 +389,7 @@ qboolean Sys_Rmdir(const char *path) {
 /*
 =======================================================================================================================================
 Sys_Mkfifo
-
-Noop on windows because named pipes do not function the same way.
+Noop on windows because named pipes do not function the same way
 =======================================================================================================================================
 */
 FILE *Sys_Mkfifo(const char *ospath) {
@@ -399,9 +408,8 @@ returns 0 otherwise
 */
 int Sys_StatFile(char *ospath) {
 	struct _stat st;
-
 	if (_stat(ospath, &st) == -1) {
-		return -1;
+		return - 1;
 	}
 
 	if (st.st_mode & _S_IFDIR) {
@@ -421,13 +429,14 @@ char *Sys_Cwd(void) {
 
 	_getcwd(cwd, sizeof(cwd) - 1);
 	cwd[MAX_OSPATH - 1] = 0;
+
 	return cwd;
 }
 
 /*
 =======================================================================================================================================
 
-	DIRECTORY SCANNING
+DIRECTORY SCANNING
 
 =======================================================================================================================================
 */
@@ -456,7 +465,6 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 	}
 
 	findhandle = _findfirst(search, &findinfo);
-
 	if (findhandle == -1) {
 		return;
 	}
@@ -466,10 +474,10 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 			if (Q_stricmp(findinfo.name, ".") && Q_stricmp(findinfo.name, "..")) {
 				if (strlen(subdirs)) {
 					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s\\%s", subdirs, findinfo.name);
-				} else {
+				}
+				else {
 					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s", findinfo.name);
 				}
-
 				Sys_ListFilteredFiles(basedir, newsubdirs, filter, list, numfiles);
 			}
 		}
@@ -480,13 +488,11 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 
 		Com_sprintf(filename, sizeof(filename), "%s\\%s", subdirs, findinfo.name);
 
-		if (!Com_FilterPath(filter, filename, qfalse)) {
+		if (!Com_FilterPath(filter, filename, qfalse))
 			continue;
-		}
-
 		list[*numfiles] = CopyString(filename);
 		(*numfiles)++;
-	} while (_findnext(findhandle, &findinfo) != -1);
+	} while(_findnext(findhandle, &findinfo) != -1);
 
 	_findclose(findhandle);
 }
@@ -536,24 +542,23 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	int extLen;
 
 	if (filter) {
-		nfiles = 0;
 
+		nfiles = 0;
 		Sys_ListFilteredFiles(directory, "", filter, list, &nfiles);
 
 		list[nfiles] = 0;
 		*numfiles = nfiles;
 
-		if (!nfiles) {
+		if (!nfiles)
 			return NULL;
-		}
 
 		listCopy = Z_Malloc((nfiles + 1) * sizeof(*listCopy));
-
 		for (i = 0; i < nfiles; i++) {
 			listCopy[i] = list[i];
 		}
 
 		listCopy[i] = NULL;
+
 		return listCopy;
 	}
 
@@ -571,19 +576,23 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	extLen = strlen(extension);
 
 	Com_sprintf(search, sizeof(search), "%s\\*%s", directory, extension);
+
 	// search
 	nfiles = 0;
-	findhandle = _findfirst(search, &findinfo);
 
+	findhandle = _findfirst(search, &findinfo);
 	if (findhandle == -1) {
 		*numfiles = 0;
 		return NULL;
 	}
 
 	do {
-		if ((!wantsubs && flag ^ (findinfo.attrib & _A_SUBDIR)) || (wantsubs && findinfo.attrib & _A_SUBDIR)) {
+		if ((!wantsubs && flag ^(findinfo.attrib & _A_SUBDIR)) ||(wantsubs && findinfo.attrib & _A_SUBDIR)) {
 			if (*extension) {
-				if (strlen(findinfo.name) < extLen || Q_stricmp(findinfo.name + strlen(findinfo.name) - extLen, extension)) {
+				if (strlen(findinfo.name) < extLen ||
+					Q_stricmp(
+						findinfo.name + strlen(findinfo.name) - extLen,
+						extension)) {
 					continue; // didn't match
 				}
 			}
@@ -595,11 +604,12 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 			list[nfiles] = CopyString(findinfo.name);
 			nfiles++;
 		}
-	} while (_findnext(findhandle, &findinfo) != -1);
+	} while(_findnext(findhandle, &findinfo) != -1);
 
 	list[nfiles] = 0;
 
 	_findclose(findhandle);
+
 	// return a copy of the list
 	*numfiles = nfiles;
 
@@ -617,17 +627,15 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 
 	do {
 		flag = 0;
-
 		for (i = 1; i < nfiles; i++) {
 			if (strgtr(listCopy[i - 1], listCopy[i])) {
 				char *temp = listCopy[i];
-
 				listCopy[i] = listCopy[i - 1];
 				listCopy[i - 1] = temp;
 				flag = 1;
 			}
 		}
-	} while (flag);
+	} while(flag);
 
 	return listCopy;
 }
@@ -651,6 +659,7 @@ void Sys_FreeFileList(char **list) {
 	Z_Free(list);
 }
 
+
 /*
 =======================================================================================================================================
 Sys_Sleep
@@ -659,21 +668,18 @@ Block execution for msec or until input is received.
 =======================================================================================================================================
 */
 void Sys_Sleep(int msec) {
+	if (msec == 0)
+		return;
 
-	if (msec == 0) {
-		return;
-	}
 #ifdef DEDICATED
-	if (msec < 0) {
+	if (msec < 0)
 		WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), INFINITE);
-	} else {
+	else
 		WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), msec);
-	}
 #else
-	// client Sys_Sleep doesn't support waiting on stdin
-	if (msec < 0) {
+	// Client Sys_Sleep doesn't support waiting on stdin
+	if (msec < 0)
 		return;
-	}
 
 	Sleep(msec);
 #endif
@@ -683,16 +689,16 @@ void Sys_Sleep(int msec) {
 =======================================================================================================================================
 Sys_ErrorDialog
 
-Display an error message.
+Display an error message
 =======================================================================================================================================
 */
 void Sys_ErrorDialog(const char *error) {
-
-	if (Sys_Dialog(DT_YES_NO, va("%s. Copy console log to clipboard?", error), "Error") == DR_YES) {
+	if (Sys_Dialog(DT_YES_NO, va("%s. Copy console log to clipboard?", error),
+			"Error") == DR_YES) {
 		HGLOBAL memoryHandle;
 		char *clipMemory;
 
-		memoryHandle = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, CON_LogSize() + 1);
+		memoryHandle = GlobalAlloc(GMEM_MOVEABLE|GMEM_DDESHARE, CON_LogSize() +  1);
 		clipMemory = (char *)GlobalLock(memoryHandle);
 
 		if (clipMemory) {
@@ -707,9 +713,8 @@ void Sys_ErrorDialog(const char *error) {
 
 			*p = '\0';
 
-			if (OpenClipboard(NULL) && EmptyClipboard()) {
+			if (OpenClipboard(NULL) && EmptyClipboard())
 				SetClipboardData(CF_TEXT, memoryHandle);
-			}
 
 			GlobalUnlock(clipMemory);
 			CloseClipboard();
@@ -721,41 +726,27 @@ void Sys_ErrorDialog(const char *error) {
 =======================================================================================================================================
 Sys_Dialog
 
-Display a win32 dialog box.
+Display a win32 dialog box
 =======================================================================================================================================
 */
 dialogResult_t Sys_Dialog(dialogType_t type, const char *message, const char *title) {
 	UINT uType;
 
-	switch (type) {
+	switch(type) {
 		default:
-		case DT_INFO:
-			uType = MB_ICONINFORMATION|MB_OK;
-			break;
-		case DT_WARNING:
-			uType = MB_ICONWARNING|MB_OK;
-			break;
-		case DT_ERROR:
-			uType = MB_ICONERROR|MB_OK;
-			break;
-		case DT_YES_NO:
-			uType = MB_ICONQUESTION|MB_YESNO;
-			break;
-		case DT_OK_CANCEL:
-			uType = MB_ICONWARNING|MB_OKCANCEL;
-			break;
+		case DT_INFO:      uType = MB_ICONINFORMATION|MB_OK; break;
+		case DT_WARNING:   uType = MB_ICONWARNING|MB_OK; break;
+		case DT_ERROR:     uType = MB_ICONERROR|MB_OK; break;
+		case DT_YES_NO:    uType = MB_ICONQUESTION|MB_YESNO; break;
+		case DT_OK_CANCEL: uType = MB_ICONWARNING|MB_OKCANCEL; break;
 	}
 
-	switch (MessageBox(NULL, message, title, uType)) {
+	switch(MessageBox(NULL, message, title, uType)) {
 		default:
-		case IDOK:
-			return DR_OK;
-		case IDCANCEL:
-			return DR_CANCEL;
-		case IDYES:
-			return DR_YES;
-		case IDNO:
-			return DR_NO;
+		case IDOK:      return DR_OK;
+		case IDCANCEL:  return DR_CANCEL;
+		case IDYES:     return DR_YES;
+		case IDNO:      return DR_NO;
 	}
 }
 
@@ -763,48 +754,48 @@ dialogResult_t Sys_Dialog(dialogType_t type, const char *message, const char *ti
 =======================================================================================================================================
 Sys_GLimpSafeInit
 
-Windows specific "safe" GL implementation initialisation.
+Windows specific "safe" GL implementation initialisation
 =======================================================================================================================================
 */
 void Sys_GLimpSafeInit(void) {
-
 }
 
 /*
 =======================================================================================================================================
 Sys_GLimpInit
 
-Windows specific GL implementation initialisation.
+Windows specific GL implementation initialisation
 =======================================================================================================================================
 */
 void Sys_GLimpInit(void) {
-
 }
 
 /*
 =======================================================================================================================================
 Sys_PlatformInit
 
-Windows specific initialisation.
+Windows specific initialisation
 =======================================================================================================================================
 */
 void Sys_PlatformInit(void) {
 #ifndef DEDICATED
 	TIMECAPS ptc;
 #endif
+
 	Sys_SetFloatEnv();
+
 #ifndef DEDICATED
 	if (timeGetDevCaps(&ptc, sizeof(ptc)) == MMSYSERR_NOERROR) {
 		timerResolution = ptc.wPeriodMin;
 
 		if (timerResolution > 1) {
-			Com_Printf("Warning: Minimum supported timer resolution is %ums on this system, recommended resolution 1ms\n", timerResolution);
+			Com_Printf("Warning: Minimum supported timer resolution is %ums "
+				"on this system, recommended resolution 1ms\n", timerResolution);
 		}
-
-		timeBeginPeriod(timerResolution);
-	} else {
+		
+		timeBeginPeriod(timerResolution); 				
+	} else
 		timerResolution = 0;
-	}
 #endif
 }
 
@@ -812,14 +803,13 @@ void Sys_PlatformInit(void) {
 =======================================================================================================================================
 Sys_PlatformExit
 
-Windows specific initialisation.
+Windows specific initialisation
 =======================================================================================================================================
 */
 void Sys_PlatformExit(void) {
 #ifndef DEDICATED
-	if (timerResolution) {
+	if (timerResolution)
 		timeEndPeriod(timerResolution);
-	}
 #endif
 }
 
@@ -827,16 +817,14 @@ void Sys_PlatformExit(void) {
 =======================================================================================================================================
 Sys_SetEnv
 
-Set/unset environment variables (empty value removes it).
+set/unset environment variables(empty value removes it)
 =======================================================================================================================================
 */
 void Sys_SetEnv(const char *name, const char *value) {
-
-	if (value) {
-		_putenv(va("%s=%s", name, value));
-	} else {
-		_putenv(va("%s=", name));
-	}
+	if (value)
+		_putenv(va("%s = %s", name, value));
+	else
+		_putenv(va("%s = ", name));
 }
 
 /*
@@ -858,16 +846,15 @@ qboolean Sys_PIDIsRunning(int pid) {
 	DWORD numBytes, numProcesses;
 	int i;
 
-	if (!EnumProcesses(processes, sizeof(processes), &numBytes)) {
-		return qfalse; // assume it's not running
-	}
+	if (!EnumProcesses(processes, sizeof(processes), &numBytes))
+		return qfalse; // Assume it's not running
 
 	numProcesses = numBytes / sizeof(DWORD);
-	// search for the pid
+
+	// Search for the pid
 	for (i = 0; i < numProcesses; i++) {
-		if (processes[i] == pid) {
+		if (processes[i] == pid)
 			return qtrue;
-		}
 	}
 
 	return qfalse;
@@ -900,5 +887,5 @@ qboolean Sys_PathIsAbsolute(const char *path) {
 
 	Q_strncpyz(filename, path, sizeof(filename));
 
-	return (PathIsRelative(filename) == FALSE);
+	return(PathIsRelative(filename) == FALSE);
 }

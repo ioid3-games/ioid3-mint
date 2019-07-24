@@ -1,39 +1,45 @@
 /*
 =======================================================================================================================================
-Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
+Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License,
+or(at your option)any later version.
 
-Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
 
-In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
-terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
-id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following
+the terms and conditions of the GNU General Public License.  If not, please
+request a copy in writing from id Software at the address below.
 
-If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
-ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional
+terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
 /*****************************************************************************
-	* name:		l_struct.c
-	*
-	* desc:		structure reading / writing
-	*
-	* $Archive: /MissionPack/CODE/botlib/l_struct.c $
-	*
-	*****************************************************************************/
+ * name:		l_struct.c
+ *
+ * desc:		structure reading / writing
+ *
+ * $Archive: /MissionPack/CODE/botlib/l_struct.c $
+ *
+ *****************************************************************************/
 
 #ifdef BOTLIB
 #include "../qcommon/q_shared.h"
-#include "botlib.h"				// for the include of be_interface.h
+#include "botlib.h"				//for the include of be_interface.h
 #include "l_script.h"
 #include "l_precomp.h"
 #include "l_struct.h"
@@ -42,7 +48,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #endif //BOTLIB
 
 #ifdef BSPC
-// include files for usage in the BSP Converter
+//include files for usage in the BSP Converter
 #include "../bspc/qbsp.h"
 #include "../bspc/l_log.h"
 #include "../bspc/l_mem.h"
@@ -52,24 +58,23 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
+// Parameter:				 - 
+// Returns:					 - 
+// Changes Globals:		 - 
 //===========================================================================
 fielddef_t *FindField(fielddef_t *defs, char *name) {
 	int i;
 
 	for (i = 0; defs[i].name; i++) {
-		if (!strcmp(defs[i].name, name)) return &defs[i];
-	}
-
+		if (!strcmp(defs[i].name, name))return &defs[i];
+	} //end for
 	return NULL;
-} // end of the function FindField
+} //end of the function FindField
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
+// Parameter:				 - 
+// Returns:					 - 
+// Changes Globals:		 - 
 //===========================================================================
 qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p) {
 	token_t token;
@@ -77,36 +82,34 @@ qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p) {
 	long int intval, intmin = 0, intmax = 0;
 	double floatval;
 
-	if (!PC_ExpectAnyToken(source, &token)) return 0;
+	if (!PC_ExpectAnyToken(source, &token))return 0;
 
-	// check for minus sign
+	//check for minus sign
 	if (token.type == TT_PUNCTUATION) {
 		if (fd->type & FT_UNSIGNED) {
 			SourceError(source, "expected unsigned value, found %s", token.string);
 			return 0;
-		}
-		// if not a minus sign
+		} //end if
+		//if not a minus sign
 		if (strcmp(token.string, "-")) {
 			SourceError(source, "unexpected punctuation %s", token.string);
 			return 0;
-		}
-
+		} //end if
 		negative = qtrue;
-		// read the number
-		if (!PC_ExpectAnyToken(source, &token)) return 0;
-	}
-	// check if it is a number
+		//read the number
+		if (!PC_ExpectAnyToken(source, &token))return 0;
+	} //end if
+	//check if it is a number
 	if (token.type != TT_NUMBER) {
 		SourceError(source, "expected number, found %s", token.string);
 		return 0;
-	}
-	// check for a float value
+	} //end if
+	//check for a float value
 	if (token.subtype & TT_FLOAT) {
 		if ((fd->type & FT_TYPE) != FT_FLOAT) {
 			SourceError(source, "unexpected float");
 			return 0;
-		}
-
+		} //end if
 		floatval = token.floatvalue;
 
 		if (negative)floatval = -floatval;
@@ -114,107 +117,103 @@ qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p) {
 		if (fd->type & FT_BOUNDED) {
 			if (floatval < fd->floatmin || floatval > fd->floatmax) {
 				SourceError(source, "float out of range [%f, %f]", fd->floatmin, fd->floatmax);
-
 				return 0;
-			}
-		}
+			} //end if
+		} //end if
 		*(float *)p = (float)floatval;
 		return 1;
-	}
-
+	} //end if
 	intval = token.intvalue;
-
 	if (negative)intval = -intval;
-	// check bounds
+	//check bounds
 	if ((fd->type & FT_TYPE) == FT_CHAR) {
-		if (fd->type & FT_UNSIGNED) {intmin = 0; intmax = 255;} else {intmin = -128; intmax = 127;}
-	}
+		if (fd->type & FT_UNSIGNED) {intmin = 0; intmax = 255; }
 
+		else {intmin = -128; intmax = 127; }
+	} //end if
 	if ((fd->type & FT_TYPE) == FT_INT) {
-		if (fd->type & FT_UNSIGNED) {intmin = 0; intmax = 65535;} else {intmin = -32768; intmax = 32767;}
-	}
+		if (fd->type & FT_UNSIGNED) {intmin = 0; intmax = 65535; }
 
-	if ((fd->type & FT_TYPE) == FT_CHAR || (fd->type & FT_TYPE) == FT_INT) {
+		else {intmin = -32768; intmax = 32767; }
+	} //end else if
+	if ((fd->type & FT_TYPE) == FT_CHAR ||(fd->type & FT_TYPE) == FT_INT) {
 		if (fd->type & FT_BOUNDED) {
 			intmin = Maximum(intmin, fd->floatmin);
 			intmax = Minimum(intmax, fd->floatmax);
-		}
-
+		} //end if
 		if (intval < intmin || intval > intmax) {
 			SourceError(source, "value %ld out of range [%ld, %ld]", intval, intmin, intmax);
 			return 0;
-		}
-	} else if ((fd->type & FT_TYPE) == FT_FLOAT) {
+		} //end if
+	} //end if
+	else if ((fd->type & FT_TYPE) == FT_FLOAT) {
 		if (fd->type & FT_BOUNDED) {
 			if (intval < fd->floatmin || intval > fd->floatmax) {
 				SourceError(source, "value %ld out of range [%f, %f]", intval, fd->floatmin, fd->floatmax);
-
 				return 0;
-			}
-		}
-	}
-	// store the value
+			} //end if
+		} //end if
+	} //end else if
+	//store the value
 	if ((fd->type & FT_TYPE) == FT_CHAR) {
 		if (fd->type & FT_UNSIGNED) * (unsigned char *)p = (unsigned char)intval;
-
 		else * (char *)p = (char)intval;
-	} else if ((fd->type & FT_TYPE) == FT_INT) {
+	} //end if
+	else if ((fd->type & FT_TYPE) == FT_INT) {
 		if (fd->type & FT_UNSIGNED) * (unsigned int *)p = (unsigned int)intval;
-
 		else * (int *)p = (int)intval;
-	} else if ((fd->type & FT_TYPE) == FT_FLOAT) {
+	} //end else
+	else if ((fd->type & FT_TYPE) == FT_FLOAT) {
 		*(float *)p = (float)intval;
-	}
-
+	} //end else
 	return 1;
-} // end of the function ReadNumber
+} //end of the function ReadNumber
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
+// Parameter:				 - 
+// Returns:					 - 
+// Changes Globals:		 - 
 //===========================================================================
 qboolean ReadChar(source_t *source, fielddef_t *fd, void *p) {
 	token_t token;
 
-	if (!PC_ExpectAnyToken(source, &token)) return 0;
+	if (!PC_ExpectAnyToken(source, &token))return 0;
 
-	// take literals into account
+	//take literals into account
 	if (token.type == TT_LITERAL) {
 		StripSingleQuotes(token.string);
 		*(char *)p = token.string[0];
-	} else {
+	} //end if
+	else {
 		PC_UnreadLastToken(source);
 
-		if (!ReadNumber(source, fd, p)) return 0;
-	}
-
+		if (!ReadNumber(source, fd, p))return 0;
+	} //end if
 	return 1;
-} // end of the function ReadChar
+} //end of the function ReadChar
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
+// Parameter:				 - 
+// Returns:					 - 
+// Changes Globals:		 - 
 //===========================================================================
 int ReadString(source_t *source, fielddef_t *fd, void *p) {
 	token_t token;
 
-	if (!PC_ExpectTokenType(source, TT_STRING, 0, &token)) return 0;
-	// remove the double quotes
+	if (!PC_ExpectTokenType(source, TT_STRING, 0, &token))return 0;
+	//remove the double quotes
 	StripDoubleQuotes(token.string);
-	// copy the string
-	strncpy((char *)p, token.string, MAX_STRINGFIELD-1);
-	// make sure the string is closed with a zero
-	((char *)p)[MAX_STRINGFIELD-1] = '\0';
-
+	//copy the string
+	strncpy((char *)p, token.string, MAX_STRINGFIELD - 1);
+	//make sure the string is closed with a zero
+	((char *)p)[MAX_STRINGFIELD - 1] = '\0';
 	return 1;
-} // end of the function ReadString
+} //end of the function ReadString
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
+// Parameter:				 - 
+// Returns:					 - 
+// Changes Globals:		 - 
 //===========================================================================
 int ReadStructure(source_t *source, structdef_t *def, char *structure) {
 	token_t token;
@@ -222,109 +221,98 @@ int ReadStructure(source_t *source, structdef_t *def, char *structure) {
 	void *p;
 	int num;
 
-	if (!PC_ExpectTokenString(source, "{")) return 0;
-
+	if (!PC_ExpectTokenString(source, "{"))return 0;
 	while (1) {
-		if (!PC_ExpectAnyToken(source, &token)) return qfalse;
-		// if end of structure
+		if (!PC_ExpectAnyToken(source, &token))return qfalse;
+		//if end of structure
 		if (!strcmp(token.string, "}"))break;
-		// find the field with the name
+		//find the field with the name
 		fd = FindField(def->fields, token.string);
 
 		if (!fd) {
 			SourceError(source, "unknown structure field %s", token.string);
 			return qfalse;
-		}
-
+		} //end if
 		if (fd->type & FT_ARRAY) {
 			num = fd->maxarray;
-
-			if (!PC_ExpectTokenString(source, "{")) return qfalse;
-		} else {
+			if (!PC_ExpectTokenString(source, "{"))return qfalse;
+		} //end if
+		else {
 			num = 1;
-		}
-
+		} //end else
 		p = (void *)(structure + fd->offset);
-
-		while (num-- > 0) {
+		while (num -- > 0) {
 			if (fd->type & FT_ARRAY) {
 				if (PC_CheckTokenString(source, "}"))break;
-			}
-
-			switch (fd->type & FT_TYPE) {
+			} //end if
+			switch(fd->type & FT_TYPE) {
 				case FT_CHAR:
 				{
-					if (!ReadChar(source, fd, p)) return qfalse;
+					if (!ReadChar(source, fd, p))return qfalse;
 					p = (char *)p + sizeof(char);
 					break;
-				}
-
+				} //end case
 				case FT_INT:
 				{
-					if (!ReadNumber(source, fd, p)) return qfalse;
+					if (!ReadNumber(source, fd, p))return qfalse;
 					p = (char *)p + sizeof(int);
 					break;
-				}
-
+				} //end case
 				case FT_FLOAT:
 				{
-					if (!ReadNumber(source, fd, p)) return qfalse;
+					if (!ReadNumber(source, fd, p))return qfalse;
 					p = (char *)p + sizeof(float);
 					break;
-				}
-
+				} //end case
 				case FT_STRING:
 				{
-					if (!ReadString(source, fd, p)) return qfalse;
+					if (!ReadString(source, fd, p))return qfalse;
 					p = (char *)p + MAX_STRINGFIELD;
 					break;
-				}
-
+				} //end case
 				case FT_STRUCT:
 				{
-					if (!fd->substruct) {
+					if (!fd->substruct)
+					{
 						SourceError(source, "BUG: no sub structure defined");
 						return qfalse;
-					}
+					} //end if
 					ReadStructure(source, fd->substruct, (char *)p);
 					p = (char *)p + fd->substruct->size;
 					break;
-				}
-			}
-
+				} //end case
+			} //end switch
 			if (fd->type & FT_ARRAY) {
-				if (!PC_ExpectAnyToken(source, &token)) return qfalse;
+				if (!PC_ExpectAnyToken(source, &token))return qfalse;
 
 				if (!strcmp(token.string, "}"))break;
 
-				if (strcmp(token.string, ",")) {
+				if (strcmp(token.string, ", ")) {
 					SourceError(source, "expected a comma, found %s", token.string);
 					return qfalse;
-				}
-			}
-		}
-	}
-
+				} //end if
+			} //end if
+		} //end while
+	} //end while
 	return qtrue;
-} // end of the function ReadStructure
+} //end of the function ReadStructure
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
+// Parameter:				 - 
+// Returns:					 - 
+// Changes Globals:		 - 
 //===========================================================================
 int WriteIndent(FILE *fp, int indent) {
-	while (indent-- > 0) {
-		if (fprintf(fp, "\t") < 0) return qfalse;
-	}
-
+	while (indent -- > 0) {
+		if (fprintf(fp, "\t") < 0)return qfalse;
+	} //end while
 	return qtrue;
-} // end of the function WriteIndent
+} //end of the function WriteIndent
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
+// Parameter:				 - 
+// Returns:					 - 
+// Changes Globals:		 - 
 //===========================================================================
 int WriteFloat(FILE *fp, float value) {
 	char buf[128];
@@ -332,121 +320,109 @@ int WriteFloat(FILE *fp, float value) {
 
 	Com_sprintf(buf, sizeof(buf), "%f", value);
 	l = strlen(buf);
-	// strip any trailing zeros
-	while (l-- > 1) {
+	//strip any trailing zeros
+	while (l -- > 1) {
 		if (buf[l] != '0' && buf[l] != '.')break;
 
 		if (buf[l] == '.') {
 			buf[l] = 0;
 			break;
-		}
-
+		} //end if
 		buf[l] = 0;
-	}
-	// write the float to file
-	if (fprintf(fp, "%s", buf) < 0) return 0;
+	} //end while
+	//write the float to file
+	if (fprintf(fp, "%s", buf) < 0)return 0;
 	return 1;
-} // end of the function WriteFloat
+} //end of the function WriteFloat
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
+// Parameter:				 - 
+// Returns:					 - 
+// Changes Globals:		 - 
 //===========================================================================
 int WriteStructWithIndent(FILE *fp, structdef_t *def, char *structure, int indent) {
 	int i, num;
 	void *p;
 	fielddef_t *fd;
 
-	if (!WriteIndent(fp, indent)) return qfalse;
-
-	if (fprintf(fp, "{\r\n") < 0) return qfalse;
+	if (!WriteIndent(fp, indent))return qfalse;
+	if (fprintf(fp, "{\r\n") < 0)return qfalse;
 
 	indent++;
 
 	for (i = 0; def->fields[i].name; i++) {
 		fd = &def->fields[i];
 
-		if (!WriteIndent(fp, indent)) return qfalse;
+		if (!WriteIndent(fp, indent))return qfalse;
 
-		if (fprintf(fp, "%s\t", fd->name) < 0) return qfalse;
-
+		if (fprintf(fp, "%s\t", fd->name) < 0)return qfalse;
 		p = (void *)(structure + fd->offset);
 
 		if (fd->type & FT_ARRAY) {
 			num = fd->maxarray;
-
-			if (fprintf(fp, "{") < 0) return qfalse;
-		} else {
+			if (fprintf(fp, "{") < 0)return qfalse;
+		} //end if
+		else {
 			num = 1;
-		}
-
-		while (num-- > 0) {
-			switch (fd->type & FT_TYPE) {
+		} //end else
+		while (num -- > 0) {
+			switch(fd->type & FT_TYPE) {
 				case FT_CHAR:
 				{
-					if (fprintf(fp, "%d", * (char *)p) < 0) return qfalse;
+					if (fprintf(fp, "%d", * (char *)p) < 0)return qfalse;
 					p = (char *)p + sizeof(char);
 					break;
-				}
-
+				} //end case
 				case FT_INT:
 				{
-					if (fprintf(fp, "%d", * (int *)p) < 0) return qfalse;
+					if (fprintf(fp, "%d", * (int *)p) < 0)return qfalse;
 					p = (char *)p + sizeof(int);
 					break;
-				}
-
+				} //end case
 				case FT_FLOAT:
 				{
-					if (!WriteFloat(fp, * (float *)p)) return qfalse;
+					if (!WriteFloat(fp, * (float *)p))return qfalse;
 					p = (char *)p + sizeof(float);
 					break;
-				}
-
+				} //end case
 				case FT_STRING:
 				{
-					if (fprintf(fp, "\"%s\"", (char *)p) < 0) return qfalse;
+					if (fprintf(fp, "\"%s\"", (char *)p) < 0)return qfalse;
 					p = (char *)p + MAX_STRINGFIELD;
 					break;
-				}
-
+				} //end case
 				case FT_STRUCT:
 				{
-					if (!WriteStructWithIndent(fp, fd->substruct, structure, indent)) return qfalse;
+					if (!WriteStructWithIndent(fp, fd->substruct, structure, indent))return qfalse;
 					p = (char *)p + fd->substruct->size;
 					break;
-				}
-			}
-
+				} //end case
+			} //end switch
 			if (fd->type & FT_ARRAY) {
 				if (num > 0) {
-					if (fprintf(fp, ",") < 0) return qfalse;
-				}
+					if (fprintf(fp, ", ") < 0)return qfalse;
+				} //end if
+				else
+				{
+					if (fprintf(fp, "}") < 0)return qfalse;
+				} //end else
+			} //end if
+		} //end while
+		if (fprintf(fp, "\r\n") < 0)return qfalse;
+	} //end for
+	indent --;
 
-				else {
-					if (fprintf(fp, "}") < 0) return qfalse;
-				}
-			}
-		}
-
-		if (fprintf(fp, "\r\n") < 0) return qfalse;
-	}
-
-	indent--;
-
-	if (!WriteIndent(fp, indent)) return qfalse;
-
-	if (fprintf(fp, "}\r\n") < 0) return qfalse;
+	if (!WriteIndent(fp, indent))return qfalse;
+	if (fprintf(fp, "}\r\n") < 0)return qfalse;
 	return qtrue;
-} // end of the function WriteStructWithIndent
+} //end of the function WriteStructWithIndent
 //===========================================================================
 //
-// Parameter:				-
-// Returns:					-
-// Changes Globals:		-
+// Parameter:				 - 
+// Returns:					 - 
+// Changes Globals:		 - 
 //===========================================================================
 int WriteStructure(FILE *fp, structdef_t *def, char *structure) {
 	return WriteStructWithIndent(fp, def, structure, 0);
-} // end of the function WriteStructure
+} //end of the function WriteStructure
 
