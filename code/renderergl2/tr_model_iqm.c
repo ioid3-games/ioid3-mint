@@ -6,27 +6,21 @@ Copyright(C)2011 - 2019 Zack Middleton < zturtleman@gmail.com>
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -298,7 +292,7 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 			// total number of values
 			n = header->num_vertexes * vertexarray->size;
 
-			switch(vertexarray->format) {
+			switch (vertexarray->format) {
 			case IQM_BYTE:
 			case IQM_UBYTE:
 				// 1 byte, no swapping necessary
@@ -306,6 +300,7 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 						    n, sizeof(byte))) {
 					return qfalse;
 				}
+
 				break;
 			case IQM_INT:
 			case IQM_UINT:
@@ -320,6 +315,7 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 				for (j = 0; j < n; j++, intPtr++) {
 					LL(*intPtr);
 				}
+
 				break;
 			default:
 				// not supported
@@ -331,25 +327,28 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 				vertexArrayFormat[vertexarray->type] = vertexarray->format;
 			}
 
-			switch(vertexarray->type) {
+			switch (vertexarray->type) {
 			case IQM_POSITION:
 			case IQM_NORMAL:
 				if (vertexarray->format != IQM_FLOAT ||
 				    vertexarray->size != 3) {
 					return qfalse;
 				}
+
 				break;
 			case IQM_TANGENT:
 				if (vertexarray->format != IQM_FLOAT ||
 				    vertexarray->size != 4) {
 					return qfalse;
 				}
+
 				break;
 			case IQM_TEXCOORD:
 				if (vertexarray->format != IQM_FLOAT ||
 				    vertexarray->size != 2) {
 					return qfalse;
 				}
+
 				break;
 			case IQM_BLENDINDEXES:
 				if ((vertexarray->format != IQM_INT &&
@@ -357,6 +356,7 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 					vertexarray->size != 4) {
 					return qfalse;
 				}
+
 				blendIndexes = (byte*)header + vertexarray->offset;
 				break;
 			case IQM_BLENDWEIGHTS:
@@ -371,12 +371,14 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 				} else {
 					blendWeights.b = (byte*)header + vertexarray->offset;
 				}
+
 				break;
 			case IQM_COLOR:
 				if (vertexarray->format != IQM_UBYTE ||
 				    vertexarray->size != 4) {
 					return qfalse;
 				}
+
 				break;
 			}
 		}
@@ -594,36 +596,36 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 	size = sizeof(iqmData_t);
 	if (header->num_meshes) {
 		size += header->num_meshes * sizeof(srfIQModel_t); // surfaces
-		size += header->num_triangles * 3 * sizeof(int); 	// triangles
-		size += header->num_vertexes * 3 * sizeof(float); 	// positions
-		size += header->num_vertexes * 2 * sizeof(float); 	// texcoords
-		size += header->num_vertexes * 3 * sizeof(float); 	// normals
+		size += header->num_triangles * 3 * sizeof(int);	// triangles
+		size += header->num_vertexes * 3 * sizeof(float);	// positions
+		size += header->num_vertexes * 2 * sizeof(float);	// texcoords
+		size += header->num_vertexes * 3 * sizeof(float);	// normals
 
 		if (vertexArrayFormat[IQM_TANGENT] != -1) {
-			size += header->num_vertexes * 4 * sizeof(float); 	// tangents
+			size += header->num_vertexes * 4 * sizeof(float);	// tangents
 		}
 
 		if (vertexArrayFormat[IQM_COLOR] != -1) {
-			size += header->num_vertexes * 4 * sizeof(byte); 	// colors
+			size += header->num_vertexes * 4 * sizeof(byte);	// colors
 		}
 
 		if (allocateInfluences) {
-			size += header->num_vertexes * sizeof(int); 			// influences
-			size += allocateInfluences * 4 * sizeof(byte); 		// influenceBlendIndexes
+			size += header->num_vertexes * sizeof(int);			// influences
+			size += allocateInfluences * 4 * sizeof(byte);		// influenceBlendIndexes
 
 			if (vertexArrayFormat[IQM_BLENDWEIGHTS] == IQM_UBYTE) {
-				size += allocateInfluences * 4 * sizeof(byte); 	// influenceBlendWeights
+				size += allocateInfluences * 4 * sizeof(byte);	// influenceBlendWeights
 			} else if (vertexArrayFormat[IQM_BLENDWEIGHTS] == IQM_FLOAT) {
-				size += allocateInfluences * 4 * sizeof(float); 	// influenceBlendWeights
+				size += allocateInfluences * 4 * sizeof(float);	// influenceBlendWeights
 			}
 		}
 	}
 
 	if (header->num_joints) {
-		size += joint_names; 								// joint names
-		size += header->num_joints * sizeof(int); 			// joint parents
-		size += header->num_joints * 12 * sizeof(float); 	// bind joint matricies
-		size += header->num_joints * 12 * sizeof(float); 	// inverse bind joint matricies
+		size += joint_names;								// joint names
+		size += header->num_joints * sizeof(int);			// joint parents
+		size += header->num_joints * 12 * sizeof(float);	// bind joint matricies
+		size += header->num_joints * 12 * sizeof(float);	// inverse bind joint matricies
 	}
 
 	if (header->num_poses) {
@@ -631,9 +633,9 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 	}
 
 	if (header->ofs_bounds) {
-		size += header->num_frames * 6 * sizeof(float); 		// model bounds
+		size += header->num_frames * 6 * sizeof(float);		// model bounds
 	} else if (header->num_meshes && header->num_frames == 0) {
-		size += 6 * sizeof(float); 							// model bounds
+		size += 6 * sizeof(float);							// model bounds
 	}
 
 	mod->type = MOD_IQM;
@@ -655,56 +657,56 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 		dataPtr += header->num_meshes * sizeof(srfIQModel_t);
 
 		iqmData->triangles = (int*)dataPtr;
-		dataPtr += header->num_triangles * 3 * sizeof(int); 		// triangles
+		dataPtr += header->num_triangles * 3 * sizeof(int);		// triangles
 
 		iqmData->positions = (float*)dataPtr;
-		dataPtr += header->num_vertexes * 3 * sizeof(float); 	// positions
+		dataPtr += header->num_vertexes * 3 * sizeof(float);	// positions
 
 		iqmData->texcoords = (float*)dataPtr;
-		dataPtr += header->num_vertexes * 2 * sizeof(float); 	// texcoords
+		dataPtr += header->num_vertexes * 2 * sizeof(float);	// texcoords
 
 		iqmData->normals = (float*)dataPtr;
-		dataPtr += header->num_vertexes * 3 * sizeof(float); 	// normals
+		dataPtr += header->num_vertexes * 3 * sizeof(float);	// normals
 
 		if (vertexArrayFormat[IQM_TANGENT] != -1) {
 			iqmData->tangents = (float*)dataPtr;
-			dataPtr += header->num_vertexes * 4 * sizeof(float); 	// tangents
+			dataPtr += header->num_vertexes * 4 * sizeof(float);	// tangents
 		}
 
 		if (vertexArrayFormat[IQM_COLOR] != -1) {
 			iqmData->colors = (byte*)dataPtr;
-			dataPtr += header->num_vertexes * 4 * sizeof(byte); 		// colors
+			dataPtr += header->num_vertexes * 4 * sizeof(byte);		// colors
 		}
 
 		if (allocateInfluences) {
 			iqmData->influences = (int*)dataPtr;
-			dataPtr += header->num_vertexes * sizeof(int); 			// influences
+			dataPtr += header->num_vertexes * sizeof(int);			// influences
 
 			iqmData->influenceBlendIndexes = (byte*)dataPtr;
-			dataPtr += allocateInfluences * 4 * sizeof(byte); 		// influenceBlendIndexes
+			dataPtr += allocateInfluences * 4 * sizeof(byte);		// influenceBlendIndexes
 
 			if (vertexArrayFormat[IQM_BLENDWEIGHTS] == IQM_UBYTE) {
 				iqmData->influenceBlendWeights.b = (byte*)dataPtr;
-				dataPtr += allocateInfluences * 4 * sizeof(byte); 	// influenceBlendWeights
+				dataPtr += allocateInfluences * 4 * sizeof(byte);	// influenceBlendWeights
 			} else if (vertexArrayFormat[IQM_BLENDWEIGHTS] == IQM_FLOAT) {
 				iqmData->influenceBlendWeights.f = (float*)dataPtr;
-				dataPtr += allocateInfluences * 4 * sizeof(float); 	// influenceBlendWeights
+				dataPtr += allocateInfluences * 4 * sizeof(float);	// influenceBlendWeights
 			}
 		}
 	}
 
 	if (header->num_joints) {
 		iqmData->jointNames = (char *)dataPtr;
-		dataPtr += joint_names; 								// joint names
+		dataPtr += joint_names;								// joint names
 
 		iqmData->jointParents = (int*)dataPtr;
-		dataPtr += header->num_joints * sizeof(int); 		// joint parents
+		dataPtr += header->num_joints * sizeof(int);		// joint parents
 
 		iqmData->bindJoints = (float*)dataPtr;
-		dataPtr += header->num_joints * 12 * sizeof(float); 		// bind joint matricies
+		dataPtr += header->num_joints * 12 * sizeof(float);		// bind joint matricies
 
 		iqmData->invBindJoints = (float*)dataPtr;
-		dataPtr += header->num_joints * 12 * sizeof(float); 		// inverse bind joint matricies
+		dataPtr += header->num_joints * 12 * sizeof(float);		// inverse bind joint matricies
 	}
 
 	if (header->num_poses) {
@@ -714,10 +716,10 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 
 	if (header->ofs_bounds) {
 		iqmData->bounds = (float*)dataPtr;
-		dataPtr += header->num_frames * 6 * sizeof(float); 	// model bounds
+		dataPtr += header->num_frames * 6 * sizeof(float);	// model bounds
 	} else if (header->num_meshes && header->num_frames == 0) {
 		iqmData->bounds = (float*)dataPtr;
-		dataPtr += 6 * sizeof(float); 						// model bounds
+		dataPtr += 6 * sizeof(float);						// model bounds
 	}
 
 	if (header->num_meshes) {
@@ -759,7 +761,7 @@ qboolean R_LoadIQM(model_t *mod, void *buffer, int filesize, const char *mod_nam
 			// total number of values
 			n = header->num_vertexes * vertexarray->size;
 
-			switch(vertexarray->type) {
+			switch (vertexarray->type) {
 			case IQM_POSITION:
 				Com_Memcpy(iqmData->positions,
 					   (byte *)header + vertexarray->offset,
@@ -1172,7 +1174,7 @@ static int R_CullIQM(iqmData_t *skeleton, iqmData_t *oldSkeleton, trRefEntity_t 
 		return CULL_CLIP;
 	}
 
-	switch(R_CullLocalBox(bounds)) {
+	switch (R_CullLocalBox(bounds)) {
 	case CULL_IN:
 		tr.pc.c_box_cull_md3_in++;
 		return CULL_IN;
@@ -1250,7 +1252,7 @@ void R_AddIQMSurfaces(trRefEntity_t *ent) {
 
 	// don't add mirror only objects if not in a mirror/portal
 	personalModel = (ent->e.renderfx & RF_ONLY_MIRROR) && !(tr.viewParms.isPortal
-	                 ||(tr.viewParms.flags &(VPF_SHADOWMAP|VPF_DEPTHSHADOW)));
+	                 || (tr.viewParms.flags &(VPF_SHADOWMAP|VPF_DEPTHSHADOW)));
 
 	if (ent->e.renderfx & RF_WRAP_FRAMES) {
 		ent->e.frame % = skeleton->num_frames;
@@ -1261,9 +1263,9 @@ void R_AddIQMSurfaces(trRefEntity_t *ent) {
 	// when the surfaces are rendered, they don't need to be
 	// range checked again.
 	if ((ent->e.frame >= skeleton->num_frames)
-	     ||(ent->e.frame < 0)
-	     ||(ent->e.oldframe >= oldSkeleton->num_frames)
-	     ||(ent->e.oldframe < 0)) {
+	     || (ent->e.frame < 0)
+	     || (ent->e.oldframe >= oldSkeleton->num_frames)
+	     || (ent->e.oldframe < 0)) {
 		ri.Printf(PRINT_DEVELOPER, "R_AddIQMSurfaces: no such frame %d to %d for '%s'\n",
 			   ent->e.oldframe, ent->e.frame,
 			   tr.currentModel->name);
@@ -1326,7 +1328,6 @@ void R_AddIQMSurfaces(trRefEntity_t *ent) {
 		surface++;
 	}
 }
-
 
 static void ComputePoseMats(iqmData_t *data, iqmData_t *skeleton, iqmData_t *oldSkeleton, int frame, int oldframe,
 			    	float backlerp, float *poseMats) {
@@ -1436,11 +1437,9 @@ void RB_IQMSurfaceAnim(surfaceType_t *surface) {
 
 	iqmData_t *skeleton = R_GetIQMModelDataByHandle(backEnd.currentEntity->e.frameModel, data);
 	iqmData_t *oldSkeleton = R_GetIQMModelDataByHandle(backEnd.currentEntity->e.oldframeModel, data);
-
 	int frame = skeleton->num_frames ? backEnd.currentEntity->e.frame % skeleton->num_frames : 0;
 	int oldframe = oldSkeleton->num_frames ? backEnd.currentEntity->e.oldframe % oldSkeleton->num_frames : 0;
 	float backlerp = backEnd.currentEntity->e.backlerp;
-
 	int *tri;
 	glIndex_t *ptr;
 	glIndex_t base;
@@ -1663,7 +1662,6 @@ void RB_IQMSurfaceAnimVao(srfVaoIQModel_t * surface) {
 
 	iqmData_t *skeleton = R_GetIQMModelDataByHandle(backEnd.currentEntity->e.frameModel, data);
 	iqmData_t *oldSkeleton = R_GetIQMModelDataByHandle(backEnd.currentEntity->e.oldframeModel, data);
-
 	int frame = skeleton->num_frames ? backEnd.currentEntity->e.frame % skeleton->num_frames : 0;
 	int oldframe = oldSkeleton->num_frames ? backEnd.currentEntity->e.oldframe % oldSkeleton->num_frames : 0;
 	float backlerp = backEnd.currentEntity->e.backlerp;

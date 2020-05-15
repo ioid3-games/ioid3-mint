@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 #ifndef __TR_PUBLIC_H
@@ -34,9 +28,9 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include "../qcommon/bsp.h"
 
 #ifdef USE_LOCAL_HEADERS
-  #include "../zlib/zlib.h"
+#include "../zlib/zlib.h"
 #else
-  #include <zlib.h>
+#include <zlib.h>
 #endif
 
 #define REF_API_VERSION		9
@@ -91,9 +85,9 @@ typedef struct {
 	void (*AddCoronaToScene)(const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible, qhandle_t hShader);
 	void (*RenderScene)(const refdef_t *fd, int bufsize);
 
-	void (*SetColor)(const float *rgba); 	// NULL = 1, 1, 1, 1
+	void (*SetColor)(const float *rgba);	// NULL = 1, 1, 1, 1
 	void (*SetClipRegion)(const float *region);
-	void (*DrawStretchPic)(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader); 	// 0 = white
+	void (*DrawStretchPic)(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader);	// 0 = white
 	void (*DrawRotatedPic)(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle);
 	void (*DrawStretchPicGradient)(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor);
 	void (*Add2dPolys)(polyVert_t * polys, int numverts, qhandle_t hShader);
@@ -111,14 +105,13 @@ typedef struct {
 
 	int (*MarkFragments)(int numPoints, const vec3_t *points, const vec3_t projection,
 				 	int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer);
-
 	int (*LerpTag)(orientation_t *tag, qhandle_t model, qhandle_t frameModel, int startFrame, qhandle_t endFrameModel, int endFrame,
 					 float frac, const char *tagName, int *tagIndex, const vec3_t *torsoAxis, qhandle_t torsoFrameModel, int torsoFrame,
 					 qhandle_t oldTorsoFrameModel, int oldTorsoFrame, float torsoFrac);
 	int (*ModelBounds)(qhandle_t model, vec3_t mins, vec3_t maxs, int startFrame, int endFrame, float frac);
 
 #ifdef __USEA3D
-	void   (*A3D_RenderGeometry)(void *pVoidA3D, void *pVoidGeom, void *pVoidMat, void *pVoidGeomStatus);
+	void (*A3D_RenderGeometry)(void *pVoidA3D, void *pVoidGeom, void *pVoidMat, void *pVoidGeomStatus);
 #endif
 	void (*RegisterFont)(const char *fontName, int pointSize, float borderWidth, qboolean forceAutoHint, fontInfo_t *font, int bufsize);
 	void (*RemapShader)(const char *oldShader, const char *newShader, const char *offsetTime);
@@ -141,10 +134,10 @@ typedef struct {
 //
 typedef struct {
 	// print message on the local console
-	void (QDECL *Printf)(int printLevel, const char *fmt, ...)__attribute__((format(printf, 2, 3)));
+	void (QDECL *Printf)(int printLevel, const char *fmt, ...)__attribute__ ((format(printf, 2, 3)));
 
 	// abort the game
-	void (QDECL *Error)(int errorLevel, const char *fmt, ...)__attribute__((noreturn, format(printf, 2, 3)));
+	void (QDECL *Error)(int errorLevel, const char *fmt, ...)__attribute__ ((noreturn, format(printf, 2, 3)));
 
 	// milliseconds should only be used for profiling, never
 	// for anything game related.  Get time from the refdef
@@ -177,14 +170,12 @@ typedef struct {
 	cvar_t * (*Cvar_SetValue)(const char *name, float value);
 	void (*Cvar_CheckRange)(cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral);
 	void (*Cvar_SetDescription)(cvar_t *cv, const char *description);
-
 	int (*Cvar_VariableIntegerValue)(const char *var_name);
 
 	void (*Cvar_VariableStringBuffer)(const char *var_name, char *buffer, int bufsize);
 
 	void (*Cmd_AddCommand)(const char *name, void(*cmd)(void));
 	void (*Cmd_RemoveCommand)(const char *name);
-
 	int (*Cmd_Argc)(void);
 	char * (*Cmd_Argv)(int i);
 

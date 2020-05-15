@@ -6,27 +6,21 @@ Copyright(C)2011 Zack Middleton
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -424,7 +418,6 @@ static qboolean BufferedFileSkip(struct BufferedFile *BF, unsigned Offset) {
 
 static qboolean FindChunk(struct BufferedFile *BF, uint32_t ChunkType) {
 	struct PNG_ChunkHeader *CH;
-
 	uint32_t Length;
 	uint32_t Type;
 
@@ -502,10 +495,8 @@ static uint32_t DecompressIDATs(struct BufferedFile *BF, uint8_t **Buffer) {
 	uint32_t CompressedDataLength;
 
 	struct PNG_ChunkHeader *CH;
-
 	uint32_t Length;
 	uint32_t Type;
-
 	int BytesToRewind;
 
 	int32_t puffResult;
@@ -600,7 +591,7 @@ static uint32_t DecompressIDATs(struct BufferedFile *BF, uint8_t **Buffer) {
 
 			BytesToRewind += Length + PNG_ChunkCRC_Size;
 			CompressedDataLength += Length;
-		} 
+		}
 	}
 
 	BufferedFileRewind(BF, BytesToRewind);
@@ -668,7 +659,7 @@ static uint32_t DecompressIDATs(struct BufferedFile *BF, uint8_t **Buffer) {
 
 			memcpy(CompressedDataPtr, OrigCompressedData, Length);
 			CompressedDataPtr += Length;
-		} 
+		}
 	}
 
 	/*
@@ -810,7 +801,7 @@ static qboolean UnfilterImage(uint8_t *DecompressedData,
 	 *  ImageHeight and BytesPerScanline can be zero in small interlaced images.
 	 */
 
-	if ((!ImageHeight) ||(!BytesPerScanline)) {
+	if ((!ImageHeight) || (!BytesPerScanline)) {
 		return(qtrue);
 	}
 
@@ -872,7 +863,7 @@ static qboolean UnfilterImage(uint8_t *DecompressedData,
 			 */
 
 			for (p = 0; p < BytesPerPixel; p++) {
-				switch(FilterType) { 
+				switch (FilterType) { 
 					case PNG_FilterType_None :
 					{
 						/*
@@ -964,10 +955,10 @@ static qboolean ConvertPixel(struct PNG_Chunk_IHDR *IHDR,
 		return(qfalse);
 	}
 
-	switch(IHDR->ColourType) {
+	switch (IHDR->ColourType) {
 		case PNG_ColourType_Grey :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_1 :
 				case PNG_BitDepth_2 :
 				case PNG_BitDepth_4 :
@@ -995,7 +986,6 @@ static qboolean ConvertPixel(struct PNG_Chunk_IHDR *IHDR,
 							OutPtr[3] = 0x00;
 						}
 					}
-
 
 					break;
 				}
@@ -1044,7 +1034,7 @@ static qboolean ConvertPixel(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_True :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_8 :
 				{
 					OutPtr[0] = DecompPtr[0];
@@ -1118,7 +1108,7 @@ static qboolean ConvertPixel(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_GreyAlpha :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_8 :
 				{
 					OutPtr[0] = DecompPtr[0];
@@ -1154,7 +1144,7 @@ static qboolean ConvertPixel(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_TrueAlpha :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_8 :
 				{
 					OutPtr[0] = DecompPtr[0];
@@ -1197,7 +1187,6 @@ static qboolean ConvertPixel(struct PNG_Chunk_IHDR *IHDR,
 	return(qtrue);
 }
 
-
 /*
  *  Decode a non - interlaced image.
  */
@@ -1235,10 +1224,10 @@ static qboolean DecodeImageNonInterlaced(struct PNG_Chunk_IHDR *IHDR,
 	 *  information for un - filtering
 	 */
 
-	switch(IHDR->ColourType) {
+	switch (IHDR->ColourType) {
 		case PNG_ColourType_Grey :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_1 :
 				case PNG_BitDepth_2 :
 				case PNG_BitDepth_4 :
@@ -1269,7 +1258,7 @@ static qboolean DecodeImageNonInterlaced(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_True :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_8  :
 				case PNG_BitDepth_16 :
 				{
@@ -1290,7 +1279,7 @@ static qboolean DecodeImageNonInterlaced(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_Indexed :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_1 :
 				case PNG_BitDepth_2 :
 				case PNG_BitDepth_4 :
@@ -1320,7 +1309,7 @@ static qboolean DecodeImageNonInterlaced(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_GreyAlpha :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_8 :
 				case PNG_BitDepth_16 :
 				{
@@ -1341,7 +1330,7 @@ static qboolean DecodeImageNonInterlaced(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_TrueAlpha :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_8 :
 				case PNG_BitDepth_16 :
 				{
@@ -1449,7 +1438,6 @@ static qboolean DecodeImageNonInterlaced(struct PNG_Chunk_IHDR *IHDR,
 				if (!ConvertPixel(IHDR, OutPtr, DecompPtr, HasTransparentColour, TransparentColour, OutPal)) {
 					return(qfalse);
 				}
-
 
 				OutPtr += Q3IMAGE_BYTESPERPIXEL;
 			}
@@ -1565,10 +1553,10 @@ static qboolean DecodeImageInterlaced(struct PNG_Chunk_IHDR *IHDR,
 	 *  information for un - filtering
 	 */
 
-	switch(IHDR->ColourType) {
+	switch (IHDR->ColourType) {
 		case PNG_ColourType_Grey :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_1 :
 				case PNG_BitDepth_2 :
 				case PNG_BitDepth_4 :
@@ -1599,7 +1587,7 @@ static qboolean DecodeImageInterlaced(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_True :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_8  :
 				case PNG_BitDepth_16 :
 				{
@@ -1620,7 +1608,7 @@ static qboolean DecodeImageInterlaced(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_Indexed :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_1 :
 				case PNG_BitDepth_2 :
 				case PNG_BitDepth_4 :
@@ -1650,7 +1638,7 @@ static qboolean DecodeImageInterlaced(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_GreyAlpha :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_8 :
 				case PNG_BitDepth_16 :
 				{
@@ -1671,7 +1659,7 @@ static qboolean DecodeImageInterlaced(struct PNG_Chunk_IHDR *IHDR,
 
 		case PNG_ColourType_TrueAlpha :
 		{
-			switch(IHDR->BitDepth) {
+			switch (IHDR->BitDepth) {
 				case PNG_BitDepth_8 :
 				case PNG_BitDepth_16 :
 				{
@@ -1796,6 +1784,7 @@ static qboolean DecodeImageInterlaced(struct PNG_Chunk_IHDR *IHDR,
 					}
 
 				}
+
 				else
 				{
 					OutPtr = OutBuffer + (((((h * HSkip[a]) +  HOffset[a]) * IHDR_Width) +  ((w * WSkip[a]) +  WOffset[a])) * Q3IMAGE_BYTESPERPIXEL);
@@ -1984,7 +1973,7 @@ void R_LoadPNG(const char *name, int *numTexLevels, textureLevel_t **pic) {
 	 *  Check if InterlaceMethod is valid.
 	 */
 
-	if (!((IHDR->InterlaceMethod == PNG_InterlaceMethod_NonInterlaced) ||(IHDR->InterlaceMethod == PNG_InterlaceMethod_Interlaced))) {
+	if (!((IHDR->InterlaceMethod == PNG_InterlaceMethod_NonInterlaced) || (IHDR->InterlaceMethod == PNG_InterlaceMethod_Interlaced))) {
 		CloseBufferedFile(ThePNG);
 
 		return;
@@ -2159,7 +2148,7 @@ void R_LoadPNG(const char *name, int *numTexLevels, textureLevel_t **pic) {
 		 *  Only for Grey, True and Indexed ColourType should tRNS exist.
 		 */
 
-		switch(IHDR->ColourType) {
+		switch (IHDR->ColourType) {
 			case PNG_ColourType_Grey :
 			{
 				if (ChunkHeaderLength != 2) {
@@ -2241,7 +2230,7 @@ void R_LoadPNG(const char *name, int *numTexLevels, textureLevel_t **pic) {
 
 				return;
 			}
-		} 
+		}
 	}
 
 	/*
@@ -2299,7 +2288,7 @@ void R_LoadPNG(const char *name, int *numTexLevels, textureLevel_t **pic) {
 	 *  Interlaced and Non - interlaced images need to be handled differently.
 	 */
 
-	switch(IHDR->InterlaceMethod) {
+	switch (IHDR->InterlaceMethod) {
 		case PNG_InterlaceMethod_NonInterlaced :
 		{
 			if (!DecodeImageNonInterlaced(IHDR, OutBuffer, DecompressedData, DecompressedDataLength, HasTransparentColour, TransparentColour, OutPal)) {
@@ -2550,7 +2539,6 @@ void RE_SavePNG(const char *filename, int width, int height, byte *data, int pad
 			numtEXt++;
 		}
 	}
-
 
 	/*
 	 *  Calculate the size of the image.

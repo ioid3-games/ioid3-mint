@@ -186,7 +186,7 @@ void GL_BindNullFramebuffers(void) {
 }
 
 void GL_BindFramebuffer(GLenum target, GLuint framebuffer) {
-	switch(target) {
+	switch (target) {
 		case GL_FRAMEBUFFER:
 			if (framebuffer != glDsaState.drawFramebuffer || framebuffer != glDsaState.readFramebuffer) {
 				qglBindFramebuffer(target, framebuffer);

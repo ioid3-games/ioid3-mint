@@ -89,7 +89,6 @@ voidpf ZCALLBACK fopen_file_func(opaque, filename, mode)
     return file;
 }
 
-
 uLong ZCALLBACK fread_file_func(opaque, stream, buf, size)
    voidpf opaque;
    voidpf stream;
@@ -100,7 +99,6 @@ uLong ZCALLBACK fread_file_func(opaque, stream, buf, size)
     ret = (uLong)fread(buf, 1, (size_t)size, (FILE *)stream);
     return ret;
 }
-
 
 uLong ZCALLBACK fwrite_file_func(opaque, stream, buf, size)
    voidpf opaque;

@@ -4,27 +4,21 @@ Copyright(C)2006 Neil Toronto.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -283,11 +277,11 @@ void G_DoTimeShiftFor(gentity_t *ent) {
 	int time;
 
 	// don't time shift for mistakes or bots
-	if (!ent->inuse || !ent->player ||(ent->r.svFlags & SVF_BOT)) {
+	if (!ent->inuse || !ent->player || (ent->r.svFlags & SVF_BOT)) {
 		return;
 	}
 
-	switch(ent->player->pers.antiLag) {
+	switch (ent->player->pers.antiLag) {
 		case 1:
 			// do just 50ms
 			time = level.previousTime + ent->player->frameOffset;
@@ -354,9 +348,8 @@ Put everyone except for this client back where they were
 =======================================================================================================================================
 */
 void G_UndoTimeShiftFor(gentity_t *ent) {
-
 	// don't un - time shift for mistakes or bots
-	if (!ent->inuse || !ent->player ||(ent->r.svFlags & SVF_BOT)) {
+	if (!ent->inuse || !ent->player || (ent->r.svFlags & SVF_BOT)) {
 		return;
 	}
 
@@ -427,7 +420,6 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 	numplanes = 0;
 
 	for (bumpcount = 0; bumpcount < numbumps; bumpcount++) {
-
 		// calculate position we are trying to move to
 		VectorMA(origin, time_left, velocity, end);
 		// see if we can make it there
@@ -482,7 +474,7 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 			into = DotProduct(velocity, planes[i]);
 
 			if (into >= 0.1) {
-				continue; 		// move doesn't interact with the plane
+				continue;		// move doesn't interact with the plane
 			}
 			// slide along the plane
 			G_PredictPlayerClipVelocity(velocity, planes[i], clipVelocity);
@@ -497,7 +489,7 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 				}
 
 				if (DotProduct(clipVelocity, planes[j]) >= 0.1) {
-					continue; 		// move doesn't interact with the plane
+					continue;		// move doesn't interact with the plane
 				}
 				// try clipping the move to the plane
 				G_PredictPlayerClipVelocity(clipVelocity, planes[j], clipVelocity);
@@ -525,7 +517,7 @@ qboolean G_PredictPlayerSlideMove(gentity_t *ent, float frametime) {
 					}
 
 					if (DotProduct(clipVelocity, planes[k]) >= 0.1) {
-						continue; 		// move doesn't interact with the plane
+						continue;		// move doesn't interact with the plane
 					}
 
 					// stop dead at a tripple plane interaction
@@ -581,7 +573,7 @@ void G_PredictPlayerStepSlideMove(gentity_t *ent, float frametime) {
 	trap_Trace(&trace, start_o, ent->s.mins, ent->s.maxs, up, ent->s.number, ent->clipmask);
 
 	if (trace.allsolid) {
-		return; 		// can't step up
+		return;		// can't step up
 	}
 
 	stepSize = trace.endpos[2] - start_o[2];

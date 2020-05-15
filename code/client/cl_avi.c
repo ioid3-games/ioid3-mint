@@ -40,7 +40,6 @@ typedef struct audioFormat_s {
 	int format;
 	int channels;
 	int bits;
-
 	int sampleSize;
 	int totalBytes;
 } audioFormat_t;
@@ -55,7 +54,6 @@ typedef struct aviFileData_s {
 
 	fileHandle_t idxF;
 	int numIndices;
-
 	int frameRate;
 	int framePeriod;
 	int width, height;
@@ -66,7 +64,6 @@ typedef struct aviFileData_s {
 	qboolean audio;
 	audioFormat_t a;
 	int numAudioFrames;
-
 	int chunkStack[MAX_RIFF_CHUNKS];
 	int chunkStackTop;
 
@@ -244,6 +241,7 @@ void CL_WriteAVIHeader(void) {
 						WRITE_4BYTES(afd.width *
 								afd.height);									 //biSizeImage
 					}
+
 					else
 					{
 						WRITE_4BYTES(0);									// BI_RGB
@@ -256,6 +254,7 @@ void CL_WriteAVIHeader(void) {
 					WRITE_4BYTES(0);										//biClrUsed
 					WRITE_4BYTES(0);										//biClrImportant
 				}
+
 				END_CHUNK();
 
 				if (afd.audio)
@@ -387,8 +386,7 @@ qboolean CL_OpenAVIForWriting(const char *fileName) {
 	if (!Cvar_VariableIntegerValue("s_initsound"))
 	{
 		afd.audio = qfalse;
-	}
-	else if (Q_stricmp(Cvar_VariableString("s_backend"), "OpenAL"))
+	} else if (Q_stricmp(Cvar_VariableString("s_backend"), "OpenAL"))
 	{
 		if (afd.a.bits != 16 || afd.a.channels != 2)
 		{

@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_models.c -- model loading and caching
@@ -257,7 +251,6 @@ qhandle_t R_RegisterTAN(const char *name, model_t *mod) {
 	return mod->index;
 }
 
-
 typedef struct {
 	char *ext;
 	qhandle_t(*ModelLoader)(const char *, model_t *);
@@ -464,7 +457,6 @@ static qboolean R_LoadMDC(model_t *mod, int lod, void *buffer, const char *modNa
 	mdvSt_t *st;
 	mdvTag_t *tag;
 	mdvTagName_t *tagName;
-
 	int version;
 	int size;
 
@@ -539,7 +531,6 @@ static qboolean R_LoadMDC(model_t *mod, int lod, void *buffer, const char *modNa
 
 		AnglesToAxis(angles, tag->axis);
 	}
-
 
 	mdvModel->tagNames = tagName = ri.Hunk_Alloc(sizeof(*tagName) * (mdcModel->numTags), h_low);
 
@@ -813,7 +804,6 @@ static qboolean R_LoadMDC(model_t *mod, int lod, void *buffer, const char *modNa
 				dataSize = surf->numVerts * stride_xyz;
 			}
 
-
 			data = ri.Malloc(dataSize);
 			dataOfs = 0;
 
@@ -946,7 +936,6 @@ static qboolean R_LoadMD3(model_t * mod, int lod, void *buffer, int bufferSize, 
 	mdvSt_t *st;
 	mdvTag_t *tag;
 	mdvTagName_t *tagName;
-
 	int version;
 	int size;
 
@@ -1007,7 +996,6 @@ static qboolean R_LoadMD3(model_t * mod, int lod, void *buffer, int bufferSize, 
 			tag->axis[2][j] = LittleFloat(md3Tag->axis[2][j]);
 		}
 	}
-
 
 	mdvModel->tagNames = tagName = ri.Hunk_Alloc(sizeof(*tagName) * (md3Model->numTags), h_low);
 
@@ -1236,7 +1224,6 @@ static qboolean R_LoadMD3(model_t * mod, int lod, void *buffer, int bufferSize, 
 				dataSize = surf->numVerts * stride_xyz;
 			}
 
-
 			data = ri.Malloc(dataSize);
 			dataOfs = 0;
 
@@ -1342,7 +1329,6 @@ static qboolean R_LoadMD3(model_t * mod, int lod, void *buffer, int bufferSize, 
 }
 
 
-
 /*
 =======================================================================================================================================
 R_LoadTAN
@@ -1369,7 +1355,6 @@ static qboolean R_LoadTAN(model_t * mod, void *buffer, const char *modName) {
 	mdvSt_t *st;
 	mdvTag_t *tag;
 	mdvTagName_t *tagName;
-
 	int version;
 	int size;
 
@@ -1661,7 +1646,6 @@ static qboolean R_LoadTAN(model_t * mod, void *buffer, const char *modName) {
 				dataSize = surf->numVerts * stride_xyz;
 			}
 
-
 			data = ri.Malloc(dataSize);
 			dataOfs = 0;
 
@@ -1767,7 +1751,6 @@ static qboolean R_LoadTAN(model_t * mod, void *buffer, const char *modName) {
 }
 
 
-
 /*
 =======================================================================================================================================
 R_LoadMDR
@@ -1829,7 +1812,7 @@ static qboolean R_LoadMDR(model_t *mod, void *buffer, int filesize, const char *
 	// Copy all the values over from the file and fix endian issues in the process, if necessary.
 	
 	mdr->ident = LittleLong(pinmodel->ident);
-	mdr->version = pinmodel->version; 	// Don't need to swap byte order on this one, we already did above.
+	mdr->version = pinmodel->version;	// Don't need to swap byte order on this one, we already did above.
 	Q_strncpyz(mdr->name, pinmodel->name, sizeof(mdr->name));
 	mdr->numFrames = pinmodel->numFrames;
 	mdr->numBones = pinmodel->numBones;
@@ -1862,7 +1845,7 @@ static qboolean R_LoadMDR(model_t *mod, void *buffer, int filesize, const char *
 			}
 
 			frame->radius = LittleFloat(cframe->radius);
-			frame->name[0] = '\0'; 	// No name supplied in the compressed version.
+			frame->name[0] = '\0';	// No name supplied in the compressed version.
 			
 			for (j = 0; j < mdr->numBones; j++) {
 				for (k = 0; k < (sizeof(cframe->bones[j].Comp) / 2); k++) {
@@ -1983,7 +1966,7 @@ static qboolean R_LoadMDR(model_t *mod, void *buffer, int filesize, const char *
 				LL(curv->numWeights);
 			
 				// simple bounds check
-				if (curv->numWeights < 0 ||(byte *)(v + 1) +  (curv->numWeights - 1) * sizeof(*weight) > (byte *)mdr + size) {
+				if (curv->numWeights < 0 || (byte *)(v + 1) +  (curv->numWeights - 1) * sizeof(*weight) > (byte *)mdr + size) {
 					ri.Printf(PRINT_WARNING, "R_LoadMDR: %s has broken structure.\n", mod_name);
 					return qfalse;
 				}
@@ -2022,7 +2005,7 @@ static qboolean R_LoadMDR(model_t *mod, void *buffer, int filesize, const char *
 			curtri = (mdrTriangle_t *)((byte *)cursurf + LittleLong(cursurf->ofsTriangles));
 			
 			// simple bounds check
-			if (surf->numTriangles < 0 ||(byte *)(tri + surf->numTriangles) > (byte *)mdr + size) {
+			if (surf->numTriangles < 0 || (byte *)(tri + surf->numTriangles) > (byte *)mdr + size) {
 				ri.Printf(PRINT_WARNING, "R_LoadMDR: %s has broken structure.\n", mod_name);
 				return qfalse;
 			}
@@ -2057,7 +2040,7 @@ static qboolean R_LoadMDR(model_t *mod, void *buffer, int filesize, const char *
 	curtag = (mdrTag_t *)((byte *)pinmodel + LittleLong(pinmodel->ofsTags));
 
 	// simple bounds check
-	if (mdr->numTags < 0 ||(byte *)(tag + mdr->numTags) > (byte *)mdr + size) {
+	if (mdr->numTags < 0 || (byte *)(tag + mdr->numTags) > (byte *)mdr + size) {
 		ri.Printf(PRINT_WARNING, "R_LoadMDR: %s has broken structure.\n", mod_name);
 		return qfalse;
 	}
@@ -2077,7 +2060,6 @@ static qboolean R_LoadMDR(model_t *mod, void *buffer, int filesize, const char *
 	
 	return qtrue;
 }
-
 
 
 /*
@@ -2247,6 +2229,7 @@ static qboolean R_LoadMDS(model_t *mod, void *buffer, const char *mod_name) {
 				} else {
 					v->fixedParent = 1;
 				}
+
 				v->fixedDist = VectorLength(v->weights[v->fixedParent].offset);
 			}
 
@@ -2268,7 +2251,6 @@ static qboolean R_LoadMDS(model_t *mod, void *buffer, const char *mod_name) {
 
 	return qtrue;
 }
-
 
 /*
 =======================================================================================================================================
@@ -2534,7 +2516,6 @@ static qboolean R_LoadMDX(model_t *mod, void *buffer, const char *mod_name) {
 }
 
 
-
 //=============================================================================
 
 /*
@@ -2580,7 +2561,6 @@ void R_ModelInit(void) {
 	mod->type = MOD_BAD;
 }
 
-
 /*
 =======================================================================================================================================
 R_Modellist_f
@@ -2615,7 +2595,6 @@ void R_Modellist_f(void) {
 	}
 #endif
 }
-
 
 //=============================================================================
 
@@ -2660,7 +2639,6 @@ static void R_GetMDVTag(mdvModel_t *mod, int frameNum, int tagIndex, orientation
 		VectorCopy(tag->axis[i], outTag->axis[i]);
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -2833,7 +2811,6 @@ int R_LerpTag(orientation_t *tag, qhandle_t handle,
 
 	return qtrue;
 }
-
 
 /*
 =======================================================================================================================================
@@ -3033,7 +3010,6 @@ shader_t *R_CustomSurfaceShader(const char *surfaceName, qhandle_t customShader,
 
 	return shader;
 }
-
 
 /*
 =======================================================================================================================================

@@ -58,7 +58,7 @@ static void MD5Init(struct MD5Context *ctx) {
 }
 /* The four core functions - F1 is optimized somewhat */
 
-/* #define F1(x, y, z)(x & y|~x & z) */
+/*#define F1(x, y, z)(x & y|~x & z) */
 #define F1(x, y, z)(z ^(x &(y ^ z)))
 #define F2(x, y, z)F1(z, x, y)
 #define F3(x, y, z)(x ^ y ^ z)
@@ -168,10 +168,10 @@ static void MD5Update(struct MD5Context *ctx, unsigned char const *buf,
 
     t = ctx->bits[0];
     if ((ctx->bits[0] = t + ((uint32_t)len << 3)) < t)
-	ctx->bits[1]++; 		/* Carry from low to high */
+	ctx->bits[1]++;		/* Carry from low to high */
     ctx->bits[1] += len >> 29;
 
-    t = (t >> 3)& 0x3f; 	/* Bytes already in shsInfo->data */
+    t = (t >> 3)& 0x3f;	/* Bytes already in shsInfo->data */
 
     /* Handle any leading odd - sized chunks */
 
@@ -204,7 +204,6 @@ static void MD5Update(struct MD5Context *ctx, unsigned char const *buf,
 
     memcpy(ctx->in, buf, len);
 }
-
 
 /*
  * Final wrapup - pad to 64 - byte boundary with the bit pattern 
@@ -249,9 +248,8 @@ static void MD5Final(struct MD5Context *ctx, unsigned char *digest) {
     
     if (digest!= NULL)
 	    memcpy(digest, ctx->buf, 16);
-    memset(ctx, 0, sizeof(*ctx)); 	/* In case it's sensitive */
+    memset(ctx, 0, sizeof(*ctx));	/* In case it's sensitive */
 }
-
 
 char *Com_MD5File(const char *fn, int length, const char *prefix, int prefix_len) {
 	static char final[33] = {""};

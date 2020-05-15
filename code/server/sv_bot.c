@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // sv_bot.c
@@ -40,9 +34,7 @@ typedef struct bot_debugpoly_s {
 
 static bot_debugpoly_t *debugpolygons;
 cvar_t *bot_maxdebugpolys;
-
 cvar_t *bot_enable;
-
 
 /*
 =======================================================================================================================================
@@ -86,7 +78,7 @@ int SV_BotAllocateClient(void) {
 
 	SV_SetupPlayerEntity(player);
 
-	return((int)(cl - svs.clients)& 0xFFFF)|((int)(player - svs.players) << 16);
+	return ((int)(cl - svs.clients)& 0xFFFF)|((int)(player - svs.players) << 16);
 }
 
 /*
@@ -110,6 +102,7 @@ void SV_BotFreeClient(int playerNum) {
 
 	player->client = NULL;
 	player->name[0] = 0;
+
 	if (player->gentity) {
 		player->gentity->r.svFlags & = ~SVF_BOT;
 	}
@@ -119,21 +112,24 @@ void SV_BotFreeClient(int playerNum) {
 =======================================================================================================================================
 SV_BotDrawDebugPolygons
 
-Set r_debugSurface to 2 to enable
+Set r_debugSurface to 2 to enable.
 =======================================================================================================================================
 */
 void SV_BotDrawDebugPolygons(void(*drawPoly)(int color, int numPoints, float *points)) {
 	bot_debugpoly_t *poly;
 	int i;
 
-	if (!debugpolygons)
+	if (!debugpolygons) {
 		return;
-
-	//draw all debug polys
+	}
+	// draw all debug polys
 	for (i = 0; i < bot_maxdebugpolys->integer; i++) {
 		poly = &debugpolygons[i];
 
-		if (!poly->inuse)continue;
+		if (!poly->inuse) {
+			continue;
+		}
+
 		drawPoly(poly->color, poly->numPoints, (float *)poly->points);
 		//Com_Printf("poly %i, numpoints = %d\n", i, poly->numPoints);
 	}
@@ -148,19 +144,24 @@ int BotImport_DebugPolygonCreate(int color, int numPoints, vec3_t *points) {
 	bot_debugpoly_t *poly;
 	int i;
 
-	if (!debugpolygons)
+	if (!debugpolygons) {
 		return 0;
+	}
 
 	for (i = 1; i < bot_maxdebugpolys->integer; i++) {
-		if (!debugpolygons[i].inuse)
+		if (!debugpolygons[i].inuse) {
 			break;
+		}
 	}
 
 	if (i >= bot_maxdebugpolys->integer)
 		return 0;
+	}
+
 	poly = &debugpolygons[i];
 	poly->inuse = qtrue;
 	poly->color = color;
+
 	if (!points || numPoints <= 0) {
 		poly->numPoints = 0;
 	} else {
@@ -179,14 +180,18 @@ BotImport_DebugPolygonShow
 void BotImport_DebugPolygonShow(int id, int color, int numPoints, vec3_t *points) {
 	bot_debugpoly_t *poly;
 
-	if (!debugpolygons)
+	if (!debugpolygons) {
 		return;
-	if (id < 0 || id >= bot_maxdebugpolys->integer)
+	}
+
+	if (id < 0 || id >= bot_maxdebugpolys->integer) {
 		return;
+	}
 
 	poly = &debugpolygons[id];
 	poly->inuse = qtrue;
 	poly->color = color;
+
 	if (!points || numPoints <= 0) {
 		poly->numPoints = 0;
 	} else {
@@ -201,10 +206,14 @@ BotImport_DebugPolygonDelete
 =======================================================================================================================================
 */
 void BotImport_DebugPolygonDelete(int id) {
-	if (!debugpolygons)
+
+	if (!debugpolygons) {
 		return;
-	if (id < 0 || id >= bot_maxdebugpolys->integer)
+	}
+
+	if (id < 0 || id >= bot_maxdebugpolys->integer) {
 		return;
+	}
 
 	debugpolygons[id].inuse = qfalse;
 }
@@ -213,12 +222,14 @@ void BotImport_DebugPolygonDelete(int id) {
 =======================================================================================================================================
 SV_ClientForPlayerNum
 
-ClientNum is for players array and we want client_t
+ClientNum is for players array and we want client_t.
 =======================================================================================================================================
 */
 client_t *SV_ClientForPlayerNum(int playerNum) {
-	if (playerNum < 0 || playerNum >= sv_maxclients->integer)
+
+	if (playerNum < 0 || playerNum >= sv_maxclients->integer) {
 		return NULL;
+	}
 
 	return svs.players[playerNum].client;
 }
@@ -227,14 +238,15 @@ client_t *SV_ClientForPlayerNum(int playerNum) {
 =======================================================================================================================================
 SV_ForceClientCommand
 
-Sends a client command for the specified playerNum
+Sends a client command for the specified playerNum.
 =======================================================================================================================================
 */
 void SV_ForceClientCommand(int playerNum, const char *command) {
 	client_t *client = SV_ClientForPlayerNum(playerNum);
 
-	if (!client)
+	if (!client) {
 		return;
+	}
 
 	SV_ExecuteClientCommand(client, command, qtrue);
 }
@@ -245,9 +257,15 @@ SV_BotFrame
 =======================================================================================================================================
 */
 void SV_BotFrame(int time) {
-	if (!bot_enable->integer)return;
-	//NOTE: maybe the game is already shutdown
-	if (!gvm)return;
+
+	if (!bot_enable->integer) {
+		return;
+	}
+	// NOTE: maybe the game is already shutdown
+	if (!gvm) {
+		return;
+	}
+
 	VM_Call(gvm, BOTAI_START_FRAME, time);
 }
 
@@ -255,7 +273,7 @@ void SV_BotFrame(int time) {
 =======================================================================================================================================
 SV_BotInitCvars
 
-Called at start up and map change
+Called at start up and map change.
 =======================================================================================================================================
 */
 void SV_BotInitCvars(void) {
@@ -267,10 +285,11 @@ void SV_BotInitCvars(void) {
 =======================================================================================================================================
 SV_BotInitBotLib
 
-Called at map change
+Called at map change.
 =======================================================================================================================================
 */
 void SV_BotInitBotLib(void) {
+
 	if (!debugpolygons || bot_maxdebugpolys->modified) {
 		if (debugpolygons)Z_Free(debugpolygons);
 		debugpolygons = Z_Malloc(sizeof(bot_debugpoly_t) * bot_maxdebugpolys->integer);
@@ -280,10 +299,7 @@ void SV_BotInitBotLib(void) {
 	Com_Memset(debugpolygons, 0, sizeof(bot_debugpoly_t) * bot_maxdebugpolys->integer);
 }
 
-
-//
-//  * * * BOT AI CODE IS BELOW THIS POINT * * *
-//
+// *** BOT AI CODE IS BELOW THIS POINT ***
 
 /*
 =======================================================================================================================================
@@ -296,8 +312,9 @@ int SV_BotGetServerCommand(int playerNum, char *buf, int size) {
 
 	cl = SV_ClientForPlayerNum(playerNum);
 
-	if (!cl)
+	if (!cl) {
 		return qfalse;
+	}
 
 	cl->lastPacketTime = svs.time;
 
@@ -315,7 +332,6 @@ int SV_BotGetServerCommand(int playerNum, char *buf, int size) {
 	Q_strncpyz(buf, cl->reliableCommands[index], size);
 	return qtrue;
 }
-
 #if 0
 /*
 =======================================================================================================================================
@@ -329,12 +345,13 @@ int EntityInPVS(int playerNum, int entityNum) {
 
 	cl = SV_ClientForPlayerNum(playerNum);
 
-	if (!cl)
+	if (!cl) {
 		return qfalse;
+	}
 
 	frame = &cl->frames[cl->netchan.outgoingSequence & PACKET_MASK];
 
-	for (i = 0; i < frame->num_entities; i++)	{
+	for (i = 0; i < frame->num_entities; i++) {
 		if (SV_SnapshotEntity(frame->first_entity + i) ->number == entityNum) {
 			return qtrue;
 		}
@@ -343,7 +360,6 @@ int EntityInPVS(int playerNum, int entityNum) {
 	return qfalse;
 }
 #endif
-
 /*
 =======================================================================================================================================
 SV_BotGetSnapshotEntity
@@ -355,10 +371,12 @@ int SV_BotGetSnapshotEntity(int playerNum, int sequence) {
 
 	cl = SV_ClientForPlayerNum(playerNum);
 
-	if (!cl)
+	if (!cl) {
 		return - 1;
+	}
 
 	frame = &cl->frames[cl->netchan.outgoingSequence & PACKET_MASK];
+
 	if (sequence < 0 || sequence >= frame->num_entities) {
 		return - 1;
 	}

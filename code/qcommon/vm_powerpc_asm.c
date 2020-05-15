@@ -229,7 +229,6 @@ asm_instruction(powerpc_iname_t sname, const int argc, const long int *argv) {
 	return ret;
 }
 
-
 /*
  * BEGIN OF ppc - opc.c
  */
@@ -438,7 +437,6 @@ insert_bdm(unsigned long insn,
   return insn |(value & 0xfffc);
 }
 
-
 /* Check for legal values of a BO field.  */
 
 static int
@@ -471,7 +469,7 @@ valid_bo(long value, int dialect, int extract) {
 	}
       /* When disassembling with - Many, accept power4 encodings too.  */
       if (valid
-	  ||(dialect & PPC_OPCODE_ANY) == 0
+	  || (dialect & PPC_OPCODE_ANY) == 0
 	  || !extract)
 	return valid;
     }
@@ -536,7 +534,6 @@ insert_rbs(unsigned long insn,
 	    const char **errmsg ATTRIBUTE_UNUSED) {
   return insn |(((insn >> 21)& 0x1f) << 11);
 }
-
 
 /* Macros used to form opcodes.  */
 

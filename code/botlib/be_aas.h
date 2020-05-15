@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -93,14 +87,14 @@ typedef enum
 
 //a trace is returned when a box is swept through the AAS world
 typedef struct aas_trace_s {
-	qboolean	startsolid; 	// if true, the initial point was in a solid area
-	float fraction; 	// time completed, 1.0 = didn't hit anything
-	vec3_t endpos; 		// final position
-	int ent; 		// entity blocking the trace
-	int lastarea; 	// last area the trace was in(zero if none)
-	int area; 		// area blocking the trace(zero if none)
-	int planenum; 	// number of the plane that was hit(zero if none or hit entity) // ZTM: FIXME: Is zero ever a valid value?
-	aas_plane_t plane; 		// surface normal at impact, transformed to world space
+	qboolean	startsolid;	// if true, the initial point was in a solid area
+	float fraction;	// time completed, 1.0 = didn't hit anything
+	vec3_t endpos;		// final position
+	int ent;		// entity blocking the trace
+	int lastarea;	// last area the trace was in(zero if none)
+	int area;		// area blocking the trace(zero if none)
+	int planenum;	// number of the plane that was hit(zero if none or hit entity) // ZTM: FIXME: Is zero ever a valid value?
+	aas_plane_t plane;		// surface normal at impact, transformed to world space
 } aas_trace_t;
 
 // area info
@@ -131,15 +125,15 @@ typedef struct aas_areainfo_s {
 #define SE_TOUCHCLUSTERPORTAL	4096	// touching a cluster portal
 
 typedef struct aas_clientmove_s {
-	vec3_t endpos; 			//position at the end of movement prediction
-	int endarea; 			//area at end of movement prediction
-	vec3_t velocity; 		//velocity at the end of movement prediction
-	aas_trace_t trace; 		//last trace
-	int presencetype; 		//presence type at end of movement prediction
-	int stopevent; 			//event that made the prediction stop
-	int endcontents; 		//contents at the end of movement prediction
-	float time; 				//time predicted ahead
-	int frames; 				//number of frames predicted ahead
+	vec3_t endpos;			//position at the end of movement prediction
+	int endarea;			//area at end of movement prediction
+	vec3_t velocity;		//velocity at the end of movement prediction
+	aas_trace_t trace;		//last trace
+	int presencetype;		//presence type at end of movement prediction
+	int stopevent;			//event that made the prediction stop
+	int endcontents;		//contents at the end of movement prediction
+	float time;				//time predicted ahead
+	int frames;				//number of frames predicted ahead
 } aas_clientmove_t;
 
 // alternate route goals
@@ -163,11 +157,11 @@ typedef struct aas_altroutegoal_s {
 #define RSE_ENTERAREA			8	//stop when entering the given area
 
 typedef struct aas_predictroute_s {
-	vec3_t endpos; 			//position at the end of movement prediction
-	int endarea; 			//area at end of movement prediction
-	int stopevent; 			//event that made the prediction stop
-	int endcontents; 		//contents at the end of movement prediction
-	int endtravelflags; 		//end travel flags
-	int numareas; 			//number of areas predicted ahead
-	int time; 				//time predicted ahead(in hundreth of a sec)
+	vec3_t endpos;			//position at the end of movement prediction
+	int endarea;			//area at end of movement prediction
+	int stopevent;			//event that made the prediction stop
+	int endcontents;		//contents at the end of movement prediction
+	int endtravelflags;		//end travel flags
+	int numareas;			//number of areas predicted ahead
+	int time;				//time predicted ahead(in hundreth of a sec)
 } aas_predictroute_t;

@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -105,7 +99,6 @@ typedef struct polyBuffer_s {
 	vec2_t st[MAX_PB_VERTS];
 	byte color[MAX_PB_VERTS][4];
 	int numVerts;
-
 	int indicies[MAX_PB_INDICIES];
 	int numIndicies;
 
@@ -134,45 +127,45 @@ typedef struct {
 	refEntityType_t reType;
 	int renderfx;
 
-	qhandle_t hModel; 				// opaque type outside refresh
+	qhandle_t hModel;				// opaque type outside refresh
 
 	// most recent data
-	vec3_t lightingOrigin; 		// so multi - part models can be lit identically(RF_LIGHTING_ORIGIN)
-	float shadowPlane; 		// projection shadows go here, stencils go slightly lower
+	vec3_t lightingOrigin;		// so multi - part models can be lit identically(RF_LIGHTING_ORIGIN)
+	float shadowPlane;		// projection shadows go here, stencils go slightly lower
 
-	vec3_t axis[3]; 			// rotation vectors
-	qboolean	nonNormalizedAxes; 	// axis are not normalized, i.e. they have scale
-	float origin[3]; 			// also used as MODEL_BEAM's "from"
-	int frame; 				// also used as MODEL_BEAM's diameter
-	qhandle_t frameModel; 			// use skeleton from another model
+	vec3_t axis[3];			// rotation vectors
+	qboolean	nonNormalizedAxes;	// axis are not normalized, i.e. they have scale
+	float origin[3];			// also used as MODEL_BEAM's "from"
+	int frame;				// also used as MODEL_BEAM's diameter
+	qhandle_t frameModel;			// use skeleton from another model
 
 	// previous data for frame interpolation
-	float oldorigin[3]; 		// also used as MODEL_BEAM's "to"
+	float oldorigin[3];		// also used as MODEL_BEAM's "to"
 	int oldframe;
-	qhandle_t oldframeModel; 		// old skeleton model
-	float backlerp; 			// 0.0 = current, 1.0 = old
+	qhandle_t oldframeModel;		// old skeleton model
+	float backlerp;			// 0.0 = current, 1.0 = old
 
 	// texturing
-	int skinNum; 			// inline skin index
-	qhandle_t customSkin; 			// NULL for default skin
-	qhandle_t customShader; 		// use one image for the entire thing
+	int skinNum;			// inline skin index
+	qhandle_t customSkin;			// NULL for default skin
+	qhandle_t customShader;		// use one image for the entire thing
 
 	// misc
-	byte shaderRGBA[4]; 		// colors used by rgbgen entity shaders
-	float shaderTexCoord[2]; 	// texture coordinates used by tcMod entity modifiers
-	int shaderTime; 			// subtracted from refdef time to control effect start times
-	float ambientLight[3]; 	// add to light grid ambient light or use instead of light grid(RF_CONST_AMBIENT)
+	byte shaderRGBA[4];		// colors used by rgbgen entity shaders
+	float shaderTexCoord[2];	// texture coordinates used by tcMod entity modifiers
+	int shaderTime;			// subtracted from refdef time to control effect start times
+	float ambientLight[3];	// add to light grid ambient light or use instead of light grid(RF_CONST_AMBIENT)
 
 	// extra sprite information
 	float radius;
 	float rotation;
 
 	// added in Spearmint 0.2
-	vec3_t fireRiseDir; 		// for alphaGen normalzfade and waveforms with negative frequency
+	vec3_t fireRiseDir;		// for alphaGen normalzfade and waveforms with negative frequency
 
 	// for MDS and MDX/MDM models
-	vec3_t torsoAxis[3]; 		// rotation vectors for torso section of skeletal animation
-	int torsoFrame; 			// skeletal torso can have frame independant of legs frame
+	vec3_t torsoAxis[3];		// rotation vectors for torso section of skeletal animation
+	int torsoFrame;			// skeletal torso can have frame independant of legs frame
 	qhandle_t torsoFrameModel;
 	int oldTorsoFrame;
 	qhandle_t oldTorsoFrameModel;
@@ -196,12 +189,11 @@ typedef struct {
 	int x, y, width, height;
 	float fov_x, fov_y;
 	vec3_t vieworg;
-	vec3_t viewaxis[3]; 		// transformation matrix
+	vec3_t viewaxis[3];		// transformation matrix
 
 	// time in milliseconds for shader effects and other time dependent rendering issues
 	int time;
-
-	int rdflags; 			// RDF_NOWORLDMODEL, etc
+	int rdflags;			// RDF_NOWORLDMODEL, etc
 
 	// 1 bits will prevent the associated area from rendering at all
 	byte areamask[MAX_MAP_AREA_BYTES];
@@ -261,9 +253,8 @@ typedef struct {
 	char vendor_string[MAX_STRING_CHARS];
 	char version_string[MAX_STRING_CHARS];
 	char extensions_string[BIG_INFO_STRING * 4];
-
-	int maxTextureSize; 			// queried from GL
-	int numTextureUnits; 		// multitexture ability
+	int maxTextureSize;			// queried from GL
+	int numTextureUnits;		// multitexture ability
 
 	int colorBits, depthBits, stencilBits;
 
@@ -297,18 +288,18 @@ typedef struct {
 #define GLYPH_CHAREND 127
 #define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
 typedef struct {
-	int height; 			// number of scan lines
-	int top; 			// top of glyph in buffer
-	int left; 			// left of glyph in buffer
-	int pitch; 			// width for copying
-	int xSkip; 			// x adjustment
-	int imageWidth; 		// width of actual image
-	int imageHeight; 	// height of actual image
-	float s; 				// x offset in image where glyph starts
-	float t; 				// y offset in image where glyph starts
+	int height;			// number of scan lines
+	int top;			// top of glyph in buffer
+	int left;			// left of glyph in buffer
+	int pitch;			// width for copying
+	int xSkip;			// x adjustment
+	int imageWidth;		// width of actual image
+	int imageHeight;	// height of actual image
+	float s;				// x offset in image where glyph starts
+	float t;				// y offset in image where glyph starts
 	float s2;
 	float t2;
-	qhandle_t glyph; 			// handle to the shader with the glyph
+	qhandle_t glyph;			// handle to the shader with the glyph
 	char shaderName[32];
 } glyphInfo_t;
 

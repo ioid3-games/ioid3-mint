@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_shade.c
@@ -49,7 +43,6 @@ R_DrawElements
 void R_DrawElements(int numIndexes, int firstIndex) {
 	qglDrawElements(GL_TRIANGLES, numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET(firstIndex * sizeof(glIndex_t)));
 }
-
 
 /*
 =======================================================================================================================================
@@ -88,7 +81,7 @@ static void R_BindAnimatedImageToTMU(textureBundle_t *bundle, int tmu) {
 	index > >= FUNCTABLE_SIZE2;
 
 	if (index < 0) {
-		index = 0; 	// may happen with shader time offsets
+		index = 0;	// may happen with shader time offsets
 	}
 
 	if (bundle->loopingImageAnim) {
@@ -103,7 +96,6 @@ static void R_BindAnimatedImageToTMU(textureBundle_t *bundle, int tmu) {
 
 	GL_BindToTMU(bundle->image[index], tmu);
 }
-
 
 /*
 =======================================================================================================================================
@@ -135,7 +127,6 @@ static void DrawTris(shaderCommands_t *input) {
 	qglDepthRange(0, 1);
 }
 
-
 /*
 =======================================================================================================================================
 DrawNormals
@@ -157,7 +148,6 @@ to overflow.
 =======================================================================================================================================
 */
 void RB_BeginSurface(shader_t *shader, int fogNum, int cubemapIndex) {
-
 	shader_t *state = (shader->remappedShader) ? shader->remappedShader : shader;
 
 	tess.numIndexes = 0;
@@ -166,7 +156,7 @@ void RB_BeginSurface(shader_t *shader, int fogNum, int cubemapIndex) {
 	tess.shader = state;
 	tess.fogNum = fogNum;
 	tess.cubemapIndex = cubemapIndex;
-	tess.dlightBits = 0; 		// will be OR'd in by surface functions
+	tess.dlightBits = 0;		// will be OR'd in by surface functions
 	tess.pshadowBits = 0;       // will be OR'd in by surface functions
 	tess.xstages = state->stages;
 	tess.numPasses = state->numUnfoggedPasses;
@@ -183,7 +173,6 @@ void RB_BeginSurface(shader_t *shader, int fogNum, int cubemapIndex) {
 		tess.currentStageIteratorFunc = RB_StageIteratorGeneric;
 	}
 }
-
 
 
 extern float EvalWaveForm(const waveForm_t *wf);
@@ -207,10 +196,10 @@ static void ComputeTexMods(shaderStage_t *pStage, int bundleNum, float *outMatri
 	outOffTurb[0] = 0.0f; outOffTurb[1] = 0.0f; outOffTurb[2] = 0.0f; outOffTurb[3] = 0.0f;
 
 	for (tm = 0; tm < bundle->numTexMods; tm++) {
-		switch(bundle->texMods[tm].type) {
+		switch (bundle->texMods[tm].type) {
 			
 		case TMOD_NONE:
-			tm = TR_MAX_TEXMODS; 		// break out of for loop
+			tm = TR_MAX_TEXMODS;		// break out of for loop
 			break;
 
 		case TMOD_TURBULENT:
@@ -251,7 +240,7 @@ static void ComputeTexMods(shaderStage_t *pStage, int bundleNum, float *outMatri
 			break;
 		}
 
-		switch(bundle->texMods[tm].type) {	
+		switch (bundle->texMods[tm].type) {	
 		case TMOD_NONE:
 		case TMOD_TURBULENT:
 		default:
@@ -283,7 +272,6 @@ static void ComputeTexMods(shaderStage_t *pStage, int bundleNum, float *outMatri
 	}
 }
 
-
 static void ComputeDeformValues(int *deformGen, vec5_t deformParams) {
 	// u_DeformGen
 	*deformGen = DGEN_NONE;
@@ -293,7 +281,7 @@ static void ComputeDeformValues(int *deformGen, vec5_t deformParams) {
 		// only support the first one
 		ds = &tess.shader->deforms[0];
 
-		switch(ds->deformation) {
+		switch (ds->deformation) {
 			case DEFORM_WAVE:
 				*deformGen = ds->deformationWave.func;
 
@@ -320,7 +308,6 @@ static void ComputeDeformValues(int *deformGen, vec5_t deformParams) {
 	}
 }
 
-
 static void ProjectDlightTexture(void) {
 	int l;
 	vec3_t origin;
@@ -344,7 +331,7 @@ static void ProjectDlightTexture(void) {
 		vec4_t vector;
 
 		if (!(tess.dlightBits &(1 << l))) {
-			continue; 	// this surface definitely doesn't have any of this light
+			continue;	// this surface definitely doesn't have any of this light
 		}
 
 		dl = &backEnd.refdef.dlights[l];
@@ -353,7 +340,7 @@ static void ProjectDlightTexture(void) {
 		scale = 1.0f / radius;
 		intensity = dl->intensity;
 
-		vertexLight = ((dl->flags & REF_DIRECTED_DLIGHT) ||(dl->flags & REF_VERTEX_DLIGHT));
+		vertexLight = ((dl->flags & REF_DIRECTED_DLIGHT) || (dl->flags & REF_VERTEX_DLIGHT));
 
 		shaderNum = (deformGen == DGEN_NONE) ? 0 : 1;
 
@@ -429,7 +416,7 @@ static void ProjectDlightTexture(void) {
 				GL_State(stage->stateBits|GLS_DEPTHFUNC_EQUAL);
 
 				// alpha test function
-				switch(stage->stateBits & GLS_ATEST_FUNC_BITS) {
+				switch (stage->stateBits & GLS_ATEST_FUNC_BITS) {
 					case GLS_ATEST_GREATER:
 						GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_GREATER);
 						break;
@@ -477,7 +464,7 @@ static void ProjectDlightTexture(void) {
 				GL_State(GLS_ATEST_GT_0|GLS_SRCBLEND_DST_COLOR|GLS_DSTBLEND_ONE|GLS_DEPTHFUNC_EQUAL);
 			}
 			// alpha test function
-			switch(glState.glStateBits & GLS_ATEST_FUNC_BITS) {
+			switch (glState.glStateBits & GLS_ATEST_FUNC_BITS) {
 				case GLS_ATEST_GREATER:
 					GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_GREATER);
 					break;
@@ -512,7 +499,6 @@ static void ProjectDlightTexture(void) {
 	}
 }
 
-
 static void ComputeShaderColors(shaderStage_t *pStage, vec4_t baseColor, vec4_t vertColor, int blend) {
 	qboolean isBlend = ((blend & GLS_SRCBLEND_BITS) == GLS_SRCBLEND_DST_COLOR)
 		||((blend & GLS_SRCBLEND_BITS) == GLS_SRCBLEND_ONE_MINUS_DST_COLOR)
@@ -534,7 +520,7 @@ static void ComputeShaderColors(shaderStage_t *pStage, vec4_t baseColor, vec4_t 
 	vertColor[3] = 0.0f;
 
 	// rgbGen
-	switch(pStage->rgbGen) {
+	switch (pStage->rgbGen) {
 		case CGEN_EXACT_VERTEX:
 		case CGEN_EXACT_VERTEX_LIT:
 			baseColor[0] = 
@@ -643,7 +629,7 @@ static void ComputeShaderColors(shaderStage_t *pStage, vec4_t baseColor, vec4_t 
 			break;
 	}
 	// alphaGen
-	switch(pStage->alphaGen) {
+	switch (pStage->alphaGen) {
 		case AGEN_SKIP:
 			break;
 		case AGEN_CONST:
@@ -713,7 +699,6 @@ static void ComputeShaderColors(shaderStage_t *pStage, vec4_t baseColor, vec4_t 
 	}
 #endif
 }
-
 
 static void ComputeFogValues(vec4_t fogDistanceVector, vec4_t fogDepthVector, float *eyeT, fogType_t *outFogType) {
 	// from RB_CalcFogTexCoords()
@@ -793,13 +778,12 @@ static void ComputeFogValues(vec4_t fogDistanceVector, vec4_t fogDepthVector, fl
 
 		*eyeT = DotProduct(backEnd.or.viewOrigin, fogDepthVector) +  fogDepthVector[3];
 	} else {
-		*eyeT = 1; 	// non - surface fog always has eye inside
+		*eyeT = 1;	// non - surface fog always has eye inside
 	}
 }
 
-
 static void ComputeFogColorMask(shaderStage_t *pStage, vec4_t fogColorMask) {
-	switch(pStage->adjustColorsForFog) {
+	switch (pStage->adjustColorsForFog) {
 		case ACFF_MODULATE_RGB:
 			fogColorMask[0] = 
 			fogColorMask[1] = 
@@ -827,14 +811,12 @@ static void ComputeFogColorMask(shaderStage_t *pStage, vec4_t fogColorMask) {
 	}
 }
 
-
 static void ForwardDlight(void) {
 	int l;
 	//vec3_t origin;
 	//float scale;
 	float radius;
 	float intensity;
-
 	int deformGen;
 	vec5_t deformParams;
 	
@@ -860,7 +842,7 @@ static void ForwardDlight(void) {
 		vec4_t texOffTurb;
 
 		if (!(tess.dlightBits &(1 << l))) {
-			continue; 	// this surface definitely doesn't have any of this light
+			continue;	// this surface definitely doesn't have any of this light
 		}
 
 		dl = &backEnd.refdef.dlights[l];
@@ -1044,12 +1026,10 @@ static void ForwardDlight(void) {
 	}
 }
 
-
 static void ProjectPshadowVBOGLSL(void) {
 	int l;
 	vec3_t origin;
 	float radius;
-
 	int deformGen;
 	vec5_t deformParams;
 
@@ -1067,7 +1047,7 @@ static void ProjectPshadowVBOGLSL(void) {
 		vec4_t vector;
 
 		if (!(tess.pshadowBits &(1 << l))) {
-			continue; 	// this surface definitely doesn't have any of this shadow
+			continue;	// this surface definitely doesn't have any of this shadow
 		}
 
 		ps = &backEnd.refdef.pshadows[l];
@@ -1114,7 +1094,6 @@ static void ProjectPshadowVBOGLSL(void) {
 }
 
 
-
 /*
 =======================================================================================================================================
 RB_FogPass
@@ -1130,7 +1109,6 @@ static void RB_FogPass(void) {
 	shaderProgram_t *sp;
 	fogType_t fogType;
 	int colorInt;
-
 	int deformGen;
 	vec5_t deformParams;
 
@@ -1246,7 +1224,6 @@ static void RB_FogPass(void) {
 	R_DrawElements(tess.numIndexes, tess.firstIndex);
 }
 
-
 static unsigned int RB_CalcShaderVertexAttribs(shaderCommands_t *input) {
 	unsigned int vertexAttribs = input->shader->vertexAttribs;
 
@@ -1273,7 +1250,6 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input) {
 	vec4_t fogDistanceVector, fogDepthVector = {0, 0, 0, 0};
 	float eyeT = 0;
 	fogType_t fogType = FT_NONE, stageFogType;
-
 	int deformGen;
 	vec5_t deformParams;
 
@@ -1331,6 +1307,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input) {
 					{
 						index |= LIGHTDEF_ENTITY_BONE_ANIMATION;
 					}
+
 					else
 					{
 						index |= LIGHTDEF_ENTITY_VERTEX_ANIMATION;
@@ -1355,6 +1332,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input) {
 				if (glState.vertexAnimation) {
 					shaderAttribs |= GENERICDEF_USE_VERTEX_ANIMATION;
 				}
+
 				else if (glState.boneAnimation) {
 					shaderAttribs |= GENERICDEF_USE_BONE_ANIMATION;
 				}
@@ -1374,6 +1352,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input) {
 				if (glState.boneAnimation) {
 					index |= LIGHTDEF_ENTITY_BONE_ANIMATION;
 				}
+
 				else
 				{
 					index |= LIGHTDEF_ENTITY_VERTEX_ANIMATION;
@@ -1449,7 +1428,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input) {
 		GL_State(pStage->stateBits);
 
 		// alpha test function
-		switch(pStage->stateBits & GLS_ATEST_FUNC_BITS) {
+		switch (pStage->stateBits & GLS_ATEST_FUNC_BITS) {
 			case GLS_ATEST_GREATER:
 				GLSL_SetUniformInt(sp, UNIFORM_ALPHATEST, U_ATEST_GREATER);
 				break;
@@ -1624,10 +1603,12 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input) {
 					color[2] = backEnd.refdef.sunCol[2] * backEnd.refdef.sunCol[2];
 					GLSL_SetUniformVec3(sp, UNIFORM_PRIMARYLIGHTCOLOR, color);
 				}
+
 				else
 				{
 					GLSL_SetUniformVec3(sp, UNIFORM_PRIMARYLIGHTCOLOR, backEnd.refdef.sunCol);
 				}
+
 				GLSL_SetUniformVec4(sp, UNIFORM_PRIMARYLIGHTORIGIN, backEnd.refdef.sunDir);
 			}
 
@@ -1674,6 +1655,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input) {
 						R_BindAnimatedImageToTMU(&pStage->bundle[TB_NORMALMAP], TB_NORMALMAP);
 						enableTextures[0] = 1.0f;
 					}
+
 					else if (r_normalMapping->integer)
 						GL_BindToTMU(tr.whiteImage, TB_NORMALMAP);
 
@@ -1682,6 +1664,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input) {
 						R_BindAnimatedImageToTMU(&pStage->bundle[TB_DELUXEMAP], TB_DELUXEMAP);
 						enableTextures[1] = 1.0f;
 					}
+
 					else if (r_deluxeMapping->integer)
 						GL_BindToTMU(tr.whiteImage, TB_DELUXEMAP);
 
@@ -1690,6 +1673,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input) {
 						R_BindAnimatedImageToTMU(&pStage->bundle[TB_SPECULARMAP], TB_SPECULARMAP);
 						enableTextures[2] = 1.0f;
 					}
+
 					else if (r_specularMapping->integer)
 						GL_BindToTMU(tr.whiteImage, TB_SPECULARMAP);
 				}
@@ -1756,7 +1740,6 @@ static void RB_IterateStagesGeneric(shaderCommands_t *input) {
 			break;
 	}
 }
-
 
 static void RB_RenderShadowmap(shaderCommands_t *input) {
 	int deformGen;
@@ -1830,7 +1813,6 @@ static void RB_RenderShadowmap(shaderCommands_t *input) {
 		}
 	}
 }
-
 
 
 /*
@@ -1921,8 +1903,6 @@ void RB_StageIteratorGeneric(void) {
 		&& tess.shader->sort <= SS_OPAQUE && !(tess.shader->surfaceParms &(SURF_NODLIGHT|SURF_SKY))) {
 		ProjectPshadowVBOGLSL();
 	}
-
-
 	// 
 	// now do any dynamic lighting needed
 	if (tess.dlightBits && tess.shader->sort <= SS_OPAQUE && r_lightmap->integer == 0

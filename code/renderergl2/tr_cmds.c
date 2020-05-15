@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 #include "tr_local.h"
@@ -62,8 +56,7 @@ void R_PerformanceCounters(void) {
 				tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled,
 				backEnd.pc.c_dlightVertexes, backEnd.pc.c_dlightIndexes / 3);
 		}
-	} 
-	else if (r_speeds->integer == 5) {
+	} else if (r_speeds->integer == 5) {
 		ri.Printf(PRINT_ALL, "zFar: %.0f\n", tr.viewParms.zFar);
 	} else if (r_speeds->integer == 6) {
 		ri.Printf(PRINT_ALL, "flare adds:%i tests:%i renders:%i\n",
@@ -78,7 +71,6 @@ void R_PerformanceCounters(void) {
 	Com_Memset(&tr.pc, 0, sizeof(tr.pc));
 	Com_Memset(&backEnd.pc, 0, sizeof(backEnd.pc));
 }
-
 
 /*
 =======================================================================================================================================
@@ -109,7 +101,6 @@ void R_IssueRenderCommands(qboolean runPerformanceCounters) {
 		RB_ExecuteRenderCommands(cmdList->cmds);
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -164,7 +155,6 @@ void *R_GetCommandBuffer(int bytes) {
 	return R_GetCommandBufferReserved(bytes, PAD(sizeof(swapBuffersCommand_t), sizeof(void *)));
 }
 
-
 /*
 =======================================================================================================================================
 R_AddDrawSurfCmd
@@ -188,7 +178,6 @@ void R_AddDrawSurfCmd(drawSurf_t *drawSurfs, int numDrawSurfs) {
 	cmd->viewParms = tr.viewParms;
 }
 
-
 /*
 =======================================================================================================================================
 R_AddCapShadowmapCmd
@@ -208,7 +197,6 @@ void R_AddCapShadowmapCmd(int map, int cubeSide) {
 	cmd->map = map;
 	cmd->cubeSide = cubeSide;
 }
-
 
 /*
 =======================================================================================================================================
@@ -261,7 +249,6 @@ void RE_SetColor(const float *rgba) {
 	cmd->color[2] = rgba[2];
 	cmd->color[3] = rgba[3];
 }
-
 
 /*
 =======================================================================================================================================
@@ -341,7 +328,6 @@ void RE_SetClipRegion(const float *region) {
 		Vector4Copy(region, tr.clipRegion);
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -578,7 +564,6 @@ void RE_GetViewFog(const vec3_t origin, fogType_t *type, vec3_t color, float *de
 
 		// skip world(bmodel 0)
 		for (bmodelNum = 1, bmodel = &tr.world->bmodels[1]; bmodelNum < tr.world->numBModels; bmodelNum++, bmodel++) {
-
 			if (!R_PointInBrush(origin, bmodel))
 				continue;
 
@@ -663,7 +648,6 @@ void R_SetColorMode(GLboolean *rgba, stereoFrame_t stereoFrame, int colormode) {
 		}
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -846,7 +830,6 @@ void RE_BeginFrame(stereoFrame_t stereoFrame) {
 	
 	tr.refdef.stereoFrame = stereoFrame;
 }
-
 
 /*
 =======================================================================================================================================

@@ -1,57 +1,60 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // cl.input.c -- builds an intended movement command to send to the server
 
 #include "client.h"
 
-unsigned	frame_msec;
+unsigned frame_msec;
 int old_com_frameTime;
 
 #ifdef USE_VOIP
+/*
+=======================================================================================================================================
+IN_VoipRecordDown
+=======================================================================================================================================
+*/
 void IN_VoipRecordDown(void) {
 	Cvar_Set("cl_voipSend", "1");
 }
 
+/*
+=======================================================================================================================================
+IN_VoipRecordUp
+=======================================================================================================================================
+*/
 void IN_VoipRecordUp(void) {
 	Cvar_Set("cl_voipSend", "0");
 }
 #endif
-
-static int mouseFlags[CL_MAX_SPLITVIEW] = {0}; 	// MOUSE_CGAME, MOUSE_CLIENT, ...
-
+static int mouseFlags[CL_MAX_SPLITVIEW] = {0}; // MOUSE_CGAME, MOUSE_CLIENT, ...
 /*
 =======================================================================================================================================
 Mouse_GetState
 =======================================================================================================================================
 */
 int Mouse_GetState(int localPlayerNum) {
+
 	if (localPlayerNum < 0 || localPlayerNum >= CL_MAX_SPLITVIEW) {
 		return 0;
 	}
@@ -65,6 +68,7 @@ Mouse_SetState
 =======================================================================================================================================
 */
 void Mouse_SetState(int localPlayerNum, int state) {
+
 	if (localPlayerNum < 0 || localPlayerNum >= CL_MAX_SPLITVIEW) {
 		return;
 	}
@@ -120,7 +124,6 @@ void CL_MouseMove(int localPlayerNum, float *outmx, float *outmy) {
 	float mx, my;
 
 	plr = &cl.localPlayers[localPlayerNum];
-
 	// allow mouse smoothing
 	if (m_filter->integer) {
 		mx = (plr->mouseDx[0] + plr->mouseDx[1]) * 0.5f;
@@ -151,11 +154,10 @@ void CL_MouseMove(int localPlayerNum, float *outmx, float *outmy) {
 			mx *= accelSensitivity;
 			my *= accelSensitivity;
 			
-			if (cl_showMouseRate->integer)
+			if (cl_showMouseRate->integer) {
 				Com_Printf("rate: %f, accelSensitivity: %f\n", rate, accelSensitivity);
-		}
-
-		else {
+			}
+		} else {
 			float rate[2];
 			float power[2];
 
@@ -163,7 +165,6 @@ void CL_MouseMove(int localPlayerNum, float *outmx, float *outmy) {
 			// cl_mouseAccel is a power value to how the acceleration is shaped
 			// cl_mouseAccelOffset is the rate for which the acceleration will have doubled the non accelerated amplification
 			// NOTE: decouple the config cvars for independent acceleration setup along X and Y?
-
 			rate[0] = fabs(mx) / (float)frame_msec;
 			rate[1] = fabs(my) / (float)frame_msec;
 			power[0] = powf(rate[0] / cl_mouseAccelOffset->value, cl_mouseAccel->value);
@@ -172,8 +173,9 @@ void CL_MouseMove(int localPlayerNum, float *outmx, float *outmy) {
 			mx = cl_sensitivity->value * (mx + ((mx < 0) ? - power[0] : power[0]) * cl_mouseAccelOffset->value);
 			my = cl_sensitivity->value * (my + ((my < 0) ? - power[1] : power[1]) * cl_mouseAccelOffset->value);
 
-			if (cl_showMouseRate->integer)
+			if (cl_showMouseRate->integer) {
 				Com_Printf("ratex: %f, ratey: %f, powx: %f, powy: %f\n", rate[0], rate[1], power[0], power[1]);
+			}
 		}
 	} else {
 		mx *= cl_sensitivity->value;
@@ -184,15 +186,13 @@ void CL_MouseMove(int localPlayerNum, float *outmx, float *outmy) {
 	*outmy = my;
 }
 
-
 /*
 =======================================================================================================================================
 CL_FinishMove
 =======================================================================================================================================
 */
 void CL_FinishMove(usercmd_t *cmd) {
-	// send the current server time so the amount of movement
-	// can be determined without allowing cheating
+	// send the current server time so the amount of movement can be determined without allowing cheating
 	cmd->serverTime = cl.serverTime;
 }
 
@@ -224,12 +224,11 @@ usercmd_t CL_CreateCmd(int localPlayerNum) {
 	return cmd;
 }
 
-
 /*
 =======================================================================================================================================
 CL_CreateNewCommands
 
-Create a new usercmd_t structure for this frame
+Create a new usercmd_t structure for this frame.
 =======================================================================================================================================
 */
 void CL_CreateNewCommands(void) {
@@ -242,21 +241,17 @@ void CL_CreateNewCommands(void) {
 	}
 
 	frame_msec = com_frameTime - old_com_frameTime;
-
 	// if running over 1000fps, act as if each frame is 1ms
 	// prevents divisions by zero
 	if (frame_msec < 1) {
 		frame_msec = 1;
 	}
-	// if running less than 5fps, truncate the extra time to prevent
-	// unexpected moves after a hitch
+	// if running less than 5fps, truncate the extra time to prevent unexpected moves after a hitch
 	if (frame_msec > 200) {
 		frame_msec = 200;
 	}
 
 	old_com_frameTime = com_frameTime;
-
-
 	// generate a command for this frame
 	cl.cmdNumber++;
 	cmdNum = cl.cmdNumber & CMD_MASK;
@@ -274,11 +269,9 @@ void CL_CreateNewCommands(void) {
 =======================================================================================================================================
 CL_ReadyToSendPacket
 
-Returns qfalse if we are over the maxpackets limit
-and should choke back the bandwidth a bit by not sending
-a packet this frame.  All the commands will still get
-delivered in the next packet, but saving a header and
-getting more delta compression will reduce total bandwidth.
+Returns qfalse if we are over the maxpackets limit and should choke back the bandwidth a bit by not sending a packet this frame.
+All the commands will still get delivered in the next packet, but saving a header and getting more delta compression will reduce total
+bandwidth.
 =======================================================================================================================================
 */
 qboolean CL_ReadyToSendPacket(void) {
@@ -289,17 +282,13 @@ qboolean CL_ReadyToSendPacket(void) {
 	if (clc.demoplaying || clc.state == CA_CINEMATIC) {
 		return qfalse;
 	}
-	// If we are downloading, we send no less than 50ms between packets
+	// if we are downloading, we send no less than 50ms between packets
 	if (*clc.downloadTempName &&
 		cls.realtime - clc.lastPacketSentTime < 50) {
 		return qfalse;
 	}
-	// if we don't have a valid gamestate yet, only send
-	// one packet a second
-	if (clc.state != CA_ACTIVE && 
-		clc.state != CA_PRIMED && 
-		!*clc.downloadTempName &&
-		cls.realtime - clc.lastPacketSentTime < 1000) {
+	// if we don't have a valid gamestate yet, only send one packet a second
+	if (clc.state != CA_ACTIVE && clc.state != CA_PRIMED && !*clc.downloadTempName && cls.realtime - clc.lastPacketSentTime < 1000) {
 		return qfalse;
 	}
 	// send every frame for loopbacks
@@ -360,31 +349,24 @@ void CL_WritePacket(void) {
 	}
 
 	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
+
 	oldcmd = &nullcmd;
 
 	MSG_Init(&buf, data, sizeof(data));
-
 	MSG_Bitstream(&buf);
-	// write the current serverId so the server
-	// can tell if this is from the current gameState
+	// write the current serverId so the server can tell if this is from the current gameState
 	MSG_WriteLong(&buf, cl.serverId);
-
-	// write the last message we received, which can
-	// be used for delta compression, and is also used
-	// to tell if we dropped a gamestate
+	// write the last message we received, which can be used for delta compression, and is also used to tell if we dropped a gamestate
 	MSG_WriteLong(&buf, clc.serverMessageSequence);
-
 	// write the last reliable message we received
 	MSG_WriteLong(&buf, clc.serverCommandSequence);
-
 	// write any unacknowledged clientCommands
 	for (i = clc.reliableAcknowledge + 1; i <= clc.reliableSequence; i++) {
 		MSG_WriteByte(&buf, clc_clientCommand);
 		MSG_WriteLong(&buf, i);
 		MSG_WriteString(&buf, clc.reliableCommands[i &(MAX_RELIABLE_COMMANDS - 1)]);
 	}
-	// we want to send all the usercmds that were generated in the last
-	// few packet, so even if a couple packets are dropped in a row,
+	// we want to send all the usercmds that were generated in the last few packet, so even if a couple packets are dropped in a row,
 	// all the cmds will make it to the server
 	if (cl_packetdup->integer < 0) {
 		Cvar_Set("cl_packetdup", "0");
@@ -394,11 +376,11 @@ void CL_WritePacket(void) {
 
 	oldPacketNum = (clc.netchan.outgoingSequence - 1 - cl_packetdup->integer)& PACKET_MASK;
 	count = cl.cmdNumber - cl.outPackets[oldPacketNum].p_cmdNumber;
+
 	if (count > MAX_PACKET_USERCMDS) {
 		count = MAX_PACKET_USERCMDS;
 		Com_Printf("MAX_PACKET_USERCMDS\n");
 	}
-
 #ifdef USE_VOIP
 	if (clc.voipOutgoingDataSize > 0) {
 		// ZTM: TODO: Allow each local player to use voip, or at least allow using voip when player 1 isn't present.
@@ -414,11 +396,8 @@ void CL_WritePacket(void) {
 			MSG_WriteByte(&buf, clc.voipFlags);
 			MSG_WriteShort(&buf, clc.voipOutgoingDataSize);
 			MSG_WriteData(&buf, clc.voipOutgoingData, clc.voipOutgoingDataSize);
-
-			// If we're recording a demo, we have to fake a server packet with
-			//  this VoIP data so it gets to disk; the server doesn't send it
-			//  back to us, and we might as well eliminate concerns about dropped
-			//  and misordered packets here.
+			// if we're recording a demo, we have to fake a server packet with this VoIP data so it gets to disk; the server doesn't send it
+			// back to us, and we might as well eliminate concerns about dropped and misordered packets here.
 			if (clc.demorecording && !clc.demowaiting) {
 				const int voipSize = clc.voipOutgoingDataSize;
 				msg_t fakemsg;
@@ -441,16 +420,13 @@ void CL_WritePacket(void) {
 			clc.voipOutgoingSequence += clc.voipOutgoingDataFrames;
 			clc.voipOutgoingDataSize = 0;
 			clc.voipOutgoingDataFrames = 0;
-		}
-
-		else {
+		} else {
 			// We have data, but no targets. Silently discard all data
 			clc.voipOutgoingDataSize = 0;
 			clc.voipOutgoingDataFrames = 0;
 		}
 	}
 #endif
-
 	if (count >= 1) {
 		if (cl_showSend->integer) {
 			Com_Printf("(%i)", count);
@@ -473,10 +449,8 @@ void CL_WritePacket(void) {
 		}
 		// write the local player bits
 		MSG_WriteByte(&buf, localPlayerBits);
-
 		// write the command count
 		MSG_WriteByte(&buf, count);
-
 		// use the message acknowledge in the key
 		key = clc.serverMessageSequence;
 		// also use the last acknowledged server command in the key
@@ -488,8 +462,8 @@ void CL_WritePacket(void) {
 			}
 
 			Com_Memset(&nullcmd, 0, sizeof(nullcmd));
-			oldcmd = &nullcmd;
 
+			oldcmd = &nullcmd;
 			// write all the commands, including the predicted command
 			for (i = 0; i < count; i++) {
 				j = (cl.cmdNumber - count + i + 1)& CMD_MASK;
@@ -510,7 +484,7 @@ void CL_WritePacket(void) {
 		Com_Printf("%i ", buf.cursize);
 	}
 
-	CL_Netchan_Transmit(&clc.netchan, &buf); 	
+	CL_Netchan_Transmit(&clc.netchan, &buf);	
 }
 
 /*
@@ -521,6 +495,7 @@ Called every frame to builds and sends a command packet to the server.
 =======================================================================================================================================
 */
 void CL_SendCmd(void) {
+
 	// don't send any message if not connected
 	if (clc.state < CA_CONNECTED) {
 		return;
@@ -531,7 +506,6 @@ void CL_SendCmd(void) {
 	}
 	// we create commands even if a demo is playing,
 	CL_CreateNewCommands();
-
 	// don't send a packet if the last packet was sent too recently
 	if (!CL_ReadyToSendPacket()) {
 		if (cl_showSend->integer) {
@@ -555,7 +529,6 @@ void CL_InitInput(void) {
 	Cmd_AddCommand("+voiprecord", IN_VoipRecordDown);
 	Cmd_AddCommand("-voiprecord", IN_VoipRecordUp);
 #endif
-
 	cl_nodelta = Cvar_Get("cl_nodelta", "0", 0);
 }
 

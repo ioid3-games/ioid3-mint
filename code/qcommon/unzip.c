@@ -178,7 +178,6 @@ local int unzlocal_getByte(pzlib_filefunc_def, filestream, pi)
     }
 }
 
-
 /*===========================================================================
    Reads a long in LSB order from the given gz_stream. Sets
 */
@@ -273,7 +272,6 @@ local int strcmpcasenosensitive_internal(fileName1, fileName2)
             return 1;
     }
 }
-
 
 #ifdef  CASESENSITIVITYDEFAULT_NO
 #define CASESENSITIVITYDEFAULTVALUE 2
@@ -488,7 +486,6 @@ extern unzFile ZEXPORT unzOpen2(path, pzlib_filefunc_def)
     return(unzFile)s;
 }
 
-
 extern unzFile ZEXPORT unzOpen(path)
     const char *path;
 {
@@ -516,7 +513,6 @@ extern int ZEXPORT unzClose(file)
     return UNZ_OK;
 }
 
-
 /*
   Write info about the ZipFile in the *pglobal_info structure.
   No preparation of the structure is needed
@@ -532,7 +528,6 @@ extern int ZEXPORT unzGetGlobalInfo(file, pglobal_info)
     *pglobal_info = s->gi;
     return UNZ_OK;
 }
-
 
 /*
    Translate date/time from Dos format to tm_unz(readable more easilty)
@@ -678,7 +673,6 @@ local int unzlocal_GetCurrentFileInfoInternal(file,
         lSeek -= uSizeRead;
     }
 
-
     if ((err == UNZ_OK) && (extraField!= NULL))
     {
         uLong uSizeRead;
@@ -732,7 +726,6 @@ local int unzlocal_GetCurrentFileInfoInternal(file,
 
     return err;
 }
-
 
 
 /*
@@ -811,7 +804,6 @@ extern int ZEXPORT unzGoToNextFile(file)
     return err;
 }
 
-
 /*
   Try locate the file szFileName in the zipfile.
   For the iCaseSensitivity signification, see unzipStringFileNameCompare
@@ -879,7 +871,6 @@ extern int ZEXPORT unzLocateFile(file, szFileName, iCaseSensitivity)
     s->cur_file_info_internal = cur_file_info_internalSaved;
     return err;
 }
-
 
 /*
 ///////////////////////////////////////////
@@ -1311,7 +1302,7 @@ extern int ZEXPORT unzReadCurrentFile (file, buf, len)
             pfile_in_zip_read_info->stream.avail_in = (uInt)uReadThis;
         }
 
-        if ((pfile_in_zip_read_info->compression_method == 0) ||(pfile_in_zip_read_info->raw))
+        if ((pfile_in_zip_read_info->compression_method == 0) || (pfile_in_zip_read_info->raw))
         {
             uInt uDoCopy, i;
 
@@ -1385,7 +1376,6 @@ extern int ZEXPORT unzReadCurrentFile (file, buf, len)
     return err;
 }
 
-
 /*
   Give the current position in uncompressed data
 */
@@ -1404,7 +1394,6 @@ extern z_off_t ZEXPORT unztell(file)
 
     return(z_off_t)pfile_in_zip_read_info->stream.total_out;
 }
-
 
 /*
   return 1 if the end of file was reached, 0 elsewhere
@@ -1427,7 +1416,6 @@ extern int ZEXPORT unzeof(file)
     else
         return 0;
 }
-
 
 
 /*
@@ -1516,7 +1504,6 @@ extern int ZEXPORT unzCloseCurrentFile(file)
             err = UNZ_CRCERROR;
     }
 
-
     TRYFREE(pfile_in_zip_read_info->read_buffer);
     pfile_in_zip_read_info->read_buffer = NULL;
     if (pfile_in_zip_read_info->stream_initialised)
@@ -1529,7 +1516,6 @@ extern int ZEXPORT unzCloseCurrentFile(file)
 
     return err;
 }
-
 
 /*
   Get the global comment string of the ZipFile, in the szComment buffer.

@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -132,7 +126,7 @@ static struct ipv6_mreq curgroup;
 static struct sockaddr_in6 boundto;
 
 #ifndef IF_NAMESIZE
-  #define IF_NAMESIZE 16
+#define IF_NAMESIZE 16
 #endif
 
 // use an admin local address per default so that network admins can decide on how to handle quake3 traffic.
@@ -164,7 +158,7 @@ NET_ErrorString
 char *NET_ErrorString(void) {
 #ifdef _WIN32
 	//FIXME: replace with FormatMessage?
-	switch(socketError) {
+	switch (socketError) {
 		case WSAEINTR: return "WSAEINTR";
 		case WSAEBADF: return "WSAEBADF";
 		case WSAEACCES: return "WSAEACCES";
@@ -237,7 +231,6 @@ static void NetadrToSockadr(netadr_t *a, struct sockaddr *s) {
 	}
 }
 
-
 static void SockadrToNetadr(struct sockaddr *s, netadr_t *a) {
 	if (s->sa_family == AF_INET) {
 		a->type = NA_IP;
@@ -250,7 +243,6 @@ static void SockadrToNetadr(struct sockaddr *s, netadr_t *a) {
 		a->scope_id = ((struct sockaddr_in6 *)s) ->sin6_scope_id;
 	}
 }
-
 
 static struct addrinfo *SearchAddrInfo(struct addrinfo *hints, sa_family_t family) {
 	while (hints) {
@@ -355,7 +347,7 @@ qboolean Sys_StringToAdr(const char *s, netadr_t *a, netadrtype_t family) {
 	struct sockaddr_storage sadr;
 	sa_family_t fam;
 	
-	switch(family) {
+	switch (family) {
 		case NA_IP:
 			fam = AF_INET;
 		break;
@@ -427,7 +419,6 @@ qboolean NET_CompareBaseAdrMask(netadr_t a, netadr_t b, int netmask) {
 	return qfalse;
 }
 
-
 /*
 =======================================================================================================================================
 NET_CompareBaseAdr
@@ -472,7 +463,6 @@ const char *NET_AdrToStringwPort(netadr_t a) {
 	return s;
 }
 
-
 qboolean	NET_CompareAdr(netadr_t a, netadr_t b) {
 	if (!NET_CompareBaseAdr(a, b))
 		return qfalse;
@@ -485,7 +475,6 @@ qboolean	NET_CompareAdr(netadr_t a, netadr_t b) {
 		
 	return qfalse;
 }
-
 
 qboolean	NET_IsLocalAddress(netadr_t adr) {
 	return adr.type == NA_LOOPBACK;
@@ -518,13 +507,13 @@ qboolean NET_GetPacket(netadr_t *net_from, msg_t *net_message, fd_set *fdr) {
 		}
 
 		else {
-
 			memset(((struct sockaddr_in *)&from) ->sin_zero, 0, 8);
 		
 			if (usingSocks && memcmp(&from, &socksRelayAddr, fromlen) == 0) {
 				if (ret < 10 || net_message->data[0] != 0 || net_message->data[1] != 0 || net_message->data[2] != 0 || net_message->data[3] != 1) {
 					return qfalse;
 				}
+
 				net_from->type = NA_IP;
 				net_from->ip[0] = net_message->data[4];
 				net_from->ip[1] = net_message->data[5];
@@ -634,10 +623,10 @@ void Sys_SendPacket(int length, const void *data, netadr_t to) {
 	NetadrToSockadr(&to, (struct sockaddr *)&addr);
 
 	if (usingSocks && to.type == NA_IP) {
-		socksBuf[0] = 0; 	// reserved
+		socksBuf[0] = 0;	// reserved
 		socksBuf[1] = 0;
-		socksBuf[2] = 0; 	// fragment(not fragmented)
-		socksBuf[3] = 1; 	// address type: IPV4
+		socksBuf[2] = 0;	// fragment(not fragmented)
+		socksBuf[3] = 1;	// address type: IPV4
 		*(int *)&socksBuf[4] = ((struct sockaddr_in *)&addr) ->sin_addr.s_addr;
 		*(short *)&socksBuf[8] = ((struct sockaddr_in *)&addr) ->sin_port;
 		memcpy(&socksBuf[10], data, length);
@@ -664,7 +653,6 @@ void Sys_SendPacket(int length, const void *data, netadr_t to) {
 		Com_Printf("Sys_SendPacket: %s\n", NET_ErrorString());
 	}
 }
-
 
 //=============================================================================
 
@@ -765,7 +753,6 @@ void Sys_ShowIP(void) {
 			Com_Printf("IP6: %s\n", addrbuf);
 	}
 }
-
 
 //=============================================================================
 
@@ -946,7 +933,7 @@ Join an ipv6 multicast group
 void NET_JoinMulticast6(void) {
 	int err;
 	
-	if (ip6_socket == INVALID_SOCKET || multicast6_socket != INVALID_SOCKET ||(net_enabled->integer & NET_DISABLEMCAST))
+	if (ip6_socket == INVALID_SOCKET || multicast6_socket != INVALID_SOCKET || (net_enabled->integer & NET_DISABLEMCAST))
 		return;
 	
 	if (IN6_IS_ADDR_MULTICAST(&boundto.sin6_addr) || IN6_IS_ADDR_UNSPECIFIED(&boundto.sin6_addr)) {
@@ -1041,7 +1028,7 @@ void NET_OpenSocks(int port) {
 		rfc1929 = qfalse;
 	}
 
-	buf[0] = 5; 		// SOCKS version
+	buf[0] = 5;		// SOCKS version
 	// method count
 	if (rfc1929) {
 		buf[1] = 2;
@@ -1051,9 +1038,9 @@ void NET_OpenSocks(int port) {
 		len = 3;
 	}
 
-	buf[2] = 0; 		// method #1 - method id #00: no authentication
+	buf[2] = 0;		// method #1 - method id #00: no authentication
 	if (rfc1929) {
-		buf[2] = 2; 		// method #2 - method id #02: username/password
+		buf[2] = 2;		// method #2 - method id #02: username/password
 	}
 
 	if (send(socks_socket, (void *)buf, len, 0) == SOCKET_ERROR) {
@@ -1072,7 +1059,7 @@ void NET_OpenSocks(int port) {
 		return;
 	}
 
-	switch(buf[1]) {
+	switch (buf[1]) {
 	case 0:	// no authentication
 		break;
 	case 2: // username/password authentication
@@ -1090,7 +1077,7 @@ void NET_OpenSocks(int port) {
 		ulen = strlen(net_socksUsername->string);
 		plen = strlen(net_socksPassword->string);
 
-		buf[0] = 1; 		// username/password authentication version
+		buf[0] = 1;		// username/password authentication version
 		buf[1] = ulen;
 
 		if (ulen) {
@@ -1126,12 +1113,12 @@ void NET_OpenSocks(int port) {
 		}
 	}
 	// send the UDP associate request
-	buf[0] = 5; 		// SOCKS version
-	buf[1] = 3; 		// command: UDP associate
-	buf[2] = 0; 		// reserved
-	buf[3] = 1; 		// address type: IPV4
+	buf[0] = 5;		// SOCKS version
+	buf[1] = 3;		// command: UDP associate
+	buf[2] = 0;		// reserved
+	buf[3] = 1;		// address type: IPV4
 	*(int *)&buf[4] = INADDR_ANY;
-	*(short *)&buf[8] = htons((short)port); 		// port
+	*(short *)&buf[8] = htons((short)port);		// port
 	if (send(socks_socket, (void *)buf, 10, 0) == SOCKET_ERROR) {
 		Com_Printf("NET_OpenSocks: send: %s\n", NET_ErrorString());
 		return;
@@ -1164,7 +1151,6 @@ void NET_OpenSocks(int port) {
 
 	usingSocks = qtrue;
 }
-
 
 /*
 =======================================================================================================================================
@@ -1338,7 +1324,6 @@ void NET_OpenIP(void) {
 	}
 }
 
-
 //===================================================================
 
 
@@ -1414,7 +1399,6 @@ static qboolean NET_GetCvars(void) {
 
 	return modified ? qtrue : qfalse;
 }
-
 
 /*
 =======================================================================================================================================
@@ -1494,7 +1478,6 @@ void NET_Config(qboolean enableNetworking) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 NET_Init
@@ -1518,7 +1501,6 @@ void NET_Init(void) {
 	
 	Cmd_AddCommand("net_restart", NET_Restart_f);
 }
-
 
 /*
 =======================================================================================================================================

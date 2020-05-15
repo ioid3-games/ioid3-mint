@@ -126,7 +126,6 @@ void mdfour_begin(struct mdfour *md) {
 	md->totalN = 0;
 }
 
-
 static void mdfour_tail(byte *in, int n) {
 	byte buf[128];
 	uint32_t M[16];
@@ -170,7 +169,6 @@ static void mdfour_update(struct mdfour *md, byte *in, int n) {
 
 	mdfour_tail(in, n);
 }
-
 
 static void mdfour_result(struct mdfour *md, byte *out) {
 	copy4(out, md->A);

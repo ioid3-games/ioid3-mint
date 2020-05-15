@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -109,7 +103,6 @@ static void Transpose(int width, int height, srfVert_t ctrl[MAX_GRID_SIZE][MAX_G
 
 }
 
-
 /*
 =======================================================================================================================================
 MakeMeshNormals
@@ -164,7 +157,6 @@ static int neighbors[8][2] = {
 		wrapHeight = qtrue;
 	}
 
-
 	for (i = 0; i < width; i++) {
 		for (j = 0; j < height; j++) {
 			count = 0;
@@ -177,6 +169,7 @@ static int neighbors[8][2] = {
 				for (dist = 1; dist <= 3; dist++) {
 					x = i + neighbors[k][0] * dist;
 					y = j + neighbors[k][1] * dist;
+
 					if (wrapWidth) {
 						if (x < 0) {
 							x = width - 1 + x;
@@ -194,15 +187,17 @@ static int neighbors[8][2] = {
 					}
 
 					if (x < 0 || x >= width || y < 0 || y >= height) {
-						break; 					// edge of patch
+						break;					// edge of patch
 					}
+
 					VectorSubtract(ctrl[y][x].xyz, base, temp);
+
 					if (VectorNormalize2(temp, temp) == 0) {
-						continue; 				// degenerate edge, get more dist
+						continue;				// degenerate edge, get more dist
 					} else {
 						good[k] = qtrue;
 						VectorCopy(temp, around[k]);
-						break; 					// good edge
+						break;					// good edge
 					}
 				}
 			}
@@ -210,13 +205,15 @@ static int neighbors[8][2] = {
 			VectorClear(sum);
 			for (k = 0; k < 8; k++) {
 				if (!good[k] || !good[(k+1)&7]) {
-					continue; 	// didn't get two points
+					continue;	// didn't get two points
 				}
+
 				CrossProduct(around[(k+1)&7], around[k], normal);
 
 				if (VectorNormalize2(normal, normal) == 0) {
 					continue;
 				}
+
 				VectorAdd(normal, sum, sum);
 				count++;
 			}
@@ -265,7 +262,6 @@ static void MakeMeshTangentVectors(int width, int height, srfVert_t ctrl[MAX_GRI
 	}
 }
 
-
 static int MakeMeshIndexes(int width, int height, glIndex_t indexes[(MAX_GRID_SIZE - 1) * (MAX_GRID_SIZE - 1) *2*3]) {
 	int i, j;
 	int numIndexes;
@@ -298,7 +294,6 @@ static int MakeMeshIndexes(int width, int height, glIndex_t indexes[(MAX_GRID_SI
 	return numIndexes;
 }
 
-
 /*
 =======================================================================================================================================
 InvertCtrl
@@ -317,7 +312,6 @@ static void InvertCtrl(int width, int height, srfVert_t ctrl[MAX_GRID_SIZE][MAX_
 	}
 }
 
-
 /*
 =======================================================================================================================================
 InvertErrorTable
@@ -330,7 +324,7 @@ static void InvertErrorTable(float errorTable[2][MAX_GRID_SIZE], int width, int 
 	Com_Memcpy(copy, errorTable, sizeof(copy));
 
 	for (i = 0; i < width; i++) {
-		errorTable[1][i] = copy[0][i]; 	//[width - 1 - i];
+		errorTable[1][i] = copy[0][i];	//[width - 1 - i];
 	}
 
 	for (i = 0; i < height; i++) {
@@ -356,7 +350,6 @@ static void PutPointsOnCurve(srfVert_t ctrl[MAX_GRID_SIZE][MAX_GRID_SIZE],
 			LerpDrawVert(&prev, &next, &ctrl[j][i]);
 		}
 	}
-
 
 	for (j = 0; j < height; j++) {
 		for (i = 1; i < width; i += 2) {
@@ -472,7 +465,6 @@ void R_SubdividePatchToGrid(srfBspSurface_t *grid, int width, int height,
 	}
 
 	for (dir = 0; dir < 2; dir++) {
-
 		for (j = 0; j < MAX_GRID_SIZE; j++) {
 			errorTable[dir][j] = 0;
 		}
@@ -510,7 +502,7 @@ void R_SubdividePatchToGrid(srfBspSurface_t *grid, int width, int height,
 				d = DotProduct(midxyz, dir);
 				VectorScale(dir, d, projected);
 				VectorSubtract(midxyz, projected, midxyz2);
-				len = VectorLengthSquared(midxyz2); 			// we will do the sqrt later
+				len = VectorLengthSquared(midxyz2);			// we will do the sqrt later
 				if (len > maxLen) {
 					maxLen = len;
 				}
@@ -529,7 +521,7 @@ void R_SubdividePatchToGrid(srfBspSurface_t *grid, int width, int height,
 			// see if we want to insert subdivided columns
 			if (width + 2 > MAX_GRID_SIZE) {
 				errorTable[dir][j+1] = 1.0f/maxLen;
-				break; 	// can't subdivide any more
+				break;	// can't subdivide any more
 			}
 
 			if (maxLen <= r_subdivisions->value) {
@@ -537,7 +529,7 @@ void R_SubdividePatchToGrid(srfBspSurface_t *grid, int width, int height,
 				// if we go over the whole grid twice without adding any columns, stop
 				if (++consecutiveComplete >= width)
 					break;
-				continue; 	// didn't need subdivision
+				continue;	// didn't need subdivision
 			}
 
 			errorTable[dir][j+2] = 1.0f/maxLen;
@@ -554,6 +546,7 @@ void R_SubdividePatchToGrid(srfBspSurface_t *grid, int width, int height,
 				for (k = width - 1; k > j + 3; k--) {
 					ctrl[i][k] = ctrl[i][k - 2];
 				}
+
 				ctrl[i][j + 1] = prev;
 				ctrl[i][j + 2] = mid;
 				ctrl[i][j + 3] = next;
@@ -567,8 +560,6 @@ void R_SubdividePatchToGrid(srfBspSurface_t *grid, int width, int height,
 		width = height;
 		height = t;
 	}
-
-
 	// put all the aproximating points on the curve
 	PutPointsOnCurve(ctrl, width, height);
 

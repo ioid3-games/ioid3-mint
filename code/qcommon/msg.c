@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 #include "q_shared.h"
@@ -69,9 +63,8 @@ void MSG_InitOOB(msg_t *buf, byte *data, int length) {
 void MSG_Clear(msg_t *buf) {
 	buf->cursize = 0;
 	buf->overflowed = qfalse;
-	buf->bit = 0; 					// < -in bits
+	buf->bit = 0;					// < -in bits
 }
-
 
 void MSG_Bitstream(msg_t *buf) {
 	buf->oob = qfalse;
@@ -275,7 +268,6 @@ int MSG_ReadBits(msg_t *msg, int bits) {
 }
 
 
-
 //================================================================================
 
 //
@@ -377,7 +369,6 @@ void MSG_WriteAngle16(msg_t *sb, float f) {
 	MSG_WriteShort(sb, ANGLE2SHORT(f));
 }
 
-
 //============================================================
 
 //
@@ -447,7 +438,7 @@ float MSG_ReadFloat(msg_t *msg) {
 		dat.f = -1;
 	}	
 	
-	return dat.f; 	
+	return dat.f;	
 }
 
 char *MSG_ReadString(msg_t *msg) {
@@ -456,7 +447,7 @@ char *MSG_ReadString(msg_t *msg) {
 	
 	l = 0;
 	do {
-		c = MSG_ReadByte(msg); 		// use ReadByte so - 1 is out of bounds
+		c = MSG_ReadByte(msg);		// use ReadByte so - 1 is out of bounds
 		if (c == -1 || c == 0) {
 			break;
 		}
@@ -479,7 +470,7 @@ char *MSG_ReadBigString(msg_t *msg) {
 	
 	l = 0;
 	do {
-		c = MSG_ReadByte(msg); 		// use ReadByte so - 1 is out of bounds
+		c = MSG_ReadByte(msg);		// use ReadByte so - 1 is out of bounds
 		if (c == -1 || c == 0) {
 			break;
 		}
@@ -502,7 +493,7 @@ char *MSG_ReadStringLine(msg_t *msg) {
 
 	l = 0;
 	do {
-		c = MSG_ReadByte(msg); 		// use ReadByte so - 1 is out of bounds
+		c = MSG_ReadByte(msg);		// use ReadByte so - 1 is out of bounds
 		if (c == -1 || c == 0 || c == '\n') {
 			break;
 		}
@@ -606,13 +597,12 @@ float MSG_ReadDeltaKeyFloat(msg_t *msg, int key, float oldV) {
 	if (MSG_ReadBits(msg, 1)) {
 		floatint_t fi;
 
-		fi.i = MSG_ReadBits(msg, 32)^ key;
+		fi.i = MSG_ReadBits(msg, 32) ^ key;
 		return fi.f;
 	}
 
 	return oldV;
 }
-
 
 /*
 =======================================================================================================================================
@@ -644,7 +634,7 @@ void MSG_WriteDeltaUsercmdKey(msg_t *msg, int key, usercmd_t *from, usercmd_t *t
 		from->upmove == to->upmove &&
 		from->buttons == to->buttons &&
 		from->stateValue == to->stateValue) {
-			MSG_WriteBits(msg, 0, 1); 				// no change
+			MSG_WriteBits(msg, 0, 1);				// no change
 			return;
 	}
 
@@ -659,7 +649,6 @@ void MSG_WriteDeltaUsercmdKey(msg_t *msg, int key, usercmd_t *from, usercmd_t *t
 	MSG_WriteDeltaKey(msg, key, from->buttons, to->buttons, 16);
 	MSG_WriteDeltaKey(msg, key, from->stateValue, to->stateValue, 32);
 }
-
 
 /*
 =======================================================================================================================================
@@ -720,14 +709,13 @@ typedef struct {
 	int offset;
 	int numElements; // 1 to 1024(MAX_NETF_ELEMENTS)
 	int numElementArrays;
-	int bits; 		// 0 = float
+	int bits;		// 0 = float
 	int pcount;
 } netField_t;
 
 typedef struct {
 	char *objectName;
 	int objectSize;
-
 	int numFields;
 	netField_t *fields;
 } netFields_t;
@@ -970,18 +958,18 @@ static void MSG_WriteDeltaNetFields(msg_t *msg, void *from, void *to,
 		Com_Memset(bitsArray, 0, sizeof(bitsArray));
 
 		for (n = 0; n < field->numElements; n++) {
-			if ((from && toF[n] != fromF[n]) ||(!from && toF[n] != 0)) {
+			if ((from && toF[n] != fromF[n]) || (!from && toF[n] != 0)) {
 				arraysChanged |= 1 << (n / MAX_NETF_ARRAY_BITS);
 				bitsArray[n / MAX_NETF_ARRAY_BITS] |= 1 << (n &(MAX_NETF_ARRAY_BITS - 1));
 			}
 		}
 
 		if (arraysChanged == 0) {
-			MSG_WriteBits(msg, 0, field->numElementArrays); 	// no change
+			MSG_WriteBits(msg, 0, field->numElementArrays);	// no change
 			continue;
 		}
 
-		MSG_WriteBits(msg, arraysChanged, field->numElementArrays); 	// changed
+		MSG_WriteBits(msg, arraysChanged, field->numElementArrays);	// changed
 
 		if (field->numElements > 1) {
 			elementsLeft = field->numElements;
@@ -1009,6 +997,7 @@ static void MSG_WriteDeltaNetFields(msg_t *msg, void *from, void *to,
 						MSG_WriteBits(msg, 0, 1);
 				} else {
 					MSG_WriteBits(msg, 1, 1);
+
 					if (trunc == fullFloat && trunc + FLOAT_INT_BIAS >= 0 && 
 						trunc + FLOAT_INT_BIAS < (1 << FLOAT_INT_BITS)) {
 						// send as small integer
@@ -1103,6 +1092,7 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to,
 				} else {
 					*toF = 0;
 				}
+
 				continue;
 			}
 
@@ -1114,6 +1104,7 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to,
 				// float
 				if (MSG_ReadBits(msg, 1) == 0) {
 					*(float *)toF = 0.0f;
+
 					if (print) {
 						Com_Printf("%i ", 0);
 					}
@@ -1138,12 +1129,14 @@ static void MSG_ReadDeltaNetFields(msg_t *msg, void *from, void *to,
 			} else {
 				if (MSG_ReadBits(msg, 1) == 0) {
 					*toF = 0;
+
 					if (print) {
 						Com_Printf("%i ", 0);
 					}
 				} else {
 					// integer
 					*toF = MSG_ReadBits(msg, field->bits);
+
 					if (print) {
 						Com_Printf("%i ", *toF);
 					}
@@ -1226,20 +1219,20 @@ void MSG_WriteDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntitySta
 	if (lc == 0) {
 		// nothing at all changed
 		if (!force) {
-			return; 		// nothing at all
+			return;		// nothing at all
 		}
 		// write two bits for no change
 		MSG_WriteBits(msg, to->number, GENTITYNUM_BITS);
-		MSG_WriteBits(msg, 0, 1); 		// not removed
-		MSG_WriteBits(msg, 0, 1); 		// no delta
+		MSG_WriteBits(msg, 0, 1);		// not removed
+		MSG_WriteBits(msg, 0, 1);		// no delta
 		return;
 	}
 
 	MSG_WriteBits(msg, to->number, GENTITYNUM_BITS);
-	MSG_WriteBits(msg, 0, 1); 			// not removed
-	MSG_WriteBits(msg, 1, 1); 			// we have a delta
+	MSG_WriteBits(msg, 0, 1);			// not removed
+	MSG_WriteBits(msg, 1, 1);			// we have a delta
 
-	MSG_WriteByte(msg, lc); 	// #of changes
+	MSG_WriteByte(msg, lc);	// #of changes
 
 	MSG_WriteDeltaNetFields(msg, from, to, &msg_entityStateFields, lc);
 }
@@ -1277,7 +1270,7 @@ void MSG_ReadDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntityStat
 	}
 	// check for a remove
 	if (MSG_ReadBits(msg, 1) == 1) {
-		Com_Memset(to, 0, sizeof(*to)); 	
+		Com_Memset(to, 0, sizeof(*to));	
 		to->number = MAX_GENTITIES - 1;
 
 		if (cl_shownet && (cl_shownet->integer >= 2 || cl_shownet->integer == -1)) {
@@ -1316,7 +1309,6 @@ void MSG_ReadDeltaEntity(msg_t *msg, sharedEntityState_t *from, sharedEntityStat
 	MSG_ReadDeltaNetFields(msg, from, to, &msg_entityStateFields, lc, startBit, print);
 }
 
-
 /*
 =======================================================================================================================================
 
@@ -1340,11 +1332,10 @@ void MSG_WriteDeltaPlayerstate(msg_t *msg, sharedPlayerState_t *from, sharedPlay
 
 	lc = MSG_LastChangedField(from, to, &msg_playerStateFields);
 
-	MSG_WriteByte(msg, lc); 	// #of changes
+	MSG_WriteByte(msg, lc);	// #of changes
 
 	MSG_WriteDeltaNetFields(msg, from, to, &msg_playerStateFields, lc);
 }
-
 
 /*
 =======================================================================================================================================
@@ -1650,8 +1641,8 @@ void MSG_initHuffman(void) {
 
 	for (i = 0; i < 256; i++) {
 		for (j = 0; j < msg_hData[i]; j++) {
-			Huff_addRef(&msgHuff.compressor, (byte)i); 			// Do update
-			Huff_addRef(&msgHuff.decompressor, (byte)i); 			// Do update
+			Huff_addRef(&msgHuff.compressor, (byte)i);			// Do update
+			Huff_addRef(&msgHuff.decompressor, (byte)i);			// Do update
 		}
 	}
 }
@@ -1674,8 +1665,8 @@ void MSG_NUinitHuffman() {
 
 	for (i = 0; i < size; i++) {
 		ch = data[i];
-		Huff_addRef(&msgHuff.compressor, ch); 			// Do update
-		Huff_addRef(&msgHuff.decompressor, ch); 			// Do update
+		Huff_addRef(&msgHuff.compressor, ch);			// Do update
+		Huff_addRef(&msgHuff.decompressor, ch);			// Do update
 		array[ch]++;
 	}
 
@@ -1683,8 +1674,8 @@ void MSG_NUinitHuffman() {
 
 	for (i = 0; i < 256; i++) {
 		if (array[i] == 0) {
-			Huff_addRef(&msgHuff.compressor, i); 			// Do update
-			Huff_addRef(&msgHuff.decompressor, i); 			// Do update
+			Huff_addRef(&msgHuff.compressor, i);			// Do update
+			Huff_addRef(&msgHuff.decompressor, i);			// Do update
 		}
 
 		Com_Printf("%d, // %d\n", array[i], i);

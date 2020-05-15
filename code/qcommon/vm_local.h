@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 #include "q_shared.h"
@@ -143,7 +137,7 @@ typedef struct vmSymbol_s {
 	struct vmSymbol_s	*next;
 	int symValue;
 	int profileCount;
-	char symName[1]; 		// variable sized
+	char symName[1];		// variable sized
 } vmSymbol_t;
 
 #define VM_OFFSET_PROGRAM_STACK		0
@@ -152,14 +146,14 @@ typedef struct vmSymbol_s {
 struct vm_s {
     // DO NOT MOVE OR CHANGE THESE WITHOUT CHANGING THE VM_OFFSET_* DEFINES
     // USED BY THE ASM CODE
-  	int programStack; 		// the vm may be recursively entered
+  	int programStack;		// the vm may be recursively entered
     intptr_t (*systemCall)(intptr_t *parms);
 
 	// ------------------------------------ 
    
 	char name[MAX_QPATH];
 	char filename[MAX_OSPATH];
-	void *searchPath; 				// hint for FS_ReadFileDir()
+	void *searchPath;				// hint for FS_ReadFileDir()
 
 	// for dynamic linked modules
 	void *dllHandle;
@@ -179,20 +173,19 @@ struct vm_s {
 
 	byte *dataBase;
 	int dataMask;
-	int dataAlloc; 			// actually allocated
+	int dataAlloc;			// actually allocated
 
-	int zoneTag; 			// tag for the memory zone owned by the VM(i.e., TAG_GAME or TAG_CGAME)
-	byte *heapBase; 			// base of dynamic memory pool
-	int heapLength; 			// length of the memory pool
-	int heapRequestedSize; 	// requested size of memory pool(for QVMs it may be smaller than heapLength)
+	int zoneTag;			// tag for the memory zone owned by the VM(i.e., TAG_GAME or TAG_CGAME)
+	byte *heapBase;			// base of dynamic memory pool
+	int heapLength;			// length of the memory pool
+	int heapRequestedSize;	// requested size of memory pool(for QVMs it may be smaller than heapLength)
 
-	int stackBottom; 		// if programStack < stackBottom, error
+	int stackBottom;		// if programStack < stackBottom, error
 
 	int numSymbols;
 	struct vmSymbol_s	*symbols;
-
-	int callLevel; 		// counts recursive VM_Call
-	int breakFunction; 		// increment breakCount on function entry to this
+	int callLevel;		// counts recursive VM_Call
+	int breakFunction;		// increment breakCount on function entry to this
 	int breakCount;
 
 	byte *jumpTableTargets;

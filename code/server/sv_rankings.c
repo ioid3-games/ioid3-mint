@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // sv_rankings.c -- global rankings interface
@@ -40,7 +34,7 @@ typedef struct {
 	uint64_t player_id;
 	GR_PLAYER_TOKEN     token;
 	grank_status_t grank_status;
-	grank_status_t final_status; 	// status to set after cleanup
+	grank_status_t final_status;	// status to set after cleanup
 	uint32_t grank;          // global rank
 	char name[32];
 } ranked_player_t;
@@ -75,7 +69,7 @@ static void SV_RankEncodeGameID(uint64_t game_id, char *result,
 static uint64_t SV_RankDecodePlayerID(const char *string);
 static void SV_RankDecodePlayerKey(const char *string, GR_PLAYER_TOKEN key);
 static char *	SV_RankStatusString(GR_STATUS status);
-static void SV_RankError(const char *fmt, ...)__attribute__((format(printf, 1, 2)));
+static void SV_RankError(const char *fmt, ...)__attribute__ ((format(printf, 1, 2)));
 static char SV_RankGameKey[64];
 
 /*
@@ -110,7 +104,7 @@ void SV_RankBegin(char *gamekey) {
 */
 
 		// substitute game - specific game key
-		switch((int)Cvar_VariableValue("g_gametype")) {
+		switch ((int)Cvar_VariableValue("g_gametype")) {
 		case GT_FFA:
 			gamekey = "Q3 Free For All";
 			break;
@@ -319,7 +313,7 @@ void SV_RankUserReset(int index) {
 	assert(index >= 0);
 	assert(index < sv_maxclients->value);
 
-	switch(s_ranked_players[index].grank_status) {
+	switch (s_ranked_players[index].grank_status) {
 	case QGR_STATUS_SPECTATOR:
 	case QGR_STATUS_NO_USER:
 	case QGR_STATUS_BAD_PASSWORD:
@@ -818,7 +812,7 @@ SV_RankQuit
 */
 void SV_RankQuit(void) {
 	int i;
-	int j = 0; 	
+	int j = 0;	
 	// yuck
 	
 	while (s_rankings_contexts > 1) {
@@ -831,6 +825,7 @@ void SV_RankQuit(void) {
 					SV_RankUserLogout(i);
 					Com_DPrintf("SV_RankQuit: SV_RankUserLogout %d\n", i);
 				}
+
 				else
 				{
 					if (s_ranked_players[i].context)
@@ -913,7 +908,6 @@ static void SV_RankNewGameCBF(GR_NEWGAME* gr_newgame, void *cbf_arg) {
 		// ready to go
 		s_rankings_active = qtrue;
 		Cvar_Set("sv_rankingsActive", "1");
-
 	} else if (gr_newgame->status == GR_STATUS_BADLEAGUE) {
 		SV_RankError("SV_RankNewGameCBF: Invalid League name");
 	} else {
@@ -944,7 +938,7 @@ static void SV_RankUserCBF(GR_LOGIN* gr_login, void *cbf_arg) {
 	assert(ranked_player);
 	assert(ranked_player->context);
 	
-	switch(gr_login->status) {
+	switch (gr_login->status) {
 		case GR_STATUS_OK:
 			// attempt to join the game, proceed to SV_RankJoinGameCBF
 			join_status = GRankJoinGameAsync
@@ -1357,7 +1351,7 @@ SV_RankStatusString
 =======================================================================================================================================
 */
 static char *SV_RankStatusString(GR_STATUS status) {
-	switch(status) {
+	switch (status) {
 		case GR_STATUS_OK:				return "GR_STATUS_OK";
 		case GR_STATUS_ERROR:			return "GR_STATUS_ERROR";
 		case GR_STATUS_BADPARAMS:		return "GR_STATUS_BADPARAMS";

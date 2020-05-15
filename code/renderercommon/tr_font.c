@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_font.c
@@ -145,7 +139,6 @@ void SpanList_Add(SpanList *list, int x, int y, int width, int coverage) {
 	list->numSpans++;
 }
 
-
 // Each time the renderer calls us back we just push another span entry on
 // our list.
 void
@@ -160,7 +153,6 @@ RasterCallback(const int y,
 		SpanList_Add(list, spans[i].x, y, spans[i].len, spans[i].coverage);
 	}
 }
-
 
 // Set up the raster parameters and render the outline.
 void
@@ -317,7 +309,6 @@ qboolean R_RenderOutlineBitmap(FT_GlyphSlot glyph, FT_Bitmap *bit2, float border
 	return qtrue;
 }
 
-
 void R_GetGlyphInfo(FT_GlyphSlot glyph, int *left, int *right, int *width, int *top, int *bottom, int *height, int *pitch) {
 	*left = _FLOOR(glyph->metrics.horiBearingX);
 	*right = _CEIL(glyph->metrics.horiBearingX + glyph->metrics.width);
@@ -328,7 +319,6 @@ void R_GetGlyphInfo(FT_GlyphSlot glyph, int *left, int *right, int *width, int *
 	*height = _TRUNC(*top - *bottom);
 	*pitch = (qtrue ?(*width+3)& - 4 : (*width+7) >> 3);
 }
-
 
 FT_Bitmap *R_RenderGlyph(FT_GlyphSlot glyph, glyphInfo_t * glyphOut, float borderWidth) {
 	FT_Bitmap  *bit2;
@@ -409,21 +399,21 @@ static void WriteTGA(char *filename, byte *data, int width, int height) {
 
 	buffer = ri.Malloc(width*height*4 + 18);
 	Com_Memset(buffer, 0, 18);
-	buffer[2] = 2; 		// uncompressed type
+	buffer[2] = 2;		// uncompressed type
 	buffer[12] = width&255;
 	buffer[13] = width >> 8;
 	buffer[14] = height&255;
 	buffer[15] = height >> 8;
-	buffer[16] = 32; 	// pixel size
+	buffer[16] = 32;	// pixel size
 
 	// swap rgb to bgr
 	c = 18 + width * height * 4;
 
 	for (i = 18; i < c; i += 4) {
-		buffer[i] = data[i - 18+2]; 		// blue
-		buffer[i+1] = data[i - 18+1]; 		// green
-		buffer[i+2] = data[i - 18+0]; 		// red
-		buffer[i+3] = data[i - 18+3]; 		// alpha
+		buffer[i] = data[i - 18+2];		// blue
+		buffer[i+1] = data[i - 18+1];		// green
+		buffer[i+2] = data[i - 18+0];		// red
+		buffer[i+3] = data[i - 18+3];		// alpha
 	}
 	// flip upside down
 	flip = (unsigned char *)ri.Malloc(width*4);
@@ -521,6 +511,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo(const char *fontName, int imageSize, u
 						_dst[2] = 0xff;
 						_dst[3] = 0xff;
 					}
+
 					mask > >= 1;
 
 					if (mask == 0) {
@@ -544,6 +535,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo(const char *fontName, int imageSize, u
 					_dst[3] = *_src++;
 					_dst += 4;
 				}
+
 				src += bitmap->pitch;
 				dst += imageSize * 4;
 			}
@@ -554,13 +546,14 @@ static glyphInfo_t *RE_ConstructGlyphInfo(const char *fontName, int imageSize, u
 				unsigned char *_src = src;
 				unsigned char *_dst = dst;
 				for (j = 0; j < bitmap->width; j++) {
-					_dst[0] = _src[2]; 	// red
-					_dst[1] = _src[1]; 	// green
-					_dst[2] = _src[0]; 	// blue
-					_dst[3] = _src[3]; 	// alpha
+					_dst[0] = _src[2];	// red
+					_dst[1] = _src[1];	// green
+					_dst[2] = _src[0];	// blue
+					_dst[3] = _src[3];	// alpha
 					_src += 4;
 					_dst += 4;
 				}
+
 				src += bitmap->pitch;
 				dst += imageSize * 4;
 			}
@@ -733,7 +726,7 @@ qboolean R_LoadPreRenderedFont(const char *datName, int pointSize, fontInfo_t *f
 #ifdef BUILD_FREETYPE
 // Q3A's gfx/2d/bigchars some additional symbols, by default these glyphs would just be default missing glyph anyway
 unsigned long R_RemapGlyphCharacter(FT_Face face, int charIndex) {
-	switch(charIndex) {
+	switch (charIndex) {
 		// thick box drawing characters
 		// - top
 		case 1:
@@ -1016,7 +1009,6 @@ qboolean R_LoadDynamicFont(const char *fontName, int pointSize, float borderWidt
 	imageNumber = 0;
 
 	while (i <= GLYPH_END + 1) {
-
 		if (i == GLYPH_END + 1) {
 			// upload/save current image buffer
 			glyph = NULL;
@@ -1261,7 +1253,6 @@ void RE_RegisterFont(const char *fontName, int pointSize, float borderWidth, qbo
 #endif
 }
 
-
 void R_InitFreeType(void) {
 #ifdef BUILD_FREETYPE
 	if (FT_Init_FreeType(&ftLibrary)) {
@@ -1271,7 +1262,6 @@ void R_InitFreeType(void) {
 
 	registeredFontCount = 0;
 }
-
 
 void R_DoneFreeType(void) {
 #ifdef BUILD_FREETYPE

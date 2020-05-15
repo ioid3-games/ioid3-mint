@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -100,13 +94,14 @@ void S_PaintChannelFrom16_altivec(portable_samplepair_t paintbuffer[PAINTBUFFER_
 
 		while (i < count) {
 			/* Try to align destination to 16 - byte boundary */
-			while (i < count && (((unsigned long)&samp[i] & 0x1f) ||((count - i) < 8) ||((SND_CHUNK_SIZE - sampleOffset) < 8))) {
+			while (i < count && (((unsigned long)&samp[i] & 0x1f) || ((count - i) < 8) || ((SND_CHUNK_SIZE - sampleOffset) < 8))) {
 				data = samples[sampleOffset++];
 				samp[i].left += (data * leftvol) >> 8;
 
 				if (sc->soundChannels == 2) {
 					data = samples[sampleOffset++];
 				}
+
 				samp[i].right += (data * rightvol) >> 8;
 	
 				if (sampleOffset == SND_CHUNK_SIZE) {
@@ -131,7 +126,7 @@ void S_PaintChannelFrom16_altivec(portable_samplepair_t paintbuffer[PAINTBUFFER_
 				vector unsigned char tmp;
 				vector short s0, s1, sampleData0, sampleData1;
 				vector signed int merge0, merge1;
-				vector signed int d0, d1, d2, d3; 				
+				vector signed int d0, d1, d2, d3;				
 				vector unsigned char samplePermute0 = 
 					VECCONST_UINT8(0, 1, 4, 5, 0, 1, 4, 5, 2, 3, 6, 7, 2, 3, 6, 7);
 				vector unsigned char samplePermute1 = 
@@ -141,7 +136,7 @@ void S_PaintChannelFrom16_altivec(portable_samplepair_t paintbuffer[PAINTBUFFER_
 				// Rather than permute the vectors after we load them to do the sample
 				// replication and rearrangement, we permute the alignment vector so
 				// we do everything in one step below and avoid data shuffling.
-				tmp = vec_lvsl(0, &samples[sampleOffset]); 								
+				tmp = vec_lvsl(0, &samples[sampleOffset]);								
 				loadPermute0 = vec_perm(tmp, tmp, samplePermute0);
 				loadPermute1 = vec_perm(tmp, tmp, samplePermute1);
 				
@@ -160,7 +155,7 @@ void S_PaintChannelFrom16_altivec(portable_samplepair_t paintbuffer[PAINTBUFFER_
 					sampleData1 = vec_perm(s0, s1, loadPermute1);
 					
 					merge0 = vec_mule(sampleData0, volume_vec);
-					merge0 = vec_sra(merge0, volume_shift); 	/* Shift down to proper range */
+					merge0 = vec_sra(merge0, volume_shift);	/* Shift down to proper range */
 					
 					merge1 = vec_mulo(sampleData0, volume_vec);
 					merge1 = vec_sra(merge1, volume_shift);
@@ -169,10 +164,10 @@ void S_PaintChannelFrom16_altivec(portable_samplepair_t paintbuffer[PAINTBUFFER_
 					d1 = vec_add(merge1, d1);
 					
 					merge0 = vec_mule(sampleData1, volume_vec);
-					merge0 = vec_sra(merge0, volume_shift); 	/* Shift down to proper range */
+					merge0 = vec_sra(merge0, volume_shift);	/* Shift down to proper range */
 					
 					merge1 = vec_mulo(sampleData1, volume_vec);
-					merge1 = vec_sra(merge1, volume_shift); 					
+					merge1 = vec_sra(merge1, volume_shift);					
 
 					d2 = vec_add(merge0, d2);
 					d3 = vec_add(merge1, d3);
@@ -204,7 +199,6 @@ void S_PaintChannelFrom16_altivec(portable_samplepair_t paintbuffer[PAINTBUFFER_
 		samples = chunk->sndChunk;
 		
 		for (i = 0; i < count; i++) {
-
 			aoff = ooff;
 			ooff = ooff + ch->dopplerScale * sc->soundChannels;
 			boff = ooff;
@@ -212,9 +206,11 @@ void S_PaintChannelFrom16_altivec(portable_samplepair_t paintbuffer[PAINTBUFFER_
 			for (j = aoff; j < boff; j += sc->soundChannels) {
 				if (j == SND_CHUNK_SIZE) {
 					chunk = chunk->next;
+
 					if (!chunk) {
 						chunk = sc->soundData;
 					}
+
 					samples = chunk->sndChunk;
 					ooff -= SND_CHUNK_SIZE;
 				}
@@ -234,7 +230,6 @@ void S_PaintChannelFrom16_altivec(portable_samplepair_t paintbuffer[PAINTBUFFER_
 		}
 	}
 }
-
 
 #endif
 

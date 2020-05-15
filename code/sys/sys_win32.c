@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -77,11 +71,11 @@ Set FPU control word to default value
 #ifndef _RC_CHOP
 // mingw doesn't seem to have these defined : (
 
-  #define _MCW_EM	0x0008001fU
-  #define _MCW_RC	0x00000300U
-  #define _MCW_PC	0x00030000U
-  #define _RC_NEAR      0x00000000U
-  #define _PC_53	0x00010000U
+#define _MCW_EM	0x0008001fU
+#define _MCW_RC	0x00000300U
+#define _MCW_PC	0x00030000U
+#define _RC_NEAR      0x00000000U
+#define _PC_53	0x00010000U
   
   unsigned int _controlfp(unsigned int new, unsigned int mask);
 #endif
@@ -249,7 +243,6 @@ qboolean Sys_RandomBytes(byte *string, int len) {
 
 	if (!CryptAcquireContext(&prov, NULL, NULL,
 		PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
-
 		return qfalse;
 	}
 
@@ -475,9 +468,11 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 				if (strlen(subdirs)) {
 					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s\\%s", subdirs, findinfo.name);
 				}
+
 				else {
 					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s", findinfo.name);
 				}
+
 				Sys_ListFilteredFiles(basedir, newsubdirs, filter, list, numfiles);
 			}
 		}
@@ -542,7 +537,6 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	int extLen;
 
 	if (filter) {
-
 		nfiles = 0;
 		Sys_ListFilteredFiles(directory, "", filter, list, &nfiles);
 
@@ -587,7 +581,7 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	}
 
 	do {
-		if ((!wantsubs && flag ^(findinfo.attrib & _A_SUBDIR)) ||(wantsubs && findinfo.attrib & _A_SUBDIR)) {
+		if ((!wantsubs && flag ^(findinfo.attrib & _A_SUBDIR)) || (wantsubs && findinfo.attrib & _A_SUBDIR)) {
 			if (*extension) {
 				if (strlen(findinfo.name) < extLen ||
 					Q_stricmp(
@@ -658,7 +652,6 @@ void Sys_FreeFileList(char **list) {
 
 	Z_Free(list);
 }
-
 
 /*
 =======================================================================================================================================
@@ -732,7 +725,7 @@ Display a win32 dialog box
 dialogResult_t Sys_Dialog(dialogType_t type, const char *message, const char *title) {
 	UINT uType;
 
-	switch(type) {
+	switch (type) {
 		default:
 		case DT_INFO:      uType = MB_ICONINFORMATION|MB_OK; break;
 		case DT_WARNING:   uType = MB_ICONWARNING|MB_OK; break;
@@ -741,7 +734,7 @@ dialogResult_t Sys_Dialog(dialogType_t type, const char *message, const char *ti
 		case DT_OK_CANCEL: uType = MB_ICONWARNING|MB_OKCANCEL; break;
 	}
 
-	switch(MessageBox(NULL, message, title, uType)) {
+	switch (MessageBox(NULL, message, title, uType)) {
 		default:
 		case IDOK:      return DR_OK;
 		case IDCANCEL:  return DR_CANCEL;
@@ -793,7 +786,7 @@ void Sys_PlatformInit(void) {
 				"on this system, recommended resolution 1ms\n", timerResolution);
 		}
 		
-		timeBeginPeriod(timerResolution); 				
+		timeBeginPeriod(timerResolution);				
 	} else
 		timerResolution = 0;
 #endif

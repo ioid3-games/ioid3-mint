@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // snd_local.h -- private sound definations
@@ -41,13 +35,13 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define SND_CHUNK_SIZE_BYTE		(SND_CHUNK_SIZE*2)		// floats
 
 typedef struct {
-	int left; 	// the final values will be clamped to +/ - 0x00ffff00 and shifted down
+	int left;	// the final values will be clamped to +/ - 0x00ffff00 and shifted down
 	int right;
 } portable_samplepair_t;
 
 typedef struct adpcm_state {
-    short sample; 		/* Previous output value */
-  	char index; 		/* Index into stepsize table */
+    short sample;		/* Previous output value */
+  	char index;		/* Index into stepsize table */
 } adpcm_state_t;
 
 typedef	struct sndBuffer_s {
@@ -59,10 +53,10 @@ typedef	struct sndBuffer_s {
 
 typedef struct sfx_s {
 	sndBuffer *soundData;
-	qboolean		defaultSound; 			// couldn't be loaded, so use buzz
-	qboolean		inMemory; 				// not in Memory
-	qboolean		soundCompressed; 		// not in Memory
-	int soundCompressionMethod; 	
+	qboolean		defaultSound;			// couldn't be loaded, so use buzz
+	qboolean		inMemory;				// not in Memory
+	qboolean		soundCompressed;		// not in Memory
+	int soundCompressionMethod;	
 	int 			soundLength;
 	int soundChannels;
 	char 			soundName[MAX_QPATH];
@@ -73,9 +67,9 @@ typedef struct sfx_s {
 
 typedef struct {
 	int channels;
-	int samples; 				// mono samples in buffer
-	int fullsamples; 			// samples with all channels in buffer(samples divided by channels)
-	int submission_chunk; 		// don't mix less than this #
+	int samples;				// mono samples in buffer
+	int fullsamples;			// samples with all channels in buffer(samples divided by channels)
+	int submission_chunk;		// don't mix less than this #
 	int samplebits;
 	int isfloat;
 	int speed;
@@ -97,23 +91,23 @@ typedef struct loopSound_s {
 	float oldDopplerScale;
 	int framenum;
 
-	struct loopSound_s *prev; 	// previous active loop sound
-	struct loopSound_s *next; 	// next active loop sound
+	struct loopSound_s *prev;	// previous active loop sound
+	struct loopSound_s *next;	// next active loop sound
 } loopSound_t;
 
 typedef struct {
 	int allocTime;
-	int startSample; 	// START_SAMPLE_IMMEDIATE = set immediately on next mix
-	int entnum; 			// to allow overriding a specific sound
-	int entchannel; 		// to allow overriding a specific sound
-	int leftvol; 		// 0 - 255 volume after spatialization
-	int rightvol; 		// 0 - 255 volume after spatialization
-	int master_vol; 		// 0 - 255 volume before spatialization
+	int startSample;	// START_SAMPLE_IMMEDIATE = set immediately on next mix
+	int entnum;			// to allow overriding a specific sound
+	int entchannel;		// to allow overriding a specific sound
+	int leftvol;		// 0 - 255 volume after spatialization
+	int rightvol;		// 0 - 255 volume after spatialization
+	int master_vol;		// 0 - 255 volume before spatialization
 	float dopplerScale;
 	float oldDopplerScale;
-	vec3_t origin; 			// only use if fixed_origin is set
-	qboolean	fixed_origin; 	// use origin instead of fetching entnum's origin
-	sfx_t *thesfx; 		// sfx structure
+	vec3_t origin;			// only use if fixed_origin is set
+	qboolean	fixed_origin;	// use origin instead of fetching entnum's origin
+	sfx_t *thesfx;		// sfx structure
 	qboolean	doppler;
 	qboolean	fullVolume;
 } channel_t;
@@ -128,7 +122,7 @@ typedef struct {
 	int width;
 	int channels;
 	int samples;
-	int dataofs; 		// chunk starts this many bytes from file start
+	int dataofs;		// chunk starts this many bytes from file start
 } wavinfo_t;
 
 // Interface between Q3 sound "api" and the sound backend
@@ -170,8 +164,8 @@ typedef struct {
 
 // Listener data
 typedef struct {
-	qboolean	valid; 		// qtrue if setup.
-	qboolean	updated; 	// qtrue if updated this frame.
+	qboolean	valid;		// qtrue if setup.
+	qboolean	updated;	// qtrue if updated this frame.
 
 	int number; // entity number
 	vec3_t origin;

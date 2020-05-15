@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -40,7 +34,6 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include "g_local.h"
 #include "../botlib/botlib.h"
 #include "../botlib/be_aas.h"
-//
 #include "ai_char.h"
 #include "ai_chat_sys.h"
 #include "ai_ea.h"
@@ -49,7 +42,6 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include "ai_move.h"
 #include "ai_weap.h"
 #include "ai_weight.h"
-//
 #include "ai_main.h"
 #include "ai_dmq3.h"
 #include "ai_chat.h"
@@ -57,11 +49,10 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include "ai_vcmd.h"
 #include "ai_dmnet.h"
 #include "ai_team.h"
-//
-#include "chars.h"				//characteristics
-#include "inv.h"				//indexes into the inventory
-#include "syn.h"				//synonyms
-#include "match.h"				//string matching types and vars
+#include "chars.h" // characteristics
+#include "inv.h" // indexes into the inventory
+#include "syn.h" // synonyms
+#include "match.h" // string matching types and vars
 
 #define MAX_USERMOVE				400
 #define MAX_COMMANDARGUMENTS		10
@@ -249,8 +240,7 @@ void EA_DelayedJump(int playerNum) {
 
 	if (bi->actionflags & ACTION_JUMPEDLASTFRAME) {
 		bi->actionflags & = ~ACTION_DELAYEDJUMP;
-	} //end if
-	else {
+	} else {
 		bi->actionflags |= ACTION_DELAYEDJUMP;
 	} //end if
 } //end of the function EA_DelayedJump
@@ -371,8 +361,12 @@ void EA_Move(int playerNum, vec3_t dir, float speed) {
 
 	VectorCopy(dir, bi->dir);
 	//cap speed
-	if (speed > MAX_USERMOVE)speed = MAX_USERMOVE;
-	else if (speed < -MAX_USERMOVE)speed = -MAX_USERMOVE;
+	if (speed > MAX_USERMOVE) {
+		speed = MAX_USERMOVE;
+	} else if (speed < -MAX_USERMOVE) {
+		speed = -MAX_USERMOVE;
+	}
+
 	bi->speed = speed;
 
 	if (speed <= 200) {
@@ -411,6 +405,7 @@ void EA_GetInput(int playerNum, float thinktime, bot_input_t *input) {
 
 	bi = &botinputs[playerNum];
 	bi->thinktime = thinktime;
+
 	Com_Memcpy(input, bi, sizeof(bot_input_t));
 } //end of the function EA_GetInput
 //===========================================================================
@@ -426,12 +421,16 @@ void EA_ResetInput(int playerNum) {
 	bi = &botinputs[playerNum];
 
 	bi->thinktime = 0;
+
 	VectorClear(bi->dir);
+
 	bi->speed = 0;
 	jumped = bi->actionflags & ACTION_JUMP;
 	bi->actionflags = 0;
 
-	if (jumped)bi->actionflags |= ACTION_JUMPEDLASTFRAME;
+	if (jumped) {
+		bi->actionflags |= ACTION_JUMPEDLASTFRAME;
+	}
 } //end of the function EA_ResetInput
 //===========================================================================
 //
@@ -440,6 +439,7 @@ void EA_ResetInput(int playerNum) {
 // Changes Globals:		 - 
 //===========================================================================
 int EA_Setup(void) {
+
 	//initialize the bot inputs
 	Com_Memset(botinputs, 0, sizeof(botinputs));
 	return BLERR_NOERROR;

@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -83,14 +77,14 @@ typedef trace_t bsp_trace_t;
 
 //entity state
 typedef struct bot_entitystate_s {
-	int type; 		// entity type
-	int flags; 		// entity flags
-	vec3_t origin; 		// origin of the entity
-	vec3_t angles; 		// angles of the model
-	vec3_t absmins; 	// absolute bounding box minimums
-	vec3_t absmaxs; 	// absolute bounding box maximums
-	int solid; 		// solid type
-	qboolean	relink; 		// relink entity
+	int type;		// entity type
+	int flags;		// entity flags
+	vec3_t origin;		// origin of the entity
+	vec3_t angles;		// angles of the model
+	vec3_t absmins;	// absolute bounding box minimums
+	vec3_t absmaxs;	// absolute bounding box maximums
+	int solid;		// solid type
+	qboolean	relink;		// relink entity
 } bot_entitystate_t;
 
 //bot AI library exported functions
@@ -98,7 +92,7 @@ typedef struct botlib_import_s {
 	//get time for measuring time lapse
 	int (*MilliSeconds)(void);
 	//print messages from the bot library
-	void (QDECL *Print)(int type, char *fmt, ...)__attribute__((format(printf, 2, 3)));
+	void (QDECL *Print)(int type, char *fmt, ...)__attribute__ ((format(printf, 2, 3)));
 	//trace a bbox through the world
 	void (*Trace)(bsp_trace_t *trace, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passent, int contentmask);
 	//trace a bbox against a specific entity
@@ -113,10 +107,10 @@ typedef struct botlib_import_s {
 	//send a bot client command
 	void (*BotClientCommand)(int playerNum, const char *command);
 	//memory allocation
-	void * (*GetMemory)(int size); 		// allocate from Zone
-	void (*FreeMemory)(void *ptr); 		// free memory from Zone
-	int (*AvailableMemory)(void); 		// available Zone memory
-	void * (*HunkAlloc)(int size); 		// allocate from hunk
+	void * (*GetMemory)(int size);		// allocate from Zone
+	void (*FreeMemory)(void *ptr);		// free memory from Zone
+	int (*AvailableMemory)(void);		// available Zone memory
+	void * (*HunkAlloc)(int size);		// allocate from hunk
 	//file system access
 	int (*FS_FOpenFile)(const char *qpath, fileHandle_t *file, fsMode_t mode);
 	int (*FS_Read)(void *buffer, int len, fileHandle_t f);

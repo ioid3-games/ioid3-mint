@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // world.c -- world query functions
@@ -35,12 +29,12 @@ Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 SV_ClipHandleForEntity
 
-Returns a headnode that can be used for testing or clipping to a
-given entity.  If the entity is a bsp model, the headnode will
-be returned, otherwise a custom box tree or capsule will be constructed.
+Returns a headnode that can be used for testing or clipping to a given entity. If the entity is a bsp model, the headnode will be
+returned, otherwise a custom box tree or capsule will be constructed.
 =======================================================================================================================================
 */
 clipHandle_t SV_ClipHandleForEntity(const sharedEntity_t *ent) {
+
 	if (ent->s.collisionType == CT_SUBMODEL) {
 		// explicit hulls in the BSP model
 		return CM_InlineModel(ent->s.modelindex);
@@ -48,7 +42,6 @@ clipHandle_t SV_ClipHandleForEntity(const sharedEntity_t *ent) {
 	// create a temp tree or capsule from bounding box sizes
 	return CM_TempBoxModel(ent->s.mins, ent->s.maxs, ent->s.collisionType, ent->s.contents);
 }
-
 
 
 /*
@@ -65,14 +58,14 @@ them, which prevents having to deal with multiple fragments of a single entity.
 */
 
 typedef struct worldSector_s {
-	int axis; 		// -1 = leaf node
+	int axis; // -1 = leaf node
 	float dist;
-	struct worldSector_s	*children[2];
+	struct worldSector_s *children[2];
 	svEntity_t *entities;
 } worldSector_t;
 
-#define AREA_DEPTH	4
-#define AREA_NODES	64
+#define AREA_DEPTH 4
+#define AREA_NODES 64
 
 worldSector_t sv_worldSectors[AREA_NODES];
 int sv_numworldSectors;
@@ -90,8 +83,8 @@ void SV_SectorList_f(void) {
 
 	for (i = 0; i < AREA_NODES; i++) {
 		sec = &sv_worldSectors[i];
-
 		c = 0;
+
 		for (ent = sec->entities; ent; ent = ent->nextEntityInWorldSector) {
 			c++;
 		}
@@ -104,7 +97,7 @@ void SV_SectorList_f(void) {
 =======================================================================================================================================
 SV_CreateworldSector
 
-Builds a uniformly subdivided tree for the given world size
+Builds a uniformly subdivided tree for the given world size.
 =======================================================================================================================================
 */
 static worldSector_t *SV_CreateworldSector(int depth, vec3_t mins, vec3_t maxs) {
@@ -122,6 +115,7 @@ static worldSector_t *SV_CreateworldSector(int depth, vec3_t mins, vec3_t maxs) 
 	}
 	
 	VectorSubtract(maxs, mins, size);
+
 	if (size[0] > size[1]) {
 		anode->axis = 0;
 	} else {
@@ -129,10 +123,11 @@ static worldSector_t *SV_CreateworldSector(int depth, vec3_t mins, vec3_t maxs) 
 	}
 
 	anode->dist = 0.5 * (maxs[anode->axis] + mins[anode->axis]);
-	VectorCopy(mins, mins1); 	
-	VectorCopy(mins, mins2); 	
-	VectorCopy(maxs, maxs1); 	
-	VectorCopy(maxs, maxs2); 	
+
+	VectorCopy(mins, mins1);
+	VectorCopy(mins, mins2);
+	VectorCopy(maxs, maxs1);
+	VectorCopy(maxs, maxs2);
 	
 	maxs1[anode->axis] = mins2[anode->axis] = anode->dist;
 	
@@ -153,19 +148,18 @@ void SV_ClearWorld(void) {
 	vec3_t mins, maxs;
 
 	Com_Memset(sv_worldSectors, 0, sizeof(sv_worldSectors));
-	sv_numworldSectors = 0;
 
+	sv_numworldSectors = 0;
 	// get world map bounds
 	h = CM_InlineModel(0);
+
 	CM_ModelBounds(h, mins, maxs);
 	SV_CreateworldSector(0, mins, maxs);
 }
 
-
 /*
 =======================================================================================================================================
 SV_UnlinkEntity
-
 =======================================================================================================================================
 */
 void SV_UnlinkEntity(sharedEntity_t *gEnt) {
@@ -175,16 +169,17 @@ void SV_UnlinkEntity(sharedEntity_t *gEnt) {
 	sharedPlayerState_t *ps;
 
 	ent = SV_SvEntityForGentity(gEnt);
-
 	gEnt->r.linked = qfalse;
+
 	if (gEnt->s.number < MAX_CLIENTS) {
 		ps = SV_GamePlayerNum(gEnt->s.number);
 		ps->linked = qfalse;
 	}
 
 	ws = ent->worldSector;
+
 	if (!ws) {
-		return; 		// not linked in anywhere
+		return; // not linked in anywhere
 	}
 
 	ent->worldSector = NULL;
@@ -204,14 +199,12 @@ void SV_UnlinkEntity(sharedEntity_t *gEnt) {
 	Com_Printf("WARNING: SV_UnlinkEntity: not found in worldSector\n");
 }
 
-
+#define MAX_TOTAL_ENT_LEAFS 128
 /*
 =======================================================================================================================================
 SV_LinkEntity
-
 =======================================================================================================================================
 */
-#define MAX_TOTAL_ENT_LEAFS		128
 void SV_LinkEntity(sharedEntity_t *gEnt) {
 	worldSector_t *node;
 	int leafs[MAX_TOTAL_ENT_LEAFS];
@@ -227,18 +220,18 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 	ent = SV_SvEntityForGentity(gEnt);
 
 	if (ent->worldSector) {
-		SV_UnlinkEntity(gEnt); 	// unlink from old position
+		SV_UnlinkEntity(gEnt); // unlink from old position
 	}
 	// get the position
 	origin = gEnt->r.currentOrigin;
 	angles = gEnt->r.currentAngles;
-
 	// set the abs box
 	if (gEnt->s.collisionType == CT_SUBMODEL && (angles[0] || angles[1] || angles[2])) {
 		// expand for rotation
 		float max;
 
 		max = RadiusFromBounds(gEnt->s.mins, gEnt->s.maxs);
+
 		for (i = 0; i < 3; i++) {
 			gEnt->r.absmin[i] = origin[i] - max;
 			gEnt->r.absmax[i] = origin[i] + max;
@@ -248,27 +241,21 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 		VectorAdd(origin, gEnt->s.mins, gEnt->r.absmin);
 		VectorAdd(origin, gEnt->s.maxs, gEnt->r.absmax);
 	}
-	// because movement is clipped an epsilon away from an actual edge,
-	// we must fully check even when bounding boxes don't quite touch
+	// because movement is clipped an epsilon away from an actual edge, we must fully check even when bounding boxes don't quite touch
 	gEnt->r.absmin[0] -= 1;
 	gEnt->r.absmin[1] -= 1;
 	gEnt->r.absmin[2] -= 1;
 	gEnt->r.absmax[0] += 1;
 	gEnt->r.absmax[1] += 1;
 	gEnt->r.absmax[2] += 1;
-
 	// link to PVS leafs
 	ent->numClusters = 0;
 	ent->lastCluster = 0;
 	ent->areanum = -1;
 	ent->areanum2 = -1;
-
-	//get all leafs, including solids
-	num_leafs = CM_BoxLeafnums(gEnt->r.absmin, gEnt->r.absmax,
-		leafs, MAX_TOTAL_ENT_LEAFS, &lastLeaf);
-
-	// if none of the leafs were inside the map, the
-	// entity is outside the world and can be considered unlinked
+	// get all leafs, including solids
+	num_leafs = CM_BoxLeafnums(gEnt->r.absmin, gEnt->r.absmax, leafs, MAX_TOTAL_ENT_LEAFS, &lastLeaf);
+	// if none of the leafs were inside the map, the entity is outside the world and can be considered unlinked
 	if (!num_leafs) {
 		return;
 	}
@@ -277,14 +264,14 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 		area = CM_LeafArea(leafs[i]);
 
 		if (area != -1) {
-			// doors may legally straggle two areas,
-			// but nothing should evern need more than that
+			// doors may legally straggle two areas, but nothing should evern need more than that
 			if (ent->areanum != -1 && ent->areanum != area) {
 				if (ent->areanum2 != -1 && ent->areanum2 != area && sv.state == SS_LOADING) {
 					Com_DPrintf("Object %i touching 3 areas at %f %f %f\n",
 					gEnt->s.number,
 					gEnt->r.absmin[0], gEnt->r.absmin[1], gEnt->r.absmin[2]);
 				}
+
 				ent->areanum2 = area;
 			} else {
 				ent->areanum = area;
@@ -310,27 +297,28 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 	}
 
 	gEnt->r.linkcount++;
-
 	// find the first world sector node that the ent's box crosses
 	node = sv_worldSectors;
-	while (1) {
-		if (node->axis == -1)
-			break;
 
-		if (gEnt->r.absmin[node->axis] > node->dist)
+	while (1) {
+		if (node->axis == -1) {
+			break;
+		}
+
+		if (gEnt->r.absmin[node->axis] > node->dist) {
 			node = node->children[0];
-		else if (gEnt->r.absmax[node->axis] < node->dist)
+		} else if (gEnt->r.absmax[node->axis] < node->dist) {
 			node = node->children[1];
-		else
-			break; 		// crosses the node
+		} else {
+			break; // crosses the node
+		}
 	}
-	
 	// link it in
 	ent->worldSector = node;
 	ent->nextEntityInWorldSector = node->entities;
 	node->entities = ent;
-
 	gEnt->r.linked = qtrue;
+
 	if (gEnt->s.number < MAX_CLIENTS) {
 		ps = SV_GamePlayerNum(gEnt->s.number);
 		ps->linked = qtrue;
@@ -342,8 +330,9 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 
 AREA QUERY
 
-Fills in a list of all entities who's absmin / absmax intersects the given
-bounds.  This does NOT mean that they actually touch in the case of bmodels.
+Fills in a list of all entities who's absmin/absmax intersects the given bounds.
+This does NOT mean that they actually touch in the case of bmodels.
+
 =======================================================================================================================================
 */
 
@@ -358,7 +347,6 @@ typedef struct {
 /*
 =======================================================================================================================================
 SV_AreaEntities_r
-
 =======================================================================================================================================
 */
 static void SV_AreaEntities_r(worldSector_t *node, areaParms_t *ap) {
@@ -367,19 +355,13 @@ static void SV_AreaEntities_r(worldSector_t *node, areaParms_t *ap) {
 
 	for (check = node->entities; check; check = next) {
 		next = check->nextEntityInWorldSector;
-
 		gcheck = SV_GEntityForSvEntity(check);
 
 		if (!gcheck->r.linked) {
 			continue;
 		}
 
-		if (gcheck->r.absmin[0] > ap->maxs[0]
-		|| gcheck->r.absmin[1] > ap->maxs[1]
-		|| gcheck->r.absmin[2] > ap->maxs[2]
-		|| gcheck->r.absmax[0] < ap->mins[0]
-		|| gcheck->r.absmax[1] < ap->mins[1]
-		|| gcheck->r.absmax[2] < ap->mins[2]) {
+		if (gcheck->r.absmin[0] > ap->maxs[0] || gcheck->r.absmin[1] > ap->maxs[1] || gcheck->r.absmin[2] > ap->maxs[2] || gcheck->r.absmax[0] < ap->mins[0] || gcheck->r.absmax[1] < ap->mins[1] || gcheck->r.absmax[2] < ap->mins[2]) {
 			continue;
 		}
 
@@ -393,7 +375,7 @@ static void SV_AreaEntities_r(worldSector_t *node, areaParms_t *ap) {
 	}
 	
 	if (node->axis == -1) {
-		return; 		// terminal node
+		return; // terminal node
 	}
 	// recurse down both sides
 	if (ap->maxs[node->axis] > node->dist) {
@@ -424,15 +406,10 @@ int SV_AreaEntities(const vec3_t mins, const vec3_t maxs, int *entityList, int m
 	return ap.count;
 }
 
-
-
-//===========================================================================
-
-
 typedef struct {
 	vec3_t boxmins, boxmaxs; // enclose the test object along entire move
 	const float *mins;
-	const float *maxs; 	// size of the moving object
+	const float *maxs; // size of the moving object
 	const float *start;
 	vec3_t end;
 	trace_t trace;
@@ -441,11 +418,9 @@ typedef struct {
 	traceType_t traceType;
 } moveclip_t;
 
-
 /*
 =======================================================================================================================================
 SV_ClipToEntity
-
 =======================================================================================================================================
 */
 void SV_ClipToEntity(trace_t *trace, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentmask, traceType_t type) {
@@ -456,37 +431,30 @@ void SV_ClipToEntity(trace_t *trace, const vec3_t start, const vec3_t mins, cons
 	touch = SV_GentityNum(entityNum);
 
 	Com_Memset(trace, 0, sizeof(trace_t));
-
-	// if it doesn't have any brushes of a type we
-	// are looking for, ignore it
+	// if it doesn't have any brushes of a type we are looking for, ignore it
 	if (!(contentmask & touch->s.contents)) {
 		trace->fraction = 1.0;
 		return;
 	}
 	// might intersect, so do an exact clip
 	clipHandle = SV_ClipHandleForEntity(touch);
-
 	origin = touch->r.currentOrigin;
 	angles = touch->r.currentAngles;
 
 	if (touch->s.collisionType != CT_SUBMODEL) {
-		angles = vec3_origin; 	// boxes don't rotate
+		angles = vec3_origin; // boxes don't rotate
 	}
 
-	CM_TransformedBoxTrace(trace, start, end,
-		mins, maxs, clipHandle, contentmask,
-		origin, angles, type);
+	CM_TransformedBoxTrace(trace, start, end, mins, maxs, clipHandle, contentmask, origin, angles, type);
 
 	if (trace->fraction < 1) {
 		trace->entityNum = touch->s.number;
 	}
 }
 
-
 /*
 =======================================================================================================================================
 SV_ClipMoveToEntities
-
 =======================================================================================================================================
 */
 static void SV_ClipMoveToEntities(moveclip_t *clip) {
@@ -516,30 +484,27 @@ static void SV_ClipMoveToEntities(moveclip_t *clip) {
 		}
 
 		touch = SV_GentityNum(touchlist[i]);
-
 		// see if we should ignore this entity
 		if (clip->passEntityNum != ENTITYNUM_NONE) {
 			if (touchlist[i] == clip->passEntityNum) {
-				continue; 	// don't clip against the pass entity
+				continue; // don't clip against the pass entity
 			}
 
 			if (touch->r.ownerNum == clip->passEntityNum) {
-				continue; 	// don't clip against own missiles
+				continue; // don't clip against own missiles
 			}
 
 			if (touch->r.ownerNum == passOwnerNum) {
-				continue; 	// don't clip against other missiles from our owner
+				continue; // don't clip against other missiles from our owner
 			}
 		}
-		// if it doesn't have any brushes of a type we
-		// are looking for, ignore it
+		// if it doesn't have any brushes of a type we are looking for, ignore it
 		if (!(clip->contentmask & touch->s.contents)) {
 			continue;
 		}
 		// might intersect, so do an exact clip
 		clipHandle = SV_ClipHandleForEntity(touch);
-
-		// non - worldspawn entities must not use world as clip model!
+		// non-worldspawn entities must not use world as clip model!
 		if (clipHandle == 0) {
 			continue;
 		}
@@ -549,12 +514,10 @@ static void SV_ClipMoveToEntities(moveclip_t *clip) {
 
 
 		if (touch->s.collisionType != CT_SUBMODEL) {
-			angles = vec3_origin; 	// boxes don't rotate
+			angles = vec3_origin; // boxes don't rotate
 		}
 
-		CM_TransformedBoxTrace(&trace, (float *)clip->start, (float *)clip->end,
-			(float *)clip->mins, (float *)clip->maxs, clipHandle, clip->contentmask,
-			origin, angles, clip->traceType);
+		CM_TransformedBoxTrace(&trace, (float *)clip->start, (float *)clip->end, (float *)clip->mins, (float *)clip->maxs, clipHandle, clip->contentmask, origin, angles, clip->traceType);
 
 		if (trace.allsolid) {
 			clip->trace.allsolid = qtrue;
@@ -565,18 +528,16 @@ static void SV_ClipMoveToEntities(moveclip_t *clip) {
 		}
 
 		if (trace.fraction < clip->trace.fraction) {
-			qboolean	oldStart;
+			qboolean oldStart;
 
 			// make sure we keep a startsolid from a previous trace
 			oldStart = clip->trace.startsolid;
-
 			trace.entityNum = touch->s.number;
 			clip->trace = trace;
 			clip->trace.startsolid |= oldStart;
 		}
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -599,13 +560,13 @@ void SV_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec
 	}
 
 	Com_Memset(&clip, 0, sizeof(moveclip_t));
-
 	// clip to world
 	CM_BoxTrace(&clip.trace, start, end, mins, maxs, 0, contentmask, type);
 	clip.trace.entityNum = clip.trace.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
+
 	if (clip.trace.fraction == 0) {
 		*results = clip.trace;
-		return; 		// blocked immediately by the world
+		return; // blocked immediately by the world
 	}
 
 	clip.contentmask = contentmask;
@@ -618,9 +579,7 @@ void SV_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec
 	clip.traceType = type;
 
 	// create the bounding box of the entire move
-	// we can limit it to the part of the move not
-	// already clipped off by the world, which can be
-	// a significant savings for line of sight and shot traces
+	// we can limit it to the part of the move not already clipped off by the world, which can be a significant savings for line of sight and shot traces
 	for (i = 0; i < 3; i++) {
 		if (end[i] > start[i]) {
 			clip.boxmins[i] = clip.start[i] + clip.mins[i] - 1;
@@ -636,12 +595,11 @@ void SV_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec
 	*results = clip.trace;
 }
 
-
 /*
 =======================================================================================================================================
 SV_ClipToEntities
 
-SV_Trace that doesn't clip to world
+SV_Trace that doesn't clip to world.
 =======================================================================================================================================
 */
 void SV_ClipToEntities(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, traceType_t type) {
@@ -657,25 +615,24 @@ void SV_ClipToEntities(trace_t *results, const vec3_t start, const vec3_t mins, 
 	}
 
 	Com_Memset(&clip, 0, sizeof(moveclip_t));
-
-	// Skip clipping to world
+	// skip clipping to world
 	clip.trace.fraction = 1; // assume it goes the entire distance until shown otherwise
-	VectorCopy(end, clip.trace.endpos);
-	clip.trace.entityNum = ENTITYNUM_NONE;
 
+	VectorCopy(end, clip.trace.endpos);
+
+	clip.trace.entityNum = ENTITYNUM_NONE;
 	clip.contentmask = contentmask;
 	clip.start = start;
+
 //	VectorCopy(clip.trace.endpos, clip.end);
 	VectorCopy(end, clip.end);
+
 	clip.mins = mins;
 	clip.maxs = maxs;
 	clip.passEntityNum = passEntityNum;
 	clip.traceType = type;
-
 	// create the bounding box of the entire move
-	// we can limit it to the part of the move not
-	// already clipped off by the world, which can be
-	// a significant savings for line of sight and shot traces
+	// we can limit it to the part of the move not already clipped off by the world, which can be a significant savings for line of sight and shot traces
 	for (i = 0; i < 3; i++) {
 		if (end[i] > start[i]) {
 			clip.boxmins[i] = clip.start[i] + clip.mins[i] - 1;
@@ -690,8 +647,6 @@ void SV_ClipToEntities(trace_t *results, const vec3_t start, const vec3_t mins, 
 
 	*results = clip.trace;
 }
-
-
 
 /*
 =======================================================================================================================================
@@ -708,7 +663,6 @@ int SV_PointContents(const vec3_t p, int passEntityNum) {
 
 	// get base contents from world
 	contents = CM_PointContents(p, 0);
-
 	// or in contents from all the other entities
 	num = SV_AreaEntities(p, p, touch, MAX_GENTITIES);
 
@@ -720,8 +674,7 @@ int SV_PointContents(const vec3_t p, int passEntityNum) {
 		hit = SV_GentityNum(touch[i]);
 		// might intersect, so do an exact clip
 		clipHandle = SV_ClipHandleForEntity(hit);
-
-		// non - worldspawn entities must not use world as clip model!
+		// non-worldspawn entities must not use world as clip model!
 		if (clipHandle == 0) {
 			continue;
 		}
@@ -729,15 +682,13 @@ int SV_PointContents(const vec3_t p, int passEntityNum) {
 		angles = hit->r.currentAngles;
 
 		if (hit->s.collisionType != CT_SUBMODEL) {
-			angles = vec3_origin; 	// boxes don't rotate
+			angles = vec3_origin; // boxes don't rotate
 		}
 
 		c2 = CM_TransformedPointContents(p, clipHandle, hit->r.currentOrigin, angles);
-
 		contents |= c2;
 	}
 
 	return contents;
 }
-
 

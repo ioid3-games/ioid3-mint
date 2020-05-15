@@ -5,27 +5,21 @@ Copyright(C)2006 - 2008 Robert Beckebans < trebor_7@users.sourceforge.net>
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_fbo.c
@@ -45,7 +39,7 @@ qboolean R_CheckFBO(const FBO_t * fbo) {
 		return qtrue;
 
 	// an error occurred
-	switch(code) {
+	switch (code) {
 		case GL_FRAMEBUFFER_UNSUPPORTED:
 			ri.Printf(PRINT_WARNING, "R_CheckFBO: (%s)Unsupported framebuffer format\n", fbo->name);
 			break;
@@ -123,7 +117,7 @@ void FBO_CreateBuffer(FBO_t *fbo, int format, int index, int multisample) {
 	GLenum attachment;
 	qboolean absent;
 
-	switch(format) {
+	switch (format) {
 		case GL_RGB:
 		case GL_RGBA:
 		case GL_RGB8:
@@ -189,7 +183,6 @@ void FBO_CreateBuffer(FBO_t *fbo, int format, int index, int multisample) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 FBO_AttachImage
@@ -207,7 +200,6 @@ void FBO_AttachImage(FBO_t *fbo, image_t *image, GLenum attachment, GLuint cubem
 	if (index >= 0 && index <= 15)
 		fbo->colorImage[index] = image;
 }
-
 
 /*
 =======================================================================================================================================

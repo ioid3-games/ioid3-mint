@@ -1,41 +1,40 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-/**********************************************************************
-	UI_ATOMS.C
 
-	User interface building blocks and support functions.
-**********************************************************************/
+/**************************************************************************************************************************************
+ User interface building blocks and support functions.
+**************************************************************************************************************************************/
+
 #include "ui_local.h"
 
+/*
+=======================================================================================================================================
+UI_SetBestScores
+=======================================================================================================================================
+*/
 void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
+
 	trap_Cvar_Set("ui_scoreAccuracy", va("%i%%", newInfo->accuracy));
 	trap_Cvar_SetValue("ui_scoreImpressives", newInfo->impressives);
 	trap_Cvar_SetValue("ui_scoreExcellents", newInfo->excellents);
@@ -43,7 +42,7 @@ void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 	trap_Cvar_SetValue("ui_scoreAssists", newInfo->assists);
 	trap_Cvar_SetValue("ui_scoreGauntlets", newInfo->gauntlets);
 	trap_Cvar_SetValue("ui_scoreScore", newInfo->score);
-	trap_Cvar_SetValue("ui_scorePerfect",  	newInfo->perfects);
+	trap_Cvar_SetValue("ui_scorePerfect", newInfo->perfects);
 	trap_Cvar_Set("ui_scoreTeam", va("%i to %i", newInfo->redScore, newInfo->blueScore));
 	trap_Cvar_SetValue("ui_scoreBase", newInfo->baseScore);
 	trap_Cvar_SetValue("ui_scoreTimeBonus", newInfo->timeBonus);
@@ -51,7 +50,8 @@ void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 	trap_Cvar_SetValue("ui_scoreShutoutBonus", newInfo->shutoutBonus);
 	trap_Cvar_Set("ui_scoreTime", va("%02i:%02i", newInfo->time / 60, newInfo->time % 60));
 	trap_Cvar_SetValue("ui_scoreCaptures", newInfo->captures);
-  if (postGame) {
+
+	if (postGame) {
 		trap_Cvar_Set("ui_scoreAccuracy2", va("%i%%", newInfo->accuracy));
 		trap_Cvar_SetValue("ui_scoreImpressives2", newInfo->impressives);
 		trap_Cvar_SetValue("ui_scoreExcellents2", newInfo->excellents);
@@ -70,16 +70,23 @@ void UI_SetBestScores(postGameInfo_t *newInfo, qboolean postGame) {
 	}
 }
 
+/*
+=======================================================================================================================================
+UI_LoadBestScores
+=======================================================================================================================================
+*/
 void UI_LoadBestScores(const char *map, int game) {
 	char fileName[MAX_QPATH];
 	fileHandle_t f;
 	postGameInfo_t newInfo;
-	
+
 	memset(&newInfo, 0, sizeof(postGameInfo_t));
+
 	Com_sprintf(fileName, MAX_QPATH, "games/%s_%i.game", map, game);
 
 	if (trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0) {
 		int size = 0;
+
 		trap_FS_Read(&size, sizeof(int), f);
 
 		if (size == sizeof(postGameInfo_t)) {
@@ -114,12 +121,13 @@ void UI_ClearScores(void) {
 	postGameInfo_t newInfo;
 
 	count = trap_FS_GetFileList("games", "game", gameList, sizeof(gameList));
-
 	size = sizeof(postGameInfo_t);
+
 	memset(&newInfo, 0, size);
 
 	if (count > 0) {
 		gameFile = gameList;
+
 		for (i = 0; i < count; i++) {
 			len = strlen(gameFile);
 
@@ -132,11 +140,15 @@ void UI_ClearScores(void) {
 			gameFile += len + 1;
 		}
 	}
-	
-	UI_SetBestScores(&newInfo, qfalse);
 
+	UI_SetBestScores(&newInfo, qfalse);
 }
 
+/*
+=======================================================================================================================================
+UI_Cache_f
+=======================================================================================================================================
+*/
 static void UI_Cache_f(void) {
 	Display_CacheAll();
 }
@@ -158,16 +170,17 @@ static void UI_CalcPostGameStats(void) {
 
 	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
 	Q_strncpyz(map, Info_ValueForKey(info, "mapname"), sizeof(map));
-	game = atoi(Info_ValueForKey(info, "g_gametype"));
 
+	game = atoi(Info_ValueForKey(info, "g_gametype"));
 	// compose file name
 	Com_sprintf(fileName, MAX_QPATH, "games/%s_%i.game", map, game);
 	// see if we have one already
 	memset(&oldInfo, 0, sizeof(postGameInfo_t));
 
 	if (trap_FS_FOpenFile(fileName, &f, FS_READ) >= 0) {
-	// if so load it
+		// if so load it
 		size = 0;
+
 		trap_FS_Read(&size, sizeof(int), f);
 
 		if (size == sizeof(postGameInfo_t)) {
@@ -175,7 +188,7 @@ static void UI_CalcPostGameStats(void) {
 		}
 
 		trap_FS_FCloseFile(f);
-	}					 
+	}
 
 	newInfo.accuracy = atoi(CG_Argv(3));
 	newInfo.impressives = atoi(CG_Argv(4));
@@ -189,11 +202,10 @@ static void UI_CalcPostGameStats(void) {
 	newInfo.blueScore = atoi(CG_Argv(12));
 	time = atoi(CG_Argv(13));
 	newInfo.captures = atoi(CG_Argv(14));
-
 	newInfo.time = (time - trap_Cvar_VariableValue("ui_matchStartTime")) / 1000;
 	adjustedTime = uiInfo.mapList[ui_currentMap.integer].timeToBeat[game];
 
-	if (newInfo.time < adjustedTime) { 
+	if (newInfo.time < adjustedTime) {
 		newInfo.timeBonus = (adjustedTime - newInfo.time) * 10;
 	} else {
 		newInfo.timeBonus = 0;
@@ -213,7 +225,6 @@ static void UI_CalcPostGameStats(void) {
 
 	newInfo.score = newInfo.baseScore + newInfo.shutoutBonus + newInfo.timeBonus;
 	newInfo.score *= newInfo.skillBonus;
-
 	// see if the score is higher for this one
 	newHigh = (newInfo.redScore > newInfo.blueScore && newInfo.score > oldInfo.score);
 
@@ -232,7 +243,6 @@ static void UI_CalcPostGameStats(void) {
 	if (newInfo.time < oldInfo.time) {
 		uiInfo.newBestTime = uiInfo.uiDC.realTime + 20000;
 	}
- 
 	// put back all the ui overrides
 	trap_Cvar_SetValue("capturelimit", trap_Cvar_VariableValue("ui_saveCaptureLimit"));
 	trap_Cvar_SetValue("fraglimit", trap_Cvar_VariableValue("ui_saveFragLimit"));
@@ -244,13 +254,22 @@ static void UI_CalcPostGameStats(void) {
 
 	UI_SetBestScores(&newInfo, qtrue);
 	UI_ShowPostGame(newHigh);
-
 }
 
+/*
+=======================================================================================================================================
+UI_Test_f
+=======================================================================================================================================
+*/
 static void UI_Test_f(void) {
 	UI_ShowPostGame(qtrue);
 }
 
+/*
+=======================================================================================================================================
+UI_Load_f
+=======================================================================================================================================
+*/
 static void UI_Load_f(void) {
 #ifdef MISSIONPACK_HUD
 	if (cg.connected) {
@@ -269,26 +288,32 @@ consoleCommand_t ui_commands[] = {
 	{"ui_report", UI_Report, 0},
 	{"ui_test", UI_Test_f, CMD_INGAME }
 };
+
 int ui_numCommands = ARRAY_LEN(ui_commands);
 
 /*
 =======================================================================================================================================
 UI_ConsoleCommand
 
-update frame time, commands are executed by CG_ConsoleCommand
+Update frame time, commands are executed by CG_ConsoleCommand.
 =======================================================================================================================================
 */
 void UI_ConsoleCommand(int realTime) {
+
 	uiInfo.uiDC.frameTime = realTime - uiInfo.uiDC.realTime;
 	uiInfo.uiDC.realTime = realTime;
 }
 
+/*
+=======================================================================================================================================
+UI_CursorInRect
+=======================================================================================================================================
+*/
 qboolean UI_CursorInRect(int x, int y, int width, int height) {
-	if (uiInfo.uiDC.cursorx < x ||
-		uiInfo.uiDC.cursory < y ||
-		uiInfo.uiDC.cursorx > x+width ||
-		uiInfo.uiDC.cursory > y+height)
+
+	if (uiInfo.uiDC.cursorx < x || uiInfo.uiDC.cursory < y || uiInfo.uiDC.cursorx > x + width || uiInfo.uiDC.cursory > y + height) {
 		return qfalse;
+	}
 
 	return qtrue;
 }

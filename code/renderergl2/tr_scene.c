@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -77,7 +71,6 @@ void R_InitNextFrame(void) {
 	r_numpolybuffers = 0;
 	r_firstScenePolybuffer = 0;
 }
-
 
 /*
 =======================================================================================================================================
@@ -281,7 +274,6 @@ void RE_AddPolyToScene(qhandle_t hShader, int numVerts, const polyVert_t *verts,
 	}
 }
 
-
 /*
 =======================================================================================================================================
 R_PolyBufferFogNum
@@ -429,7 +421,6 @@ void RE_AddRefEntityToScene(const refEntity_t *ent, int entBufSize, int numVerts
 	r_numentities++;
 }
 
-
 /*
 =======================================================================================================================================
 RE_AddDynamicLightToScene
@@ -516,7 +507,6 @@ void RE_AddDirectedLightToScene(const vec3_t normal, float intensity, float r, f
 	RE_AddDynamicLightToScene(normal, 256, intensity, r, g, b, REF_GRID_DLIGHT|REF_SURFACE_DLIGHT|REF_DIRECTED_DLIGHT, 0);
 }
 
-
 /*
 =======================================================================================================================================
 RE_AddCoronaToScene
@@ -543,7 +533,6 @@ void RE_AddCoronaToScene(const vec3_t org, float r, float g, float b, float scal
 	cor->visible = visible;
 	cor->shader = R_GetShaderByHandle(hShader);
 }
-
 
 void RE_BeginScene(const refdef_t *fd) {
 	Com_Memcpy(tr.refdef.text, fd->text, sizeof(tr.refdef.text));
@@ -710,7 +699,6 @@ void RE_BeginScene(const refdef_t *fd) {
 	tr.frameSceneNum++;
 	tr.sceneCount++;
 }
-
 
 void RE_EndScene(void) {
 	// the next scene rendered in this frame will tack on after this one

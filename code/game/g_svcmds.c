@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -37,7 +31,6 @@ Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 
 PACKET FILTERING
- 
 
 You can add or remove addresses from the filter list with:
 
@@ -71,7 +64,7 @@ typedef struct ipFilter_s {
 	unsigned compare;
 } ipFilter_t;
 
-#define MAX_IPFILTERS	1024
+#define MAX_IPFILTERS 1024
 
 static ipFilter_t ipFilters[MAX_IPFILTERS];
 static int numIPFilters;
@@ -94,13 +87,14 @@ static qboolean StringToFilter(char *s, ipFilter_t *f) {
 	
 	for (i = 0; i < 4; i++) {
 		if (*s < '0' || *s > '9') {
-			if (*s == '*') // 'match any'
-			{
+			if (*s == '*') { // 'match any'
 				// b[i] and m[i] to 0
 				s++;
 
-				if (!*s)
+				if (!*s) {
 					break;
+				}
+
 				s++;
 				continue;
 			}
@@ -110,6 +104,7 @@ static qboolean StringToFilter(char *s, ipFilter_t *f) {
 		}
 		
 		j = 0;
+
 		while (*s >= '0' && *s <= '9') {
 			num[j++] = *s++;
 		}
@@ -118,8 +113,10 @@ static qboolean StringToFilter(char *s, ipFilter_t *f) {
 		b[i] = atoi(num);
 		m[i] = 255;
 
-		if (!*s)
+		if (!*s) {
 			break;
+		}
+
 		s++;
 	}
 	
@@ -144,19 +141,24 @@ static void UpdateIPBans(void) {
 	*iplist_final = 0;
 
 	for (i = 0; i < numIPFilters; i++) {
-		if (ipFilters[i].compare == 0xffffffff)
+		if (ipFilters[i].compare == 0xffffffff) {
 			continue;
+		}
 
 		*(unsigned *)b = ipFilters[i].compare;
 		*(unsigned *)m = ipFilters[i].mask;
 		*ip = 0;
+
 		for (j = 0; j < 4; j++) {
-			if (m[j]!= 255)
+			if (m[j]!= 255) {
 				Q_strcat(ip, sizeof(ip), "*");
-			else
+			} else {
 				Q_strcat(ip, sizeof(ip), va("%i", b[j]));
+			}
+
 			Q_strcat(ip, sizeof(ip), (j < 3) ? "." : " ");
-		}		
+		}
+
 		if (strlen(iplist_final) + strlen(ip) < MAX_CVAR_VALUE_STRING) {
 			Q_strcat(iplist_final, sizeof(iplist_final), ip);
 		} else {
@@ -184,21 +186,26 @@ qboolean G_FilterPacket(char *from) {
 
 	while (*p && i < 4) {
 		m[i] = 0;
+
 		while (*p >= '0' && *p <= '9') {
 			m[i] = m[i] * 10 + (*p - '0');
 			p++;
 		}
 
-		if (!*p || *p == ':')
+		if (!*p || *p == ':') {
 			break;
+		}
+
 		i++, p++;
 	}
 	
 	in = * (unsigned *)m;
 
-	for (i = 0; i < numIPFilters; i++)
-		if ((in & ipFilters[i].mask) == ipFilters[i].compare)
+	for (i = 0; i < numIPFilters; i++) {
+		if ((in & ipFilters[i].mask) == ipFilters[i].compare) {
 			return g_filterBan.integer != 0;
+		}
+	}
 
 	return g_filterBan.integer == 0;
 }
@@ -211,9 +218,12 @@ AddIP
 static void AddIP(char *str) {
 	int i;
 
-	for (i = 0; i < numIPFilters; i++)
-		if (ipFilters[i].compare == 0xffffffff)
-			break; 		// free spot
+	for (i = 0; i < numIPFilters; i++) {
+		if (ipFilters[i].compare == 0xffffffff) {
+			break; // free spot
+		}
+	}
+
 	if (i == numIPFilters) {
 		if (numIPFilters == MAX_IPFILTERS) {
 			G_Printf("IP filter list is full\n");
@@ -223,8 +233,9 @@ static void AddIP(char *str) {
 		numIPFilters++;
 	}
 	
-	if (!StringToFilter(str, &ipFilters[i]))
+	if (!StringToFilter(str, &ipFilters[i])) {
 		ipFilters[i].compare = 0xffffffffu;
+	}
 
 	UpdateIPBans();
 }
@@ -243,13 +254,18 @@ void G_ProcessIPBans(void) {
 	for (t = s = g_banIPs.string; *t; /* */) {
 		s = strchr(s, ' ');
 
-		if (!s)
+		if (!s) {
 			break;
-		while (*s == ' ')
-			*s++ = 0;
+		}
 
-		if (*t)
+		while (*s == ' ') {
+			*s++ = 0;
+		}
+
+		if (*t) {
 			AddIP(t);
+		}
+
 		t = s;
 	}
 }
@@ -270,7 +286,6 @@ void Svcmd_AddIP_f(void) {
 	trap_Argv(1, str, sizeof(str));
 
 	AddIP(str);
-
 }
 
 /*
@@ -284,21 +299,20 @@ void Svcmd_RemoveIP_f(void) {
 	char str[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 2) {
-		G_Printf("Usage: removeip < ip - mask > \n");
+		G_Printf("Usage: removeip <ip - mask> \n");
 		return;
 	}
 
 	trap_Argv(1, str, sizeof(str));
 
-	if (!StringToFilter(str, &f))
+	if (!StringToFilter(str, &f)) {
 		return;
+	}
 
 	for (i = 0; i < numIPFilters; i++) {
-		if (ipFilters[i].mask == f.mask	&&
-			ipFilters[i].compare == f.compare) {
+		if (ipFilters[i].mask == f.mask && ipFilters[i].compare == f.compare) {
 			ipFilters[i].compare = 0xffffffffu;
 			G_Printf("Removed.\n");
-
 			UpdateIPBans();
 			return;
 		}
@@ -324,49 +338,50 @@ void Svcmd_EntityList_f(void) {
 		}
 
 		G_Printf("%3i:", e);
-		switch(check->s.eType) {
-		case ET_GENERAL:
-			G_Printf("ET_GENERAL          ");
-			break;
-		case ET_PLAYER:
-			G_Printf("ET_PLAYER           ");
-			break;
-		case ET_ITEM:
-			G_Printf("ET_ITEM             ");
-			break;
-		case ET_MISSILE:
-			G_Printf("ET_MISSILE          ");
-			break;
-		case ET_MOVER:
-			G_Printf("ET_MOVER            ");
-			break;
-		case ET_BEAM:
-			G_Printf("ET_BEAM             ");
-			break;
-		case ET_PORTAL:
-			G_Printf("ET_PORTAL           ");
-			break;
-		case ET_SPEAKER:
-			G_Printf("ET_SPEAKER          ");
-			break;
-		case ET_PUSH_TRIGGER:
-			G_Printf("ET_PUSH_TRIGGER     ");
-			break;
-		case ET_TELEPORT_TRIGGER:
-			G_Printf("ET_TELEPORT_TRIGGER ");
-			break;
-		case ET_INVISIBLE:
-			G_Printf("ET_INVISIBLE        ");
-			break;
-		case ET_GRAPPLE:
-			G_Printf("ET_GRAPPLE          ");
-			break;
-		case ET_CORONA:
-			G_Printf("ET_CORONA           ");
-			break;
-		default:
-			G_Printf("%3i                 ", check->s.eType);
-			break;
+
+		switch (check->s.eType) {
+			case ET_GENERAL:
+				G_Printf("ET_GENERAL          ");
+				break;
+			case ET_PLAYER:
+				G_Printf("ET_PLAYER           ");
+				break;
+			case ET_ITEM:
+				G_Printf("ET_ITEM             ");
+				break;
+			case ET_MISSILE:
+				G_Printf("ET_MISSILE          ");
+				break;
+			case ET_MOVER:
+				G_Printf("ET_MOVER            ");
+				break;
+			case ET_BEAM:
+				G_Printf("ET_BEAM             ");
+				break;
+			case ET_PORTAL:
+				G_Printf("ET_PORTAL           ");
+				break;
+			case ET_SPEAKER:
+				G_Printf("ET_SPEAKER          ");
+				break;
+			case ET_PUSH_TRIGGER:
+				G_Printf("ET_PUSH_TRIGGER     ");
+				break;
+			case ET_TELEPORT_TRIGGER:
+				G_Printf("ET_TELEPORT_TRIGGER ");
+				break;
+			case ET_INVISIBLE:
+				G_Printf("ET_INVISIBLE        ");
+				break;
+			case ET_GRAPPLE:
+				G_Printf("ET_GRAPPLE          ");
+				break;
+			case ET_CORONA:
+				G_Printf("ET_CORONA           ");
+				break;
+			default:
+				G_Printf("%3i                 ", check->s.eType);
+				break;
 		}
 
 		if (check->classname) {
@@ -377,6 +392,11 @@ void Svcmd_EntityList_f(void) {
 	}
 }
 
+/*
+=======================================================================================================================================
+PlayerForString
+=======================================================================================================================================
+*/
 int PlayerForString(const char *s) {
 	gplayer_t *cl;
 	int idnum;
@@ -410,7 +430,7 @@ int PlayerForString(const char *s) {
 
 	G_Printf("User %s is not on the server\n", s);
 
-	return - 1;
+	return -1;
 }
 
 /*
@@ -427,6 +447,7 @@ void G_Field_CompletePlayerName(void) {
 
 	// ZTM: FIXME: have to clear whole list because BG_AddStringToList doesn't properly terminate list
 	memset(list, 0, sizeof(list));
+
 	listTotalLength = 0;
 
 	for (idnum = 0, cl = level.players; idnum < level.maxplayers; idnum++, cl++) {
@@ -436,7 +457,7 @@ void G_Field_CompletePlayerName(void) {
 
 		Q_strncpyz(cleanName, cl->pers.netname, sizeof(cleanName));
 		Q_CleanStr(cleanName);
-		// Use quotes if there is a space in the name
+		// use quotes if there is a space in the name
 		if (strchr(cleanName, ' ') != NULL) {
 			BG_AddStringToList(list, sizeof(list), &listTotalLength, va("\"%s\"", cleanName));
 		} else {
@@ -454,7 +475,7 @@ void G_Field_CompletePlayerName(void) {
 =======================================================================================================================================
 Svcmd_ForceTeam_f
 
-forceTeam < player > < team>
+forceTeam <player> <team>.
 =======================================================================================================================================
 */
 void Svcmd_ForceTeam_f(void) {
@@ -483,6 +504,7 @@ Svcmd_ForceTeamComplete
 =======================================================================================================================================
 */
 void Svcmd_ForceTeamComplete(char *args, int argNum) {
+
 	if (argNum == 2) {
 		G_Field_CompletePlayerName();
 	} else if (argNum == 3) {
@@ -494,7 +516,7 @@ void Svcmd_ForceTeamComplete(char *args, int argNum) {
 =======================================================================================================================================
 Svcmd_Teleport_f
 
-teleport < player > < x > < y > < z > [yaw]
+Teleport <player> <x> <y> <z> [yaw].
 =======================================================================================================================================
 */
 void Svcmd_Teleport_f(void) {
@@ -530,6 +552,7 @@ void Svcmd_Teleport_f(void) {
 	position[2] = atoi(str);
 
 	ent = &g_entities[playerNum];
+
 	VectorCopy(ent->s.angles, angles);
 
 	if (trap_Argc() > 5) {
@@ -546,6 +569,7 @@ Svcmd_TeleportComplete
 =======================================================================================================================================
 */
 void Svcmd_TeleportComplete(char *args, int argNum) {
+
 	if (argNum == 2) {
 		G_Field_CompletePlayerName();
 	}
@@ -589,7 +613,7 @@ void Svcmd_Tell_f(void) {
 	char *p;
 
 	if (trap_Argc() < 3) {
-		G_Printf("Usage: tell < player id > < message > \n");
+		G_Printf("Usage: tell <player id> <message>\n");
 		return;
 	}
 
@@ -617,57 +641,59 @@ Svcmd_TellComplete
 =======================================================================================================================================
 */
 void Svcmd_TellComplete(char *args, int argNum) {
+
 	if (argNum == 2) {
 		G_Field_CompletePlayerName();
 	}
 }
 
-struct svcmd
-{
+struct svcmd {
 	char *cmd;
 	qboolean dedicated;
-  void(*function)(void);
-  void(*complete)(char *, int);
-} svcmds[] = {
-  { "abort_podium", qfalse, Svcmd_AbortPodium_f},
-  { "addbot", qfalse, Svcmd_AddBot_f, Svcmd_AddBotComplete},
-  { "addip", qfalse, Svcmd_AddIP_f},
-  { "botlist", qfalse, Svcmd_BotList_f},
-  { "botreport", qfalse, Svcmd_BotTeamplayReport_f},
-  { "entityList", qfalse, Svcmd_EntityList_f},
-  { "forceTeam", qfalse, Svcmd_ForceTeam_f, Svcmd_ForceTeamComplete},
-  { "listip", qfalse, Svcmd_ListIPs_f},
-  { "removeip", qfalse, Svcmd_RemoveIP_f},
-  { "say", qtrue, Svcmd_Say_f},
-  { "teleport", qfalse, Svcmd_Teleport_f, Svcmd_TeleportComplete},
-  { "tell", qtrue, Svcmd_Tell_f, Svcmd_TellComplete},
+	void (*function)(void);
+	void (*complete)(char *, int);
+}
+
+svcmds[] = {
+	{"abort_podium", qfalse, Svcmd_AbortPodium_f},
+	{"addbot", qfalse, Svcmd_AddBot_f, Svcmd_AddBotComplete},
+	{"addip", qfalse, Svcmd_AddIP_f},
+	{"botlist", qfalse, Svcmd_BotList_f},
+	{"botreport", qfalse, Svcmd_BotTeamplayReport_f},
+	{"entityList", qfalse, Svcmd_EntityList_f},
+	{"forceTeam", qfalse, Svcmd_ForceTeam_f, Svcmd_ForceTeamComplete},
+	{"listip", qfalse, Svcmd_ListIPs_f},
+	{"removeip", qfalse, Svcmd_RemoveIP_f},
+	{"say", qtrue, Svcmd_Say_f},
+	{"teleport", qfalse, Svcmd_Teleport_f, Svcmd_TeleportComplete},
+	{"tell", qtrue, Svcmd_Tell_f, Svcmd_TellComplete},
 };
 
 const size_t numSvCmds = ARRAY_LEN(svcmds);
-
 /*
 =======================================================================================================================================
 G_ConsoleCommand
-
 =======================================================================================================================================
 */
 qboolean G_ConsoleCommand(void) {
 	char cmd[MAX_TOKEN_CHARS];
-	struct	svcmd *command;
+	struct svcmd *command;
 
 	trap_Argv(0, cmd, sizeof(cmd));
 
 	command = bsearch(cmd, svcmds, numSvCmds, sizeof(struct svcmd), cmdcmp);
 
 	if (!command) {
-		if (g_dedicated.integer)
+		if (g_dedicated.integer) {
 			G_Printf("unknown command: %s\n", cmd);
+		}
 
 		return qfalse;
 	}
 
-	if (command->dedicated && !g_dedicated.integer)
+	if (command->dedicated && !g_dedicated.integer) {
 		return qfalse;
+	}
 
 	command->function();
 	return qtrue;
@@ -676,23 +702,24 @@ qboolean G_ConsoleCommand(void) {
 /*
 =======================================================================================================================================
 G_ConsoleCompleteArgument
-
 =======================================================================================================================================
 */
 qboolean G_ConsoleCompleteArgument(int completeArgument) {
 	char args[BIG_INFO_STRING];
 	char cmd[MAX_TOKEN_CHARS];
-	struct	svcmd *command;
+	struct svcmd *command;
 
 	trap_Argv(0, cmd, sizeof(cmd));
 
 	command = bsearch(cmd, svcmds, numSvCmds, sizeof(struct svcmd), cmdcmp);
 
-	if (!command || !command->complete)
+	if (!command || !command->complete) {
 		return qfalse;
+	}
 
-	if (command->dedicated && !g_dedicated.integer)
+	if (command->dedicated && !g_dedicated.integer) {
 		return qfalse;
+	}
 
 	trap_LiteralArgs(args, sizeof(args));
 
@@ -700,12 +727,19 @@ qboolean G_ConsoleCompleteArgument(int completeArgument) {
 	return qtrue;
 }
 
+/*
+=======================================================================================================================================
+G_RegisterCommands
+=======================================================================================================================================
+*/
 void G_RegisterCommands(void) {
 	int i;
 
 	for (i = 0; i < numSvCmds; i++) {
-		if (svcmds[i].dedicated && !g_dedicated.integer)
+		if (svcmds[i].dedicated && !g_dedicated.integer) {
 			continue;
+		}
+
 		trap_AddCommand(svcmds[i].cmd);
 	}
 }

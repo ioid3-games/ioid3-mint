@@ -4,27 +4,21 @@ Copyright(C)2009 David S. Miller < davem@davemloft.net>
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -306,12 +300,12 @@ static unsigned int sparc_assemble(enum sparc_iname iname, const int argc, const
 	int i, flt, rd_flt;
 
 	flt = (op->name[0] == 'f');
-	rd_flt = flt ||(op->name[2] == 'f');
+	rd_flt = flt || (op->name[2] == 'f');
 
 	for (i = 0; op->args[i] != ARG_NONE; i++) {
 		int val = argv[i];
 
-		switch(op->args[i]) {
+		switch (op->args[i]) {
 		case ARG_RS1: insn |= RS1(val); break;
 		case ARG_RS2: insn |= RS2(val); break;
 		case ARG_RD:  insn |= RD(val); break;
@@ -370,11 +364,11 @@ static void sparc_disassemble(unsigned int insn) {
 			continue;
 
 		flt = (op->name[0] == 'f');
-		rd_flt = flt ||(op->name[2] == 'f');
+		rd_flt = flt || (op->name[2] == 'f');
 
 		Com_Printf("ASM: %7s\t", op->name);
 		for (i = 0; op->args[i] != ARG_NONE; i++) {
-			switch(op->args[i]) {
+			switch (op->args[i]) {
 			case ARG_RS1: pgreg((insn >> 14)& 0x1f, i, flt); break;
 			case ARG_RS2: pgreg((insn >> 0)& 0x1f, i, flt); break;
 			case ARG_RD:  pgreg((insn >> 25)& 0x1f, i, rd_flt); break;
@@ -582,7 +576,6 @@ struct func_info {
 	int need_float_tmp;
 
 	struct src_insn		*cached_const;
-
 	int stack_space;
 	int gpr_pos;
 #define rFIRST(fp)		((fp) ->gpr_pos - 1)
@@ -599,7 +592,6 @@ struct func_info {
 #define INSN_BUF_SIZE		50
 	unsigned int insn_buf[INSN_BUF_SIZE];
 	int insn_index;
-
 	int saved_icount;
 	int force_emit;
 
@@ -862,23 +854,22 @@ do {	if ((fp) ->cached_const) {	       \
 } while(0)
 
 #define EMIT_FALSE_CONST(fp)					\
-do {	int saved_i_count = (fp) ->saved_icount; 			\
-	(fp) ->saved_icount = (fp) ->cached_const->i_count; 	\
-	dst_insn_append(fp); 					\
-	(fp) ->saved_icount = saved_i_count; 			\
+do {	int saved_i_count = (fp) ->saved_icount;			\
+	(fp) ->saved_icount = (fp) ->cached_const->i_count;	\
+	dst_insn_append(fp);					\
+	(fp) ->saved_icount = saved_i_count;			\
 } while(0)
 
 static void compile_one_insn(vm_t *vm, struct func_info * const fp, struct src_insn *sp) {
 	start_emit(fp, sp->i_count);
 
-	switch(sp->op) {
+	switch (sp->op) {
 	default:
 		Com_Printf("VM: Unhandled opcode 0x%02x[%s]\n",
 			   sp->op,
 			   opnames[sp->op] ? opnames[sp->op] : "UNKNOWN");
 		DIE("Unsupported opcode");
 		break;
-
 	case OP_ENTER: {
 		int stack = SL(64, 128);
 
@@ -1022,7 +1013,6 @@ static void compile_one_insn(vm_t *vm, struct func_info * const fp, struct src_i
 		POP_GPR(fp);
 		POP_GPR(fp);
 		break;
-
 	case OP_PUSH:
 		MAYBE_EMIT_CONST(fp);
 
@@ -1148,7 +1138,7 @@ static void compile_one_insn(vm_t *vm, struct func_info * const fp, struct src_i
 			in(SUBCC, rSECOND(fp), rFIRST(fp), G0);
 		}
 
-		switch(sp->op) {
+		switch (sp->op) {
 		case OP_EQ: iname = BE; break;
 		case OP_NE: iname = BNE; break;
 		case OP_LTI: iname = BL; break;
@@ -1295,7 +1285,6 @@ static void compile_one_insn(vm_t *vm, struct func_info * const fp, struct src_i
 
 		POP_GPR(fp);
 		break;
-
 	case OP_NEGF:
 		MAYBE_EMIT_CONST(fp);
 		in(FNEG, fFIRST(fp), fFIRST(fp));
@@ -1320,7 +1309,6 @@ static void compile_one_insn(vm_t *vm, struct func_info * const fp, struct src_i
 		in(FMUL, fSECOND(fp), fFIRST(fp), fSECOND(fp));
 		POP_FPR(fp);
 		break;
-
 	case OP_EQF:
 	case OP_NEF:
 	case OP_LTF:
@@ -1331,7 +1319,7 @@ static void compile_one_insn(vm_t *vm, struct func_info * const fp, struct src_i
 
 		MAYBE_EMIT_CONST(fp);
 		in(FCMP, fSECOND(fp), fFIRST(fp));
-		switch(sp->op) {
+		switch (sp->op) {
 		case OP_EQF: iname = FBE; break;
 		case OP_NEF: iname = FBNE; break;
 		case OP_LTF: iname = FBL; break;

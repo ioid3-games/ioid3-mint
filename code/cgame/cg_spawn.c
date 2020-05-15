@@ -1,41 +1,38 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*
- * name:		cg_spawn.c
- *
- * desc:		Client sided only map entities
-*/
+/**************************************************************************************************************************************
+ Client sided only map entities.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
+/*
+=======================================================================================================================================
+CG_SpawnString
+=======================================================================================================================================
+*/
 qboolean CG_SpawnString(const char *key, const char *defaultString, char **out) {
 	int i;
 
@@ -55,6 +52,11 @@ qboolean CG_SpawnString(const char *key, const char *defaultString, char **out) 
 	return qfalse;
 }
 
+/*
+=======================================================================================================================================
+CG_SpawnFloat
+=======================================================================================================================================
+*/
 qboolean CG_SpawnFloat(const char *key, const char *defaultString, float *out) {
 	char *s;
 	qboolean present;
@@ -64,6 +66,11 @@ qboolean CG_SpawnFloat(const char *key, const char *defaultString, float *out) {
 	return present;
 }
 
+/*
+=======================================================================================================================================
+CG_SpawnInt
+=======================================================================================================================================
+*/
 qboolean CG_SpawnInt(const char *key, const char *defaultString, int *out) {
 	char *s;
 	qboolean present;
@@ -73,6 +80,11 @@ qboolean CG_SpawnInt(const char *key, const char *defaultString, int *out) {
 	return present;
 }
 
+/*
+=======================================================================================================================================
+CG_SpawnVector
+=======================================================================================================================================
+*/
 qboolean CG_SpawnVector(const char *key, const char *defaultString, float *out) {
 	char *s;
 	qboolean present;
@@ -82,6 +94,11 @@ qboolean CG_SpawnVector(const char *key, const char *defaultString, float *out) 
 	return present;
 }
 
+/*
+=======================================================================================================================================
+CG_SpawnVector2D
+=======================================================================================================================================
+*/
 qboolean CG_SpawnVector2D(const char *key, const char *defaultString, float *out) {
 	char *s;
 	qboolean present;
@@ -95,8 +112,7 @@ qboolean CG_SpawnVector2D(const char *key, const char *defaultString, float *out
 =======================================================================================================================================
 VectorToString
 
-This is just a convenience function
-for printing vectors
+This is just a convenience function for printing vectors.
 =======================================================================================================================================
 */
 char *vtos(const vec3_t v) {
@@ -113,6 +129,11 @@ char *vtos(const vec3_t v) {
 	return s;
 }
 
+/*
+=======================================================================================================================================
+SP_misc_gamemodel
+=======================================================================================================================================
+*/
 void SP_misc_gamemodel(void) {
 	char * model;
 	char * skin;
@@ -126,22 +147,18 @@ void SP_misc_gamemodel(void) {
 
 	cg_gamemodel_t * gamemodel;
 	int i;
-
-#if 0 // ZTM: Note: Spearmint's game always drops misc_gamemodels. Also, RTCW has targetname set though I'm not sure what, if anything, it's used for.
+#if 0 // ZTM: NOTE: Spearmint's game always drops misc_gamemodels. Also, RTCW has targetname set though I'm not sure what, if anything, it's used for
 	if (CG_SpawnString("targetname", "", &model) || CG_SpawnString("scriptname", "", &model) || CG_SpawnString("spawnflags", "", &model)) {
 		// Gordon: this model may not be static, so let the server handle it
 		return;
 	}
 #endif
-
 	if (cg.numMiscGameModels >= MAX_STATIC_GAMEMODELS) {
 		CG_Error("^1MAX_STATIC_GAMEMODELS(%i)hit", MAX_STATIC_GAMEMODELS);
 	}
 
 	CG_SpawnString("model", "", &model);
-
 	CG_SpawnString("skin", "", &skin);
-
 	CG_SpawnVector("origin", "0 0 0", org);
 
 	if (!CG_SpawnVector("angles", "0 0 0", angles)) {
@@ -187,13 +204,13 @@ void SP_misc_gamemodel(void) {
 	}
 }
 
-/*QUAKED props_skyportal(.6 .7 .7)(-8 - 8 0)(8 8 16)
+/*
+QUAKED props_skyportal(.6 .7 .7)(-8 - 8 0)(8 8 16)
 "fov" for the skybox default is 90
 To have the portal sky fogged, enter any of the following values:
 "fogcolor"(r g b)(values 0.0 - 1.0)
 "fognear" distance from entity to start fogging(FIXME? Supported by RTCW, but not Spearmint)
 "fogfar" distance from entity that fog is opaque
-
 */
 void SP_skyportal(void) {
 	int fogn;
@@ -202,6 +219,7 @@ void SP_skyportal(void) {
 	cg.hasSkyPortal = qtrue;
 
 	CG_SpawnVector("origin", "0 0 0", cg.skyPortalOrigin);
+
 	isfog = CG_SpawnVector("fogcolor", "0 0 0", cg.skyPortalFogColor);
 	isfog += CG_SpawnInt("fognear", "0", &fogn);
 	isfog += CG_SpawnInt("fogfar", "300", &cg.skyPortalFogDepthForOpaque);
@@ -213,7 +231,7 @@ void SP_skyportal(void) {
 
 typedef struct {
 	char *name;
-	void(*spawn)(void);
+	void (*spawn)(void);
 } spawn_t;
 
 spawn_t spawns[] = {
@@ -221,14 +239,14 @@ spawn_t spawns[] = {
 	{"misc_gamemodel", SP_misc_gamemodel},
 	{"props_skyportal", SP_skyportal},
 };
+
 int numSpawns = ARRAY_LEN(spawns);
 
 /*
 =======================================================================================================================================
 CG_ParseEntityFromSpawnVars
 
-Spawn an entity and fill in all of the level fields from
-cg.spawnVars[], then call the class specfic spawn function
+Spawn an entity and fill in all of the level fields from cg.spawnVars[], then call the class specfic spawn function.
 =======================================================================================================================================
 */
 void CG_ParseEntityFromSpawnVars(void) {
@@ -239,8 +257,7 @@ void CG_ParseEntityFromSpawnVars(void) {
 	spawnInfo.gametype = cgs.gametype;
 	spawnInfo.spawnInt = CG_SpawnInt;
 	spawnInfo.spawnString = CG_SpawnString;
-
-	// check "notsingle", "notfree", "notteam", etc
+	// check "notsingle", "notfree", "notteam", etc.
 	if (!BG_CheckSpawnEntity(&spawnInfo)) {
 		return;
 	}
@@ -271,6 +288,7 @@ char *CG_AddSpawnVarToken(const char *string) {
 	}
 
 	dest = cg.spawnVarChars + cg.numSpawnVarChars;
+
 	memcpy(dest, string, l + 1);
 
 	cg.numSpawnVarChars += l + 1;
@@ -282,9 +300,7 @@ char *CG_AddSpawnVarToken(const char *string) {
 =======================================================================================================================================
 CG_ParseSpawnVars
 
-Parses a brace bounded set of key / value pairs out of the
-level's entity strings into cg.spawnVars[]
-
+Parses a brace bounded set of key/value pairs out of the level's entity strings into cg.spawnVars[].
 This does not actually spawn an entity.
 =======================================================================================================================================
 */
@@ -294,7 +310,6 @@ qboolean CG_ParseSpawnVars(void) {
 
 	cg.numSpawnVars = 0;
 	cg.numSpawnVarChars = 0;
-
 	// parse the opening brace
 	if (!trap_GetEntityToken(&cg.spawnEntityOffset, com_token, sizeof(com_token))) {
 		// end of spawn string
@@ -304,7 +319,7 @@ qboolean CG_ParseSpawnVars(void) {
 	if (com_token[0] != '{') {
 		CG_Error("CG_ParseSpawnVars: found %s when expecting {", com_token);
 	}
-	// go through all the key / value pairs
+	// go through all the key/value pairs
 	while (1) {
 		// parse key
 		if (!trap_GetEntityToken(&cg.spawnEntityOffset, keyname, sizeof(keyname))) {
@@ -335,6 +350,11 @@ qboolean CG_ParseSpawnVars(void) {
 	return qtrue;
 }
 
+/*
+=======================================================================================================================================
+SP_worldspawn
+=======================================================================================================================================
+*/
 void SP_worldspawn(void) {
 	char *s;
 
@@ -356,17 +376,14 @@ void SP_worldspawn(void) {
 	} else {
 		cg.mapcoordsValid = qfalse;
 	}
-
 #if 0
 	cg.mapcoordsScale[0] = 1 / (cg.mapcoordsMaxs[0] - cg.mapcoordsMins[0]);
 	cg.mapcoordsScale[1] = 1 / (cg.mapcoordsMaxs[1] - cg.mapcoordsMins[1]);
 
 	BG_InitLocations(cg.mapcoordsMins, cg.mapcoordsMaxs);
 #endif
-
 	CG_SpawnString("atmosphere", "", &s);
 	CG_EffectParse(s);
-
 	CG_SpawnFloat("skyalpha", "1", &cg.skyAlpha);
 }
 
@@ -378,21 +395,19 @@ Parses textual entity definitions out of an entstring and spawns gentities.
 =======================================================================================================================================
 */
 void CG_ParseEntitiesFromString(void) {
+
 	// allow calls to CG_Spawn*()
 	cg.spawning = qtrue;
 	cg.numSpawnVars = 0;
 	cg.spawnEntityOffset = 0;
 	cg.numMiscGameModels = 0;
-
-	// the worldspawn is not an actual entity, but it still
-	// has a "spawn" function to perform any global setup
-	// needed by a level(setting configstrings or cvars, etc)
+	// the worldspawn is not an actual entity, but it still has a "spawn" function to perform any global setup
+	// needed by a level (setting configstrings or cvars, etc.)
 	if (!CG_ParseSpawnVars()) {
 		CG_Error("ParseEntities: no entities");
 	}
 
 	SP_worldspawn();
-
 	// parse ents
 	while (CG_ParseSpawnVars()) {
 		CG_ParseEntityFromSpawnVars();
@@ -400,5 +415,5 @@ void CG_ParseEntitiesFromString(void) {
 
 	CG_DPrintf("CGame loaded %d misc_gamemodels\n", cg.numMiscGameModels);
 
-	cg.spawning = qfalse;           // any future calls to CG_Spawn*()will be errors
+	cg.spawning = qfalse; // any future calls to CG_Spawn*()will be errors
 }

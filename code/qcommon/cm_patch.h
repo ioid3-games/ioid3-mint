@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -73,12 +67,12 @@ properly.
 
 typedef struct {
 	float plane[4];
-	int signbits; 		// signx + (signy << 1) +  (signz << 2), used as lookup during collision
+	int signbits;		// signx + (signy << 1) +  (signz << 2), used as lookup during collision
 } patchPlane_t;
 
 typedef struct {
 	int surfacePlane;
-	int numBorders; 		// 3 or four + 6 axial bevels + 4 or 3 * 4 edge bevels
+	int numBorders;		// 3 or four + 6 axial bevels + 4 or 3 * 4 edge bevels
 	int borderPlanes[4+6+16];
 	int borderInward[4+6+16];
 	qboolean	borderNoAdjust[4+6+16];
@@ -86,7 +80,7 @@ typedef struct {
 
 typedef struct patchCollide_s {
 	vec3_t bounds[2];
-	int numPlanes; 			// surface planes plus edge planes
+	int numPlanes;			// surface planes plus edge planes
 	patchPlane_t *planes;
 	int numFacets;
 	facet_t *facets;
@@ -101,7 +95,7 @@ typedef struct {
 	qboolean	wrapWidth;
 	qboolean	wrapHeight;
 	float subdivideDistance;
-	vec3_t points[MAX_GRID_SIZE][MAX_GRID_SIZE]; 	// [width][height]
+	vec3_t points[MAX_GRID_SIZE][MAX_GRID_SIZE];	// [width][height]
 } cGrid_t;
 
 #define PLANE_TRI_EPSILON	0.1

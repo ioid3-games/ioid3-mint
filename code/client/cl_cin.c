@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -40,11 +34,11 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include "client.h"
 #include "snd_local.h"
 
-#define MAXSIZE				8
-#define MINSIZE				4
+#define MAXSIZE 8
+#define MINSIZE 4
 
-#define DEFAULT_CIN_WIDTH	512
-#define DEFAULT_CIN_HEIGHT	512
+#define DEFAULT_CIN_WIDTH 512
+#define DEFAULT_CIN_HEIGHT 512
 
 #define ROQ_QUAD			0x1000
 #define ROQ_QUAD_INFO		0x1001
@@ -56,7 +50,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define ZA_SOUND_MONO		0x1020
 #define ZA_SOUND_STEREO		0x1021
 
-#define MAX_VIDEO_HANDLES	16
+#define MAX_VIDEO_HANDLES 16
 
 
 static void RoQ_init(void);
@@ -84,12 +78,10 @@ typedef struct {
 	byte linbuf[DEFAULT_CIN_WIDTH*DEFAULT_CIN_HEIGHT*4*2];
 	byte file[65536];
 	short sqrTable[256];
-
 	int mcomp[256];
 	byte *qStatus[2][32768];
 
 	long oldXOff, oldYOff, oldysize, oldxsize;
-
 	int currentHandle;
 } cinematics_t;
 
@@ -97,9 +89,9 @@ typedef struct {
 	char fileName[MAX_OSPATH];
 	int CIN_WIDTH, CIN_HEIGHT;
 	int xpos, ypos, width, height;
-	qboolean			looping, holdAtEnd, dirty, alterGameState, silent, shader;
+	qboolean looping, holdAtEnd, dirty, alterGameState, silent, shader;
 	fileHandle_t iFile;
-	e_status			status;
+	e_status status;
 	int startTime;
 	int lastTime;
 	long tfps;
@@ -117,11 +109,11 @@ typedef struct {
 	void(*VQNormal)(byte *status, void *qdata);
 	void(*VQBuffer)(byte *status, void *qdata);
 
-	long samplesPerPixel; 				// defaults to 2
-	byte*				gray;
+	long samplesPerPixel; // defaults to 2
+	byte *gray;
 	unsigned int xsize, ysize, maxsize, minsize;
 
-	qboolean			half, smootheddouble, inMemory;
+	qboolean half, smootheddouble, inMemory;
 	long normalBuffer0;
 	long roq_flags;
 	long roqF0;
@@ -129,15 +121,15 @@ typedef struct {
 	long t[2];
 	long roqFPS;
 	int playonwalls;
-	byte*				buf;
+	byte *buf;
 	long drawX, drawY;
 } cin_cache;
 
 static cinematics_t cin;
-static cin_cache		cinTable[MAX_VIDEO_HANDLES];
+static cin_cache cinTable[MAX_VIDEO_HANDLES];
 static int currentHandle = -1;
 
-extern int s_soundtime; 		// sample PAIRS
+extern int s_soundtime; // sample PAIRS
 
 
 void CIN_CloseAllVideos(void) {
@@ -149,7 +141,6 @@ void CIN_CloseAllVideos(void) {
 		}
 	}
 }
-
 
 static int CIN_HandleForVideo(void) {
 	int i;
@@ -163,7 +154,6 @@ static int CIN_HandleForVideo(void) {
 	Com_Error(ERR_DROP, "CIN_HandleForVideo: none free");
 	return - 1;
 }
-
 
 extern int Com_ScaledMilliseconds(void);
 
@@ -186,7 +176,6 @@ static void RllSetupTable(void) {
 }
 
 
-
 // ----------------------------------------------------------------------------- 
 // RllDecodeMonoToMono
 //
@@ -204,18 +193,18 @@ long RllDecodeMonoToMono(unsigned char *from, short *to, unsigned int size, char
 	unsigned int z;
 	int prev;
 	
-	if (signedOutput)	
+	if (signedOutput) {
 		prev = flag - 0x8000;
-	else 
+	} else {
 		prev = flag;
+	}
 
 	for (z = 0; z < size; z++) {
 		prev = to[z] = (short)(prev + cin.sqrTable[from[z]]);
 	}
 
-	return size; 	//*sizeof(short));
+	return size;	//*sizeof(short));
 }
-
 
 // ----------------------------------------------------------------------------- 
 // RllDecodeMonoToStereo
@@ -235,19 +224,19 @@ long RllDecodeMonoToStereo(unsigned char *from, short *to, unsigned int size, ch
 	unsigned int z;
 	int prev;
 	
-	if (signedOutput)	
+	if (signedOutput) {
 		prev = flag - 0x8000;
-	else 
+	} else {
 		prev = flag;
+	}
 
 	for (z = 0; z < size; z++) {
 		prev = (short)(prev + cin.sqrTable[from[z]]);
 		to[z*2+0] = to[z*2+1] = (short)(prev);
 	}
 	
-	return size; 	// * 2 * sizeof(short));
+	return size;	// * 2 * sizeof(short));
 }
-
 
 // ----------------------------------------------------------------------------- 
 // RllDecodeStereoToStereo
@@ -276,15 +265,11 @@ long RllDecodeStereoToStereo(unsigned char *from, short *to, unsigned int size, 
 	}
 
 	for (z = 0; z < size; z += 2) {
-                prevL = (short)(prevL + cin.sqrTable[*zz++]);
-                prevR = (short)(prevR + cin.sqrTable[*zz++]);
-                to[z+0] = (short)(prevL);
-                to[z+1] = (short)(prevR);
+		prevL = (short)(prevL + cin.sqrTable[*zz++]); prevR = (short)(prevR + cin.sqrTable[*zz++]); to[z + 0] = (short)(prevL); to[z + 1] = (short)(prevR);
 	}
 	
-	return(size >> 1); 	//*sizeof(short));
+	return (size >> 1); //*sizeof(short));
 }
-
 
 // ----------------------------------------------------------------------------- 
 // RllDecodeStereoToMono
@@ -312,9 +297,9 @@ long RllDecodeStereoToMono(unsigned char *from, short *to, unsigned int size, ch
 	}
 
 	for (z = 0; z < size; z += 1) {
-		prevL = prevL + cin.sqrTable[from[z*2]];
-		prevR = prevR + cin.sqrTable[from[z*2+1]];
-		to[z] = (short)((prevL + prevR) /2);
+		prevL = prevL + cin.sqrTable[from[z * 2]];
+		prevR = prevR + cin.sqrTable[from[z * 2 + 1]];
+		to[z] = (short)((prevL + prevR) / 2);
 	}
 
 	return size;
@@ -417,14 +402,13 @@ unsigned short newd, celdata, code;
 unsigned int index, i;
 int spl;
 
-	newd	 = 0;
+	newd = 0;
 	celdata = 0;
-	index	 = 0;
-	
-        spl = cinTable[currentHandle].samplesPerLine;
-        
+	index = 0;
+	spl = cinTable[currentHandle].samplesPerLine;
+
 	do {
-		if (!newd) { 
+		if (!newd) {
 			newd = 7;
 			celdata = data[0] + data[1] * 256;
 			data += 2;
@@ -435,14 +419,15 @@ int spl;
 		code = (unsigned short)(celdata&0xc000);
 		celdata <<= 2;
 		
-		switch(code) {
+		switch (code) {
 			case 0x8000:													// vq code
 				blit8_32((byte *)&vq8[(*data) *128], status[index], spl);
 				data++;
 				index += 5;
 				break;
 			case 0xc000:													// drop
-				index++; 													// skip 8x8
+				index++;													// skip 8x8
+
 				for (i = 0; i < 4; i++) {
 					if (!newd) { 
 						newd = 7;
@@ -451,10 +436,10 @@ int spl;
 					} else {
 						newd --;
 					}
-						
+
 					code = (unsigned short)(celdata&0xc000); celdata <<= 2;
 
-					switch(code) {											// code in top two bits of code
+					switch (code) {											// code in top two bits of code
 						case 0x8000:										// 4x4 vq code
 							blit4_32((byte *)&vq4[(*data) *32], status[index], spl);
 							data++;
@@ -477,6 +462,7 @@ int spl;
 
 					index++;
 				}
+
 				break;
 			case 0x4000:													// motion compensation
 				move8_32(status[index] + cin.mcomp[(*data)], status[index], spl);
@@ -512,46 +498,46 @@ static void ROQ_GenYUVTables(void) {
 	
 		ROQ_UB_tab[i] = (long)((t_ub * x) +  (1 << 5));
 		ROQ_VR_tab[i] = (long)((t_vr * x) +  (1 << 5));
-		ROQ_UG_tab[i] = (long)((-t_ug * x)		);
+		ROQ_UG_tab[i] = (long)((-t_ug * x));
 		ROQ_VG_tab[i] = (long)((-t_vg * x) +  (1 << 5));
 		ROQ_YY_tab[i] = (long)((i << 6)|(i >> 2));
 	}
 }
 
 #define VQ2TO4(a, b, c, d) { \
-    	*c++ = a[0]; 	\
-	*d++ = a[0]; 	\
-	*d++ = a[0]; 	\
-	*c++ = a[1]; 	\
-	*d++ = a[1]; 	\
-	*d++ = a[1]; 	\
-	*c++ = b[0]; 	\
-	*d++ = b[0]; 	\
-	*d++ = b[0]; 	\
-	*c++ = b[1]; 	\
-	*d++ = b[1]; 	\
-	*d++ = b[1]; 	\
-	*d++ = a[0]; 	\
-	*d++ = a[0]; 	\
-	*d++ = a[1]; 	\
-	*d++ = a[1]; 	\
-	*d++ = b[0]; 	\
-	*d++ = b[0]; 	\
-	*d++ = b[1]; 	\
-	*d++ = b[1]; 	\
+    	*c++ = a[0];	\
+	*d++ = a[0];	\
+	*d++ = a[0];	\
+	*c++ = a[1];	\
+	*d++ = a[1];	\
+	*d++ = a[1];	\
+	*c++ = b[0];	\
+	*d++ = b[0];	\
+	*d++ = b[0];	\
+	*c++ = b[1];	\
+	*d++ = b[1];	\
+	*d++ = b[1];	\
+	*d++ = a[0];	\
+	*d++ = a[0];	\
+	*d++ = a[1];	\
+	*d++ = a[1];	\
+	*d++ = b[0];	\
+	*d++ = b[0];	\
+	*d++ = b[1];	\
+	*d++ = b[1];	\
 	a += 2; b += 2; }
  
 #define VQ2TO2(a, b, c, d) { \
-	*c++ = *a; 	\
-	*d++ = *a; 	\
-	*d++ = *a; 	\
-	*c++ = *b; 	\
-	*d++ = *b; 	\
-	*d++ = *b; 	\
-	*d++ = *a; 	\
-	*d++ = *a; 	\
-	*d++ = *b; 	\
-	*d++ = *b; 	\
+	*c++ = *a;	\
+	*d++ = *a;	\
+	*d++ = *a;	\
+	*c++ = *b;	\
+	*d++ = *b;	\
+	*d++ = *b;	\
+	*d++ = *a;	\
+	*d++ = *a;	\
+	*d++ = *b;	\
+	*d++ = *b;	\
 	a++; b++; }
 
 /******************************************************************************
@@ -789,7 +775,7 @@ static void decodeCodeBook(byte *input, unsigned short roq_flags) {
 					*bbptr++ = cinTable[currentHandle].gray[((y0*3) + y2) /4];
 					*bbptr++ = cinTable[currentHandle].gray[((y1*3) + y3) /4];
 					*bbptr++ = cinTable[currentHandle].gray[(y0+ (y2*3)) /4];
-					*bbptr++ = cinTable[currentHandle].gray[(y1+ (y3*3)) /4]; 						
+					*bbptr++ = cinTable[currentHandle].gray[(y1+ (y3*3)) /4];						
 					*bbptr++ = cinTable[currentHandle].gray[y2];
 					*bbptr++ = cinTable[currentHandle].gray[y3];
 				}
@@ -916,7 +902,6 @@ static void recurseQuad(long startX, long startY, long quadSize, long xOff, long
 	}
 }
 
-
 /******************************************************************************
 *
 * Function:		
@@ -940,7 +925,7 @@ static void setupQuad(long xOff, long yOff) {
 
 	numQuadCels = (cinTable[currentHandle].xsize*cinTable[currentHandle].ysize) / (16);
 	numQuadCels += numQuadCels/4;
-	numQuadCels += 64; 							  // for overflow
+	numQuadCels += 64;							  // for overflow
 
 	cinTable[currentHandle].onQuad = 0;
 
@@ -951,8 +936,8 @@ static void setupQuad(long xOff, long yOff) {
 	temp = NULL;
 
 	for (i = (numQuadCels - 64); i < numQuadCels; i++) {
-		cin.qStatus[0][i] = temp; 			  // eoq
-		cin.qStatus[1][i] = temp; 			  // eoq
+		cin.qStatus[0][i] = temp;			  // eoq
+		cin.qStatus[1][i] = temp;			  // eoq
 	}
 }
 
@@ -1117,7 +1102,7 @@ static void RoQInterrupt(void) {
 // new frame is ready
 //
 redump:
-	switch(cinTable[currentHandle].roq_id) {
+	switch (cinTable[currentHandle].roq_id) {
 		case ROQ_QUAD_VQ:
 			if ((cinTable[currentHandle].numQuads&1)) {
 				cinTable[currentHandle].normalBuffer0 = cinTable[currentHandle].t[1];
@@ -1154,6 +1139,7 @@ redump:
 					S_Update();
 					s_rawend[0] = s_soundtime;
 				}
+
 				ssize = RllDecodeStereoToStereo(framedata, sbuf, cinTable[currentHandle].RoQFrameSize, 0, (unsigned short)cinTable[currentHandle].roq_flags);
                                 S_RawSamples(0, ssize, 22050, 2, 2, (byte *)sbuf, 1.0f, -1);
 			}
@@ -1483,7 +1469,7 @@ int CIN_PlayCinematic(const char *arg, int x, int y, int w, int h, int systemBit
 
 			do {
 				CIN_RunCinematic(currentHandle);
-			} while(cinTable[currentHandle].buf == NULL && cinTable[currentHandle].status == FMV_PLAY); 		// wait for first frame(load codebook and sound)
+			} while(cinTable[currentHandle].buf == NULL && cinTable[currentHandle].status == FMV_PLAY);		// wait for first frame(load codebook and sound)
 		}
 
 		return currentHandle;

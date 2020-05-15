@@ -98,9 +98,9 @@ static const char *JSON_SkipStruct(const char *json, const char *jsonEnd);
 static const char *JSON_SkipValue(const char *json, const char *jsonEnd);
 static const char *JSON_SkipValueAndSeparators(const char *json, const char *jsonEnd);
 
-#define IS_SEPARATOR(x)  ((x) == ' ' ||(x) == '\t' ||(x) == '\n' ||(x) == '\r' ||(x) == ', ' ||(x) == ':')
-#define IS_STRUCT_OPEN(x)((x) == '{' ||(x) == '[')
-#define IS_STRUCT_CLOSE(x)((x) == '}' ||(x) == ']')
+#define IS_SEPARATOR(x)  ((x) == ' ' || (x) == '\t' || (x) == '\n' || (x) == '\r' || (x) == ', ' || (x) == ':')
+#define IS_STRUCT_OPEN(x)((x) == '{' || (x) == '[')
+#define IS_STRUCT_CLOSE(x)((x) == '}' || (x) == ']')
 
 static const char *JSON_SkipSeparators(const char *json, const char *jsonEnd) {
 	while (json < jsonEnd && IS_SEPARATOR(*json))

@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -34,9 +28,9 @@ Suite 120, Rockville, Maryland 20850 USA.
 
 #ifndef MODDIR
   #ifdef MISSIONPACK
-    #define MODDIR "missionpack"
+#define MODDIR "missionpack"
   #else
-    #define MODDIR "baseq3"
+#define MODDIR "baseq3"
   #endif
 #endif
 
@@ -44,7 +38,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 
 // Keep this in - sync with VERSION in Makefile.
 #ifndef PRODUCT_VERSION
-	#define PRODUCT_VERSION			"1.0.1"
+	#define PRODUCT_VERSION			"1.0.2"
 #endif
 
 // because games can change separately from the main system protocol, we need a
@@ -146,14 +140,14 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define CS_ITEMS				27		// string of 0's and 1's that tell which items are present
 
 #define CS_MODELS				32
-#define CS_SOUNDS				(CS_MODELS+MAX_MODELS)
-#define CS_PLAYERS				(CS_SOUNDS+MAX_SOUNDS)
-#define CS_LOCATIONS			(CS_PLAYERS+MAX_CLIENTS)
-#define CS_PARTICLES			(CS_LOCATIONS+MAX_LOCATIONS)
-#define CS_DLIGHTS(CS_PARTICLES+MAX_LOCATIONS)
-#define CS_BOTINFO				(CS_DLIGHTS+MAX_DLIGHT_CONFIGSTRINGS)
+#define CS_SOUNDS				(CS_MODELS + MAX_MODELS)
+#define CS_PLAYERS				(CS_SOUNDS + MAX_SOUNDS)
+#define CS_LOCATIONS			(CS_PLAYERS + MAX_CLIENTS)
+#define CS_PARTICLES			(CS_LOCATIONS + MAX_LOCATIONS)
+#define CS_DLIGHTS				(CS_PARTICLES + MAX_LOCATIONS)
+#define CS_BOTINFO				(CS_DLIGHTS + MAX_DLIGHT_CONFIGSTRINGS)
 
-#define CS_MAX					(CS_BOTINFO+MAX_CLIENTS)
+#define CS_MAX					(CS_BOTINFO + MAX_CLIENTS)
 
 #if(CS_MAX) > MAX_CONFIGSTRINGS
 #error overflow: (CS_MAX) > MAX_CONFIGSTRINGS
@@ -193,9 +187,9 @@ typedef enum {
 typedef struct {
 	trType_t trType;
 	int trTime;
-	int trDuration; 			// if non 0, trTime + trDuration = stop time
+	int trDuration;			// if non 0, trTime + trDuration = stop time
 	vec3_t trBase;
-	vec3_t trDelta; 			// velocity, etc
+	vec3_t trDelta;			// velocity, etc
 } trajectory_t;
 
 /*
@@ -217,18 +211,18 @@ Add new fields to bg_entityStateFields / bg_playerStateFields in bg_misc.c
 // the structure size is fairly large
 
 typedef struct entityState_s {
-	int number; 			// entity index
+	int number;			// entity index
 
-	int contents; 		// CONTENTS_TRIGGER, CONTENTS_SOLID, CONTENTS_BODY, etc
+	int contents;		// CONTENTS_TRIGGER, CONTENTS_SOLID, CONTENTS_BODY, etc
 							// a non - solid entity should set to 0
 
-	collisionType_t collisionType; 	// if CT_SUBMODEL, modelindex is an inline model number. only set by trap_SetBrushModel
+	collisionType_t collisionType;	// if CT_SUBMODEL, modelindex is an inline model number. only set by trap_SetBrushModel
 									// if CT_CAPSULE, use capsule instead of bbox for clipping against this ent
 									// else(CT_AABB), assume an explicit mins / maxs bounding box
 
 	int modelindex;
 
-	vec3_t mins, maxs; 	// bounding box size
+	vec3_t mins, maxs;	// bounding box size
 
 	vec3_t origin;
 	vec3_t origin2;
@@ -237,40 +231,40 @@ typedef struct entityState_s {
 	// EXPECTS THE FIELDS IN THAT ORDER!
 	//================================
 
-	int eType; 			// entityType_t
+	int eType;			// entityType_t
 	int eFlags;
 
-	trajectory_t pos; 	// for calculating position
-	trajectory_t apos; 	// for calculating angles
+	trajectory_t pos;	// for calculating position
+	trajectory_t apos;	// for calculating angles
 
 	int time;
 	int time2;
 
 	vec3_t angles;
 	vec3_t angles2;
-	int otherEntityNum; 	// shotgun sources, etc
+	int otherEntityNum;	// shotgun sources, etc
 	int otherEntityNum2;
-	int groundEntityNum; 	// ENTITYNUM_NONE = in air
+	int groundEntityNum;	// ENTITYNUM_NONE = in air
 
-	int constantLight; 	// r + (g << 8) +  (b << 16) +  (intensity << 24)
-	int dl_intensity; 	// used for coronas
-	int loopSound; 		// constantly loop this sound
+	int constantLight;	// r + (g << 8) +  (b << 16) +  (intensity << 24)
+	int dl_intensity;	// used for coronas
+	int loopSound;		// constantly loop this sound
 
 	int modelindex2;
-	int playerNum; 		// 0 to(MAX_CLIENTS - 1), for players and corpses
+	int playerNum;		// 0 to(MAX_CLIENTS - 1), for players and corpses
 	int frame;
-	int event; 			// impulse events -- muzzle flashes, footsteps, etc
+	int event;			// impulse events -- muzzle flashes, footsteps, etc
 	int eventParm;
 	int team;
 	int density;            // for particle effects
 
 	// for players
-	int powerups; 		// bit flags
-	int weapon; 			// determines weapon and flash model, etc
-	int legsAnim; 		// mask off ANIM_TOGGLEBIT
-	int torsoAnim; 		// mask off ANIM_TOGGLEBIT
-	int tokens; 			// harvester skulls
-	float skinFraction; 	// 0 = full health, 1 = dead
+	int powerups;		// bit flags
+	int weapon;			// determines weapon and flash model, etc
+	int legsAnim;		// mask off ANIM_TOGGLEBIT
+	int torsoAnim;		// mask off ANIM_TOGGLEBIT
+	int tokens;			// harvester skulls
+	float skinFraction;	// 0 = full health, 1 = dead
 } entityState_t;
 
 // bit limits
@@ -298,31 +292,31 @@ typedef struct entityState_s {
 // from it.
 
 typedef struct playerState_s {
-	int commandTime; 	// cmd->serverTime of last executed command
+	int commandTime;	// cmd->serverTime of last executed command
 
 	vec3_t origin;
 
-	qboolean linked; 			// set by server
+	qboolean linked;			// set by server
 
-	int playerNum; 		// ranges from 0 to MAX_CLIENTS - 1
+	int playerNum;		// ranges from 0 to MAX_CLIENTS - 1
 
-	vec3_t viewangles; 		// for fixed views
+	vec3_t viewangles;		// for fixed views
 	int viewheight;
 
 	// ping is not communicated over the net at all
-	int ping; 			// server to game info for scoreboard
+	int ping;			// server to game info for scoreboard
 
 	// ZTM: FIXME: make persistant private to game/cgame. Currently server accesses PERS_SCORE(0)in it.
-	int persistant[MAX_PERSISTANT]; 	// stats that aren't cleared on death
+	int persistant[MAX_PERSISTANT];	// stats that aren't cleared on death
 
 	// DO NOT MODIFY ANYTHING ABOVE THIS, THE SERVER
 	// EXPECTS THE FIELDS IN THAT ORDER!
 	//================================
 
-	//int commandTime; 	// cmd->serverTime of last executed command
+	//int commandTime;	// cmd->serverTime of last executed command
 	int pm_type;
-	int bobCycle; 		// for view bobbing and footstep generation
-	int pm_flags; 		// ducked, jump_held, etc
+	int bobCycle;		// for view bobbing and footstep generation
+	int pm_flags;		// ducked, jump_held, etc
 	int pm_time;
 
 	//vec3_t origin;
@@ -330,59 +324,59 @@ typedef struct playerState_s {
 	int weaponTime;
 	int gravity;
 	int speed;
-	int delta_angles[3]; 	// add to command angles to get view direction
+	int delta_angles[3];	// add to command angles to get view direction
 									// changed by spawns, rotating objects, and teleporters
 
-	vec3_t mins, maxs; 		// bounding box size
+	vec3_t mins, maxs;		// bounding box size
 
 	int groundEntityNum; // ENTITYNUM_NONE = in air
 
-	int legsTimer; 		// don't change low priority animations until this runs out
-	int legsAnim; 		// mask off ANIM_TOGGLEBIT
+	int legsTimer;		// don't change low priority animations until this runs out
+	int legsAnim;		// mask off ANIM_TOGGLEBIT
 
-	int torsoTimer; 		// don't change low priority animations until this runs out
-	int torsoAnim; 		// mask off ANIM_TOGGLEBIT
+	int torsoTimer;		// don't change low priority animations until this runs out
+	int torsoAnim;		// mask off ANIM_TOGGLEBIT
 
-	int movementDir; 	// a number 0 to 7 that represents the relative angle
+	int movementDir;	// a number 0 to 7 that represents the relative angle
 								// of movement to the view angle(axial and diagonals)
 								// when at rest, the value will remain unchanged
 								// used to twist the legs during strafing
 
-	vec3_t grapplePoint; 	// location of grapple to pull towards if PMF_GRAPPLE_PULL
+	vec3_t grapplePoint;	// location of grapple to pull towards if PMF_GRAPPLE_PULL
 
-	int eFlags; 				// copied to entityState_t->eFlags
-	int contents; 			// copied to entityState_t->contents
-	collisionType_t collisionType; 	// copied to entityState_t->capsule
-	//qboolean linked; 				// set by server
+	int eFlags;				// copied to entityState_t->eFlags
+	int contents;			// copied to entityState_t->contents
+	collisionType_t collisionType;	// copied to entityState_t->capsule
+	//qboolean linked;				// set by server
 
-	int eventSequence; 	// pmove generated events
+	int eventSequence;	// pmove generated events
 	int events[MAX_PS_EVENTS];
 	int eventParms[MAX_PS_EVENTS];
-	int externalEvent; 	// events set on player from another source
+	int externalEvent;	// events set on player from another source
 	int externalEventParm;
 
-	//int playerNum; 		// ranges from 0 to MAX_CLIENTS - 1
-	int weapon; 			// copied to entityState_t->weapon
+	//int playerNum;		// ranges from 0 to MAX_CLIENTS - 1
+	int weapon;			// copied to entityState_t->weapon
 	int weaponstate;
 
-	//vec3_t viewangles; 		// for fixed views
+	//vec3_t viewangles;		// for fixed views
 	//int viewheight;
 
 	// damage feedback
-	int damageEvent; 	// when it changes, latch the other parms
+	int damageEvent;	// when it changes, latch the other parms
 	int damageYaw;
 	int damagePitch;
 	int damageCount;
 	int stats[MAX_STATS];
-	//int persistant[MAX_PERSISTANT]; 	// stats that aren't cleared on death
-	int powerups[MAX_POWERUPS]; 	// level.time that the powerup runs out
+	//int persistant[MAX_PERSISTANT];	// stats that aren't cleared on death
+	int powerups[MAX_POWERUPS];	// level.time that the powerup runs out
 	int ammo[MAX_WEAPONS];
-	int tokens; 			// harvester skulls
+	int tokens;			// harvester skulls
 	int loopSound;
-	int jumppad_ent; 	// jumppad entity hit this frame
+	int jumppad_ent;	// jumppad entity hit this frame
 
 	// not communicated over the net at all
-	//int ping; 			// server to game info for scoreboard
+	//int ping;			// server to game info for scoreboard
 	int pmove_framecount;
 	int jumppad_frame;
 	int entityEventSequence;
@@ -424,7 +418,7 @@ usercmd_t->button bits definitions
 
 #define BUTTON_ANY			(1 << 15)		// any key whatsoever
 
-#define BUTTONS_GENERATED(BUTTON_TALK|BUTTON_WALKING|BUTTON_ANY)
+#define BUTTONS_GENERATED	(BUTTON_TALK|BUTTON_WALKING|BUTTON_ANY)
 
 #define MOVE_RUN			120			// if forwardmove or rightmove are >= MOVE_RUN,
 										// then BUTTON_WALKING should be set
@@ -482,10 +476,10 @@ typedef struct {
 
 	// command(in)
 	usercmd_t cmd;
-	int tracemask; 			// collide against these types of surfaces
-	int debugLevel; 			// if set, diagnostic output will be printed
-	qboolean noFootsteps; 		// if the game is setup for no footsteps by the server
-	qboolean gauntletHit; 		// true if a gauntlet attack would actually hit something
+	int tracemask;			// collide against these types of surfaces
+	int debugLevel;			// if set, diagnostic output will be printed
+	qboolean noFootsteps;		// if the game is setup for no footsteps by the server
+	qboolean gauntletHit;		// true if a gauntlet attack would actually hit something
 
 	int framecount;
 
@@ -839,11 +833,11 @@ typedef enum {
 typedef struct animation_s {
 	int firstFrame;
 	int numFrames;
-	int loopFrames; 			// 0 to numFrames
-	int frameLerp; 			// msec between frames
-	int initialLerp; 		// msec to get to first frame
-	int reversed; 			// true if animation is reversed
-	int flipflop; 			// true if animation should flipflop back to base
+	int loopFrames;			// 0 to numFrames
+	int frameLerp;			// msec between frames
+	int initialLerp;		// msec to get to first frame
+	int reversed;			// true if animation is reversed
+	int flipflop;			// true if animation should flipflop back to base
 } animation_t;
 
 // flip the togglebit every time an animation
@@ -1013,19 +1007,19 @@ typedef enum {
 #define MAX_ITEM_MODELS 4
 
 typedef struct gitem_s {
-	char *classname; 	// spawning name
+	char *classname;	// spawning name
 	char *pickup_sound;
 	char *world_model[MAX_ITEM_MODELS];
 
 	char *icon;
-	char *pickup_name; 	// for printing on pickup
+	char *pickup_name;	// for printing on pickup
 
-	int quantity; 		// for ammo how much, or duration of powerup
-	itemType_t giType; 			// IT_* flags
+	int quantity;		// for ammo how much, or duration of powerup
+	itemType_t giType;			// IT_* flags
 
 	int giTag;
 
-	char *sounds; 		// string of all sounds this item will use
+	char *sounds;		// string of all sounds this item will use
 } gitem_t;
 
 // included in both the game dll and the client
@@ -1213,8 +1207,8 @@ int BG_GetTracemapGroundFloor(void);
 int BG_GetTracemapGroundCeil(void);
 void etpro_FinalizeTracemapClamp(int *x, int *y);
 
-void PC_SourceWarning(int handle, char *format, ...)__attribute__((format(printf, 2, 3)));
-void PC_SourceError(int handle, char *format, ...)__attribute__((format(printf, 2, 3)));
+void PC_SourceWarning(int handle, char *format, ...)__attribute__ ((format(printf, 2, 3)));
+void PC_SourceError(int handle, char *format, ...)__attribute__ ((format(printf, 2, 3)));
 int PC_CheckTokenString(int handle, char *string);
 int PC_ExpectTokenString(int handle, char *string);
 int PC_ExpectTokenType(int handle, int type, int subtype, pc_token_t *token);
@@ -1236,13 +1230,13 @@ int PC_ExpectAnyToken(int handle, pc_token_t *token);
 
 //structure field definition
 typedef struct fielddef_s {
-	char *name; 										//name of the field
-	int offset; 										//offset in the structure
-	int type; 										//type of the field
+	char *name;										//name of the field
+	int offset;										//offset in the structure
+	int type;										//type of the field
 	//type specific fields
-	int maxarray; 									//maximum array size
-	float floatmin, floatmax; 					//float min and max
-	struct structdef_s *substruct; 			//sub structure
+	int maxarray;									//maximum array size
+	float floatmin, floatmax;					//float min and max
+	struct structdef_s *substruct;			//sub structure
 } fielddef_t;
 
 //structure definition
@@ -1260,7 +1254,7 @@ qboolean PC_ReadStructure(int source, structdef_t *def, void *structure);
 void trap_Print(const char *text);
 
 // abort the game
-void trap_Error(const char *text)__attribute__((noreturn));
+void trap_Error(const char *text)__attribute__ ((noreturn));
 
 // milliseconds should only be used for performance tuning, never
 // for anything game related.

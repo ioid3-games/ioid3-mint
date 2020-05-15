@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // bg_lib.h -- standard C library replacement routines used by code
@@ -37,7 +31,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 //Ignore __attribute__ on non - gcc platforms
 #ifndef __GNUC__
 #ifndef __attribute__
-#define __attribute__(x)
+#define __attribute__ (x)
 #endif
 #endif
 
@@ -50,7 +44,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 typedef unsigned int size_t;
 
 typedef char *  va_list;
-#define _INTSIZEOF(n)((sizeof(n) +  sizeof(int) - 1)& ~(sizeof(int) - 1))
+#define _INTSIZEOF(n)((sizeof(n) + sizeof(int) - 1)& ~(sizeof(int) - 1))
 #define va_start(ap, v)(ap = (va_list)&v + _INTSIZEOF(v))
 #define va_arg(ap, t)(*(t *)((ap += _INTSIZEOF(t)) - _INTSIZEOF(t)))
 #define va_end(ap)(ap = (va_list)0)
@@ -73,18 +67,18 @@ typedef char *  va_list;
 #define isalnum(c)(isalpha(c) || isdigit(c))
 #define isalpha(c)(isupper(c) || islower(c))
 #define isascii(c)((c) > 0 && (c) <= 0x7f)
-#define iscntrl(c)(((c) >= 0) && (((c) <= 0x1f) ||((c) == 0x7f)))
+#define iscntrl(c)(((c) >= 0) && (((c) <= 0x1f) || ((c) == 0x7f)))
 #define isdigit(c)((c) >= '0' && (c) <= '9')
 #define isgraph(c)((c) != ' ' && isprint(c))
 #define islower(c)((c) >= 'a' && (c) <= 'z')
 #define isprint(c)((c) >= ' ' && (c) <= '~')
 #define ispunct(c)(((c) > ' ' && (c) <= '~') && !isalnum(c))
-#define isspace(c)((c) == ' ' ||(c) == '\f' ||(c) == '\n' ||(c) == '\r' || \
- (c) == '\t' ||(c) == '\v')
+#define isspace(c)((c) == ' ' || (c) == '\f' || (c) == '\n' || (c) == '\r' || \
+ (c) == '\t' || (c) == '\v')
 #define isupper(c)((c) >= 'A' && (c) <= 'Z')
 #define isxdigit(c)(isxupper(c) || isxlower(c))
-#define isxlower(c)(isdigit(c) ||(c >= 'a' && c <= 'f'))
-#define isxupper(c)(isdigit(c) ||(c >= 'A' && c <= 'F'))
+#define isxlower(c)(isdigit(c) || (c >= 'a' && c <= 'f'))
+#define isxupper(c)(isdigit(c) || (c >= 'A' && c <= 'F'))
 
 // Misc functions
 typedef int cmp_t(const void *, const void *);
@@ -113,7 +107,7 @@ int atoi(const char *string);
 int _atoi(const char **stringPtr);
 long strtol(const char *nptr, char **endptr, int base);
 int Q_vsnprintf(char *buffer, size_t length, const char *fmt, va_list argptr);
-int sscanf(const char *buffer, const char *fmt, ...)__attribute__((format(scanf, 2, 3)));
+int sscanf(const char *buffer, const char *fmt, ...)__attribute__ ((format(scanf, 2, 3)));
 
 // Memory functions
 void *memmove(void *dest, const void *src, size_t count);

@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -56,19 +50,20 @@ SV_Netchan_TransmitNextInQueue
 */
 void SV_Netchan_TransmitNextInQueue(client_t *client) {
 	netchan_buffer_t *netbuf;
-		
+
 	Com_DPrintf("#462 Netchan_TransmitNextFragment: popping a queued message for transmit\n");
 	netbuf = client->netchan_start_queue;
 
 	Netchan_Transmit(&client->netchan, netbuf->msg.cursize, netbuf->msg.data);
-
 	// pop from queue
 	client->netchan_start_queue = netbuf->next;
+
 	if (!client->netchan_start_queue) {
 		Com_DPrintf("#462 Netchan_TransmitNextFragment: emptied queue\n");
 		client->netchan_end_queue = &client->netchan_start_queue;
-	} else
+	} else {
 		Com_DPrintf("#462 Netchan_TransmitNextFragment: remaining queued message\n");
+	}
 
 	Z_Free(netbuf);
 }
@@ -76,13 +71,14 @@ void SV_Netchan_TransmitNextInQueue(client_t *client) {
 /*
 =======================================================================================================================================
 SV_Netchan_TransmitNextFragment
-Transmit the next fragment and the next queued packet
-Return number of ms until next message can be sent based on throughput given by client rate,
- - 1 if no packet was sent.
+
+Transmit the next fragment and the next queued packet.
+Return number of ms until next message can be sent based on throughput given by client rate, -1 if no packet was sent.
 =======================================================================================================================================
 */
 
 int SV_Netchan_TransmitNextFragment(client_t *client) {
+
 	if (client->netchan.unsentFragments) {
 		Netchan_TransmitNextFragment(&client->netchan);
 		return SV_RateMsec(client);
@@ -94,19 +90,19 @@ int SV_Netchan_TransmitNextFragment(client_t *client) {
 	return - 1;
 }
 
-
 /*
 =======================================================================================================================================
 SV_Netchan_Transmit
+
 TTimo
 https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id = 462
-if there are some unsent fragments(which may happen if the snapshots
-and the gamestate are fragmenting, and collide on send for instance)
-then buffer them and make sure they get sent in correct order
+If there are some unsent fragments (which may happen if the snapshots and the gamestate are fragmenting, and collide on send for
+instance) then buffer them and make sure they get sent in correct order.
 =======================================================================================================================================
 */
 
 void SV_Netchan_Transmit(client_t *client, msg_t *msg) {
+
 	MSG_WriteByte(msg, svc_EOF);
 
 	if (client->netchan.unsentFragments || client->netchan_start_queue) {
@@ -131,10 +127,12 @@ Netchan_SV_Process
 */
 qboolean SV_Netchan_Process(client_t *client, msg_t *msg) {
 	int ret;
+
 	ret = Netchan_Process(&client->netchan, msg);
-	if (!ret)
+
+	if (!ret) {
 		return qfalse;
+	}
 
 	return qtrue;
 }
-

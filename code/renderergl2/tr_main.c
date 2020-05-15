@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_main.c -- main control flow for each frame
@@ -64,7 +58,7 @@ qboolean R_CompareVert(srfVert_t * v1, srfVert_t * v2, qboolean checkST) {
 			return qfalse;
 		}
 
-		if (checkST && ((v1->st[0] != v2->st[0]) ||(v1->st[1] != v2->st[1]))) {
+		if (checkST && ((v1->st[0] != v2->st[0]) || (v1->st[1] != v2->st[1]))) {
 			return qfalse;
 		}
 	}
@@ -189,7 +183,6 @@ qboolean R_CalcTangentVectors(srfVert_t * dv[3]) {
 	return qtrue;
 }
 
-
 // fog stuff
 qboolean fogIsOn = qfalse;
 fogType_t lastGlfogType = FT_NONE;
@@ -206,7 +199,6 @@ void RB_Fog(int fogNum) {
 	//static float lastDensity = -1;
 	//static int lastHint = -1;
 	//static float lastStart = -1, lastEnd = -1;
-
 	int fogMode;
 	vec3_t color;
 	float density;
@@ -222,7 +214,7 @@ void RB_Fog(int fogNum) {
 	if (R_IsGlobalFog(fogNum)) {
 		lastGlfogType = backEnd.refdef.fogType;
 
-		switch(backEnd.refdef.fogType) {
+		switch (backEnd.refdef.fogType) {
 			case FT_LINEAR:
 				fogMode = GL_LINEAR;
 				break;
@@ -241,7 +233,6 @@ void RB_Fog(int fogNum) {
 
 		end = backEnd.refdef.fogDepthForOpaque;
 		density = backEnd.refdef.fogDensity;
-
 	} else {
 		fog_t *fog;
 
@@ -255,7 +246,7 @@ void RB_Fog(int fogNum) {
 
 		lastGlfogType = fog->shader->fogParms.fogType;
 
-		switch(fog->shader->fogParms.fogType) {
+		switch (fog->shader->fogParms.fogType) {
 			case FT_LINEAR:
 				fogMode = GL_LINEAR;
 				break;
@@ -356,7 +347,6 @@ R_BoundsFogNum
 =======================================================================================================================================
 */
 qboolean R_IsGlobalFog(int fogNum) {
-
 	if (!tr.world || fogNum <= 0 || fogNum >= tr.world->numfogs) {
 		return qfalse;
 	}
@@ -459,7 +449,7 @@ int R_CullLocalBox(vec3_t localBounds[2]) {
 				front = 1;
 
 				if (back) {
-					break; 		// a point is in front
+					break;		// a point is in front
 				}
 			} else {
 				back = 1;
@@ -475,10 +465,10 @@ int R_CullLocalBox(vec3_t localBounds[2]) {
 	}
 
 	if (!anyBack) {
-		return CULL_IN; 		// completely inside frustum
+		return CULL_IN;		// completely inside frustum
 	}
 
-	return CULL_CLIP; 		// partially clipped
+	return CULL_CLIP;		// partially clipped
 #else
 	int j;
 	vec3_t transformed;
@@ -588,7 +578,7 @@ int R_CullPointAndRadiusEx(const vec3_t pt, float radius, const cplane_t * frust
 		return CULL_CLIP;
 	}
 
-	return CULL_IN; 		// completely inside frustum
+	return CULL_IN;		// completely inside frustum
 }
 
 /*
@@ -679,7 +669,6 @@ void R_TransformClipToWindow(const vec4_t clip, const viewParms_t *view, vec4_t 
 	window[0] = (int)(window[0] + 0.5);
 	window[1] = (int)(window[1] + 0.5);
 }
-
 
 /*
 =======================================================================================================================================
@@ -1023,7 +1012,7 @@ void R_SetupProjection(viewParms_t *dest, float zProj, float zFar, qboolean comp
 
 	dest->projectionMatrix[1] = 0;
 	dest->projectionMatrix[5] = 2 * zProj / height;
-	dest->projectionMatrix[9] = (ymax + ymin) / height; 	// normally 0
+	dest->projectionMatrix[9] = (ymax + ymin) / height;	// normally 0
 	dest->projectionMatrix[13] = 0;
 
 	dest->projectionMatrix[3] = 0;
@@ -1202,7 +1191,6 @@ void R_MirrorVector(vec3_t in, orientation_t *surface, orientation_t *camera, ve
 	}
 }
 
-
 /*
 =======================================================================================================================================
 R_PlaneForSurface
@@ -1220,7 +1208,7 @@ void R_PlaneForSurface(surfaceType_t *surfType, cplane_t *plane) {
 		return;
 	}
 
-	switch(*surfType) {
+	switch (*surfType) {
 	case SF_FACE:
 		*plane = ((srfBspSurface_t *)surfType) ->cullPlane;
 		return;
@@ -1241,7 +1229,7 @@ void R_PlaneForSurface(surfaceType_t *surfType, cplane_t *plane) {
 		return;
 	default:
 		Com_Memset(plane, 0, sizeof(*plane));
-		plane->normal[0] = 1; 		
+		plane->normal[0] = 1;		
 		return;
 	}
 }
@@ -1399,8 +1387,7 @@ static qboolean IsMirror(const drawSurf_t *drawSurf, int entityNum) {
 
 		// translate the original plane
 		originalPlane.dist = originalPlane.dist + DotProduct(originalPlane.normal, tr.or.origin);
-	} 
-
+	}
 	// locate the portal entity closest to this plane.
 	// origin will be the origin of the portal, origin2 will be
 	// the origin of the camera
@@ -1493,7 +1480,7 @@ static qboolean SurfIsOffscreen(const drawSurf_t *drawSurf, vec4_t clipDest[128]
 
 		VectorSubtract(tess.xyz[tess.indexes[i]], tr.viewParms.or.origin, normal);
 
-		len = VectorLengthSquared(normal); 			// lose the sqrt
+		len = VectorLengthSquared(normal);			// lose the sqrt
 		if (len < shortest) {
 			shortest = len;
 		}
@@ -1540,7 +1527,7 @@ qboolean R_MirrorViewBySurface(drawSurf_t *drawSurf, int entityNum) {
 		return qfalse;
 	}
 
-	if (r_noportals->integer ||(r_fastsky->integer == 1)) {
+	if (r_noportals->integer || (r_fastsky->integer == 1)) {
 		return qfalse;
 	}
 	// trivially reject portal/mirror
@@ -1556,7 +1543,7 @@ qboolean R_MirrorViewBySurface(drawSurf_t *drawSurf, int entityNum) {
 	newParms.flags & = ~VPF_FARPLANEFRUSTUM;
 	if (!R_GetPortalOrientations(drawSurf, entityNum, &surface, &camera,
 		newParms.pvsOrigin, &newParms.isMirror)) {
-		return qfalse; 		// bad portal, no portalentity
+		return qfalse;		// bad portal, no portalentity
 	}
 	// Never draw viewmodels in portal or mirror views.
 	newParms.flags |= VPF_NOVIEWMODEL;
@@ -1626,7 +1613,6 @@ int R_PolyEntFogNum(trRefEntity_t *ent) {
 
 	return R_BoundsFogNum(&tr.refdef, mins, maxs);
 }
-
 
 /*
 =======================================================================================================================================
@@ -1832,7 +1818,7 @@ void R_SortDrawSurfs(drawSurf_t *drawSurfs, int numDrawSurfs) {
 				return;
 			}
 
-			break; 		// only one mirror view at a time
+			break;		// only one mirror view at a time
 		}
 	}
 
@@ -1879,21 +1865,19 @@ static void R_AddEntitySurface(int entityNum) {
 		}
 	}
 	// simple generated models, like sprites and beams, are not culled
-	switch(ent->e.reType) {
+	switch (ent->e.reType) {
 	case RT_PORTALSURFACE:
-		break; 		// don't draw anything
+		break;		// don't draw anything
 
 	case RT_SPRITE:
 		shader = R_GetShaderByHandle(ent->e.customShader);
 		R_AddEntDrawSurf(ent, &entitySurface, shader, R_SpriteFogNum(ent), 0, 0, 0, 0 /*cubeMap*/);
 		break;
-
 	case RT_POLY_GLOBAL:
 	case RT_POLY_LOCAL:
 		shader = R_GetShaderByHandle(ent->e.customShader);
 		R_AddEntDrawSurf(ent, &entitySurface, shader, R_PolyEntFogNum(ent), 0, 0, 0, 0 /*cubeMap*/);
 		break;
-
 	case RT_MODEL:
 		// we must set up parts of tr.or for model culling
 		R_RotateForEntity(ent, &tr.viewParms, &tr.or);
@@ -1909,7 +1893,7 @@ static void R_AddEntitySurface(int entityNum) {
 				break;
 			}
 
-			switch(tr.currentModel->type) {
+			switch (tr.currentModel->type) {
 			case MOD_MESH:
 				R_AddMD3Surfaces(ent);
 				break;
@@ -1962,7 +1946,6 @@ void R_AddEntitySurfaces(void) {
 	for (i = 0; i < tr.refdef.num_entities; i++)
 		R_AddEntitySurface(i);
 }
-
 
 /*
 =======================================================================================================================================
@@ -2060,7 +2043,6 @@ void R_DebugGraphics(void) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 R_RenderView
@@ -2110,7 +2092,6 @@ void R_RenderView(viewParms_t *parms) {
 	//RB_FogOn();
 }
 
-
 void R_RenderDlightCubemaps(const refdef_t *fd) {
 	int i;
 
@@ -2140,7 +2121,7 @@ void R_RenderDlightCubemaps(const refdef_t *fd) {
 		VectorCopy(tr.refdef.dlights[i].origin, shadowParms.or.origin);
 
 		for (j = 0; j < 6; j++) {
-			switch(j) {
+			switch (j) {
 				case 0:
 					// - X
 					VectorSet(shadowParms.or.axis[0], -1, 0, 0);
@@ -2185,7 +2166,6 @@ void R_RenderDlightCubemaps(const refdef_t *fd) {
 	}
 }
 
-
 void R_RenderPshadowMaps(const refdef_t *fd) {
 	viewParms_t shadowParms;
 	int i;
@@ -2217,13 +2197,14 @@ void R_RenderPshadowMaps(const refdef_t *fd) {
 				scale = VectorLength(ent->e.axis[0]);
 			}
 
-			switch(model->type) {
+			switch (model->type) {
 				case MOD_MESH:
 				{
 					mdvFrame_t *frame = &model->mdv[0]->frames[ent->e.frame];
 
 					radius = frame->radius * scale;
 				}
+
 				break;
 
 				case MOD_MDR:
@@ -2235,6 +2216,7 @@ void R_RenderPshadowMaps(const refdef_t *fd) {
 
 					radius = frame->radius;
 				}
+
 				break;
 				case MOD_IQM:
 				{
@@ -2247,6 +2229,7 @@ void R_RenderPshadowMaps(const refdef_t *fd) {
 					VectorSubtract(framebounds+3, framebounds, diag);
 					radius = 0.5f * VectorLength(diag);
 				}
+
 				break;
 
 				default:
@@ -2449,7 +2432,7 @@ void R_RenderPshadowMaps(const refdef_t *fd) {
 
 				dest->projectionMatrix[1] = 0;
 				dest->projectionMatrix[5] = 2 / (ymax - ymin);
-				dest->projectionMatrix[9] = (ymax + ymin) / (ymax - ymin); 	// normally 0
+				dest->projectionMatrix[9] = (ymax + ymin) / (ymax - ymin);	// normally 0
 				dest->projectionMatrix[13] = 0;
 
 				dest->projectionMatrix[2] = 0;
@@ -2506,7 +2489,6 @@ static float CalcSplit(float n, float f, float i, float m) {
 	return(n * pow(f / n, i / m) +  (f - n) * i / m) / 2.0f;
 }
 
-
 void R_RenderSunShadowMaps(const refdef_t *fd, int level) {
 	viewParms_t shadowParms;
 	vec4_t lightDir, lightCol;
@@ -2550,7 +2532,7 @@ void R_RenderSunShadowMaps(const refdef_t *fd, int level) {
 	viewZFar = r_shadowCascadeZFar->value;
 	splitBias = r_shadowCascadeZBias->value;
 
-	switch(level) {
+	switch (level) {
 		case 0:
 		default:
 			//splitZNear = r_znear->value;
@@ -2765,7 +2747,7 @@ void R_RenderSunShadowMaps(const refdef_t *fd, int level) {
 			VectorScale(lightviewBounds[1], worldUnitsPerTexel, lightviewBounds[1]);
 		}
 
-		//ri.Printf(PRINT_ALL, "level %d znear %f zfar %f\n", level, lightviewBounds[0][0], lightviewBounds[1][0]); 		
+		//ri.Printf(PRINT_ALL, "level %d znear %f zfar %f\n", level, lightviewBounds[0][0], lightviewBounds[1][0]);		
 		//ri.Printf(PRINT_ALL, "xmin %f xmax %f ymin %f ymax %f\n", lightviewBounds[0][1], lightviewBounds[1][1], -lightviewBounds[1][2], -lightviewBounds[0][2]);
 	}
 
@@ -2845,7 +2827,7 @@ void R_RenderCubemapSide(int cubemapIndex, int cubemapSide, qboolean subscene) {
 	refdef.rdflags = 0;
 	VectorCopy(tr.cubemaps[cubemapIndex].origin, refdef.vieworg);
 
-	switch(cubemapSide) {
+	switch (cubemapSide) {
 		case 0:
 			// - X
 			VectorSet(refdef.viewaxis[0], -1, 0, 0);

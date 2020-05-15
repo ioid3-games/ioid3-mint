@@ -54,18 +54,18 @@ static int stepsizeTable[89] = {
 
    
 void S_AdpcmEncode(short indata[], char outdata[], int len, struct adpcm_state *state) {
-    short *inp; 			/* Input buffer pointer */
-    signed char *outp; 		/* output buffer pointer */
-  	int val; 			/* Current input sample value */
-  	int sign; 			/* Current adpcm sign bit */
-  	int delta; 			/* Current adpcm output value */
-  	int diff; 			/* Difference between val and sample */
-  	int step; 			/* Stepsize */
-  	int valpred; 		/* Predicted output value */
-  	int vpdiff; 			/* Current change to valpred */
-  	int index; 			/* Current step change index */
-  	int outputbuffer; 		/* place to keep previous 4 - bit value */
-  	int bufferstep; 		/* toggle between outputbuffer/output */
+    short *inp;			/* Input buffer pointer */
+    signed char *outp;		/* output buffer pointer */
+  	int val;			/* Current input sample value */
+  	int sign;			/* Current adpcm sign bit */
+  	int delta;			/* Current adpcm output value */
+  	int diff;			/* Difference between val and sample */
+  	int step;			/* Stepsize */
+  	int valpred;		/* Predicted output value */
+  	int vpdiff;			/* Current change to valpred */
+  	int index;			/* Current step change index */
+  	int outputbuffer;		/* place to keep previous 4 - bit value */
+  	int bufferstep;		/* toggle between outputbuffer/output */
 
     outp = (signed char *)outdata;
     inp = indata;
@@ -74,7 +74,7 @@ void S_AdpcmEncode(short indata[], char outdata[], int len, struct adpcm_state *
     index = state->index;
     step = stepsizeTable[index];
     
-	outputbuffer = 0; 	// quiet a compiler warning
+	outputbuffer = 0;	// quiet a compiler warning
     bufferstep = 1;
 
     for(; len > 0; len--) {
@@ -159,18 +159,17 @@ void S_AdpcmEncode(short indata[], char outdata[], int len, struct adpcm_state *
     state->index = index;
 }
 
-
 /* static */ void S_AdpcmDecode(const char indata[], short *outdata, int len, struct adpcm_state *state) {
-    signed char *inp; 		/* Input buffer pointer */
-  	int outp; 			/* output buffer pointer */
-  	int sign; 			/* Current adpcm sign bit */
-  	int delta; 			/* Current adpcm output value */
-  	int step; 			/* Stepsize */
-  	int valpred; 		/* Predicted value */
-  	int vpdiff; 			/* Current change to valpred */
-  	int index; 			/* Current step change index */
-  	int inputbuffer; 		/* place to keep next 4 - bit value */
-  	int bufferstep; 		/* toggle between inputbuffer/input */
+    signed char *inp;		/* Input buffer pointer */
+  	int outp;			/* output buffer pointer */
+  	int sign;			/* Current adpcm sign bit */
+  	int delta;			/* Current adpcm output value */
+  	int step;			/* Stepsize */
+  	int valpred;		/* Predicted value */
+  	int vpdiff;			/* Current change to valpred */
+  	int index;			/* Current step change index */
+  	int inputbuffer;		/* place to keep next 4 - bit value */
+  	int bufferstep;		/* toggle between inputbuffer/input */
 
     outp = 0;
     inp = (signed char *)indata;
@@ -180,7 +179,7 @@ void S_AdpcmEncode(short indata[], char outdata[], int len, struct adpcm_state *
     step = stepsizeTable[index];
 
     bufferstep = 0;
-    inputbuffer = 0; 	// quiet a compiler warning
+    inputbuffer = 0;	// quiet a compiler warning
     for(; len > 0; len--) {
 		
 		/* Step 1 - get the delta value */
@@ -240,7 +239,6 @@ void S_AdpcmEncode(short indata[], char outdata[], int len, struct adpcm_state *
     state->index = index;
 }
 
-
 /*
 =======================================================================================================================================
 S_AdpcmMemoryNeeded
@@ -275,7 +273,6 @@ int S_AdpcmMemoryNeeded(const wavinfo_t *info) {
 	return sampleMemory + headerMemory;
 }
 
-
 /*
 =======================================================================================================================================
 S_AdpcmGetSamples
@@ -293,7 +290,6 @@ void S_AdpcmGetSamples(sndBuffer *chunk, short *to) {
 	// get samples
 	S_AdpcmDecode((char *)out, to, SND_CHUNK_SIZE_BYTE*2, &state);
 }
-
 
 /*
 =======================================================================================================================================

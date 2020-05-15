@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -65,7 +59,7 @@ input sources(say, mouse button 1 and the control key)can both press the
 same button, but the button should only be released when both of the
 pressing key have been released.
 
-When a key event issues a button command(+forward, +attack, etc), it appends
+When a key event issues a button command(+forward, +attack, etc.), it appends
 its key number as argv(1)so it can be matched up with the release.
 
 argv(2)will be set to the time the event happened, which allows exact
@@ -76,14 +70,14 @@ at the same time.
 */
 
 typedef struct {
-	int down[2]; 		// key nums holding it down
-	int joystickNum[2]; 	// player joystick number or - 1 if key is not on a joystick
-	int axisNum[2]; 		// analog joystick axis + 1(possibly negated for negative axis)
-	unsigned downtime; 		// msec timestamp
-	unsigned msec; 			// msec down this frame if both a down and up happened
-	qboolean active; 			// current state
-	qboolean wasPressed; 		// set when down, not cleared when up
-	float lastFraction[2]; 	// last fraction
+	int down[2];		// key nums holding it down
+	int joystickNum[2];	// player joystick number or - 1 if key is not on a joystick
+	int axisNum[2];		// analog joystick axis + 1(possibly negated for negative axis)
+	unsigned downtime;		// msec timestamp
+	unsigned msec;			// msec down this frame if both a down and up happened
+	qboolean active;			// current state
+	qboolean wasPressed;		// set when down, not cleared when up
+	float lastFraction[2];	// last fraction
 } kbutton_t;
 
 typedef struct {
@@ -126,11 +120,11 @@ void IN_KeyDown(kbutton_t *b) {
 	if (c[0]) {
 		k = atoi(c);
 	} else {
-		k = -1; 		// typed manually at the console for continuous down
+		k = -1;		// typed manually at the console for continuous down
 	}
 
 	if (k == b->down[0] || k == b->down[1]) {
-		return; 		// repeating key
+		return;		// repeating key
 	}
 	
 	trap_Argv(3, c, sizeof(c));
@@ -139,7 +133,7 @@ void IN_KeyDown(kbutton_t *b) {
 	trap_Argv(4, c, sizeof(c));
 	axisNum = atoi(c);
 
-	if (joystickNum < 0 || joystickNum >= MAX_SPLITVIEW ||(abs(axisNum) - 1) >= MAX_JOYSTICK_AXIS) {
+	if (joystickNum < 0 || joystickNum >= MAX_SPLITVIEW || (abs(axisNum) - 1) >= MAX_JOYSTICK_AXIS) {
 		joystickNum = -1;
 		axisNum = 0;
 	}
@@ -162,7 +156,7 @@ void IN_KeyDown(kbutton_t *b) {
 	}
 	
 	if (b->active) {
-		return; 		// still down
+		return;		// still down
 	}
 	// save timestamp for partial frame summing
 	trap_Argv(2, c, sizeof(c));
@@ -193,11 +187,11 @@ void IN_KeyUp(kbutton_t *b) {
 	} else if (b->down[1] == k) {
 		b->down[1] = 0;
 	} else {
-		return; 		// key up without coresponding down(menu pass through)
+		return;		// key up without coresponding down(menu pass through)
 	}
 
 	if (b->down[0] || b->down[1]) {
-		return; 		// some other key is still holding it down
+		return;		// some other key is still holding it down
 	}
 
 	b->active = qfalse;
@@ -239,7 +233,7 @@ float CL_AxisFraction(int localPlayerNum, int joystickNum, int axisNum) {
 	// sign flip shouldn't ever happen, key should be released first
 	if (!!(axisNum < 0) != !!(cg.localPlayers[joystickNum].joystickAxis[axis] < 0)) {
 		fraction = 0;
-		CG_Printf("WARNING: Cmd for player %d(axis %d on joystick for player %d): axis fraction is 0, but input system still thinks it's pressed\n", localPlayerNum+1, axisNum, joystickNum+1);
+		CG_Printf("WARNING: Cmd for player %d(axis %d on joystick for player %d): axis fraction is 0, but input system still thinks it's pressed\n", localPlayerNum + 1, axisNum, joystickNum + 1);
 	} else {
 		float threshold = 32767.0f * cg_joystickThreshold[joystickNum].value;
 

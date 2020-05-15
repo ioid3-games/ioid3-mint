@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 #include "vm_local.h"
@@ -170,7 +164,6 @@ void VM_StackTrace(vm_t *vm, int programCounter, int programStack) {
 
 }
 
-
 /*
 =======================================================================================================================================
 VM_PrepareInterpreter
@@ -184,7 +177,7 @@ void VM_PrepareInterpreter(vm_t *vm, vmHeader_t *header) {
 	int instruction;
 	int *codeBase;
 
-	vm->codeBase = Hunk_Alloc(vm->codeLength*4, h_high); 			// we're now int aligned
+	vm->codeBase = Hunk_Alloc(vm->codeLength*4, h_high);			// we're now int aligned
 //	memcpy(vm->codeBase, (byte *)header + header->codeOffset, vm->codeLength);
 
 	// we don't need to translate the instructions, but we still need
@@ -209,7 +202,7 @@ void VM_PrepareInterpreter(vm_t *vm, vmHeader_t *header) {
 		int_pc++;
 
 		// these are the only opcodes that aren't a single byte
-		switch(op) {
+		switch (op) {
 		case OP_ENTER:
 		case OP_CONST:
 		case OP_LOCAL:
@@ -256,7 +249,7 @@ void VM_PrepareInterpreter(vm_t *vm, vmHeader_t *header) {
 		instruction++;
 		int_pc++;
 		
-		switch(op) {
+		switch (op) {
 		// These ops need to translate addresses in jumps from instruction index to int index
 		case OP_EQ:
 		case OP_NE:
@@ -366,8 +359,8 @@ int VM_CallInterpreted(vm_t *vm, int *args) {
 	for (arg = 0; arg < MAX_VMMAIN_ARGS; arg++)
 		*(int *)&image[programStack + 8 + arg * 4] = args[arg];
 
-	*(int *)&image[programStack + 4] = 0; 	// return stack
-	*(int *)&image[programStack] = -1; 	// will terminate the loop on return
+	*(int *)&image[programStack + 4] = 0;	// return stack
+	*(int *)&image[programStack] = -1;	// will terminate the loop on return
 
 	VM_Debug(0);
 
@@ -416,7 +409,7 @@ nextInstruction2:
 #endif
 		opcode = codeImage[programCounter++];
 
-		switch(opcode) {
+		switch (opcode) {
 #ifdef DEBUG_VM
 		default:
 			Com_Error(ERR_DROP, "Bad VM instruction");  // this should be scanned on load!
@@ -629,7 +622,7 @@ nextInstruction2:
 		case OP_EQ:
 			opStackOfs -= 2;
 			if (r1 == r0) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -639,7 +632,7 @@ nextInstruction2:
 		case OP_NE:
 			opStackOfs -= 2;
 			if (r1 != r0) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -649,7 +642,7 @@ nextInstruction2:
 		case OP_LTI:
 			opStackOfs -= 2;
 			if (r1 < r0) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -659,7 +652,7 @@ nextInstruction2:
 		case OP_LEI:
 			opStackOfs -= 2;
 			if (r1 <= r0) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -669,7 +662,7 @@ nextInstruction2:
 		case OP_GTI:
 			opStackOfs -= 2;
 			if (r1 > r0) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -679,7 +672,7 @@ nextInstruction2:
 		case OP_GEI:
 			opStackOfs -= 2;
 			if (r1 >= r0) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -689,7 +682,7 @@ nextInstruction2:
 		case OP_LTU:
 			opStackOfs -= 2;
 			if (((unsigned)r1) < ((unsigned)r0)) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -699,7 +692,7 @@ nextInstruction2:
 		case OP_LEU:
 			opStackOfs -= 2;
 			if (((unsigned)r1) <= ((unsigned)r0)) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -709,7 +702,7 @@ nextInstruction2:
 		case OP_GTU:
 			opStackOfs -= 2;
 			if (((unsigned)r1) > ((unsigned)r0)) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -719,7 +712,7 @@ nextInstruction2:
 		case OP_GEU:
 			opStackOfs -= 2;
 			if (((unsigned)r1) >= ((unsigned)r0)) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -730,7 +723,7 @@ nextInstruction2:
 			opStackOfs -= 2;
 			
 			if (((float *)opStack)[(uint8_t)(opStackOfs + 1)] == ((float *)opStack)[(uint8_t)(opStackOfs + 2)]) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -741,7 +734,7 @@ nextInstruction2:
 			opStackOfs -= 2;
 
 			if (((float *)opStack)[(uint8_t)(opStackOfs + 1)] != ((float *)opStack)[(uint8_t)(opStackOfs + 2)]) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -752,7 +745,7 @@ nextInstruction2:
 			opStackOfs -= 2;
 
 			if (((float *)opStack)[(uint8_t)(opStackOfs + 1)] < ((float *)opStack)[(uint8_t)(opStackOfs + 2)]) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -763,7 +756,7 @@ nextInstruction2:
 			opStackOfs -= 2;
 
 			if (((float *)opStack)[(uint8_t)((uint8_t)(opStackOfs + 1))] <= ((float *)opStack)[(uint8_t)((uint8_t)(opStackOfs + 2))]) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -774,7 +767,7 @@ nextInstruction2:
 			opStackOfs -= 2;
 
 			if (((float *)opStack)[(uint8_t)(opStackOfs + 1)] > ((float *)opStack)[(uint8_t)(opStackOfs + 2)]) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
@@ -785,13 +778,12 @@ nextInstruction2:
 			opStackOfs -= 2;
 
 			if (((float *)opStack)[(uint8_t)(opStackOfs + 1)] >= ((float *)opStack)[(uint8_t)(opStackOfs + 2)]) {
-				programCounter = r2; 	//vm->instructionPointers[r2];
+				programCounter = r2;	//vm->instructionPointers[r2];
 				goto nextInstruction;
 			} else {
 				programCounter += 1;
 				goto nextInstruction;
 			}
-
 
 		//===================================================================
 

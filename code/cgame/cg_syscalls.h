@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -105,7 +99,7 @@ void trap_SV_Shutdown(const char *msg);
 // model collision
 void trap_CM_LoadMap(const char *mapname);
 int trap_CM_NumInlineModels(void);
-clipHandle_t trap_CM_InlineModel(int index); 		// 0 = world, 1 += bmodels
+clipHandle_t trap_CM_InlineModel(int index);		// 0 = world, 1 += bmodels
 clipHandle_t trap_CM_TempBoxModel(const vec3_t mins, const vec3_t maxs, int contents);
 clipHandle_t trap_CM_TempCapsuleModel(const vec3_t mins, const vec3_t maxs, int contents);
 int trap_CM_PointContents(const vec3_t p, clipHandle_t model);
@@ -124,10 +118,10 @@ void trap_CM_TransformedCapsuleTrace(trace_t *results, const vec3_t start, const
 					  const vec3_t mins, const vec3_t maxs,
 					  clipHandle_t model, int brushmask,
 					  const vec3_t origin, const vec3_t angles);
-void          trap_CM_BiSphereTrace(trace_t *results, const vec3_t start,
+void trap_CM_BiSphereTrace(trace_t *results, const vec3_t start,
                 const vec3_t end, float startRad, float endRad,
                 clipHandle_t model, int mask);
-void          trap_CM_TransformedBiSphereTrace(trace_t *results, const vec3_t start,
+void trap_CM_TransformedBiSphereTrace(trace_t *results, const vec3_t start,
                 const vec3_t end, float startRad, float endRad,
                 clipHandle_t model, int mask,
                 const vec3_t origin);
@@ -143,10 +137,10 @@ qboolean trap_GetEntityToken(int *parseOffset, char *buffer, int bufferSize);
 
 // all media should be registered during level startup to prevent
 // hitches during gameplay
-qhandle_t trap_R_RegisterModel(const char *name); 			// returns rgb axis if not found
+qhandle_t trap_R_RegisterModel(const char *name);			// returns rgb axis if not found
 qhandle_t trap_R_RegisterShaderEx(const char *name, int lightmapIndex, qboolean mipRawImage); // returns all white if not found
-qhandle_t trap_R_RegisterShader(const char *name); 			// returns all white if not found
-qhandle_t trap_R_RegisterShaderNoMip(const char *name); 			// returns all white if not found
+qhandle_t trap_R_RegisterShader(const char *name);			// returns all white if not found
+qhandle_t trap_R_RegisterShaderNoMip(const char *name);			// returns all white if not found
 void trap_R_RegisterFont(const char *fontName, int pointSize, float borderWidth, qboolean forceAutoHint, fontInfo_t *font);
 
 // skin(entity model surface remap)management
@@ -163,7 +157,7 @@ void trap_R_AddRefEntityToScene(const refEntity_t *re);
 void trap_R_AddPolyRefEntityToScene(const refEntity_t *re, int numVerts, const polyVert_t *verts, int numPolys);
 void trap_R_AddPolyToScene(qhandle_t hShader, int numVerts, const polyVert_t *verts, int bmodelNum, int sortLevel);
 void trap_R_AddPolysToScene(qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys, int bmodelNum, int sortLevel);
-void        trap_R_AddPolyBufferToScene(polyBuffer_t * pPolyBuffer);
+void trap_R_AddPolyBufferToScene(polyBuffer_t * pPolyBuffer);
 void trap_R_AddLightToScene(const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader);
 void trap_R_AddAdditiveLightToScene(const vec3_t org, float radius, float intensity, float r, float g, float b);
 void trap_R_AddVertexLightToScene(const vec3_t org, float radius, float intensity, float r, float g, float b);
@@ -172,7 +166,7 @@ void trap_R_AddDirectedLightToScene(const vec3_t normal, float intensity, float 
 void trap_R_AddCoronaToScene(const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible, qhandle_t hShader);
 int trap_R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
 void trap_R_RenderScene(const refdef_t *fd);
-void trap_R_SetColor(const float *rgba); 	// NULL = 1, 1, 1, 1
+void trap_R_SetColor(const float *rgba);	// NULL = 1, 1, 1, 1
 void trap_R_SetClipRegion(const float *region);
 void trap_R_DrawStretchPic(float x, float y, float w, float h,
 				float s1, float t1, float s2, float t2, qhandle_t hShader);
@@ -222,9 +216,9 @@ void trap_S_UpdateEntityPosition(int entityNum, const vec3_t origin);
 // respatialize recalculates the volumes of sound as they should be heard by the
 // given entityNum and position
 void trap_S_Respatialize(int entityNum, const vec3_t origin, vec3_t axis[3], int inwater, qboolean firstPerson);
-sfxHandle_t trap_S_RegisterSound(const char *sample, qboolean compressed); 		// returns buzz if not found
+sfxHandle_t trap_S_RegisterSound(const char *sample, qboolean compressed);		// returns buzz if not found
 int trap_S_SoundDuration(sfxHandle_t handle);
-void trap_S_StartBackgroundTrack(const char *intro, const char *loop, float volume, float loopVolume); 	// empty name stops music
+void trap_S_StartBackgroundTrack(const char *intro, const char *loop, float volume, float loopVolume);	// empty name stops music
 void trap_S_StopBackgroundTrack(void);
 
 void trap_S_StartStreamingSound(int stream, int entityNum, const char *filename, float volume);

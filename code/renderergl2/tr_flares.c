@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_flares.c
@@ -66,20 +60,19 @@ up to five or more times in a frame with 3D status bar icons).
 // flare states maintain visibility over multiple frames for fading
 // layers: view, mirror, menu
 typedef struct flare_s {
-	struct		flare_s	*next; 		// for active chain
+	struct		flare_s	*next;		// for active chain
 
 	int addedFrame;
 
-	qboolean	inPortal; 				// true if in a portal view of the scene
+	qboolean	inPortal;				// true if in a portal view of the scene
 	int frameSceneNum;
 	void *surface;
 	int fogNum;
-
 	int fadeTime;
 
-	qboolean	cgvisible; 			// for coronas, the client determines current visibility, but it's still inserted so it will fade out properly
-	qboolean	visible; 			// state of last test
-	float drawIntensity; 		// may be non 0 even if !visible due to fading
+	qboolean	cgvisible;			// for coronas, the client determines current visibility, but it's still inserted so it will fade out properly
+	qboolean	visible;			// state of last test
+	float drawIntensity;		// may be non 0 even if !visible due to fading
 
 	int windowX, windowY;
 	float eyeZ;
@@ -87,7 +80,6 @@ typedef struct flare_s {
 	vec3_t origin;
 	vec3_t color;
 	float scale;
-
 	int id;
 
 	shader_t *shader;
@@ -105,7 +97,6 @@ R_SetFlareCoeff
 =======================================================================================================================================
 */
 static void R_SetFlareCoeff(void) {
-
 	if (r_flareCoeff->value == 0.0f)
 		flareCoeff = atof(FLARE_STDCOEFF);
 	else
@@ -131,7 +122,6 @@ void R_ClearFlares(void) {
 
 	R_SetFlareCoeff();
 }
-
 
 /*
 =======================================================================================================================================
@@ -174,11 +164,11 @@ void RB_AddFlare(void *surface, int fogNum, vec3_t point, vec3_t color, float sc
 
 	if (window[0] < 0 || window[0] >= backEnd.viewParms.viewportWidth
 		|| window[1] < 0 || window[1] >= backEnd.viewParms.viewportHeight) {
-		return; 	// shouldn't happen, since we check the clip[] above, except for FP rounding
+		return;	// shouldn't happen, since we check the clip[] above, except for FP rounding
 	}
 	// see if a flare with a matching surface, scene, and view exists
 	for (f = r_activeFlares; f; f = f->next) {
-		if (((id == -1 && f->surface == surface) ||(id != -1 && f->id == id)) && f->frameSceneNum == backEnd.viewParms.frameSceneNum
+		if (((id == -1 && f->surface == surface) || (id != -1 && f->id == id)) && f->frameSceneNum == backEnd.viewParms.frameSceneNum
 			&& f->inPortal == backEnd.viewParms.isPortal) {
 			break;
 		}
@@ -347,7 +337,6 @@ void RB_TestFlare(flare_t *f) {
 
 	f->drawIntensity = fade;
 }
-
 
 /*
 =======================================================================================================================================
@@ -553,7 +542,7 @@ void RB_RenderFlares(void) {
 	}
 
 	if (!draw) {
-		return; 		// none visible
+		return;		// none visible
 	}
 
 	Mat4Copy(glState.projection, oldprojection);
@@ -576,7 +565,6 @@ void RB_RenderFlares(void) {
 	GL_SetProjectionMatrix(oldprojection);
 	GL_SetModelviewMatrix(oldmodelview);
 }
-
 
 
 

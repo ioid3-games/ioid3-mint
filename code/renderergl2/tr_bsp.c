@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_map.c
@@ -78,7 +72,7 @@ static void HSVtoRGB(float h, float s, float v, float rgb[3]) {
 	q = v * (1 - s * f);
 	t = v * (1 - s * (1 - f));
 
-	switch(i) {
+	switch (i) {
 	case 0:
 		rgb[0] = v;
 		rgb[1] = t;
@@ -150,7 +144,6 @@ static void R_ColorShiftLightingBytes(int inSize, byte in[4], byte out[4]) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 R_ColorShiftLightingFloats
@@ -208,7 +201,6 @@ void ColorToRGB16(const vec3_t color, uint16_t rgb16[3]) {
 	rgb16[1] = color[1] * 65535.0f + 0.5f;
 	rgb16[2] = color[2] * 65535.0f + 0.5f;
 }
-
 
 /*
 =======================================================================================================================================
@@ -536,7 +528,6 @@ static void R_LoadLightmaps(const bspFile_t *bsp) {
 	ri.Free(image);
 }
 
-
 static float FatPackU(float input, int lightmapnum) {
 	if (lightmapnum < 0)
 		return input;
@@ -567,7 +558,6 @@ static float FatPackV(float input, int lightmapnum) {
 	return input;
 }
 
-
 static int FatLightmap(int lightmapnum) {
 	if (lightmapnum < 0)
 		return lightmapnum;
@@ -592,7 +582,6 @@ space in big maps...
 void RE_SetWorldVisData(const byte *vis) {
 	tr.externalVisData = vis;
 }
-
 
 /*
 =======================================================================================================================================
@@ -627,7 +616,6 @@ ShaderForShaderNum
 static shader_t *ShaderForShaderNum(int shaderNum, int lightmapNum) {
 	shader_t *shader;
 	dshader_t *dsh;
-
 	int _shaderNum = LittleLong(shaderNum);
 	if (_shaderNum < 0 || _shaderNum >= s_worldData.numShaders) {
 		ri.Error(ERR_DROP, "ShaderForShaderNum: bad num %i", _shaderNum);
@@ -706,7 +694,6 @@ void LoadDrawVertToSrfVert(srfVert_t *s, drawVert_t *d, int realLightmapNum, flo
 	R_VaoPackColor(s->color, v);
 }
 
-
 /*
 =======================================================================================================================================
 ConvertBSPFogNum
@@ -734,7 +721,6 @@ static void SphereFromBounds(vec3_t mins, vec3_t maxs, vec3_t origin, float *rad
 	VectorSubtract(maxs, origin, temp);
 	*radius = VectorLength(temp);
 }
-
 
 
 /*
@@ -828,7 +814,7 @@ static void ParseFace(dsurface_t *ds, drawVert_t *verts, float *hdrVertColors, m
 			}
 		}
 
-		if ((tri[0] == tri[1]) ||(tri[1] == tri[2]) ||(tri[0] == tri[2])) {
+		if ((tri[0] == tri[1]) || (tri[1] == tri[2]) || (tri[0] == tri[2])) {
 			tri -= 3;
 			badTriangles++;
 		}
@@ -1009,7 +995,7 @@ static void ParseTriSurf(dsurface_t *ds, drawVert_t *verts, float *hdrVertColors
 			}
 		}
 
-		if ((tri[0] == tri[1]) ||(tri[1] == tri[2]) ||(tri[0] == tri[2])) {
+		if ((tri[0] == tri[1]) || (tri[1] == tri[2]) || (tri[0] == tri[2])) {
 			tri -= 3;
 			badTriangles++;
 		}
@@ -1120,7 +1106,7 @@ static void ParseFoliage(dsurface_t *ds, drawVert_t *verts, float *hdrVertColors
 			}
 		}
 		
-		if ((tri[0] == tri[1]) ||(tri[1] == tri[2]) ||(tri[0] == tri[2])) {
+		if ((tri[0] == tri[1]) || (tri[1] == tri[2]) || (tri[0] == tri[2])) {
 			tri -= 3;
 			badTriangles++;
 		}
@@ -1208,7 +1194,6 @@ static void ParseFlare(dsurface_t *ds, drawVert_t *verts, msurface_t *surf, int 
 	surf->cullinfo.type = CULLINFO_NONE;
 }
 
-
 /*
 =======================================================================================================================================
 R_MergedWidthPoints
@@ -1287,9 +1272,9 @@ void R_FixSharedVertexLodError_r(int start, srfBspSurface_t *grid1) {
 			if (R_MergedWidthPoints(grid1, offset1))continue;
 			for (k = 1; k < grid1->width - 1; k++) {
 				for (m = 0; m < 2; m++) {
-
 					if (m)offset2 = (grid2->height - 1) * grid2->width;
 					else offset2 = 0;
+
 					if (R_MergedWidthPoints(grid2, offset2))continue;
 
 					for (l = 1; l < grid2->width - 1; l++) {
@@ -1301,10 +1286,11 @@ void R_FixSharedVertexLodError_r(int start, srfBspSurface_t *grid1) {
 						touch = qtrue;
 					}
 				}
-				for (m = 0; m < 2; m++) {
 
+				for (m = 0; m < 2; m++) {
 					if (m)offset2 = grid2->width - 1;
 					else offset2 = 0;
+
 					if (R_MergedHeightPoints(grid2, offset2))continue;
 
 					for (l = 1; l < grid2->height - 1; l++) {
@@ -1325,9 +1311,9 @@ void R_FixSharedVertexLodError_r(int start, srfBspSurface_t *grid1) {
 			if (R_MergedHeightPoints(grid1, offset1))continue;
 			for (k = 1; k < grid1->height - 1; k++) {
 				for (m = 0; m < 2; m++) {
-
 					if (m)offset2 = (grid2->height - 1) * grid2->width;
 					else offset2 = 0;
+
 					if (R_MergedWidthPoints(grid2, offset2))continue;
 
 					for (l = 1; l < grid2->width - 1; l++) {
@@ -1339,10 +1325,11 @@ void R_FixSharedVertexLodError_r(int start, srfBspSurface_t *grid1) {
 						touch = qtrue;
 					}
 				}
-				for (m = 0; m < 2; m++) {
 
+				for (m = 0; m < 2; m++) {
 					if (m)offset2 = grid2->width - 1;
 					else offset2 = 0;
+
 					if (R_MergedHeightPoints(grid2, offset2))continue;
 
 					for (l = 1; l < grid2->height - 1; l++) {
@@ -1392,7 +1379,6 @@ void R_FixSharedVertexLodError(void) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 R_StitchPatches
@@ -1413,9 +1399,7 @@ int R_StitchPatches(int grid1num, int grid2num) {
 		if (R_MergedWidthPoints(grid1, offset1))
 			continue;
 		for (k = 0; k < grid1->width - 2; k += 2) {
-
 			for (m = 0; m < 2; m++) {
-
 				if (grid2->width >= MAX_GRID_SIZE)
 					break;
 
@@ -1424,23 +1408,30 @@ int R_StitchPatches(int grid1num, int grid2num) {
 				for (l = 0; l < grid2->width - 1; l++) {
 					v1 = grid1->verts[k + offset1].xyz;
 					v2 = grid2->verts[l + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 
 					v1 = grid1->verts[k + 2 + offset1].xyz;
 					v2 = grid2->verts[l + 1 + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 					v1 = grid2->verts[l + offset2].xyz;
 					v2 = grid2->verts[l + 1 + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) < .01 &&
 							fabs(v1[1] - v2[1]) < .01 &&
 							fabs(v1[2] - v2[2]) < .01)
@@ -1458,7 +1449,6 @@ int R_StitchPatches(int grid1num, int grid2num) {
 			}
 
 			for (m = 0; m < 2; m++) {
-
 				if (grid2->height >= MAX_GRID_SIZE)
 					break;
 
@@ -1467,23 +1457,30 @@ int R_StitchPatches(int grid1num, int grid2num) {
 				for (l = 0; l < grid2->height - 1; l++) {
 					v1 = grid1->verts[k + offset1].xyz;
 					v2 = grid2->verts[grid2->width * l + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 
 					v1 = grid1->verts[k + 2 + offset1].xyz;
 					v2 = grid2->verts[grid2->width * (l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 					v1 = grid2->verts[grid2->width * l + offset2].xyz;
 					v2 = grid2->verts[grid2->width * (l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) < .01 &&
 							fabs(v1[1] - v2[1]) < .01 &&
 							fabs(v1[2] - v2[2]) < .01)
@@ -1510,7 +1507,6 @@ int R_StitchPatches(int grid1num, int grid2num) {
 			continue;
 		for (k = 0; k < grid1->height - 2; k += 2) {
 			for (m = 0; m < 2; m++) {
-
 				if (grid2->width >= MAX_GRID_SIZE)
 					break;
 
@@ -1519,23 +1515,30 @@ int R_StitchPatches(int grid1num, int grid2num) {
 				for (l = 0; l < grid2->width - 1; l++) {
 					v1 = grid1->verts[grid1->width * k + offset1].xyz;
 					v2 = grid2->verts[l + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 
 					v1 = grid1->verts[grid1->width * (k + 2) +  offset1].xyz;
 					v2 = grid2->verts[l + 1 + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 					v1 = grid2->verts[l + offset2].xyz;
 					v2 = grid2->verts[(l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) < .01 &&
 							fabs(v1[1] - v2[1]) < .01 &&
 							fabs(v1[2] - v2[2]) < .01)
@@ -1553,7 +1556,6 @@ int R_StitchPatches(int grid1num, int grid2num) {
 			}
 
 			for (m = 0; m < 2; m++) {
-
 				if (grid2->height >= MAX_GRID_SIZE)
 					break;
 
@@ -1562,23 +1564,30 @@ int R_StitchPatches(int grid1num, int grid2num) {
 				for (l = 0; l < grid2->height - 1; l++) {
 					v1 = grid1->verts[grid1->width * k + offset1].xyz;
 					v2 = grid2->verts[grid2->width * l + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 
 					v1 = grid1->verts[grid1->width * (k + 2) +  offset1].xyz;
 					v2 = grid2->verts[grid2->width * (l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 					v1 = grid2->verts[grid2->width * l + offset2].xyz;
 					v2 = grid2->verts[grid2->width * (l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) < .01 &&
 							fabs(v1[1] - v2[1]) < .01 &&
 							fabs(v1[2] - v2[2]) < .01)
@@ -1604,9 +1613,7 @@ int R_StitchPatches(int grid1num, int grid2num) {
 		if (R_MergedWidthPoints(grid1, offset1))
 			continue;
 		for (k = grid1->width - 1; k > 1; k -= 2) {
-
 			for (m = 0; m < 2; m++) {
-
 				if (!grid2 || grid2->width >= MAX_GRID_SIZE)
 					break;
 
@@ -1615,23 +1622,30 @@ int R_StitchPatches(int grid1num, int grid2num) {
 				for (l = 0; l < grid2->width - 1; l++) {
 					v1 = grid1->verts[k + offset1].xyz;
 					v2 = grid2->verts[l + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 
 					v1 = grid1->verts[k - 2 + offset1].xyz;
 					v2 = grid2->verts[l + 1 + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 					v1 = grid2->verts[l + offset2].xyz;
 					v2 = grid2->verts[(l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) < .01 &&
 							fabs(v1[1] - v2[1]) < .01 &&
 							fabs(v1[2] - v2[2]) < .01)
@@ -1649,7 +1663,6 @@ int R_StitchPatches(int grid1num, int grid2num) {
 			}
 
 			for (m = 0; m < 2; m++) {
-
 				if (!grid2 || grid2->height >= MAX_GRID_SIZE)
 					break;
 
@@ -1658,23 +1671,30 @@ int R_StitchPatches(int grid1num, int grid2num) {
 				for (l = 0; l < grid2->height - 1; l++) {
 					v1 = grid1->verts[k + offset1].xyz;
 					v2 = grid2->verts[grid2->width * l + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 
 					v1 = grid1->verts[k - 2 + offset1].xyz;
 					v2 = grid2->verts[grid2->width * (l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 					v1 = grid2->verts[grid2->width * l + offset2].xyz;
 					v2 = grid2->verts[grid2->width * (l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) < .01 &&
 							fabs(v1[1] - v2[1]) < .01 &&
 							fabs(v1[2] - v2[2]) < .01)
@@ -1685,6 +1705,7 @@ int R_StitchPatches(int grid1num, int grid2num) {
 					else column = 0;
 					R_GridInsertRow(grid2, l+1, column,
 										grid1->verts[k - 1 + offset1].xyz, grid1->widthLodError[k+1]);
+
 					if (!grid2)
 						break;
 					grid2->lodStitched = qfalse;
@@ -1703,7 +1724,6 @@ int R_StitchPatches(int grid1num, int grid2num) {
 			continue;
 		for (k = grid1->height - 1; k > 1; k -= 2) {
 			for (m = 0; m < 2; m++) {
-
 				if (!grid2 || grid2->width >= MAX_GRID_SIZE)
 					break;
 
@@ -1712,23 +1732,30 @@ int R_StitchPatches(int grid1num, int grid2num) {
 				for (l = 0; l < grid2->width - 1; l++) {
 					v1 = grid1->verts[grid1->width * k + offset1].xyz;
 					v2 = grid2->verts[l + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 
 					v1 = grid1->verts[grid1->width * (k - 2) +  offset1].xyz;
 					v2 = grid2->verts[l + 1 + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 					v1 = grid2->verts[l + offset2].xyz;
 					v2 = grid2->verts[(l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) < .01 &&
 							fabs(v1[1] - v2[1]) < .01 &&
 							fabs(v1[2] - v2[2]) < .01)
@@ -1746,7 +1773,6 @@ int R_StitchPatches(int grid1num, int grid2num) {
 			}
 
 			for (m = 0; m < 2; m++) {
-
 				if (!grid2 || grid2->height >= MAX_GRID_SIZE)
 					break;
 
@@ -1755,23 +1781,30 @@ int R_StitchPatches(int grid1num, int grid2num) {
 				for (l = 0; l < grid2->height - 1; l++) {
 					v1 = grid1->verts[grid1->width * k + offset1].xyz;
 					v2 = grid2->verts[grid2->width * l + offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 
 					v1 = grid1->verts[grid1->width * (k - 2) +  offset1].xyz;
 					v2 = grid2->verts[grid2->width * (l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) > .1)
 						continue;
+
 					if (fabs(v1[1] - v2[1]) > .1)
 						continue;
+
 					if (fabs(v1[2] - v2[2]) > .1)
 						continue;
 					v1 = grid2->verts[grid2->width * l + offset2].xyz;
 					v2 = grid2->verts[grid2->width * (l + 1) +  offset2].xyz;
+
 					if (fabs(v1[0] - v2[0]) < .01 &&
 							fabs(v1[1] - v2[1]) < .01 &&
 							fabs(v1[2] - v2[2]) < .01)
@@ -1903,7 +1936,6 @@ void R_MovePatchSurfacesToHunk(void) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 R_LoadSurfaces
@@ -1932,7 +1964,7 @@ static void R_LoadSurfaces(const bspFile_t *bsp) {
 
 	indexes = bsp->drawIndexes;
 
-	out = ri.Hunk_Alloc(count * sizeof(*out), h_low); 	
+	out = ri.Hunk_Alloc(count * sizeof(*out), h_low);	
 
 	s_worldData.surfaces = out;
 	s_worldData.numsurfaces = count;
@@ -1956,8 +1988,6 @@ static void R_LoadSurfaces(const bspFile_t *bsp) {
 				ri.Error(ERR_DROP, "Bad size for %s(%i, expected %i)!", filename, size, (int)((sizeof(float)) * 3 * bsp->numDrawVerts));
 		}
 	}
-
-
 	// Two passes, allocate surfaces first, then load them full of data
 	// This ensures surfaces are close together to reduce L2 cache misses when using VAOs,
 	// which don't actually use the verts and indexes
@@ -1965,7 +1995,7 @@ static void R_LoadSurfaces(const bspFile_t *bsp) {
 	out = s_worldData.surfaces;
 
 	for (i = 0; i < count; i++, in++, out++) {
-		switch(LittleLong(in->surfaceType)) {
+		switch (LittleLong(in->surfaceType)) {
 			case MST_PATCH:
 				out->data = ri.Hunk_Alloc(sizeof(srfBspSurface_t), h_low);
 				break;
@@ -1993,7 +2023,7 @@ static void R_LoadSurfaces(const bspFile_t *bsp) {
 	out = s_worldData.surfaces;
 
 	for (i = 0; i < count; i++, in++, out++) {
-		switch(LittleLong(in->surfaceType)) {
+		switch (LittleLong(in->surfaceType)) {
 		case MST_PATCH:
 			ParseMesh(in, dv, hdrVertColors, out);
 			numMeshes++;
@@ -2042,7 +2072,6 @@ static void R_LoadSurfaces(const bspFile_t *bsp) {
 }
 
 
-
 /*
 =======================================================================================================================================
 R_LoadSubmodels
@@ -2064,7 +2093,7 @@ static void R_LoadSubmodels(const bspFile_t *bsp) {
 
 		model = R_AllocModel();
 
-		assert(model != NULL); 			// this should never happen
+		assert(model != NULL);			// this should never happen
 		if (model == NULL) {
 			ri.Error(ERR_DROP, "R_LoadSubmodels: R_AllocModel()failed");
 		}
@@ -2091,7 +2120,6 @@ static void R_LoadSubmodels(const bspFile_t *bsp) {
 		}
 	}
 }
-
 
 
 //==================================================================
@@ -2153,7 +2181,7 @@ static void R_LoadNodesAndLeafs(const bspFile_t *bsp) {
 	numNodes = bsp->numNodes;
 	numLeafs = bsp->numLeafs;
 
-	out = ri.Hunk_Alloc((numNodes + numLeafs) * sizeof(*out), h_low); 	
+	out = ri.Hunk_Alloc((numNodes + numLeafs) * sizeof(*out), h_low);	
 
 	s_worldData.nodes = out;
 	s_worldData.numnodes = numNodes + numLeafs;
@@ -2172,7 +2200,7 @@ static void R_LoadNodesAndLeafs(const bspFile_t *bsp) {
 		p = LittleLong(in->planeNum);
 		out->plane = s_worldData.planes + p;
 
-		out->isLeaf = qfalse; 	// differentiate from leafs
+		out->isLeaf = qfalse;	// differentiate from leafs
 
 		for (j = 0; j < 2; j++) {
 			p = LittleLong(in->children[j]);
@@ -2194,7 +2222,7 @@ static void R_LoadNodesAndLeafs(const bspFile_t *bsp) {
 		// surface bounds
 		ClearBounds(out->surfMins, out->surfMaxs);
 
-		out->isLeaf = qtrue; 	// differentiate from nodes
+		out->isLeaf = qtrue;	// differentiate from nodes
 
 		out->cluster = LittleLong(inLeaf->cluster);
 		out->area = LittleLong(inLeaf->area);
@@ -2223,7 +2251,6 @@ static void R_LoadShaders(const bspFile_t *bsp) {
 	s_worldData.numShaders = bsp->numShaders;
 }
 
-
 /*
 =======================================================================================================================================
 R_LoadMarksurfaces
@@ -2236,7 +2263,7 @@ static void R_LoadMarksurfaces(const bspFile_t *bsp) {
 	
 	in = bsp->leafSurfaces;
 	count = bsp->numLeafSurfaces;
-	out = ri.Hunk_Alloc(count*sizeof(*out), h_low); 	
+	out = ri.Hunk_Alloc(count*sizeof(*out), h_low);	
 
 	s_worldData.marksurfaces = out;
 	s_worldData.nummarksurfaces = count;
@@ -2246,7 +2273,6 @@ static void R_LoadMarksurfaces(const bspFile_t *bsp) {
 		out[i] = j;
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -2262,7 +2288,7 @@ static void R_LoadPlanes(const bspFile_t *bsp) {
 	
 	in = bsp->planes;
 	count = bsp->numPlanes;
-	out = ri.Hunk_Alloc(count*2*sizeof(*out), h_low); 	
+	out = ri.Hunk_Alloc(count*2*sizeof(*out), h_low);	
 	
 	s_worldData.planes = out;
 	s_worldData.numplanes = count;
@@ -2413,7 +2439,6 @@ static void R_LoadFogs(const bspFile_t *bsp) {
 		out++;
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -2872,7 +2897,6 @@ void R_AssignCubemapsToWorldSurfaces(void) {
 	}
 }
 
-
 void R_LoadCubemaps(void) {
 	int i;
 	imgFlags_t flags = IMGFLAG_CLAMPTOEDGE|IMGFLAG_MIPMAP|IMGFLAG_NOLIGHTSCALE|IMGFLAG_CUBEMAP;
@@ -2886,7 +2910,6 @@ void R_LoadCubemaps(void) {
 		cubemap->image = R_FindImageFile(filename, IMGTYPE_COLORALPHA, flags);
 	}
 }
-
 
 void R_RenderMissingCubemaps(void) {
 	int i, j;
@@ -2906,7 +2929,6 @@ void R_RenderMissingCubemaps(void) {
 	}
 }
 
-
 void R_CalcVertexLightDirs(void) {
 	int i, k;
 	msurface_t *surface;
@@ -2914,7 +2936,7 @@ void R_CalcVertexLightDirs(void) {
 	for (k = 0, surface = &s_worldData.surfaces[0]; k < s_worldData.numsurfaces /* s_worldData.numWorldSurfaces */; k++, surface++) {
 		srfBspSurface_t *bspSurf = (srfBspSurface_t *)surface->data;
 
-		switch(bspSurf->surfaceType) {
+		switch (bspSurf->surfaceType) {
 			case SF_FACE:
 			case SF_GRID:
 			case SF_TRIANGLES:
@@ -2940,6 +2962,7 @@ void R_CalcVertexLightDirs(void) {
 					R_LightDirForPoint(srf->verts[i].xyz, lightDir, normal, &s_worldData);
 					R_VaoPackNormal(srf->verts[i].lightdir, lightDir);
 				}
+
 				break;
 			}
 
@@ -2948,7 +2971,6 @@ void R_CalcVertexLightDirs(void) {
 		}
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -3087,12 +3109,12 @@ void RE_LoadWorldMap(const bspFile_t *bsp) {
 			char fileName[MAX_QPATH];
 			
 			Com_Memset(buffer, 0, 18);
-			buffer[2] = 2; 		// uncompressed type
+			buffer[2] = 2;		// uncompressed type
 			buffer[12] = w->lightGridBounds[0] & 255;
 			buffer[13] = w->lightGridBounds[0] >> 8;
 			buffer[14] = w->lightGridBounds[1] & 255;
 			buffer[15] = w->lightGridBounds[1] >> 8;
-			buffer[16] = 24; 	// pixel size
+			buffer[16] = 24;	// pixel size
 
 			in = primaryLightGrid;
 			for (i = 0; i < w->lightGridBounds[2]; i++) {
@@ -3108,12 +3130,14 @@ void RE_LoadWorldMap(const bspFile_t *bsp) {
 						*out++ = 255;
 						*out++ = 255;
 					}
+
 					else if (*in == 255)
 					{
 						*out++ = 64;
 						*out++ = 64;
 						*out++ = 64;
 					}
+
 					else
 					{
 						*out++ = 0;

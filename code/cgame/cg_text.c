@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -73,7 +67,7 @@ void CG_HudTextInit(void) {
 // 256x256 image with characters that are 16x16
 void CG_InitBitmapFont(fontInfo_t *font, int charHeight, int charWidth) {
 	int i, col, row;
-	const char 	*shaderName;
+	const char *shaderName;
 	qhandle_t hShader;
 	float aspect;
 
@@ -186,7 +180,7 @@ qboolean CG_InitTrueTypeFont(const char *name, int pointSize, float borderWidth,
 	// the q3_ui arrow. Though, I don't think programs typically use glyphs
 	// from fonts for text input cursors anyway.
 
-	// ZTM: TODO?: Replace(unreliable/pointless)glyphInfo_t::pitch with
+	// ZTM: TODO?: Replace (unreliable/pointless) glyphInfo_t::pitch with
 	// flags so it's possible to check if glyph is missing, so these can
 	// be fallbacks instead of hard coded.
 
@@ -214,6 +208,11 @@ qboolean CG_InitTrueTypeFont(const char *name, int pointSize, float borderWidth,
 	return qtrue;
 }
 
+/*
+=======================================================================================================================================
+Text_GetGlyph
+=======================================================================================================================================
+*/
 const glyphInfo_t *Text_GetGlyph(const fontInfo_t *font, unsigned long index) {
 	if (index == 0 || index >= GLYPHS_PER_FONT) {
 		return &font->glyphs[(int)'.'];
@@ -222,6 +221,11 @@ const glyphInfo_t *Text_GetGlyph(const fontInfo_t *font, unsigned long index) {
 	return &font->glyphs[index];
 }
 
+/*
+=======================================================================================================================================
+CG_Text_Width
+=======================================================================================================================================
+*/
 float Text_Width(const char *text, const fontInfo_t *font, float scale, int limit) {
 	int count, len;
 	float out;
@@ -259,6 +263,11 @@ float Text_Width(const char *text, const fontInfo_t *font, float scale, int limi
 	return out * useScale;
 }
 
+/*
+=======================================================================================================================================
+CG_Text_Height
+=======================================================================================================================================
+*/
 float Text_Height(const char *text, const fontInfo_t *font, float scale, int limit) {
 	int len, count;
 	float max;
@@ -300,12 +309,16 @@ float Text_Height(const char *text, const fontInfo_t *font, float scale, int lim
 	return max * useScale;
 }
 
+/*
+=======================================================================================================================================
+Text_PaintGlyph
+=======================================================================================================================================
+*/
 void Text_PaintGlyph(float x, float y, float w, float h, const glyphInfo_t *glyph, float *gradientColor) {
 #if 0
 	vec4_t colors[2] = {
-		{1.0, 1.0, 1.0f, 1.0f}, // white(pixel aligned) { 0.0, 1.0, 0.0f, 1.0f}, // green(sub - pixel position / size)
+		{1.0, 1.0, 1.0f, 1.0f}, // white (pixel aligned) { 0.0, 1.0, 0.0f, 1.0f}, // green(sub - pixel position / size)
 	};
-
 	// check which glyphs have sub - pixel blending
 	gradientColor = NULL;
 
@@ -316,7 +329,6 @@ void Text_PaintGlyph(float x, float y, float w, float h, const glyphInfo_t *glyp
 		trap_R_SetColor(colors[0]);
 	}
 #endif
-
 	if (gradientColor) {
 		trap_R_DrawStretchPicGradient(x, y, w, h, glyph->s, glyph->t, glyph->s2, glyph->t2, glyph->glyph, gradientColor);
 	} else {
@@ -324,6 +336,11 @@ void Text_PaintGlyph(float x, float y, float w, float h, const glyphInfo_t *glyp
 	}
 }
 
+/*
+=======================================================================================================================================
+Text_Paint
+=======================================================================================================================================
+*/
 void Text_Paint(float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor, qboolean textInMotion) {
 	int len, count;
 	vec4_t newColor;
@@ -341,6 +358,7 @@ void Text_Paint(float x, float y, const fontInfo_t *font, float scale, const vec
 
 	xscale = 1.0f;
 	yscale = 1.0f;
+
 	CG_AdjustFrom640(&x, &y, &xscale, &yscale);
 
 	shadowOffsetX = shadowOffset * xscale;
@@ -410,13 +428,18 @@ void Text_Paint(float x, float y, const fontInfo_t *font, float scale, const vec
 
 		Text_PaintGlyph(x + xadj, y - yadj, glyph->imageWidth * useScaleX, glyph->imageHeight * useScaleY, glyph, (gradient != 0) ? gradientColor : NULL);
 
-		x += (glyph->xSkip * useScaleX) +  adjust;
+		x += (glyph->xSkip * useScaleX) + adjust;
 		count++;
 	}
 
 	trap_R_SetColor(NULL);
 }
 
+/*
+=======================================================================================================================================
+Text_PaintWithCursor
+=======================================================================================================================================
+*/
 void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, int cursorPos, char cursor, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor, qboolean textInMotion) {
 	int len, count;
 	vec4_t newColor;
@@ -434,6 +457,7 @@ void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale,
 
 	xscale = 1.0f;
 	yscale = 1.0f;
+
 	CG_AdjustFrom640(&x, &y, &xscale, &yscale);
 
 	shadowOffsetX = shadowOffset * xscale;
@@ -460,8 +484,7 @@ void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale,
 	gradientColor[1] = Com_Clamp(0, 1, newColor[1] - gradient);
 	gradientColor[2] = Com_Clamp(0, 1, newColor[2] - gradient);
 	gradientColor[3] = color[3];
-
-	// note: doesn't use Q_UTF8_PrintStrlen because this function draws color codes
+	// NOTE: doesn't use Q_UTF8_PrintStrlen because this function draws color codes
 	len = Q_UTF8_Strlen(text);
 
 	if (limit > 0 && len > limit) {
@@ -490,15 +513,10 @@ void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale,
 
 		glyph = Text_GetGlyph(font, Q_UTF8_CodePoint(&s));
 
-		if (count == cursorPos && ((cg.realTime / BLINK_DIVISOR)& 1) == 0) {
+		if (count == cursorPos && ((cg.realTime / BLINK_DIVISOR) & 1) == 0) {
 			yadj = useScaleY * glyph2->top;
-
 			// use horizontal width of text character(glyph)
-			Text_PaintGlyph(x, y - yadj,
-							(glyph->left + glyph->xSkip) * useScaleX,
-							glyph2->imageHeight * useScaleY,
-							glyph2,
-							NULL);
+			Text_PaintGlyph(x, y - yadj, (glyph->left + glyph->xSkip) * useScaleX, glyph2->imageHeight * useScaleY, glyph2, NULL);
 		}
 
 		yadj = useScaleY * glyph->top;
@@ -528,16 +546,16 @@ void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale,
 			Text_PaintGlyph(x + xadj, y - yadj, glyph->imageWidth * useScaleX, glyph->imageHeight * useScaleY, glyph, (gradient != 0) ? gradientColor : NULL);
 		}
 
-		if (count == cursorPos && !((cg.realTime / BLINK_DIVISOR)& 1) && cursor == GLYPH_OVERSTRIKE) {
+		if (count == cursorPos && !((cg.realTime / BLINK_DIVISOR) & 1) && cursor == GLYPH_OVERSTRIKE) {
 			// restore color
 			trap_R_SetColor(newColor);
 		}
 
-		x += (glyph->xSkip * useScaleX) +  adjust;
+		x += (glyph->xSkip * useScaleX) + adjust;
 		count++;
 	}
 	// need to paint cursor at end of text
-	if (cursorPos == len && !((cg.realTime / BLINK_DIVISOR)& 1)) {
+	if (cursorPos == len && !((cg.realTime / BLINK_DIVISOR) & 1)) {
 		yadj = useScaleY * glyph2->top;
 		Text_PaintGlyph(x, y - yadj, glyph2->imageWidth * useScaleX, glyph2->imageHeight * useScaleY, glyph2, NULL);
 	}
@@ -545,6 +563,11 @@ void Text_PaintWithCursor(float x, float y, const fontInfo_t *font, float scale,
 	trap_R_SetColor(NULL);
 }
 
+/*
+=======================================================================================================================================
+Text_Paint_Limit
+=======================================================================================================================================
+*/
 void Text_Paint_Limit(float *maxX, float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *text, float adjust, int limit, qboolean textInMotion) {
 	int len, count;
 	vec4_t newColor;
@@ -563,6 +586,7 @@ void Text_Paint_Limit(float *maxX, float x, float y, const fontInfo_t *font, flo
 	yscale = 1.0f;
 	start = 0.0f;
 	max = *maxX;
+
 	CG_AdjustFrom640(&x, &y, &xscale, &yscale);
 	CG_AdjustFrom640(&start, NULL, &adjust, NULL);
 	CG_AdjustFrom640(&max, NULL, NULL, NULL);
@@ -590,7 +614,7 @@ void Text_Paint_Limit(float *maxX, float x, float y, const fontInfo_t *font, flo
 
 	while (s && *s && count < len) {
 		if (Q_IsColorString(s)) {
-			VectorCopy(g_color_table[ColorIndex(*(s+1))], newColor);
+			VectorCopy(g_color_table[ColorIndex(*(s + 1))], newColor);
 			newColor[3] = color[3];
 			trap_R_SetColor(newColor);
 			Vector4Copy(newColor, lastTextColor);
@@ -609,12 +633,12 @@ void Text_Paint_Limit(float *maxX, float x, float y, const fontInfo_t *font, flo
 		xadj = useScaleX * glyph->left;
 
 		Text_PaintGlyph(x + xadj, y - yadj, glyph->imageWidth * useScaleX, glyph->imageHeight * useScaleY, glyph, NULL);
+
 		x += (glyph->xSkip * useScaleX) +  adjust;
 		count++;
 	}
 
 	trap_R_SetColor(NULL);
-
 	// convert X to 640 coords
 	*maxX = (x - start) / xscale;
 }
@@ -622,6 +646,11 @@ void Text_Paint_Limit(float *maxX, float x, float y, const fontInfo_t *font, flo
 #define MAX_WRAP_BYTES 1024
 #define MAX_WRAP_LINES 1024
 
+/*
+=======================================================================================================================================
+Text_Paint_AutoWrapped
+=======================================================================================================================================
+*/
 void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scale, const vec4_t color, const char *str, float adjust, int limit, float shadowOffset, float gradient, qboolean forceColor, qboolean textInMotion, float xmax, float ystep, int style) {
 	int width;
 	char *s1, *s2, *s3;
@@ -634,22 +663,21 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 	const char *p, *start;
 	float drawX;
 
-	if (!str || str[0] == '\0')
+	if (!str || str[0] == '\0') {
 		return;
-
-	// Wrap the text
-	//
-
+	}
+	// wrap the text
 	Q_strncpyz(buf, str, sizeof(buf));
-	s1 = s2 = s3 = buf;
 
+	s1 = s2 = s3 = buf;
 	wrapped[0] = 0;
 	numLines = 0;
 
 	while (1) {
 		do {
 			s3 += Q_UTF8_Width(s3);
-		} while(*s3 != '\n' && *s3 != ' ' && *s3 != '\0');
+		} while (*s3 != '\n' && *s3 != ' ' && *s3 != '\0');
+
 		c_bcp = *s3;
 		*s3 = '\0';
 		width = Text_Width(s1, font, scale, 0);
@@ -673,20 +701,19 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 
 			if (c_bcp == '\0') {
 				// that was the last word
-				// we could start a new loop, but that wouldn't be much use
-				// even if the word is too long, we would overflow it(see above)
-				// so just print it now if needed
+				// we could start a new loop, but that wouldn't be much use even if the word is too long, we would overflow it (see above) so just print it now if needed
 				s2 += Q_UTF8_Width(s2);
 
-				if (*s2 != '\0' && *s2 != '\n') // if we are printing an overflowing line we have s2 == s3
-				{
+				if (*s2 != '\0' && *s2 != '\n') { // if we are printing an overflowing line we have s2 == s3
 					Q_strcat(wrapped, sizeof(wrapped), s2);
 					Q_strcat(wrapped, sizeof(wrapped), "\n");
+
 					if (numLines < MAX_WRAP_LINES) {
 						autoNewline[numLines] = qtrue;
 						numLines++;
 					}
 				}
+
 				break;
 			}
 
@@ -708,15 +735,13 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 			s1 = s3;
 			s2 = s3;
 
-			if (*s3 == '\0') // we reached the end
-			{
+			if (*s3 == '\0') { // we reached the end
 				break;
 			}
 		} else {
 			s2 = s3;
 
-			if (c_bcp == '\0') // we reached the end
-			{
+			if (c_bcp == '\0') { // we reached the end
 				Q_strcat(wrapped, sizeof(wrapped), s1);
 				Q_strcat(wrapped, sizeof(wrapped), "\n");
 
@@ -724,24 +749,21 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 					autoNewline[numLines] = qfalse;
 					numLines++;
 				}
+
 				break;
 			}
 		}
 	}
-	// Draw the text
-	//
-
-	switch(style & UI_VA_FORMATMASK) {
+	// draw the text
+	switch (style & UI_VA_FORMATMASK) {
 		case UI_VA_CENTER:
 			// center justify at y
 			y = y - numLines * ystep / 2.0f;
 			break;
-
 		case UI_VA_BOTTOM:
 			// bottom justify at y
 			y = y - numLines * ystep;
 			break;
-
 		case UI_VA_TOP:
 		default:
 			// top justify at y
@@ -749,6 +771,7 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 	}
 
 	numLines = 0;
+
 	Vector4Copy(color, newColor);
 
 	start = wrapped;
@@ -758,17 +781,15 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 		strncpy(buf, start, p - start+1);
 		buf[p - start] = '\0';
 
-		switch(style & UI_FORMATMASK) {
+		switch (style & UI_FORMATMASK) {
 			case UI_CENTER:
 				// center justify at x
 				drawX = x - Text_Width(buf, font, scale, 0) / 2;
 				break;
-
 			case UI_RIGHT:
 				// right justify at x
 				drawX = x - Text_Width(buf, font, scale, 0);
 				break;
-
 			case UI_LEFT:
 			default:
 				// left justify at x
@@ -777,6 +798,7 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 		}
 
 		Text_Paint(drawX, y, font, scale, newColor, buf, adjust, 0, shadowOffset, gradient, forceColor, textInMotion);
+
 		y += ystep;
 
 		if (numLines >= MAX_WRAP_LINES || autoNewline[numLines]) {
@@ -787,9 +809,7 @@ void Text_Paint_AutoWrapped(float x, float y, const fontInfo_t *font, float scal
 		}
 
 		numLines++;
-
 		start += p - start + 1;
-		p = strchr(p+1, '\n');
+		p = strchr(p + 1, '\n');
 	}
 }
-

@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -161,7 +155,7 @@ Key events are used for non - printable characters, others are gotten from char 
 */
 void MField_KeyDownEvent(mfield_t *edit, int key) {
 	// shift - insert is paste
-	if (((key == K_INS) ||(key == K_KP_INS)) && (trap_Key_IsDown(K_LEFTSHIFT) || trap_Key_IsDown(K_RIGHTSHIFT))) {
+	if (((key == K_INS) || (key == K_KP_INS)) && (trap_Key_IsDown(K_LEFTSHIFT) || trap_Key_IsDown(K_RIGHTSHIFT))) {
 		MField_Paste(edit);
 		return;
 	}
@@ -204,13 +198,13 @@ void MField_KeyDownEvent(mfield_t *edit, int key) {
 		return;
 	}
 
-	if (key == K_HOME || key == K_KP_HOME ||(tolower(key) == 'a' && (trap_Key_IsDown(K_LEFTCTRL) || trap_Key_IsDown(K_RIGHTCTRL)))) {
+	if (key == K_HOME || key == K_KP_HOME || (tolower(key) == 'a' && (trap_Key_IsDown(K_LEFTCTRL) || trap_Key_IsDown(K_RIGHTCTRL)))) {
 		edit->cursor = 0;
 		edit->scroll = 0;
 		return;
 	}
 
-	if (key == K_END || key == K_KP_END ||(tolower(key) == 'e' && (trap_Key_IsDown(K_LEFTCTRL) || trap_Key_IsDown(K_RIGHTCTRL)))) {
+	if (key == K_END || key == K_KP_END || (tolower(key) == 'e' && (trap_Key_IsDown(K_LEFTCTRL) || trap_Key_IsDown(K_RIGHTCTRL)))) {
 		edit->cursor = edit->len;
 		edit->scroll = edit->len - edit->widthInChars + 1;
 
@@ -281,11 +275,11 @@ void MField_CharEvent(mfield_t *edit, int ch) {
 	}
 
 	if (trap_Key_GetOverstrikeMode()) {
-		if ((edit->cursor == MAX_EDIT_LINE - 1) ||(edit->maxchars && edit->cursor >= edit->maxchars))
+		if ((edit->cursor == MAX_EDIT_LINE - 1) || (edit->maxchars && edit->cursor >= edit->maxchars))
 			return;
 	} else {
 		// insert mode
-		if ((edit->len == MAX_EDIT_LINE - 1) ||(edit->maxchars && edit->len >= edit->maxchars))
+		if ((edit->len == MAX_EDIT_LINE - 1) || (edit->maxchars && edit->len >= edit->maxchars))
 			return;
 
 		for (i = edit->len + 1; i >= edit->cursor; i--) {

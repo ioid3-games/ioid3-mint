@@ -1,32 +1,26 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 Copyright(C)2005 Stuart Dalton(badcdev@gmail.com)
 Copyright(C)2005 - 2006 Joerg Dietrich < dietrich_joerg@gmx.de>
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -109,7 +103,7 @@ int S_OggOpus_Callback_seek(void *datasource, opus_int64 offset, int whence) {
 	stream = (snd_stream_t *)datasource;
 
 	// we must map the whence to its Q3 counterpart
-	switch(whence) {
+	switch (whence) {
 		case SEEK_SET :
 		{
 			// set the file position in the actual file with the Q3 function
@@ -385,7 +379,7 @@ void *S_OggOpus_CodecLoad(const char *filename, snd_info_t *info) {
 	if (!buffer) {
 		S_OggOpus_CodecCloseStream(stream);
 	
-		return NULL; 	
+		return NULL;	
 	}
 	// fill the buffer
 	bytesRead = S_OggOpus_CodecReadStream(stream, info->size, buffer);
@@ -395,7 +389,7 @@ void *S_OggOpus_CodecLoad(const char *filename, snd_info_t *info) {
 		Hunk_FreeTempMemory(buffer);
 		S_OggOpus_CodecCloseStream(stream);
 
-		return NULL; 	
+		return NULL;	
 	}
 
 	S_OggOpus_CodecCloseStream(stream);

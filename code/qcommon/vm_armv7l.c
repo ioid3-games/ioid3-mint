@@ -214,7 +214,7 @@ Error handler for jump/call to invalid instruction number
 =======================================================================================================================================
 */
 
-static void __attribute__((__noreturn__))ErrJump(unsigned num) {
+static void __attribute__ ((__noreturn__))ErrJump(unsigned num) {
 	Com_Error(ERR_DROP, "program tried to execute code outside VM(%x)", num);
 }
 
@@ -689,7 +689,7 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 		// TODO: for debug only
 		//emit_MOVRxi(R4, i_count);
 
-		switch(op) {
+		switch (op) {
 			case OP_UNDEF:
 				break;
 
@@ -708,22 +708,26 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 				if (arg.i == 0 || can_encode(arg.i)) {
 					emit(SUBi(rPSTACK, rPSTACK, arg.i)); // pstack -= arg
 				}
+
 				else
 				{
 					emit_MOVR0i(arg.i);
 					emit(SUB(rPSTACK, rPSTACK, R0)); // pstack -= arg
 				}
+
 				break;
 
 			case OP_LEAVE:
 				if (arg.i == 0 || can_encode(arg.i)) {
 					emit(ADDi(rPSTACK, rPSTACK, arg.i)); // pstack += arg
 				}
+
 				else
 				{
 					emit_MOVR0i(arg.i);
 					emit(ADD(rPSTACK, rPSTACK, R0)); // pstack += arg
 				}
+
 				emit(ADDi(SP, SP, 12));
 				emit(0xe49df004); // pop pc
 				break;
@@ -738,6 +742,7 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 				if (got_const) {
 					NOTIMPL(op);
 				}
+
 				else
 #endif
 				{
@@ -756,6 +761,7 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 						emit(ADD(R0, rCODEBASE, R0)); // r0 = codeBase+r0
 						emit(BLX(R0));
 						emit(Bi(j_rel(vm->instructionPointers[i_count+1] - vm->codeLength)));
+
 					if (bytes_to_skip == -1)
 						bytes_to_skip = vm->codeLength - start_block;
 					emit(MOV(R1, rPSTACK));
@@ -764,6 +770,7 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 					// store return value
 					emit(STRaiw(R0, rOPSTACK, 4));      // opstack += 4; *opstack = r0
 				}
+
 				break;
 
 			case OP_PUSH:
@@ -788,11 +795,13 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 				if (arg.i == 0 || can_encode(arg.i)) {
 					emit(ADDi(R0, rPSTACK, arg.i));     // r0 = pstack+arg
 				}
+
 				else
 				{
 					emit_MOVR0i(arg.i);
 					emit(ADD(R0, rPSTACK, R0));     // r0 = pstack+arg
 				}
+
 				emit(STRaiw(R0, rOPSTACK, 4));      // opstack += 4; *opstack = r0
 				break;
 
@@ -801,6 +810,7 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 				if (got_const) {
 					NOTIMPL(op);
 				}
+
 				else
 #endif
 				{
@@ -811,6 +821,7 @@ void VM_Compile(vm_t *vm, vmHeader_t *header) {
 					emit(ADD(R0, rCODEBASE, R0)); // r0 = codeBase+r0
 					emit(BLX(R0));
 				}
+
 				break;
 
 			case OP_EQ:

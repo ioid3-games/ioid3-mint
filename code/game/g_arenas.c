@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -97,7 +91,7 @@ void UpdateTournamentInfo(void) {
 			score1 = level.teamScores[TEAM_RED];
 			score2 = level.teamScores[TEAM_BLUE];
 
-			if (level.players[playerNum].sess.sessionTeam	 == TEAM_RED) {
+			if (level.players[playerNum].sess.sessionTeam == TEAM_RED) {
 				won = (level.teamScores[TEAM_RED] > level.teamScores[TEAM_BLUE]);
 			} else {
 				won = (level.teamScores[TEAM_BLUE] > level.teamScores[TEAM_RED]);
@@ -150,6 +144,11 @@ void UpdateTournamentInfo(void) {
 	trap_Cmd_ExecuteText(EXEC_APPEND, msg);
 }
 
+/*
+=======================================================================================================================================
+SpawnModelOnVictoryPad
+=======================================================================================================================================
+*/
 static gentity_t *SpawnModelOnVictoryPad(gentity_t *pad, vec3_t offset, gentity_t *ent, int place) {
 	gentity_t *body;
 	vec3_t vec;
@@ -165,14 +164,14 @@ static gentity_t *SpawnModelOnVictoryPad(gentity_t *pad, vec3_t offset, gentity_
 	body->classname = ent->player->pers.netname;
 	body->player = ent->player;
 	body->s = ent->s;
-	body->s.eType = ET_PLAYER; 		// could be ET_INVISIBLE
-	body->s.eFlags = 0; 				// clear EF_TALK, etc
-	body->s.powerups = 0; 			// clear powerups
-	body->s.loopSound = 0; 			// clear lava burning
+	body->s.eType = ET_PLAYER;		// could be ET_INVISIBLE
+	body->s.eFlags = 0;				// clear EF_TALK, etc
+	body->s.powerups = 0;			// clear powerups
+	body->s.loopSound = 0;			// clear lava burning
 	body->s.number = body - g_entities;
 	body->timestamp = level.time;
 	body->physicsObject = qtrue;
-	body->physicsBounce = 0; 		// don't bounce
+	body->physicsBounce = 0;		// don't bounce
 	body->s.event = 0;
 	body->s.pos.trType = TR_STATIONARY;
 	body->s.groundEntityNum = ENTITYNUM_WORLD;
@@ -217,6 +216,11 @@ static gentity_t *SpawnModelOnVictoryPad(gentity_t *pad, vec3_t offset, gentity_
 	return body;
 }
 
+/*
+=======================================================================================================================================
+CelebrateStop
+=======================================================================================================================================
+*/
 static void CelebrateStop(gentity_t *player) {
 	int anim;
 
@@ -226,12 +230,17 @@ static void CelebrateStop(gentity_t *player) {
 		anim = TORSO_STAND;
 	}
 
-	player->s.torsoAnim = ((player->s.torsoAnim & ANIM_TOGGLEBIT)^ ANIM_TOGGLEBIT)| anim;
+	player->s.torsoAnim = ((player->s.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|anim;
 }
 
-#define TIMER_GESTURE	(34*66+50)
+#define TIMER_GESTURE (34 * 66 + 50)
+/*
+=======================================================================================================================================
+CelebrateStart
+=======================================================================================================================================
+*/
 static void CelebrateStart(gentity_t *player) {
-	player->s.torsoAnim = ((player->s.torsoAnim & ANIM_TOGGLEBIT)^ ANIM_TOGGLEBIT)| TORSO_GESTURE;
+	player->s.torsoAnim = ((player->s.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)| TORSO_GESTURE;
 	player->nextthink = level.time + TIMER_GESTURE;
 	player->think = CelebrateStop;
 
@@ -244,9 +253,14 @@ static void CelebrateStart(gentity_t *player) {
 }
 
 static vec3_t offsetFirst = {0, 0, 74};
-static vec3_t offsetSecond = { - 10, 60, 54};
-static vec3_t offsetThird = { - 19, -60, 45};
+static vec3_t offsetSecond = {-10, 60, 54};
+static vec3_t offsetThird = {-19, -60, 45};
 
+/*
+=======================================================================================================================================
+PodiumPlacementThink
+=======================================================================================================================================
+*/
 static void PodiumPlacementThink(gentity_t *podium) {
 	vec3_t vec;
 	vec3_t origin;
@@ -302,6 +316,11 @@ static void PodiumPlacementThink(gentity_t *podium) {
 	}
 }
 
+/*
+=======================================================================================================================================
+SpawnPodium
+=======================================================================================================================================
+*/
 static gentity_t *SpawnPodium(void) {
 	gentity_t *podium;
 	vec3_t vec;
@@ -349,8 +368,7 @@ void SpawnModelsOnVictoryPads(void) {
 
 	podium = SpawnPodium();
 
-	player = SpawnModelOnVictoryPad(podium, offsetFirst, &g_entities[level.sortedPlayers[0]],
-				level.players[level.sortedPlayers[0]].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG);
+	player = SpawnModelOnVictoryPad(podium, offsetFirst, &g_entities[level.sortedPlayers[0]], level.players[level.sortedPlayers[0]].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG);
 
 	if (player) {
 		player->nextthink = level.time + 2000;
@@ -358,16 +376,14 @@ void SpawnModelsOnVictoryPads(void) {
 		podium1 = player;
 	}
 
-	player = SpawnModelOnVictoryPad(podium, offsetSecond, &g_entities[level.sortedPlayers[1]],
-				level.players[level.sortedPlayers[1]].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG);
+	player = SpawnModelOnVictoryPad(podium, offsetSecond, &g_entities[level.sortedPlayers[1]], level.players[level.sortedPlayers[1]].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG);
 
 	if (player) {
 		podium2 = player;
 	}
 
 	if (level.numNonSpectatorPlayers > 2) {
-		player = SpawnModelOnVictoryPad(podium, offsetThird, &g_entities[level.sortedPlayers[2]],
-				level.players[level.sortedPlayers[2]].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG);
+		player = SpawnModelOnVictoryPad(podium, offsetThird, &g_entities[level.sortedPlayers[2]], level.players[level.sortedPlayers[2]].ps.persistant[PERS_RANK] &~ RANK_TIED_FLAG);
 
 		if (player) {
 			podium3 = player;
@@ -381,6 +397,7 @@ Svcmd_AbortPodium_f
 =======================================================================================================================================
 */
 void Svcmd_AbortPodium_f(void) {
+
 	if (g_gametype.integer != GT_SINGLE_PLAYER) {
 		return;
 	}

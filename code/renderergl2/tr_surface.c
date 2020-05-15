@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_surf.c
@@ -83,7 +77,6 @@ void RB_CheckVao(vao_t *vao) {
 	if (vao != tess.vao)
 		tess.useInternalVao = qfalse;
 }
-
 
 /*
 =======================================================================================================================================
@@ -174,7 +167,6 @@ void RB_AddQuadStamp(vec3_t origin, vec3_t left, vec3_t up, float color[4]) {
 	RB_AddQuadStampExt(origin, left, up, color, 0, 0, 1, 1);
 }
 
-
 /*
 =======================================================================================================================================
 RB_InstantQuad
@@ -221,7 +213,6 @@ void RB_InstantQuad2(vec4_t quadVerts[4], vec2_t texCoords[4]) {
 	tess.firstIndex = 0;
 }
 
-
 void RB_InstantQuad(vec4_t quadVerts[4]) {
 	vec2_t texCoords[4];
 
@@ -238,7 +229,6 @@ void RB_InstantQuad(vec4_t quadVerts[4]) {
 	RB_InstantQuad2(quadVerts, texCoords);
 }
 
-
 /*
 =======================================================================================================================================
 RB_SurfaceSprite
@@ -251,7 +241,7 @@ static void RB_SurfaceSprite(void) {
 	float colors[4];
 	trRefEntity_t *ent = backEnd.currentEntity;
 
-	switch(tess.shader->spriteGen) {
+	switch (tess.shader->spriteGen) {
 		case SG_PARALLEL:
 			// face screen
 			AxisCopy(backEnd.viewParms.or.axis, axis);
@@ -323,7 +313,6 @@ static void RB_SurfaceSprite(void) {
 
 	RB_AddQuadStamp(ent->e.origin, left, up, colors);
 }
-
 
 /*
 =======================================================================================================================================
@@ -490,7 +479,6 @@ static qboolean RB_SurfaceVaoCached(int numVerts, srfVert_t *verts, int numIndex
 	return qtrue;
 }
 
-
 /*
 =======================================================================================================================================
 RB_SurfaceTriangles
@@ -505,7 +493,6 @@ static void RB_SurfaceTriangles(srfBspSurface_t *srf) {
 	RB_SurfaceVertsAndIndexes(srf->numVerts, srf->verts, srf->numIndexes,
 			srf->indexes, srf->dlightBits, srf->pshadowBits);
 }
-
 
 /*
 =======================================================================================================================================
@@ -672,7 +659,6 @@ static void LerpMeshVertexes(mdvSurface_t *surf, float backlerp) {
 
 }
 
-
 /*
 =======================================================================================================================================
 RB_SurfaceMesh
@@ -720,7 +706,6 @@ static void RB_SurfaceMesh(mdvSurface_t *surface) {
 
 }
 
-
 /*
 =======================================================================================================================================
 RB_SurfaceFace
@@ -735,7 +720,6 @@ static void RB_SurfaceFace(srfBspSurface_t *srf) {
 	RB_SurfaceVertsAndIndexes(srf->numVerts, srf->verts, srf->numIndexes,
 			srf->indexes, srf->dlightBits, srf->pshadowBits);
 }
-
 
 static float LodErrorForVolume(vec3_t local, float radius) {
 	vec3_t world;
@@ -923,8 +907,6 @@ static void RB_SurfaceGrid(srfBspSurface_t *srf) {
 				//*vDlightBits++ = dlightBits;
 			}
 		}
-
-
 		// add the indexes
 		{
 			int numIndexes;
@@ -962,7 +944,6 @@ static void RB_SurfaceGrid(srfBspSurface_t *srf) {
 		used += rows - 1;
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -1010,7 +991,7 @@ Entities that have a single procedurally generated surface
 =======================================================================================================================================
 */
 static void RB_SurfaceEntity(surfaceType_t *surfType) {
-	switch(backEnd.currentEntity->e.reType) {
+	switch (backEnd.currentEntity->e.reType) {
 	case RT_SPRITE:
 		RB_SurfaceSprite();
 		break;
@@ -1173,7 +1154,6 @@ void RB_SurfaceVaoMdvMesh(srfVaoMdvMesh_t * surface) {
 
 static void RB_SurfaceSkip(void *surf) {
 }
-
 
 void(*rb_surfaceTable[SF_NUM_SURFACE_TYPES])(void *) = {
 	(void(*)(void *))RB_SurfaceBad, // SF_BAD,

@@ -547,7 +547,7 @@ void R_LoadDDS(const char *name, int *numTexLevels, textureLevel_t **pic) {
 			DDS_HEADER_DXT10 *hdr10 = (DDS_HEADER_DXT10 *)(hdr + 1);
 			base = (byte *)(hdr10 + 1);
 
-			switch(hdr10->dxgiFormat) {
+			switch (hdr10->dxgiFormat) {
 			case DXGI_FORMAT_R8G8B8A8_TYPELESS:
 			case DXGI_FORMAT_R8G8B8A8_UNORM:
 			case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
@@ -622,7 +622,7 @@ void R_LoadDDS(const char *name, int *numTexLevels, textureLevel_t **pic) {
 			}
 		} else {
 			// check if it is one of the DXTn formats
-			switch(hdr->ddspf.dwFourCC) {
+			switch (hdr->ddspf.dwFourCC) {
 			case D3DFMT_DXT1:
 				glFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 				break;
@@ -788,7 +788,7 @@ void R_LoadDDS(const char *name, int *numTexLevels, textureLevel_t **pic) {
 			glFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)) {
 		ri.Printf(PRINT_WARNING, "LoadDDS: DXTn decompression is not supported by GPU driver(%s)\n", name);
 	} else {
-		switch(glFormat) {
+		switch (glFormat) {
 		case GL_RGBA8:
 			SetupLinear(pic, hdr->dwWidth, hdr->dwHeight, depth,
 					 hdr->ddspf.dwRGBBitCount,

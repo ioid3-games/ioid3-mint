@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -93,7 +87,7 @@ void SND_setup(void) {
 
 	buffer = malloc(scs*sizeof(sndBuffer));
 	// allocate the stack based hunk allocator
-	sfxScratchBuffer = malloc(SND_CHUNK_SIZE * sizeof(short) * 4); 	//Hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
+	sfxScratchBuffer = malloc(SND_CHUNK_SIZE * sizeof(short) * 4);	//Hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
 	sfxScratchPointer = NULL;
 
 	inUse = scs*sizeof(sndBuffer);
@@ -129,7 +123,7 @@ static int ResampleSfx(sfx_t *sfx, int channels, int inrate, int inwidth, int sa
 	int part;
 	sndBuffer *chunk;
 	
-	stepscale = (float)inrate / dma.speed; 	// this is usually 0.5, 1, or 2
+	stepscale = (float)inrate / dma.speed;	// this is usually 0.5, 1, or 2
 
 	outcount = samples / stepscale;
 
@@ -159,6 +153,7 @@ static int ResampleSfx(sfx_t *sfx, int channels, int inrate, int inwidth, int sa
 				} else {
 					chunk->next = newchunk;
 				}
+
 				chunk = newchunk;
 			}
 
@@ -183,7 +178,7 @@ static int ResampleSfxRaw(short *sfx, int channels, int inrate, int inwidth, int
 	int i, j;
 	int sample, samplefrac, fracstep;
 	
-	stepscale = (float)inrate / dma.speed; 	// this is usually 0.5, 1, or 2
+	stepscale = (float)inrate / dma.speed;	// this is usually 0.5, 1, or 2
 
 	outcount = samples / stepscale;
 

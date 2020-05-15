@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // common.c -- misc functions used in client and server
@@ -34,37 +28,35 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include <setjmp.h>
 #ifndef _WIN32
 #include <netinet/in.h>
-#include <sys/stat.h > // umask
+#include <sys/stat.h> // umask
 #else
 #include <winsock.h>
 #endif
-
 #include "../sys/sys_loadlib.h"
 
 // List of demo protocols that are supported for playback.
 // Also plays protocol com_protocol
 int demo_protocols[] = { PROTOCOL_VERSION, 11, 10, /* 6, 7, 8, 9 were skipped */ 5, 4, 3, 2, 0 };
 
-#define MAX_NUM_ARGVS	50
+#define MAX_NUM_ARGVS 50
 
 #define MIN_DEDICATED_COMHUNKMEGS 1
-#define MIN_COMHUNKMEGS		56
-#define DEF_COMHUNKMEGS 	384
-#define DEF_COMZONEMEGS		64
-#define DEF_COMHUNKMEGS_S	XSTRING(DEF_COMHUNKMEGS)
-#define DEF_COMZONEMEGS_S	XSTRING(DEF_COMZONEMEGS)
+#define MIN_COMHUNKMEGS 56
+#define DEF_COMHUNKMEGS 384
+#define DEF_COMZONEMEGS 64
+#define DEF_COMHUNKMEGS_S XSTRING(DEF_COMHUNKMEGS)
+#define DEF_COMZONEMEGS_S XSTRING(DEF_COMZONEMEGS)
 
 int com_argc;
 char *com_argv[MAX_NUM_ARGVS+1];
 
-jmp_buf abortframe; 		// an ERR_DROP occurred, exit the entire frame
-
+jmp_buf abortframe; // an ERR_DROP occurred, exit the entire frame
 
 FILE *debuglogfile;
 static fileHandle_t pipefile;
 static fileHandle_t logfile;
-fileHandle_t com_journalFile; 			// events are written here
-fileHandle_t com_journalDataFile; 		// config files are written here
+fileHandle_t com_journalFile; // events are written here
+fileHandle_t com_journalDataFile; // config files are written here
 
 // Structure containing functions exported from refresh DLL
 refexport_t re;
@@ -83,12 +75,12 @@ cvar_t *com_altivec;
 cvar_t *com_timedemo;
 cvar_t *com_sv_running;
 cvar_t *com_cl_running;
-cvar_t *com_logfile; 		// 1 = buffer log, 2 = flush after each print
+cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print
 cvar_t *com_pipefile;
 cvar_t *com_showtrace;
 cvar_t *com_version;
 cvar_t *com_singlePlayerActive;
-cvar_t *com_buildScript; 	// for automated data building scripts
+cvar_t *com_buildScript; // for automated data building scripts
 cvar_t *cl_paused;
 cvar_t *sv_paused;
 cvar_t *cl_packetdelay;
@@ -117,26 +109,24 @@ cvar_t *com_demoext;
 cvar_t *com_renderer;
 static void *rendererLib = NULL;
 #endif
-
 #if idx64
-	int(*Q_VMftol)(void);
+int(*Q_VMftol)(void);
 #elif id386
-	long(QDECL *Q_ftol)(float f);
-	int(QDECL *Q_VMftol)(void);
-	void(QDECL *Q_SnapVector)(vec3_t vec);
+long(QDECL *Q_ftol)(float f);
+int(QDECL *Q_VMftol)(void);
+void(QDECL *Q_SnapVector)(vec3_t vec);
 #endif
-
 // com_speeds times
 int time_game;
-int time_frontend; 		// renderer frontend time
-int time_backend; 		// renderer backend time
+int time_frontend; // renderer frontend time
+int time_backend; // renderer backend time
 
 int com_frameTime;
 int com_frameNumber;
 int com_errorEntered = 0;
-qboolean	com_fullyInitialized = qfalse;
-qboolean	com_gameRestarting = qfalse;
-qboolean	com_gameClientRestarting = qfalse;
+qboolean com_fullyInitialized = qfalse;
+qboolean com_gameRestarting = qfalse;
+qboolean com_gameClientRestarting = qfalse;
 
 char com_errorMessage[MAXPRINTMSG];
 int com_playVideo = 0;
@@ -144,15 +134,21 @@ int com_playVideo = 0;
 void Com_WriteConfig_f(void);
 void CIN_CloseAllVideos(void);
 
-//============================================================================
-
 static char *rd_buffer;
 static int rd_buffersize;
 static void (*rd_flush)(char *buffer);
 
+/*
+=======================================================================================================================================
+Com_BeginRedirect
+=======================================================================================================================================
+*/
 void Com_BeginRedirect(char *buffer, int buffersize, void(*flush)(char *)) {
-	if (!buffer || !buffersize || !flush)
+
+	if (!buffer || !buffersize || !flush) {
 		return;
+	}
+
 	rd_buffer = buffer;
 	rd_buffersize = buffersize;
 	rd_flush = flush;
@@ -160,7 +156,13 @@ void Com_BeginRedirect(char *buffer, int buffersize, void(*flush)(char *)) {
 	*rd_buffer = 0;
 }
 
+/*
+=======================================================================================================================================
+Com_EndRedirect
+=======================================================================================================================================
+*/
 void Com_EndRedirect(void) {
+
 	if (rd_flush) {
 		rd_flush(rd_buffer);
 	}
@@ -181,10 +183,9 @@ A raw string should NEVER be passed as fmt, because of "%f" type crashers.
 =======================================================================================================================================
 */
 void QDECL Com_Printf(const char *fmt, ...) {
-	va_list		argptr;
+	va_list argptr;
 	char msg[MAXPRINTMSG];
-  static qboolean opening_qconsole = qfalse;
-
+	static qboolean opening_qconsole = qfalse;
 
 	va_start(argptr, fmt);
 	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
@@ -197,51 +198,44 @@ void QDECL Com_Printf(const char *fmt, ...) {
 		}
 
 		Q_strcat(rd_buffer, rd_buffersize, msg);
-    // TTimo nooo .. that would defeat the purpose
-		//rd_flush(rd_buffer); 			
+		// TTimo nooo .. that would defeat the purpose
+		//rd_flush(rd_buffer);
 		//*rd_buffer = 0;
 		return;
 	}
-
 #ifndef DEDICATED
 	CL_ConsolePrint(msg);
 #endif
-
 	// echo to dedicated console and early console
 	Sys_Print(msg);
-
 	// logfile
 	if (com_logfile && com_logfile->integer) {
-    // TTimo: only open the qconsole.log if the filesystem is in an initialized state
-    //   also, avoid recursing in the qconsole.log opening(i.e. if fs_debug is on)
+		// TTimo: only open the qconsole.log if the filesystem is in an initialized state
+		// also, avoid recursing in the qconsole.log opening(i.e. if fs_debug is on)
 		if (!logfile && FS_Initialized() && !opening_qconsole) {
 			struct tm *newtime;
 			time_t aclock;
 
-      opening_qconsole = qtrue;
+			opening_qconsole = qtrue;
 
 			time(&aclock);
-			newtime = localtime(&aclock);
 
+			newtime = localtime(&aclock);
 			logfile = FS_FOpenFileWrite("console.log");
 			
 			if (logfile) {
 				Com_Printf("logfile opened on %s\n", asctime(newtime));
 			
 				if (com_logfile->integer > 1) {
-					// force it to not buffer so we get valid
-					// data even if we are crashing
+					// force it to not buffer so we get valid data even if we are crashing
 					FS_ForceFlush(logfile);
 				}
-			}
-
-			else
-			{
+			} else {
 				Com_Printf("Opening qconsole.log failed!\n");
 				Cvar_SetValue("logfile", 0);
 			}
 
-      opening_qconsole = qfalse;
+			opening_qconsole = qfalse;
 		}
 
 		if (logfile && FS_Initialized()) {
@@ -250,26 +244,24 @@ void QDECL Com_Printf(const char *fmt, ...) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 Com_DPrintf
 
-A Com_Printf that only shows up if the "developer" cvar is set
+A Com_Printf that only shows up if the "developer" cvar is set.
 =======================================================================================================================================
 */
 void QDECL Com_DPrintf(const char *fmt, ...) {
-	va_list		argptr;
+	va_list argptr;
 	char msg[MAXPRINTMSG];
 		
 	if (!com_developer || !com_developer->integer) {
-		return; 			// don't confuse non - developers with techie stuff...
+		return; // don't confuse non - developers with techie stuff...
 	}
 
-	va_start(argptr, fmt); 	
+	va_start(argptr, fmt);
 	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
 	va_end(argptr);
-	
 	Com_Printf("%s", msg);
 }
 
@@ -277,21 +269,19 @@ void QDECL Com_DPrintf(const char *fmt, ...) {
 =======================================================================================================================================
 Com_Error
 
-Both client and server can use this, and it will
-do the appropriate thing.
+Both client and server can use this, and it will do the appropriate thing.
 =======================================================================================================================================
 */
 void QDECL Com_Error(int code, const char *fmt, ...) {
-	va_list		argptr;
+	va_list argptr;
 	static int lastErrorTime;
 	static int errorCount;
 	static int lastErrorCode;
 	int currentTime;
-	qboolean	restartClient;
+	qboolean restartClient;
 
 	com_errorEntered++;
 	lastErrorCode = code;
-
 	// turn recursive drop into fatal
 	if (com_errorEntered == 2 && code == ERR_DROP && lastErrorCode == ERR_DROP) {
 		code = ERR_FATAL;
@@ -301,9 +291,7 @@ void QDECL Com_Error(int code, const char *fmt, ...) {
 	}
 
 	Cvar_Set("com_errorCode", va("%i", code));
-
-	// when we are running automated scripts, make sure we
-	// know if anything failed
+	// when we are running automated scripts, make sure we know if anything failed
 	if (com_buildScript && com_buildScript->integer) {
 		code = ERR_FATAL;
 	} else if (!com_fullyInitialized) {
@@ -325,10 +313,12 @@ void QDECL Com_Error(int code, const char *fmt, ...) {
 	Q_vsnprintf(com_errorMessage, sizeof(com_errorMessage), fmt, argptr);
 	va_end(argptr);
 
-	if (code != ERR_DISCONNECT)
+	if (code != ERR_DISCONNECT) {
 		Cvar_Set("com_errorMessage", com_errorMessage);
+	}
 
 	restartClient = com_gameClientRestarting && !(com_cl_running && com_cl_running->integer);
+
 	if (com_gameRestarting) {
 		if (code == ERR_DROP && FS_TryLastValidGame() && com_cl_running && com_cl_running->integer) {
 			CL_Shutdown(va("Change Game Directory: %s", com_errorMessage), qtrue, qtrue);
@@ -381,23 +371,20 @@ void QDECL Com_Error(int code, const char *fmt, ...) {
 	Sys_Error("%s", com_errorMessage);
 }
 
-
 /*
 =======================================================================================================================================
 Com_Quit_f
 
-Both client and server can use this, and it will
-do the appropriate things.
+Both client and server can use this, and it will do the appropriate things.
 =======================================================================================================================================
 */
 void Com_Quit_f(void) {
 	// don't try to shutdown if we are in a recursive error
 	char *p = Cmd_Args();
+
 	if (!com_errorEntered) {
-		// Some VMs might execute "quit" command directly,
-		// which would trigger an unload of active VM error.
-		// Sys_Quit will kill this process anyways, so
-		// a corrupt call stack makes no difference
+		// some VMs might execute "quit" command directly, which would trigger an unload of active VM error
+		// Sys_Quit will kill this process anyways, so a corrupt call stack makes no difference
 		VM_Forced_Unload_Start();
 		SV_Shutdown(p[0] ? p : "Server quit");
 		CL_Shutdown(p[0] ? p : "Client quit", qtrue, qtrue);
@@ -410,14 +397,12 @@ void Com_Quit_f(void) {
 }
 
 
-
 /*
 =======================================================================================================================================
 
 COMMAND LINE FUNCTIONS
 
-+ characters separate the commandLine string into multiple console
-command lines.
++ characters separate the commandLine string into multiple console command lines.
 
 All of these are valid:
 
@@ -428,7 +413,7 @@ quake3 set test blah + map test
 =======================================================================================================================================
 */
 
-#define MAX_CONSOLE_LINES	32
+#define MAX_CONSOLE_LINES 32
 int com_numConsoleLines;
 char *com_consoleLines[MAX_CONSOLE_LINES];
 
@@ -436,39 +421,40 @@ char *com_consoleLines[MAX_CONSOLE_LINES];
 =======================================================================================================================================
 Com_ParseCommandLine
 
-Break it up into multiple console lines
+Break it up into multiple console lines.
 =======================================================================================================================================
 */
 void Com_ParseCommandLine(char *commandLine) {
-  	int inq = 0;
-    com_consoleLines[0] = commandLine;
-    com_numConsoleLines = 1;
+	int inq = 0;
 
-    while(*commandLine) {
-        if (*commandLine == '"') {
-            inq = !inq;
-        }
-        // look for a + separating character
-        // if commandLine came from a file, we might have real line seperators
-        if ((*commandLine == '+' && !inq) || *commandLine == '\n'  || *commandLine == '\r') {
-            if (com_numConsoleLines == MAX_CONSOLE_LINES) {
-                return;
-            }
-            com_consoleLines[com_numConsoleLines] = commandLine + 1;
-            com_numConsoleLines++;
-            *commandLine = 0;
-        }
-        commandLine++;
-    }
+	com_consoleLines[0] = commandLine;
+	com_numConsoleLines = 1;
+
+	while(*commandLine) {
+		if (*commandLine == '"') {
+			inq = !inq;
+		}
+		// look for a + separating character
+		// if commandLine came from a file, we might have real line seperators
+		if ((*commandLine == '+' && !inq) || *commandLine == '\n' || *commandLine == '\r') {
+			if (com_numConsoleLines == MAX_CONSOLE_LINES) {
+				return;
+			}
+
+			com_consoleLines[com_numConsoleLines] = commandLine + 1;
+			com_numConsoleLines++;
+			*commandLine = 0;
+		}
+
+		commandLine++;
+	}
 }
-
 
 /*
 =======================================================================================================================================
 Com_SafeMode
 
-Check for "safe" on the command line, which will
-skip loading of q3config.cfg
+Check for "safe" on the command line, which will skip loading of q3config.cfg.
 =======================================================================================================================================
 */
 qboolean Com_SafeMode(void) {
@@ -477,8 +463,7 @@ qboolean Com_SafeMode(void) {
 	for (i = 0; i < com_numConsoleLines; i++) {
 		Cmd_TokenizeString(com_consoleLines[i]);
 
-		if (!Q_stricmp(Cmd_Argv(0), "safe")
-			|| !Q_stricmp(Cmd_Argv(0), "cvar_restart")) {
+		if (!Q_stricmp(Cmd_Argv(0), "safe") || !Q_stricmp(Cmd_Argv(0), "cvar_restart")) {
 			com_consoleLines[i][0] = 0;
 			return qtrue;
 		}
@@ -487,15 +472,13 @@ qboolean Com_SafeMode(void) {
 	return qfalse;
 }
 
-
 /*
 =======================================================================================================================================
 Com_StartupVariable
 
 Searches for command line parameters that are set commands.
 If match is not NULL, only that cvar will be looked for.
-That is necessary because cddir and basedir need to be set
-before the filesystem is started, but all other sets should
+That is necessary because cddir and basedir need to be set before the filesystem is started, but all other sets should
 be after execing the config and default.
 =======================================================================================================================================
 */
@@ -518,21 +501,18 @@ void Com_StartupVariable(const char *match) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 Com_AddStartupCommands
 
-Adds command line parameters as script statements
-Commands are separated by + signs
-
-Returns qtrue if any late commands were added, which
-will keep the demoloop from immediately starting
+Adds command line parameters as script statements.
+Commands are separated by + signs.
+Returns qtrue if any late commands were added, which will keep the demoloop from immediately starting.
 =======================================================================================================================================
 */
 qboolean Com_AddStartupCommands(void) {
 	int i;
-	qboolean	added;
+	qboolean added;
 
 	added = qfalse;
 	// quote every token, so args with semicolons can work
@@ -542,7 +522,6 @@ qboolean Com_AddStartupCommands(void) {
 		}
 
 		Cmd_TokenizeString(com_consoleLines[i]);
-
 		// set commands already added with Com_StartupVariable
 		if (!strcmp(Cmd_Argv(0), "set")) {
 			continue;
@@ -554,6 +533,7 @@ qboolean Com_AddStartupCommands(void) {
 		}
 
 		added = qtrue;
+
 		Cbuf_AddText(com_consoleLines[i]);
 		Cbuf_AddText("\n");
 	}
@@ -561,31 +541,36 @@ qboolean Com_AddStartupCommands(void) {
 	return added;
 }
 
-
-//============================================================================
-
+/*
+=======================================================================================================================================
+Info_Print
+=======================================================================================================================================
+*/
 void Info_Print(const char *s) {
 	char key[BIG_INFO_KEY];
 	char value[BIG_INFO_VALUE];
 	char *o;
 	int l;
 
-	if (*s == '\\')
+	if (*s == '\\') {
 		s++;
+	}
+
 	while (*s) {
 		o = key;
-		while (*s && *s != '\\')
+		while (*s && *s != '\\') {
 			*o++ = *s++;
+		}
 
 		l = o - key;
 
 		if (l < 20) {
 			Com_Memset(o, ' ', 20 - l);
 			key[20] = 0;
+		} else {
+			*o = 0;
 		}
 
-		else
-			*o = 0;
 		Com_Printf("%s ", key);
 
 		if (!*s) {
@@ -595,12 +580,17 @@ void Info_Print(const char *s) {
 
 		o = value;
 		s++;
-		while (*s && *s != '\\')
+
+		while (*s && *s != '\\') {
 			*o++ = *s++;
+		}
+
 		*o = 0;
 
-		if (*s)
+		if (*s) {
 			s++;
+		}
+
 		Com_Printf("%s\n", value);
 	}
 }
@@ -651,74 +641,90 @@ int Com_Filter(char *filter, char *name, int casesensitive) {
 	while (*filter) {
 		if (*filter == '*') {
 			filter++;
+
 			for (i = 0; *filter; i++) {
-				if (*filter == '*' || *filter == '?')break;
+				if (*filter == '*' || *filter == '?') {
+					break;
+				}
+
 				buf[i] = *filter;
 				filter++;
 			}
 
 			buf[i] = '\0';
+
 			if (strlen(buf)) {
 				ptr = Com_StringContains(name, buf, casesensitive);
 
-				if (!ptr)return qfalse;
+				if (!ptr) {
+					return qfalse;
+				}
+
 				name = ptr + strlen(buf);
 			}
-		}
-
-		else if (*filter == '?') {
+		} else if (*filter == '?') {
 			filter++;
 			name++;
-		}
-
-		else if (*filter == '[' && * (filter+1) == '[') {
+		} else if (*filter == '[' && * (filter+1) == '[') {
 			filter++;
-		}
-
-		else if (*filter == '[') {
+		} else if (*filter == '[') {
 			filter++;
 			found = qfalse;
 			while (*filter && !found) {
-				if (*filter == ']' && * (filter+1) != ']')break;
-
-				if (*(filter+1) == ' - ' && * (filter+2) && (*(filter+2) != ']' || * (filter+3) == ']')) {
-					if (casesensitive) {
-						if (*name >= *filter && *name <= * (filter+2))found = qtrue;
-					}
-					else {
-						if (toupper(*name) >= toupper(*filter) &&
-							toupper(*name) <= toupper(*(filter+2)))found = qtrue;
-					}
-					filter += 3;
+				if (*filter == ']' && * (filter + 1) != ']') {
+					break;
 				}
-				else {
+
+				if (*(filter+1) == '-' && * (filter+2) && (*(filter+2) != ']' || * (filter + 3) == ']')) {
 					if (casesensitive) {
-						if (*filter == *name)found = qtrue;
+						if (*name >= *filter && *name <= * (filter + 2)) {
+							found = qtrue;
+						}
+					} else {
+						if (toupper(*name) >= toupper(*filter) && toupper(*name) <= toupper(*(filter + 2))) {
+							found = qtrue;
+						}
 					}
-					else {
-						if (toupper(*filter) == toupper(*name))found = qtrue;
+
+					filter += 3;
+				} else {
+					if (casesensitive) {
+						if (*filter == *name) {
+							found = qtrue;
+						}
+					} else {
+						if (toupper(*filter) == toupper(*name)) {
+							found = qtrue;
+						}
 					}
+
 					filter++;
 				}
 			}
 
-			if (!found)return qfalse;
+			if (!found) {
+				return qfalse;
+			}
+
 			while (*filter) {
-				if (*filter == ']' && * (filter+1) != ']')break;
+				if (*filter == ']' && * (filter + 1) != ']') {
+					break;
+				}
+
 				filter++;
 			}
 
 			filter++;
 			name++;
-		}
-
-		else {
+		} else {
 			if (casesensitive) {
-				if (*filter != *name)return qfalse;
-			}
-
-			else {
-				if (toupper(*filter) != toupper(*name))return qfalse;
+				if (*filter != *name) {
+					return qfalse;
+				}
+			} else {
+				if (toupper(*filter) != toupper(*name)) {
+					return qfalse;
+				}
 			}
 
 			filter++;
@@ -742,9 +748,7 @@ int Com_FilterPath(char *filter, char *name, int casesensitive) {
 	for (i = 0; i < MAX_QPATH - 1 && filter[i]; i++) {
 		if (filter[i] == '\\' || filter[i] == ':') {
 			new_filter[i] = '/';
-		}
-
-		else {
+		} else {
 			new_filter[i] = filter[i];
 		}
 	}
@@ -754,9 +758,7 @@ int Com_FilterPath(char *filter, char *name, int casesensitive) {
 	for (i = 0; i < MAX_QPATH - 1 && name[i]; i++) {
 		if (name[i] == '\\' || name[i] == ':') {
 			new_name[i] = '/';
-		}
-
-		else {
+		} else {
 			new_name[i] = name[i];
 		}
 	}
@@ -775,9 +777,13 @@ int Com_RealTime(qtime_t *qtime) {
 	struct tm *tms;
 
 	t = time(NULL);
-	if (!qtime)
+
+	if (!qtime) {
 		return t;
+	}
+
 	tms = localtime(&t);
+
 	if (tms) {
 		qtime->tm_sec = tms->tm_sec;
 		qtime->tm_min = tms->tm_min;
@@ -792,7 +798,6 @@ int Com_RealTime(qtime_t *qtime) {
 
 	return t;
 }
-
 
 /*
 =======================================================================================================================================
@@ -809,8 +814,8 @@ all big things are allocated on the hunk.
 =======================================================================================================================================
 */
 
-#define ZONEID	0x1d4a11
-#define MINFRAGMENT	64
+#define ZONEID 0x1d4a11
+#define MINFRAGMENT 64
 
 typedef struct zonedebug_s {
 	char *label;
@@ -820,31 +825,30 @@ typedef struct zonedebug_s {
 } zonedebug_t;
 
 typedef struct memblock_s {
-	int size;           // including the header and possibly tiny fragments
-	int tag;            // a tag of 0 is a free block
-	struct memblock_s       *next, *prev;
-	int id;        		// should be ZONEID
+	int size;	// including the header and possibly tiny fragments
+	int tag;	// a tag of 0 is a free block
+	struct memblock_s *next, *prev;
+	int id;		// should be ZONEID
 #ifdef ZONE_DEBUG
 	zonedebug_t d;
 #endif
 } memblock_t;
 
 typedef struct {
-	int size; 			// total bytes malloced, including header
-	int used; 			// total bytes used
-	memblock_t blocklist; 	// start / end cap for linked list
+	int size;				// total bytes malloced, including header
+	int used;				// total bytes used
+	memblock_t blocklist;	// start / end cap for linked list
 	memblock_t *rover;
 } memzone_t;
 
 // main zone for all "dynamic" memory allocation
 static memzone_t *mainzone;
 // we also have a small zone for small allocations that would only
-// fragment the main zone(think of cvar and cmd strings)
+// fragment the main zone (think of cvar and cmd strings)
 static memzone_t *smallzone;
 // zones for Game / CGame VM "dynamic" memory allocation
 static memzone_t *vm_gamezone;
 static memzone_t *vm_cgamezone;
-
 static void Z_CheckHeap(void);
 
 /*
@@ -853,7 +857,8 @@ Z_ZoneForTag
 =======================================================================================================================================
 */
 memzone_t *Z_ZoneForTag(int tag) {
-	switch(tag) {
+
+	switch (tag) {
 		case TAG_GAME:
 			return vm_gamezone;
 		case TAG_CGAME:
@@ -871,6 +876,7 @@ Z_NameForZone
 =======================================================================================================================================
 */
 const char *Z_NameForZone(memzone_t *zone) {
+
 	if (!zone) {
 		return "NULL";
 	} else if (zone == mainzone) {
@@ -892,6 +898,7 @@ Z_CvarNameForZone
 =======================================================================================================================================
 */
 const char *Z_CvarNameForZone(memzone_t *zone) {
+
 	if (!zone) {
 		return NULL;
 	} else if (zone == mainzone) {
@@ -916,10 +923,8 @@ static void Z_ClearZone(memzone_t *zone, int size) {
 	memblock_t *block;
 	
 	// set the entire zone to one free block
-
-	zone->blocklist.next = zone->blocklist.prev = block = 
-		(memblock_t *)((byte *)zone + sizeof(memzone_t));
-	zone->blocklist.tag = 1; 	// in use block
+	zone->blocklist.next = zone->blocklist.prev = block = (memblock_t *)((byte *)zone + sizeof(memzone_t));
+	zone->blocklist.tag = 1; // in use block
 	zone->blocklist.id = 0;
 	zone->blocklist.size = 0;
 	zone->rover = block;
@@ -927,7 +932,7 @@ static void Z_ClearZone(memzone_t *zone, int size) {
 	zone->used = 0;
 	
 	block->prev = block->next = &zone->blocklist;
-	block->tag = 0; 			// free block
+	block->tag = 0; // free block
 	block->id = ZONEID;
 	block->size = size - sizeof(memzone_t);
 }
@@ -1008,9 +1013,9 @@ void Z_Free(void *ptr)
 	// if it is referenced...
 	Com_Memset(ptr, 0xaa, block->size - sizeof(*block));
 
-	block->tag = 0; 		// mark as free
-	
+	block->tag = 0; // mark as free
 	other = block->prev;
+
 	if (!other->tag) {
 		// merge with previous free block
 		other->size += block->size;
@@ -1025,8 +1030,8 @@ void Z_Free(void *ptr)
 	}
 
 	zone->rover = block;
-
 	other = block->next;
+
 	if (!other->tag) {
 		// merge the next free block onto the end
 		block->size += other->size;
@@ -1034,7 +1039,6 @@ void Z_Free(void *ptr)
 		block->next->prev = block;
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -1047,21 +1051,21 @@ int Z_FreeTags(int tag) {
 
 	zone = Z_ZoneForTag(tag);
 	count = 0;
-	// use the rover as our pointer, because
-	// Z_Free automatically adjusts it
+	// use the rover as our pointer, because Z_Free automatically adjusts it
 	zone->rover = zone->blocklist.next;
+
 	do {
 		if (zone->rover->tag == tag) {
 			count++;
 			Z_Free((void *)(zone->rover + 1));
 			continue;
 		}
+
 		zone->rover = zone->rover->next;
 	} while(zone->rover != &zone->blocklist);
 
 	return count;
 }
-
 
 /*
 =======================================================================================================================================
@@ -1083,41 +1087,37 @@ void *Z_TagMalloc(int size, int tag) {
 	}
 
 	zone = Z_ZoneForTag(tag);
-
 #ifdef ZONE_DEBUG
 	allocSize = size;
 #endif
-	// scan through the block list looking for the first free block
-	// of sufficient size
-	size += sizeof(memblock_t); 	// account for size of block header
-	size += 4; 					// space for memory trash tester
-	size = PAD(size, sizeof(intptr_t)); 		// align to 32/64 bit boundary
-	
+	// scan through the block list looking for the first free block of sufficient size
+	size += sizeof(memblock_t); // account for size of block header
+	size += 4; // space for memory trash tester
+	size = PAD(size, sizeof(intptr_t)); // align to 32/64 bit boundary
+
 	base = rover = zone->rover;
 	start = base->prev;
 	
 	do {
-		if (rover == start)	{
+		if (rover == start) {
 			// scaned all the way around the list
 			char cvarMessage[128];
 			const char *cvarName;
 
 			// display user friendly message for overly common error
 			cvarName = Z_CvarNameForZone(zone);
+
 			if (cvarName) {
 				Com_sprintf(cvarMessage, sizeof(cvarMessage), "(increase %s cvar value, current value %s)", cvarName, Cvar_VariableString(cvarName));
 			} else {
 				cvarMessage[0] = '\0';
 			}
-
 #ifdef ZONE_DEBUG
 			Z_LogHeap();
 
-			Com_Error(ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes from the %s zone%s: %s, line: %d(%s)",
-								size, Z_NameForZone(zone), cvarMessage, file, line, label);
+			Com_Error(ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes from the %s zone%s: %s, line: %d(%s)", size, Z_NameForZone(zone), cvarMessage, file, line, label);
 #else
-			Com_Error(ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes from the %s zone%s",
-								size, Z_NameForZone(zone), cvarMessage);
+			Com_Error(ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes from the %s zone%s", size, Z_NameForZone(zone), cvarMessage);
 #endif
 			return NULL;
 		}
@@ -1127,15 +1127,16 @@ void *Z_TagMalloc(int size, int tag) {
 		} else {
 			rover = rover->next;
 		}
-	} while(base->tag || base->size < size);
-	
+	} while (base->tag || base->size < size);
+
 	// found a block big enough
 	extra = base->size - size;
+
 	if (extra > MINFRAGMENT) {
 		// there will be a free fragment after the allocated block
 		new = (memblock_t *)((byte *)base + size);
 		new->size = extra;
-		new->tag = 0; 			// free block
+		new->tag = 0; // free block
 		new->prev = base;
 		new->id = ZONEID;
 		new->next = base->next;
@@ -1144,20 +1145,18 @@ void *Z_TagMalloc(int size, int tag) {
 		base->size = size;
 	}
 	
-	base->tag = tag; 			// no longer a free block
+	base->tag = tag; // no longer a free block
 	
-	zone->rover = base->next; 	// next allocation will start looking here
-	zone->used += base->size; 	//
+	zone->rover = base->next; // next allocation will start looking here
+	zone->used += base->size;
 	
 	base->id = ZONEID;
-
 #ifdef ZONE_DEBUG
 	base->d.label = label;
 	base->d.file = file;
 	base->d.line = line;
 	base->d.allocSize = allocSize;
 #endif
-
 	// marker for memory trash testing
 	*(int *)((byte *)base + base->size - 4) = ZONEID;
 
@@ -1176,7 +1175,7 @@ void *Z_Malloc(int size) {
 #endif
 	void *buf;
 	
-  //Z_CheckHeap(); 	// DEBUG
+  //Z_CheckHeap();	// DEBUG
 
 #ifdef ZONE_DEBUG
 	buf = Z_TagMallocDebug(size, TAG_GENERAL, label, file, line);
@@ -1208,7 +1207,7 @@ static void Z_CheckHeap(void) {
 	
 	for (block = mainzone->blocklist.next;; block = block->next) {
 		if (block->next == &mainzone->blocklist) {
-			break; 			// all blocks have been hit
+			break; // all blocks have been hit
 		}
 
 		if ((byte *)block + block->size != (byte *)block->next)
@@ -1240,6 +1239,7 @@ void Z_LogZoneHeap(memzone_t *zone, char *name) {
 
 	if (!logfile || !FS_Initialized())
 		return;
+
 	size = numBlocks = 0;
 #ifdef ZONE_DEBUG
 	allocSize = 0;
@@ -1256,6 +1256,7 @@ void Z_LogZoneHeap(memzone_t *zone, char *name) {
 				if (ptr[i] >= 32 && ptr[i] < 127) {
 					dump[j++] = ptr[i];
 				}
+
 				else {
 					dump[j++] = '_';
 				}
@@ -1444,7 +1445,7 @@ void Com_Meminfo_f(void) {
 		}
 
 		if (block->next == &mainzone->blocklist) {
-			break; 			// all blocks have been hit	
+			break;			// all blocks have been hit	
 		}
 
 		if ((byte *)block + block->size != (byte *)block->next) {
@@ -1468,7 +1469,7 @@ void Com_Meminfo_f(void) {
 		}
 
 		if (block->next == &smallzone->blocklist) {
-			break; 			// all blocks have been hit	
+			break;			// all blocks have been hit	
 		}
 	}
 
@@ -1550,7 +1551,7 @@ void Com_TouchMemory(void) {
 		}
 
 		if (block->next == &mainzone->blocklist) {
-			break; 			// all blocks have been hit	
+			break;			// all blocks have been hit	
 		}
 	}
 
@@ -1558,7 +1559,6 @@ void Com_TouchMemory(void) {
 
 	Com_DPrintf("Com_TouchMemory: %i msec\n", end - start);
 }
-
 
 
 /*
@@ -1980,7 +1980,6 @@ void *Hunk_AllocateTempMemory(int size) {
 	return buf;
 }
 
-
 /*
 =======================================================================================================================================
 Hunk_FreeTempMemory
@@ -1997,7 +1996,6 @@ void Hunk_FreeTempMemory(void *buf) {
 		Z_Free(buf);
 		return;
 	}
-
 
 	hdr = ((hunkHeader_t *)buf) - 1;
 	if (hdr->magic != HUNK_MAGIC) {
@@ -2022,7 +2020,6 @@ void Hunk_FreeTempMemory(void *buf) {
 		}
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -2477,7 +2474,6 @@ sysEvent_t Com_GetRealEvent(void) {
 	return ev;
 }
 
-
 /*
 =======================================================================================================================================
 Com_InitPushEvent
@@ -2493,7 +2489,6 @@ void Com_InitPushEvent(void) {
   com_pushedEventsTail = 0;
 }
 
-
 /*
 =======================================================================================================================================
 Com_PushEvent
@@ -2506,7 +2501,6 @@ void Com_PushEvent(sysEvent_t *event) {
 	ev = &com_pushedEvents[com_pushedEventsHead &(MAX_PUSHED_EVENTS - 1)];
 
 	if (com_pushedEventsHead - com_pushedEventsTail >= MAX_PUSHED_EVENTS) {
-
 		// don't print the warning constantly, or it can give time for more...
 		if (!printedWarning) {
 			printedWarning = qtrue;
@@ -2610,7 +2604,7 @@ int Com_EventLoop(void) {
 		else if (ev.evType >= SE_JOYSTICK_HAT && ev.evType <= SE_JOYSTICK_HAT_LAST)
 			CL_JoystickHatEvent(ev.evType - SE_JOYSTICK_HAT, ev.evValue, ev.evValue2, ev.evTime);
 		else {
-			switch(ev.evType) {
+			switch (ev.evType) {
 				case SE_KEY:
 					CL_KeyEvent(ev.evValue, ev.evValue2, ev.evTime);
 				break;
@@ -2632,7 +2626,7 @@ int Com_EventLoop(void) {
 		}
 	}
 
-	return 0; 	// never reached
+	return 0;	// never reached
 }
 
 /*
@@ -2647,7 +2641,6 @@ int Com_Milliseconds(void) {
 
 	// get events and push them until we get a null event with the current time
 	do {
-
 		ev = Com_GetRealEvent();
 
 		if (ev.evType != SE_NONE) {
@@ -2668,14 +2661,13 @@ Just throw a fatal error to
 test error shutdown procedures
 =======================================================================================================================================
 */
-static void __attribute__((__noreturn__))Com_Error_f(void) {
+static void __attribute__ ((__noreturn__))Com_Error_f(void) {
 	if (Cmd_Argc() > 1) {
 		Com_Error(ERR_DROP, "Testing drop error");
 	} else {
 		Com_Error(ERR_FATAL, "Testing fatal error");
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -3168,7 +3160,6 @@ void Com_ReadFromPipe(void) {
 	}
 }
 
-
 //==================================================================
 
 /*
@@ -3205,7 +3196,7 @@ Com_RefPrintf
 DLL glue
 =======================================================================================================================================
 */
-static __attribute__((format(printf, 2, 3))) void QDECL Com_RefPrintf(int print_level, const char *fmt, ...) {
+static __attribute__ ((format(printf, 2, 3))) void QDECL Com_RefPrintf(int print_level, const char *fmt, ...) {
 	va_list		argptr;
 	char msg[MAXPRINTMSG];
 	
@@ -3216,12 +3207,11 @@ static __attribute__((format(printf, 2, 3))) void QDECL Com_RefPrintf(int print_
 	if (print_level == PRINT_ALL) {
 		Com_Printf("%s", msg);
 	} else if (print_level == PRINT_WARNING) {
-		Com_Printf(S_COLOR_YELLOW "%s", msg); 		// yellow
+		Com_Printf(S_COLOR_YELLOW "%s", msg);		// yellow
 	} else if (print_level == PRINT_DEVELOPER) {
-		Com_DPrintf(S_COLOR_RED "%s", msg); 		// red
+		Com_DPrintf(S_COLOR_RED "%s", msg);		// red
 	}
 }
-
 
 
 /*
@@ -3376,7 +3366,6 @@ void Com_WriteConfigToFile(const char *filename) {
 	FS_FCloseFile(f);
 }
 
-
 /*
 =======================================================================================================================================
 Com_WriteConfiguration
@@ -3399,7 +3388,6 @@ void Com_WriteConfiguration(void) {
 
 	Com_WriteConfigToFile(Q3CONFIG_CFG);
 }
-
 
 /*
 =======================================================================================================================================
@@ -3502,7 +3490,6 @@ Com_Frame
 =======================================================================================================================================
 */
 void Com_Frame(void) {
-
 	int msec, minMsec;
 	int timeVal, timeValSV;
 	static int lastTime = 0, bias = 0;
@@ -3515,7 +3502,7 @@ void Com_Frame(void) {
   
 
 	if (setjmp(abortframe)) {
-		return; 			// an ERR_DROP was thrown
+		return;			// an ERR_DROP was thrown
 	}
 
 	timeBeforeFirstEvents = 0;
@@ -4085,7 +4072,6 @@ void Com_RandomBytes(byte *string, int len) {
 	for (i = 0; i < len; i++)
 		string[i] = (unsigned char)(rand()% 256);
 }
-
 
 /*
 =======================================================================================================================================

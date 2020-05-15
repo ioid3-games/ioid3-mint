@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -35,25 +29,20 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include "../renderergl1/tr_local.h"
 
 qboolean refHeadless;
-
 refimport_t ri;
 trGlobals_t tr;
 glconfig_t glConfig;
 backEndState_t backEnd;
 shaderCommands_t tess;
-
 shader_t localShader;
-
 cvar_t *r_shadows = NULL;
 
 /*
-@@@@@@@@@@@@@@@@@@@@@
+=======================================================================================================================================
 GetRefAPI
-
-@@@@@@@@@@@@@@@@@@@@@
+=======================================================================================================================================
 */
 refexport_t *GetRefAPI(int apiVersion, refimport_t *rimp, qboolean headless) {
-
 	static refexport_t re;
 
 	ri = *rimp;
@@ -63,84 +52,143 @@ refexport_t *GetRefAPI(int apiVersion, refimport_t *rimp, qboolean headless) {
 	Com_Memset(&re, 0, sizeof(re));
 
 	if (apiVersion != REF_API_VERSION) {
-		ri.Printf(PRINT_ALL, "Mismatched REF_API_VERSION: expected %i, got %i\n",
-			REF_API_VERSION, apiVersion);
+		ri.Printf(PRINT_ALL, "Mismatched REF_API_VERSION: expected %i, got %i\n", REF_API_VERSION, apiVersion);
 		return NULL;
 	}
 	// the RE_ functions are Renderer Entry points
-
 	re.Shutdown = RE_Shutdown;
-
 	re.BeginRegistration = RE_BeginRegistration;
-
 	re.RegisterModel = RE_RegisterModel;
 	re.LerpTag = R_LerpTag;
 	re.ModelBounds = R_ModelBounds;
-
 	return &re;
 }
 
+/*
+=======================================================================================================================================
+R_Init
+=======================================================================================================================================
+*/
 void R_Init(void) {
+
 	Com_Memset(&tr, 0, sizeof(trGlobals_t));
 	Com_Memset(&glConfig, 0, sizeof(glconfig_t));
 	Com_Memset(&backEnd, 0, sizeof(backEndState_t));
 	Com_Memset(&tess, 0, sizeof(shaderCommands_t));
-
 	// dummy shader
 	Q_strncpyz(localShader.name, "<default>", MAX_QPATH);
+
 	localShader.defaultShader = qtrue;
 	tr.defaultShader = &localShader;
 
 	R_ModelInit();
 }
 
+/*
+=======================================================================================================================================
+R_FindShader
+=======================================================================================================================================
+*/
 shader_t *R_FindShader(const char *name, int lightmapIndex, imgFlags_t rawImageFlags) {
 	return tr.defaultShader;
 }
 
-shader_t * R_GetShaderByHandle(qhandle_t handle) {
+/*
+=======================================================================================================================================
+R_GetShaderByHandle
+=======================================================================================================================================
+*/
+shader_t *R_GetShaderByHandle(qhandle_t handle) {
 	return tr.defaultShader;
 }
 
+/*
+=======================================================================================================================================
+R_CullLocalBox
+=======================================================================================================================================
+*/
 int R_CullLocalBox(vec3_t bounds[2]) {
 	return CULL_CLIP;
 }
 
+/*
+=======================================================================================================================================
+R_PointFogNum
+=======================================================================================================================================
+*/
 int R_PointFogNum(const trRefdef_t *refdef, vec3_t point, float radius) {
 	return 0;
 }
 
+/*
+=======================================================================================================================================
+RE_Shutdown
+=======================================================================================================================================
+*/
 void RE_Shutdown(qboolean destroyWindow) {
 	tr.registered = qfalse;
 }
 
+/*
+=======================================================================================================================================
+RB_CheckOverflow
+=======================================================================================================================================
+*/
 void RB_CheckOverflow(int verts, int indexes) {
 
 }
 
+/*
+=======================================================================================================================================
+R_AddEntDrawSurf
+=======================================================================================================================================
+*/
 void R_AddEntDrawSurf(trRefEntity_t *ent, surfaceType_t *surface, shader_t *shader, int fogIndex, int dlightMap, int sortLevel) {
 
 }
 
+/*
+=======================================================================================================================================
+R_AddDrawSurf
+=======================================================================================================================================
+*/
 void R_AddDrawSurf(surfaceType_t *surface, shader_t *shader, int fogIndex, int dlightMap) {
 
 }
 
+/*
+=======================================================================================================================================
+R_SetupEntityLighting
+=======================================================================================================================================
+*/
 void R_SetupEntityLighting(const trRefdef_t *refdef, trRefEntity_t *ent) {
 
 }
 
+/*
+=======================================================================================================================================
+R_ClearFlares
+=======================================================================================================================================
+*/
 void R_ClearFlares(void) {
 
 }
 
+/*
+=======================================================================================================================================
+RE_ClearScene
+=======================================================================================================================================
+*/
 void RE_ClearScene(void) {
 
 }
 
+/*
+=======================================================================================================================================
+R_IssuePendingRenderCommands
+=======================================================================================================================================
+*/
 void R_IssuePendingRenderCommands(void) {
 
 }
-
 #endif
-

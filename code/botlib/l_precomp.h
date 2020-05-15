@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -73,38 +67,38 @@ Suite 120, Rockville, Maryland 20850 USA.
 
 //macro definitions
 typedef struct define_s {
-	char *name; 							//define name
-	int flags; 							//define flags
-	int builtin; 						// > 0 if builtin define
-	int numparms; 						//number of define parameters
-	token_t *parms; 						//define parameters
-	token_t *tokens; 					//macro tokens(possibly containing parm tokens)
-	struct define_s *next; 				//next defined macro in a list
-	struct define_s *hashnext; 			//next define in the hash chain
+	char *name;							//define name
+	int flags;							//define flags
+	int builtin;						// > 0 if builtin define
+	int numparms;						//number of define parameters
+	token_t *parms;						//define parameters
+	token_t *tokens;					//macro tokens(possibly containing parm tokens)
+	struct define_s *next;				//next defined macro in a list
+	struct define_s *hashnext;			//next define in the hash chain
 } define_t;
 
 //indents
 //used for conditional compilation directives:
 //#if, #else, #elif, #ifdef, #ifndef
 typedef struct indent_s {
-	int type; 								//indent type
-	int skip; 								//true if skipping current indent
-	script_t *script; 						//script the indent was in
-	struct indent_s *next; 					//next indent on the indent stack
+	int type;								//indent type
+	int skip;								//true if skipping current indent
+	script_t *script;						//script the indent was in
+	struct indent_s *next;					//next indent on the indent stack
 } indent_t;
 
 //source file
 typedef struct source_s {
-	char filename[1024]; 					//file name of the script
-	char includepath[1024]; 					//path to include files
-	punctuation_t *punctuations; 			//punctuations to use
-	script_t *scriptstack; 					//stack with scripts of the source
-	token_t *tokens; 						//tokens to read first
-	define_t *defines; 						//list with macro definitions
-	define_t **definehash; 					//hash chain with defines
-	indent_t *indentstack; 					//stack with indents
-	int skip; 								// > 0 if skipping conditional code
-	token_t token; 							//last read token
+	char filename[1024];					//file name of the script
+	char includepath[1024];					//path to include files
+	punctuation_t *punctuations;			//punctuations to use
+	script_t *scriptstack;					//stack with scripts of the source
+	token_t *tokens;						//tokens to read first
+	define_t *defines;						//list with macro definitions
+	define_t **definehash;					//hash chain with defines
+	indent_t *indentstack;					//stack with indents
+	int skip;								// > 0 if skipping conditional code
+	token_t token;							//last read token
 } source_t;
 
 
@@ -153,9 +147,9 @@ source_t *LoadSourceMemory(const char *ptr, int length, const char *name, const 
 //free the given source
 void FreeSource(source_t *source);
 //print a source error
-void QDECL SourceError(source_t *source, char *str, ...)__attribute__((format(printf, 2, 3)));
+void QDECL SourceError(source_t *source, char *str, ...)__attribute__ ((format(printf, 2, 3)));
 //print a source warning
-void QDECL SourceWarning(source_t *source, char *str, ...) __attribute__((format(printf, 2, 3)));
+void QDECL SourceWarning(source_t *source, char *str, ...) __attribute__ ((format(printf, 2, 3)));
 
 //
 int PC_LoadSourceHandle(const char *filename, const char *basepath, const define_t *globaldefines);

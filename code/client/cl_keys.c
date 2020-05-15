@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 #include "client.h"
@@ -559,11 +553,9 @@ qboolean Key_GetOverstrikeMode(void) {
 	return key_overstrikeMode;
 }
 
-
 void Key_SetOverstrikeMode(qboolean state) {
 	key_overstrikeMode = state;
 }
-
 
 /*
 =======================================================================================================================================
@@ -634,7 +626,7 @@ given keynum.
 =======================================================================================================================================
 */
 char *Key_KeynumToString(int keynum) {
-	keyname_t *kn; 	
+	keyname_t *kn;	
 	static char tinystr[5];
 	int i, j;
 
@@ -670,7 +662,6 @@ char *Key_KeynumToString(int keynum) {
 	return tinystr;
 }
 
-
 /*
 =======================================================================================================================================
 Key_SetBinding
@@ -692,7 +683,6 @@ void Key_SetBinding(int keynum, const char *binding) {
 	// file write will be triggered at the next opportunity
 	cvar_modifiedFlags |= CVAR_ARCHIVE;
 }
-
 
 /*
 =======================================================================================================================================
@@ -764,7 +754,6 @@ void Key_Unbindall_f(void) {
 			Key_SetBinding(i, "");
 }
 
-
 /*
 =======================================================================================================================================
 Key_Bind_f
@@ -801,7 +790,7 @@ void Key_Bind_f(void) {
 	}
 	
 // copy the rest of the command line
-	cmd[0] = 0; 		// start out with a null string
+	cmd[0] = 0;		// start out with a null string
 	for (i = 2; i < c; i++) {
 		strcat(cmd, Cmd_Argv(i));
 
@@ -836,7 +825,6 @@ void Key_WriteBindings(fileHandle_t f) {
 
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -1001,7 +989,6 @@ void CL_CharEvent(int character) {
 		VM_Call(cgvm, CG_CHAR_EVENT, character, clc.state);
 	}
 }
-
 
 /*
 =======================================================================================================================================

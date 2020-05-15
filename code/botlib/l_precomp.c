@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -94,9 +88,9 @@ typedef struct directive_s {
 
 int numtokens;
 /*
-int tokenheapinitialized; 				//true when the token heap is initialized
-token_t token_heap[TOKEN_HEAP_SIZE]; 	//heap with tokens
-token_t *freetokens; 					//free tokens from the heap
+int tokenheapinitialized;				//true when the token heap is initialized
+token_t token_heap[TOKEN_HEAP_SIZE];	//heap with tokens
+token_t *freetokens;					//free tokens from the heap
 */
 
 //list with global defines added to every source loaded
@@ -447,9 +441,9 @@ void PC_PrintDefine(define_t *define) {
 	printf("define->flags = %d\n", define->flags);
 	printf("define->builtin = %d\n", define->builtin);
 	printf("define->numparms = %d\n", define->numparms);
-//	token_t *parms; 					//define parameters
-//	token_t *tokens; 					//macro tokens(possibly containing parm tokens)
-//	struct define_s *next; 			//next defined macro in a list
+//	token_t *parms;					//define parameters
+//	token_t *tokens;					//macro tokens(possibly containing parm tokens)
+//	struct define_s *next;			//next defined macro in a list
 } //end of the function PC_PrintDefine*/
 #if DEFINEHASHING
 #if 0
@@ -631,7 +625,7 @@ int PC_ExpandBuiltinDefine(source_t *source, token_t *deftoken, define_t *define
 	char *curtime;
 
 	token = PC_CopyToken(deftoken);
-	switch(define->builtin) {
+	switch (define->builtin) {
 		case BUILTIN_LINE:
 		{
 			sprintf(token->string, "%d", deftoken->line);
@@ -794,6 +788,7 @@ int PC_ExpandDefine(source_t *source, token_t *deftoken, define_t *define,
 					} //end if
 					PC_FreeToken(t1->next);
 					t1->next = t2->next;
+
 					if (t2 == last)last = t1;
 					PC_FreeToken(t2);
 					continue;
@@ -1044,7 +1039,7 @@ int PC_Directive_define(source_t *source) {
 	} //end if
 	if (token.type != TT_NAME) {
 		PC_UnreadSourceToken(source, &token);
-		SourceError(source, "expected name after #define, found %s", token.string);
+		SourceError(source, "expected name after#define, found %s", token.string);
 		return qfalse;
 	} //end if
 	//check if the define already exists
@@ -1463,7 +1458,7 @@ typedef struct value_s {
 	struct value_s *prev, *next;
 } value_t;
 int PC_OperatorPriority(int op) {
-	switch(op) {
+	switch (op) {
 		case P_MUL: return 15;
 		case P_DIV: return 15;
 		case P_MOD: return 15;
@@ -1504,9 +1499,9 @@ int PC_OperatorPriority(int op) {
 #define MAX_OPERATORS	64
 #define AllocValue(val)									\
 	if (numvalues >= MAX_VALUES) {						\
-		SourceError(source, "out of value space"); 		\
-		error = 1; 										\
-		break; 											\
+		SourceError(source, "out of value space");		\
+		error = 1;										\
+		break;											\
 	}													\
 	else												\
 		val = &value_heap[numvalues++];
@@ -1514,9 +1509,9 @@ int PC_OperatorPriority(int op) {
 //
 #define AllocOperator(op)								\
 	if (numoperators >= MAX_OPERATORS) {				\
-		SourceError(source, "out of operator space"); 	\
-		error = 1; 										\
-		break; 											\
+		SourceError(source, "out of operator space");	\
+		error = 1;										\
+		break;											\
 	}													\
 	else												\
 		op = &operator_heap[numoperators++];
@@ -1546,7 +1541,7 @@ int PC_EvaluateTokens(source_t *source, token_t *tokens, signed long int *intval
 	if (floatvalue) *floatvalue = 0;
 
 	for (t = tokens; t; t = t->next) {
-		switch(t->type) {
+		switch (t->type) {
 			case TT_NAME:
 			{
 				if (lastwasvalue || negativevalue) {
@@ -1596,6 +1591,7 @@ int PC_EvaluateTokens(source_t *source, token_t *tokens, signed long int *intval
 
 				if (brace) {
 					t = t->next;
+
 					if (!t || strcmp(t->string, ")"))
 					{
 						SourceError(source, "defined without)in #if/#elif");
@@ -1652,6 +1648,7 @@ int PC_EvaluateTokens(source_t *source, token_t *tokens, signed long int *intval
 				} //end if
 				else if (t->subtype == P_PARENTHESESCLOSE) {
 					parentheses --;
+
 					if (parentheses < 0)
 					{
 						SourceError(source, "too many)in #if/#elsif");
@@ -1671,7 +1668,7 @@ int PC_EvaluateTokens(source_t *source, token_t *tokens, signed long int *intval
 						break;
 					} //end if
 				} //end if
-				switch(t->subtype) {
+				switch (t->subtype) {
 					case P_LOGIC_NOT:
 					case P_BIN_NOT:
 					{
@@ -1746,6 +1743,7 @@ int PC_EvaluateTokens(source_t *source, token_t *tokens, signed long int *intval
 					o->parentheses = parentheses;
 					o->next = NULL;
 					o->prev = lastoperator;
+
 					if (lastoperator)lastoperator->next = o;
 					else firstoperator = o;
 					lastoperator = o;
@@ -1811,7 +1809,7 @@ int PC_EvaluateTokens(source_t *source, token_t *tokens, signed long int *intval
 			if (v2)Log_Write("value2 = %f", v2->floatvalue);
 		} //end else
 #endif //DEBUG_EVAL
-		switch(o->operator) {
+		switch (o->operator) {
 			case P_LOGIC_NOT:		v1->intvalue = !v1->intvalue;
 									v1->floatvalue = !v1->floatvalue; break;
 			case P_BIN_NOT:			v1->intvalue = ~v1->intvalue;
@@ -2443,13 +2441,16 @@ int PC_ReadToken(source_t *source, token_t *token) {
 			if (PC_ReadToken(source, &newtoken)) {
 				if (newtoken.type == TT_STRING) {
 					token->string[strlen(token->string) - 1] = '\0';
+
 					if (strlen(token->string) +  strlen(newtoken.string+1) +  1 >= MAX_TOKEN)
 					{
 						SourceError(source, "string longer than MAX_TOKEN %d", MAX_TOKEN);
 						return qfalse;
 					}
+
 					strcat(token->string, newtoken.string+1);
 				}
+
 				else
 				{
 					PC_UnreadToken(source, &newtoken);

@@ -4,27 +4,21 @@ Copyright(C)2006 - 2009 Robert Beckebans < trebor_7@users.sourceforge.net>
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_glsl.c
@@ -185,7 +179,7 @@ static void GLSL_PrintLog(GLuint programOrShader, glslPrintLog_t type, qboolean 
 	int i;
 	int printLevel = developerOnly ? PRINT_DEVELOPER : PRINT_ALL;
 
-	switch(type) {
+	switch (type) {
 		case GLSL_PRINTLOG_PROGRAM_INFO:
 			ri.Printf(printLevel, "Program info log:\n");
 			qglGetProgramiv(programOrShader, GL_INFO_LOG_LENGTH, &maxLength);
@@ -212,7 +206,7 @@ static void GLSL_PrintLog(GLuint programOrShader, glslPrintLog_t type, qboolean 
 	else
 		msg = ri.Malloc(maxLength);
 
-	switch(type) {
+	switch (type) {
 		case GLSL_PRINTLOG_PROGRAM_INFO:
 			qglGetProgramInfoLog(programOrShader, maxLength, &maxLength, msg);
 			break;
@@ -250,8 +244,8 @@ static void GLSL_GetShaderHeader(GLenum shaderType, const GLchar *extra, char *d
 	dest[0] = '\0';
 
 	// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
-	if (glRefConfig.glslMajorVersion > 1 ||(glRefConfig.glslMajorVersion == 1 && glRefConfig.glslMinorVersion >= 30)) {
-		if (glRefConfig.glslMajorVersion > 1 ||(glRefConfig.glslMajorVersion == 1 && glRefConfig.glslMinorVersion >= 50))
+	if (glRefConfig.glslMajorVersion > 1 || (glRefConfig.glslMajorVersion == 1 && glRefConfig.glslMinorVersion >= 30)) {
+		if (glRefConfig.glslMajorVersion > 1 || (glRefConfig.glslMajorVersion == 1 && glRefConfig.glslMinorVersion >= 50))
 			Q_strcat(dest, size, "#version 150\n");
 		else
 			Q_strcat(dest, size, "#version 130\n");
@@ -660,7 +654,7 @@ void GLSL_InitUniforms(shaderProgram_t *program) {
 		 
 		program->uniformBufferOffsets[i] = size;
 
-		switch(uniformsInfo[i].type) {
+		switch (uniformsInfo[i].type) {
 			case GLSL_INT:
 				size += sizeof(GLint);
 				break;
@@ -960,7 +954,6 @@ void GLSL_InitGPUShaders(void) {
 		numGenShaders++;
 	}
 
-
 	attribs = ATTR_POSITION|ATTR_TEXCOORD;
 
 	if (!GLSL_InitGPUShader(&tr.textureColorShader, "texturecolor", attribs, qtrue, extradefines, qtrue, fallbackShader_texturecolor_vp, fallbackShader_texturecolor_fp)) {
@@ -1008,7 +1001,6 @@ void GLSL_InitGPUShaders(void) {
 		numEtcShaders++;
 	}
 
-
 	for (i = 0; i < DLIGHTDEF_COUNT; i++) {
 		attribs = ATTR_POSITION|ATTR_NORMAL|ATTR_TEXCOORD;
 		extradefines[0] = '\0';
@@ -1029,7 +1021,6 @@ void GLSL_InitGPUShaders(void) {
 
 		numEtcShaders++;
 	}
-
 
 	for (i = 0; i < LIGHTDEF_COUNT; i++) {
 		int lightType = i & LIGHTDEF_LIGHTTYPE_MASK;
@@ -1064,9 +1055,10 @@ void GLSL_InitGPUShaders(void) {
 			if (fastLight)
 				Q_strcat(extradefines, 1024, "#define USE_FAST_LIGHT\n");
 
-			switch(lightType) {
+			switch (lightType) {
 				case LIGHTDEF_USE_LIGHTMAP:
 					Q_strcat(extradefines, 1024, "#define USE_LIGHTMAP\n");
+
 					if (r_deluxeMapping->integer && !fastLight)
 						Q_strcat(extradefines, 1024, "#define USE_DELUXEMAP\n");
 					attribs |= ATTR_LIGHTCOORD|ATTR_LIGHTDIRECTION;
@@ -1089,6 +1081,7 @@ void GLSL_InitGPUShaders(void) {
 
 				if ((i & LIGHTDEF_USE_PARALLAXMAP) && !(i & LIGHTDEF_ENTITY_VERTEX_ANIMATION) && !(i & LIGHTDEF_ENTITY_BONE_ANIMATION) && r_parallaxMapping->integer) {
 					Q_strcat(extradefines, 1024, "#define USE_PARALLAXMAP\n");
+
 					if (r_parallaxMapping->integer > 1)
 						Q_strcat(extradefines, 1024, "#define USE_RELIEFMAP\n");
 				}
@@ -1102,7 +1095,7 @@ void GLSL_InitGPUShaders(void) {
 			else if (r_deluxeSpecular->value > 0.000001f)
 				Q_strcat(extradefines, 1024, va("#define r_deluxeSpecular %f\n", r_deluxeSpecular->value));
 
-			switch(r_glossType->integer) {
+			switch (r_glossType->integer) {
 				case 0:
 				default:
 					Q_strcat(extradefines, 1024, "#define GLOSS_IS_GLOSS\n");
@@ -1282,9 +1275,8 @@ void GLSL_InitGPUShaders(void) {
 
 		GLSL_FinishGPUShader(&tr.calclevels4xShader[i]);
 
-		numEtcShaders++; 		
+		numEtcShaders++;		
 	}
-
 
 	attribs = ATTR_POSITION|ATTR_TEXCOORD;
 	extradefines[0] = '\0';
@@ -1429,7 +1421,6 @@ void GLSL_ShutdownGPUShaders(void) {
 		GLSL_DeleteGPUShader(&tr.depthBlurShader[i]);
 }
 
-
 void GLSL_BindProgram(shaderProgram_t * program) {
 	GLuint programObject = program ? program->program : 0;
 	char *name = program ? program->name : "NULL";
@@ -1443,7 +1434,6 @@ void GLSL_BindProgram(shaderProgram_t * program) {
 		backEnd.pc.c_glslShaderBinds++;
 }
 
-
 shaderProgram_t *GLSL_GetGenericShaderProgram(int stage, fogType_t fogType) {
 	shaderStage_t *pStage = tess.xstages[stage];
 	int shaderAttribs = 0;
@@ -1456,7 +1446,7 @@ shaderProgram_t *GLSL_GetGenericShaderProgram(int stage, fogType_t fogType) {
 		shaderAttribs |= GENERICDEF_USE_LIGHTMAP;
 	}
 
-	switch(pStage->rgbGen) {
+	switch (pStage->rgbGen) {
 		case CGEN_LIGHTING_DIFFUSE:
 		case CGEN_LIGHTING_DIFFUSE_ENTITY:
 			shaderAttribs |= GENERICDEF_USE_RGBAGEN;
@@ -1465,7 +1455,7 @@ shaderProgram_t *GLSL_GetGenericShaderProgram(int stage, fogType_t fogType) {
 			break;
 	}
 
-	switch(pStage->alphaGen) {
+	switch (pStage->alphaGen) {
 		case AGEN_LIGHTING_SPECULAR:
 		case AGEN_PORTAL:
 		case AGEN_NORMALZFADE:

@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -178,7 +172,7 @@ static int R_CullModel(trRefEntity_t *ent) {
 	// cull bounding sphere ONLY if this is not an upscaled entity
 	if (!ent->e.nonNormalizedAxes) {
 		if (ent->e.frame == ent->e.oldframe && ent->e.frameModel == ent->e.oldframeModel) {
-			switch(R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius)) {
+			switch (R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius)) {
 			case CULL_OUT:
 				tr.pc.c_sphere_cull_md3_out++;
 				return CULL_OUT;
@@ -221,7 +215,7 @@ static int R_CullModel(trRefEntity_t *ent) {
 		bounds[1][i] = oldFrame->bounds[1][i] > newFrame->bounds[1][i] ? oldFrame->bounds[1][i] : newFrame->bounds[1][i];
 	}
 
-	switch(R_CullLocalBox(bounds)) {
+	switch (R_CullLocalBox(bounds)) {
 	case CULL_IN:
 		tr.pc.c_box_cull_md3_in++;
 		return CULL_IN;
@@ -340,7 +334,7 @@ void R_MDMAddAnimSurfaces(trRefEntity_t *ent) {
 
 	// don't add mirror only objects if not in a mirror/portal
 	personalModel = (ent->e.renderfx & RF_ONLY_MIRROR) && !(tr.viewParms.isPortal 
-	                 ||(tr.viewParms.flags &(VPF_SHADOWMAP|VPF_DEPTHSHADOW)));
+	                 || (tr.viewParms.flags &(VPF_SHADOWMAP|VPF_DEPTHSHADOW)));
 
 	// if missing torso information use base
 	if (AxisEmpty(ent->e.torsoAxis)) {
@@ -415,7 +409,6 @@ void R_MDMAddAnimSurfaces(trRefEntity_t *ent) {
 	surface = (mdmSurface_t *)((byte *)header + header->ofsSurfaces);
 
 	for (i = 0; i < header->numSurfaces; i++) {
-
 		if (ent->e.customShader || ent->e.customSkin) {
 			shader = R_CustomSurfaceShader(surface->name, ent->e.customShader, ent->e.customSkin);
 			if (shader == tr.nodrawShader) {
@@ -785,7 +778,6 @@ static ID_INLINE void Matrix3Transpose(const vec3_t matrix[3], vec3_t transpose[
 	}
 }
 
-
 /*
 =======================================================================================================================================
 R_CalcBone
@@ -836,6 +828,7 @@ static void R_CalcBone(mdxFrame_t *frame, int torsoParent, int boneNum) {
 				if (fabs(diff) > 180) {
 					diff = AngleNormalize180(diff);
 				}
+
 				angles[j] = angles[j] + thisBoneInfo->torsoWeight * diff;
 			}
 		}
@@ -862,6 +855,7 @@ static void R_CalcBone(mdxFrame_t *frame, int torsoParent, int boneNum) {
 				if (fabs(diff) > 180) {
 					diff = AngleNormalize180(diff);
 				}
+
 				angles[j] = angles[j] + thisBoneInfo->torsoWeight * diff;
 			}
 		}
@@ -880,7 +874,6 @@ static void R_CalcBone(mdxFrame_t *frame, int torsoParent, int boneNum) {
 			LocalAngleVector(angles, vec);
 			LocalVectorMA(parentBone->translation, thisBoneInfo->parentDist, vec, bonePtr->translation);
 		} else {
-
 			angles[0] = cBonePtr->ofsAngles[0];
 			angles[1] = cBonePtr->ofsAngles[1];
 			angles[2] = 0;
@@ -915,7 +908,6 @@ static void R_CalcBone(mdxFrame_t *frame, int torsoParent, int boneNum) {
 			#endif
 			LocalVectorMA(parentBone->translation, thisBoneInfo->parentDist, vec, bonePtr->translation);
 		} else {
-
 			#ifndef YD_INGLES
 			sh = (short *)cBonePtr->ofsAngles; pf = angles;
 			*(pf++) = SHORT2ANGLE(*(sh++)); * (pf++) = SHORT2ANGLE(*(sh++)); * (pf++) = 0;
@@ -979,7 +971,6 @@ static void R_CalcBoneLerp(mdxFrame_t *frame, mdxFrame_t *oldFrame, int torsoPar
 		return;
 	}
 
-
 	thisBoneInfo = &boneInfo[boneNum];
 
 	if (!thisBoneInfo) {
@@ -1018,7 +1009,6 @@ static void R_CalcBoneLerp(mdxFrame_t *frame, mdxFrame_t *oldFrame, int torsoPar
 	#ifndef YD_INGLES
 
 	if (fullTorso) {
-
 		sh = (short *)cTBonePtr->angles;
 		sh2 = (short *)cOldTBonePtr->angles;
 		pf = angles;
@@ -1029,9 +1019,7 @@ static void R_CalcBoneLerp(mdxFrame_t *frame, mdxFrame_t *oldFrame, int torsoPar
 		*(pf++) = a1 - torsoBacklerp * diff;
 		a1 = SHORT2ANGLE(*(sh++)); a2 = SHORT2ANGLE(*(sh2++)); diff = AngleNormalize180(a1 - a2);
 		*(pf++) = a1 - torsoBacklerp * diff;
-
 	} else {
-
 		sh = (short *)cBonePtr->angles;
 		sh2 = (short *)cOldBonePtr->angles;
 		pf = angles;
@@ -1044,7 +1032,6 @@ static void R_CalcBoneLerp(mdxFrame_t *frame, mdxFrame_t *oldFrame, int torsoPar
 		*(pf++) = a1 - backlerp * diff;
 
 		if (isTorso) {
-
 			sh = (short *)cTBonePtr->angles;
 			sh2 = (short *)cOldTBonePtr->angles;
 			pf = tangles;
@@ -1063,6 +1050,7 @@ static void R_CalcBoneLerp(mdxFrame_t *frame, mdxFrame_t *oldFrame, int torsoPar
 				if (fabs(diff) > 180) {
 					diff = AngleNormalize180(diff);
 				}
+
 				angles[j] = angles[j] + thisBoneInfo->torsoWeight * diff;
 			}
 
@@ -1107,6 +1095,7 @@ static void R_CalcBoneLerp(mdxFrame_t *frame, mdxFrame_t *oldFrame, int torsoPar
 				if (tingles[j] > 32767) {
 					tingles[j] -= 65536;
 				}
+
 				tingles[j] = sh[j] - torsoBacklerp * tingles[j];
 
 				// blend torso and angles
@@ -1127,7 +1116,6 @@ static void R_CalcBoneLerp(mdxFrame_t *frame, mdxFrame_t *oldFrame, int torsoPar
 	#endif
 
 	if (parentBone) {
-
 		if (fullTorso) {
 			sh = (short *)cTBonePtr->ofsAngles;
 			sh2 = (short *)cOldTBonePtr->ofsAngles;
@@ -1206,7 +1194,6 @@ static void R_CalcBoneLerp(mdxFrame_t *frame, mdxFrame_t *oldFrame, int torsoPar
 		}
 
 		LocalVectorMA(parentBone->translation, thisBoneInfo->parentDist, dir, bonePtr->translation);
-
 	} else {    // just interpolate the frame positions
 
 		bonePtr->translation[0] = frontlerp * frame->parentOffset[0] + backlerp * oldFrame->parentOffset[0];
@@ -1224,7 +1211,6 @@ static void R_CalcBoneLerp(mdxFrame_t *frame, mdxFrame_t *oldFrame, int torsoPar
 	newBones[boneNum] = 1;
 
 }
-
 
 /*
 =======================================================================================================================================
@@ -1273,7 +1259,6 @@ static qboolean R_BonesStillValid(const refEntity_t *refent) {
 	return qtrue;
 }
 
-
 /*
 =======================================================================================================================================
 R_CalcBones
@@ -1282,7 +1267,6 @@ R_CalcBones
 =======================================================================================================================================
 */
 static void R_CalcBones(const refEntity_t *refent, int *boneList, int numBones) {
-
 	int i;
 	int *boneRefs;
 	float torsoWeight;
@@ -1361,7 +1345,6 @@ static void R_CalcBones(const refEntity_t *refent, int *boneList, int numBones) 
 #endif
 
 		for (i = 0; i < numBones; i++, boneRefs++) {
-
 			if (validBones[*boneRefs]) {
 				// this bone is still in the cache
 				bones[*boneRefs] = rawBones[*boneRefs];
@@ -1382,7 +1365,6 @@ static void R_CalcBones(const refEntity_t *refent, int *boneList, int numBones) 
 		cOldBoneListTorso = oldTorsoFrame->bones;
 
 		for (i = 0; i < numBones; i++, boneRefs++) {
-
 			if (validBones[*boneRefs]) {
 				// this bone is still in the cache
 				bones[*boneRefs] = rawBones[*boneRefs];
@@ -1403,12 +1385,10 @@ static void R_CalcBones(const refEntity_t *refent, int *boneList, int numBones) 
 	boneRefs = boneList;
 
 	for (i = 0; i < numBones; i++, boneRefs++) {
-
 		thisBoneInfo = &boneInfo[*boneRefs];
 		bonePtr = &bones[*boneRefs];
 		// add torso rotation
 		if (thisBoneInfo->torsoWeight > 0) {
-
 			if (!newBones[*boneRefs]) {
 				// just copy it back from the previous calc
 				bones[*boneRefs] = oldBones[*boneRefs];
@@ -1530,7 +1510,6 @@ void RB_MDMSurfaceAnim(mdmSurface_t *surface) {
 		}
 
 		render_count = (int)((float)surface->numVerts * lodScale);
-
 	} else {
 #endif
 		render_count = (int)((float)surface->numVerts * lodScale);
@@ -1666,6 +1645,7 @@ void RB_MDMSurfaceAnim(mdmSurface_t *surface) {
 						VectorMA(bonePtr->translation, (r_bonesDebug->integer == 8 ? 1.5f : 5), bonePtr->matrix[j], vec);
 						qglVertex3fv(vec);
 					}
+
 					qglEnd();
 				}
 				// connect to our parent if it's valid
@@ -1766,6 +1746,7 @@ void RB_MDMSurfaceAnim(mdmSurface_t *surface) {
 
 						pTag = (mdmTag_t *)((byte *)pTag + pTag->ofsEnd);
 					}
+
 					qglDepthRange(0, 1);
 				}
 			}
@@ -1826,8 +1807,10 @@ void RB_MDMSurfaceAnim(mdmSurface_t *surface) {
 					} else {
 						qglColor3f(1.f, .4f, 0.f);
 					}
+
 					qglVertex3fv(tempVert);
 				}
+
 				v = (mdmVertex_t *)&v->weights[v->numWeights];
 			}
 

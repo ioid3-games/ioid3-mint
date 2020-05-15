@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // client.h -- primary header for client
@@ -58,27 +52,26 @@ Suite 120, Rockville, Maryland 20850 USA.
 
 // snapshots are a view of the server at a given time
 typedef struct {
-	qboolean		valid; 			// cleared if delta parsing was invalid
-	int snapFlags; 		// rate delayed and dropped commands
+	qboolean		valid;			// cleared if delta parsing was invalid
+	int snapFlags;		// rate delayed and dropped commands
 
-	int serverTime; 		// server time the message is valid for(in msec)
+	int serverTime;		// server time the message is valid for(in msec)
 
-	int messageNum; 		// copied from netchan->incoming_sequence
-	int deltaNum; 		// messageNum the delta is from
-	int ping; 			// time from when cmdNum - 1 was sent to time packet was reeceived
-	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES]; 		// portalarea visibility bits
+	int messageNum;		// copied from netchan->incoming_sequence
+	int deltaNum;		// messageNum the delta is from
+	int ping;			// time from when cmdNum - 1 was sent to time packet was reeceived
+	byte areamask[MAX_SPLITVIEW][MAX_MAP_AREA_BYTES];		// portalarea visibility bits
 
-	int cmdNum; 			// the next cmdNum the server is expecting
+	int cmdNum;			// the next cmdNum the server is expecting
 
 	int numPSs;
-	darray_t playerStates; 	// complete information about the current players at this time
+	darray_t playerStates;	// complete information about the current players at this time
 	int localPlayerIndex[MAX_SPLITVIEW];
 	int playerNums[MAX_SPLITVIEW];
+	int numEntities;			// all of the entities that need to be presented
+	int parseEntitiesNum;		// at the time of this snapshot
 
-	int numEntities; 			// all of the entities that need to be presented
-	int parseEntitiesNum; 		// at the time of this snapshot
-
-	int serverCommandNum; 		// execute all commands up to this before
+	int serverCommandNum;		// execute all commands up to this before
 											// making the snapshot current
 } clSnapshot_t;
 
@@ -94,51 +87,51 @@ new gamestate_t, potentially several times during an established connection
 */
 
 typedef struct {
-	int p_cmdNumber; 		// cl.cmdNumber when packet was sent
-	int p_serverTime; 		// usercmd->serverTime when packet was sent
-	int p_realtime; 			// cls.realtime when packet was sent
+	int p_cmdNumber;		// cl.cmdNumber when packet was sent
+	int p_serverTime;		// usercmd->serverTime when packet was sent
+	int p_realtime;			// cls.realtime when packet was sent
 } outPacket_t;
 
 typedef struct {
-	int mouseDx[2], mouseDy[2]; 	// added to by mouse events
+	int mouseDx[2], mouseDy[2];	// added to by mouse events
 	int mouseIndex;
 
-	vec3_t viewAngles; 		// used so cgame can save view angles across vid_restart.
+	vec3_t viewAngles;		// used so cgame can save view angles across vid_restart.
 								// It is cleared to 0 upon entering each level.
 
 } clientActivePlayer_t;
 
 typedef struct {
-	int timeoutcount; 		// it requres several frames in a timeout condition
+	int timeoutcount;		// it requres several frames in a timeout condition
 									// to disconnect, preventing debugging breaks from
 									// causing immediate disconnects on continue
-	clSnapshot_t snap; 			// latest received from server
+	clSnapshot_t snap;			// latest received from server
 
-	int serverTime; 			// may be paused during play
-	int oldServerTime; 		// to prevent time from flowing bakcwards
-	int oldFrameServerTime; 	// to check tournament restarts
-	int serverTimeDelta; 	// cl.serverTime = cls.realtime + cl.serverTimeDelta
+	int serverTime;			// may be paused during play
+	int oldServerTime;		// to prevent time from flowing bakcwards
+	int oldFrameServerTime;	// to check tournament restarts
+	int serverTimeDelta;	// cl.serverTime = cls.realtime + cl.serverTimeDelta
 									// this value changes as net lag varies
-	qboolean	extrapolatedSnapshot; 	// set if any cgame frame has been forced to extrapolate
+	qboolean	extrapolatedSnapshot;	// set if any cgame frame has been forced to extrapolate
 									// cleared when CL_AdjustTimeDelta looks at it
-	qboolean	newSnapshots; 		// set on parse of any valid packet
+	qboolean	newSnapshots;		// set on parse of any valid packet
 
-	gameState_t gameState; 			// configstrings
-	char mapname[MAX_QPATH]; 	// extracted from CS_SERVERINFO
+	gameState_t gameState;			// configstrings
+	char mapname[MAX_QPATH];	// extracted from CS_SERVERINFO
 
-	int parseEntitiesNum; 	// index(not anded off)into cl_parse_entities[]
+	int parseEntitiesNum;	// index(not anded off)into cl_parse_entities[]
 
 	clientActivePlayer_t localPlayers[CL_MAX_SPLITVIEW];
 
 	// cmds[cmdNumber] is the predicted command, [cmdNumber - 1] is the last
 	// properly generated command
-	usercmd_t cmdss[CL_MAX_SPLITVIEW][CMD_BACKUP]; 	// each mesage will send several old cmds
-	int cmdNumber; 			// incremented each frame, because multiple
+	usercmd_t cmdss[CL_MAX_SPLITVIEW][CMD_BACKUP];	// each mesage will send several old cmds
+	int cmdNumber;			// incremented each frame, because multiple
 									// frames may need to be packed into a single packet
 
-	outPacket_t outPackets[PACKET_BACKUP]; 	// information about each packet we have sent out
+	outPacket_t outPackets[PACKET_BACKUP];	// information about each packet we have sent out
 
-	int serverId; 			// included in each client message so the server
+	int serverId;			// included in each client message so the server
 												// can tell if it is for a prior map_restart
 	// big stuff at end of structure so most offsets are 15 bits or less
 	clSnapshot_t snapshots[PACKET_BACKUP];
@@ -175,29 +168,28 @@ demo through a file.
 #define MAX_TIMEDEMO_DURATIONS	4096
 
 typedef struct {
-
-	connstate_t state; 				// connection status
+	connstate_t state;				// connection status
 
 	int playerNums[MAX_SPLITVIEW];
-	int lastPacketSentTime; 			// for retransmits during connection
-	int lastPacketTime; 				// for timeouts
+	int lastPacketSentTime;			// for retransmits during connection
+	int lastPacketTime;				// for timeouts
 
-	char servername[MAX_OSPATH]; 		// name of server from original connect(used by reconnect)
+	char servername[MAX_OSPATH];		// name of server from original connect(used by reconnect)
 	netadr_t serverAddress;
-	int connectTime; 				// for connection retransmits
-	int connectPacketCount; 			// for display on connection dialog
-	char serverMessage[MAX_STRING_TOKENS]; 	// for display on connection dialog
-	char mapTitle[MAX_STRING_TOKENS]; 		// for saving in PNG screenshots
+	int connectTime;				// for connection retransmits
+	int connectPacketCount;			// for display on connection dialog
+	char serverMessage[MAX_STRING_TOKENS];	// for display on connection dialog
+	char mapTitle[MAX_STRING_TOKENS];		// for saving in PNG screenshots
 
-	int challenge; 					// from the server to use for connecting
+	int challenge;					// from the server to use for connecting
 
-	int desiredPlayerBits; 			// bits for desired local players when connecting
+	int desiredPlayerBits;			// bits for desired local players when connecting
 
-	qboolean	fsRestarted; 				// if true, file system has been restarted after connect to reload mint - game.settings
+	qboolean	fsRestarted;				// if true, file system has been restarted after connect to reload mint - game.settings
 
 	// these are our reliable messages that go to the server
 	int reliableSequence;
-	int reliableAcknowledge; 		// the last one the server has executed
+	int reliableAcknowledge;		// the last one the server has executed
 	char reliableCommands[MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
 
 	// server message(unreliable)and command(reliable)sequence
@@ -210,7 +202,7 @@ typedef struct {
 
 	// reliable messages received from server
 	int serverCommandSequence;
-	int lastExecutedServerCommand; 		// last server command grabbed or executed with CL_GetServerCommand
+	int lastExecutedServerCommand;		// last server command grabbed or executed with CL_GetServerCommand
 	char serverCommands[MAX_RELIABLE_COMMANDS][MAX_STRING_CHARS];
 
 	// file transfer from server
@@ -228,30 +220,29 @@ typedef struct {
 	int sv_allowDownload;
 	char sv_dlURL[MAX_CVAR_VALUE_STRING];
 	int downloadNumber;
-	int downloadBlock; 	// block we are waiting for
-	int downloadCount; 	// how many bytes we got
-	int downloadSize; 	// how many bytes we got
+	int downloadBlock;	// block we are waiting for
+	int downloadCount;	// how many bytes we got
+	int downloadSize;	// how many bytes we got
 	char downloadList[MAX_INFO_STRING]; // list of paks we need to download
-	qboolean	downloadRestart; 	// if true, we need to do another FS_Restart because we downloaded a pak
-	char missingDefaultCfg[MAX_OSPATH]; 	// if set, fellback to last fs_game to attempt download because default.cfg was missing
+	qboolean	downloadRestart;	// if true, we need to do another FS_Restart because we downloaded a pak
+	char missingDefaultCfg[MAX_OSPATH];	// if set, fellback to last fs_game to attempt download because default.cfg was missing
 
 	// demo information
 	char demoName[MAX_OSPATH];
 	qboolean	demorecording;
 	qboolean	demoplaying;
-	qboolean	demowaiting; 	// don't record until a non - delta message is received
+	qboolean	demowaiting;	// don't record until a non - delta message is received
 	qboolean	firstDemoFrameSkipped;
 	fileHandle_t demofile;
-	int demoLength; 		// size of playback demo
+	int demoLength;		// size of playback demo
 	int demoRecordStartTime;
-
-	int timeDemoFrames; 		// counter of rendered frames
-	int timeDemoStart; 		// cls.realtime before first frame
-	int timeDemoBaseTime; 	// each frame will be at this time + frameNum * 50
+	int timeDemoFrames;		// counter of rendered frames
+	int timeDemoStart;		// cls.realtime before first frame
+	int timeDemoBaseTime;	// each frame will be at this time + frameNum * 50
 	int timeDemoLastFrame; // time the last frame was rendered
-	int timeDemoMinDuration; 	// minimum frame duration
-	int timeDemoMaxDuration; 	// maximum frame duration
-	unsigned char timeDemoDurations[MAX_TIMEDEMO_DURATIONS]; 	// log of frame durations
+	int timeDemoMinDuration;	// minimum frame duration
+	int timeDemoMaxDuration;	// maximum frame duration
+	unsigned char timeDemoDurations[MAX_TIMEDEMO_DURATIONS];	// log of frame durations
 
 	float aviVideoFrameRemainder;
 	float aviSoundFrameRemainder;
@@ -335,28 +326,24 @@ typedef struct {
 	qboolean	soundRegistered;
 	qboolean	cgameStarted;
 
-	qboolean	printToCgame; 			// enabled after restoring console text to cgame
+	qboolean	printToCgame;			// enabled after restoring console text to cgame
 	bspFile_t *cgameBsp;
-
 	int framecount;
-	int frametime; 			// msec since last frame
+	int frametime;			// msec since last frame
 
-	int realtime; 			// ignores pause
-	int realFrametime; 		// ignoring pause, so console always works
+	int realtime;			// ignores pause
+	int realFrametime;		// ignoring pause, so console always works
 
 	int numlocalservers;
 	serverInfo_t localServers[MAX_OTHER_SERVERS];
-
 	int numglobalservers;
 	serverInfo_t globalServers[MAX_GLOBAL_SERVERS];
 	// additional global servers
 	int numGlobalServerAddresses;
 	netadr_t globalServerAddresses[MAX_GLOBAL_SERVERS];
-
 	int numfavoriteservers;
 	serverInfo_t favoriteServers[MAX_OTHER_SERVERS];
-
-	int pingUpdateSource; 		// source currently pinging or updating
+	int pingUpdateSource;		// source currently pinging or updating
 
 	// update server info
 	netadr_t updateServer;
@@ -396,8 +383,8 @@ typedef struct {
 
 //=============================================================================
 
-extern	vm_t *cgvm; 	// interface to cgame dll or vm
-extern	refexport_t re; 		// interface to refresh .dll
+extern	vm_t *cgvm;	// interface to cgame dll or vm
+extern	refexport_t re;		// interface to refresh .dll
 
 
 //
@@ -605,7 +592,7 @@ void LAN_SaveServersToCache(void);
 //
 // cl_net_chan.c
 //
-void CL_Netchan_Transmit(netchan_t *chan, msg_t * msg); 	//int length, const byte *data);
+void CL_Netchan_Transmit(netchan_t *chan, msg_t * msg);	//int length, const byte *data);
 qboolean CL_Netchan_Process(netchan_t *chan, msg_t *msg);
 
 //

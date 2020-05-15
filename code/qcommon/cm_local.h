@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -39,23 +33,21 @@ Suite 120, Rockville, Maryland 20850 USA.
 
 typedef struct {
 	cplane_t *plane;
-	int children[2]; 		// negative numbers are leafs
+	int children[2];		// negative numbers are leafs
 } cNode_t;
 
 typedef struct {
 	int cluster;
 	int area;
-
 	int firstLeafBrush;
 	int numLeafBrushes;
-
 	int firstLeafSurface;
 	int numLeafSurfaces;
 } cLeaf_t;
 
 typedef struct cmodel_s {
 	vec3_t mins, maxs;
-	cLeaf_t leaf; 			// submodels don't reference the main tree
+	cLeaf_t leaf;			// submodels don't reference the main tree
 } cmodel_t;
 
 typedef struct cbrushedge_s {
@@ -73,12 +65,12 @@ typedef struct {
 } cbrushside_t;
 
 typedef struct {
-	int shaderNum; 		// the shader that determined the contents
+	int shaderNum;		// the shader that determined the contents
 	int contents;
 	vec3_t bounds[2];
 	int numsides;
 	cbrushside_t *sides;
-	int checkcount; 		// to avoid repeated testings
+	int checkcount;		// to avoid repeated testings
 	qboolean	collided; // marker for optimisation
 	cbrushedge_t *edges;
 	int numEdges;
@@ -86,7 +78,7 @@ typedef struct {
 
 
 typedef struct {
-	int checkcount; 				// to avoid repeated testings
+	int checkcount;				// to avoid repeated testings
 	int surfaceFlags;
 	int contents;
 	struct patchCollide_s	*pc;
@@ -100,51 +92,40 @@ typedef struct {
 
 typedef struct {
 	char name[MAX_QPATH];
-
 	int numShaders;
 	dshader_t *shaders;
-
 	int numBrushSides;
 	cbrushside_t *brushsides;
-
 	int numPlanes;
 	cplane_t *planes;
-
 	int numNodes;
 	cNode_t *nodes;
-
 	int numLeafs;
 	cLeaf_t *leafs;
-
 	int numLeafBrushes;
 	int *leafbrushes;
-
 	int numLeafSurfaces;
 	int *leafsurfaces;
-
 	int numSubModels;
 	cmodel_t *cmodels;
-
 	int numBrushes;
 	cbrush_t *brushes;
-
 	int numClusters;
 	int clusterBytes;
 	byte *visibility;
-	qboolean	vised; 			// if false, visibility is just a single cluster of ffs
+	qboolean	vised;			// if false, visibility is just a single cluster of ffs
 
 	int numEntityChars;
 	char *entityString;
-
 	int numAreas;
 	cArea_t *areas;
-	int *areaPortals; 	// [numAreas*numAreas] reference counts
+	int *areaPortals;	// [numAreas*numAreas] reference counts
 
 	int numSurfaces;
-	cPatch_t **surfaces; 			// non - patches will be NULL
+	cPatch_t **surfaces;			// non - patches will be NULL
 
 	int floodvalid;
-	int checkcount; 					// incremented on each trace
+	int checkcount;					// incremented on each trace
 } clipMap_t;
 
 
@@ -179,16 +160,16 @@ typedef struct {
 	traceType_t type;
 	vec3_t start;
 	vec3_t end;
-	vec3_t size[2]; 	// size of the box being swept through the model
-	vec3_t offsets[8]; 	// [signbits][x] = either size[0][x] or size[1][x]
-	float maxOffset; 	// longest corner length from origin
-	vec3_t extents; 	// greatest of abs(size[0])and abs(size[1])
-	vec3_t bounds[2]; 	// enclosing box of start and end surrounding by size
+	vec3_t size[2];	// size of the box being swept through the model
+	vec3_t offsets[8];	// [signbits][x] = either size[0][x] or size[1][x]
+	float maxOffset;	// longest corner length from origin
+	vec3_t extents;	// greatest of abs(size[0])and abs(size[1])
+	vec3_t bounds[2];	// enclosing box of start and end surrounding by size
 	vec3_t modelOrigin; // origin of the model tracing through
-	int contents; 	// ored contents of the model tracing through
-	qboolean	isPoint; 	// optimized case
-	trace_t trace; 		// returned from trace call
-	sphere_t sphere; 		// sphere for oriendted capsule collision
+	int contents;	// ored contents of the model tracing through
+	qboolean	isPoint;	// optimized case
+	trace_t trace;		// returned from trace call
+	sphere_t sphere;		// sphere for oriendted capsule collision
 	biSphere_t biSphere;
 	qboolean	testLateralCollision; // whether or not to test for lateral collision
 } traceWork_t;
@@ -199,7 +180,7 @@ typedef struct leafList_s {
 	qboolean	overflowed;
 	int *list;
 	vec3_t bounds[2];
-	int lastLeaf; 		// for overflows where each leaf can't be stored individually
+	int lastLeaf;		// for overflows where each leaf can't be stored individually
 	void (*storeLeafs)(struct leafList_s *ll, int nodenum);
 } leafList_t;
 

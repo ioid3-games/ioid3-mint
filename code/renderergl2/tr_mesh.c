@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_mesh.c: triangle model functions
@@ -94,7 +88,7 @@ static int R_CullModel(mdvModel_t *model, trRefEntity_t *ent) {
 	// cull bounding sphere ONLY if this is not an upscaled entity
 	if (!ent->e.nonNormalizedAxes) {
 		if (ent->e.frame == ent->e.oldframe) {
-			switch(R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius)) {
+			switch (R_CullLocalPointAndRadius(newFrame->localOrigin, newFrame->radius)) {
 			case CULL_OUT:
 				tr.pc.c_sphere_cull_md3_out++;
 				return CULL_OUT;
@@ -124,10 +118,12 @@ static int R_CullModel(mdvModel_t *model, trRefEntity_t *ent) {
 					tr.pc.c_sphere_cull_md3_out++;
 					return CULL_OUT;
 				}
+
 				else if (sphereCull == CULL_IN) {
 					tr.pc.c_sphere_cull_md3_in++;
 					return CULL_IN;
 				}
+
 				else
 				{
 					tr.pc.c_sphere_cull_md3_clip++;
@@ -142,7 +138,7 @@ static int R_CullModel(mdvModel_t *model, trRefEntity_t *ent) {
 		bounds[1][i] = oldFrame->bounds[1][i] > newFrame->bounds[1][i] ? oldFrame->bounds[1][i] : newFrame->bounds[1][i];
 	}
 
-	switch(R_CullLocalBox(bounds)) {
+	switch (R_CullLocalBox(bounds)) {
 	case CULL_IN:
 		tr.pc.c_box_cull_md3_in++;
 		return CULL_IN;
@@ -155,7 +151,6 @@ static int R_CullModel(mdvModel_t *model, trRefEntity_t *ent) {
 		return CULL_OUT;
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -270,7 +265,7 @@ void R_AddMD3Surfaces(trRefEntity_t *ent) {
 
 	// don't add mirror only objects if not in a mirror/portal
 	personalModel = (ent->e.renderfx & RF_ONLY_MIRROR) && !(tr.viewParms.isPortal 
-	                 ||(tr.viewParms.flags &(VPF_SHADOWMAP|VPF_DEPTHSHADOW)));
+	                 || (tr.viewParms.flags &(VPF_SHADOWMAP|VPF_DEPTHSHADOW)));
 
 	if (ent->e.renderfx & RF_WRAP_FRAMES) {
 		ent->e.frame % = tr.currentModel->mdv[0]->numFrames;
@@ -314,7 +309,6 @@ void R_AddMD3Surfaces(trRefEntity_t *ent) {
 	surface = model->surfaces;
 
 	for (i = 0; i < model->numSurfaces; i++) {
-
 		if (ent->e.customShader || ent->e.customSkin) {
 			shader = R_CustomSurfaceShader(surface->name, ent->e.customShader, ent->e.customSkin);
 			if (shader == tr.nodrawShader) {
@@ -352,7 +346,6 @@ void R_AddMD3Surfaces(trRefEntity_t *ent) {
 	}
 
 }
-
 
 
 

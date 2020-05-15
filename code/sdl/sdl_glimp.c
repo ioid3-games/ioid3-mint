@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -120,7 +114,6 @@ void GLimp_Minimize(void) {
 	SDL_MinimizeWindow(SDL_window);
 }
 
-
 /*
 =======================================================================================================================================
 GLimp_LogComment
@@ -153,7 +146,6 @@ static int GLimp_CompareModes(const void *a, const void *b) {
 	else
 		return areaA - areaB;
 }
-
 
 /*
 =======================================================================================================================================
@@ -526,7 +518,7 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder, qbool
 	}
 
 	colorBits = r_colorbits->value;
-	if ((!colorBits) ||(colorBits >= 32))
+	if ((!colorBits) || (colorBits >= 32))
 		colorBits = 24;
 
 	if (!r_depthbits->value)
@@ -547,7 +539,7 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder, qbool
 		// 3 - minus stencil
 		if ((i % 4) == 0 && i) {
 			// one pass, reduce
-			switch(i / 4) {
+			switch (i / 4) {
 				case 2 :
 					if (colorBits == 24)
 						colorBits = 16;
@@ -639,7 +631,7 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder, qbool
 		if (fullscreen) {
 			SDL_DisplayMode mode;
 
-			switch(testColorBits) {
+			switch (testColorBits) {
 				case 16: mode.format = SDL_PIXELFORMAT_RGB565; break;
 				case 24: mode.format = SDL_PIXELFORMAT_RGB24;  break;
 				default: ri.Printf(PRINT_DEVELOPER, "testColorBits is %d, can't fullscreen\n", testColorBits); continue;
@@ -689,13 +681,14 @@ static int GLimp_SetMode(int mode, qboolean fullscreen, qboolean noborder, qbool
 				if (GLimp_GetProcAddresses(fixedFunction)) {
 					renderer = (const char *)qglGetString(GL_RENDERER);
 				}
+
 				else
 				{
 					ri.Printf(PRINT_ALL, "GLimp_GetProcAddresses()failed for OpenGL 3.2 core context\n");
 					renderer = NULL;
 				}
 
-				if (!renderer ||(strstr(renderer, "Software Renderer") || strstr(renderer, "Software Rasterizer"))) {
+				if (!renderer || (strstr(renderer, "Software Renderer") || strstr(renderer, "Software Rasterizer"))) {
 					if (renderer)
 						ri.Printf(PRINT_ALL, "GL_RENDERER is %s, rejecting context\n", renderer);
 
@@ -804,7 +797,7 @@ static qboolean GLimp_StartDriverAndSetMode(int mode, qboolean fullscreen, qbool
 	
 	err = GLimp_SetMode(mode, fullscreen, noborder, gl3Core);
 
-	switch(err) {
+	switch (err) {
 		case RSERR_INVALID_FULLSCREEN:
 			ri.Printf(PRINT_ALL, "...WARNING: fullscreen unavailable in this mode\n");
 			return qfalse;
@@ -921,10 +914,12 @@ static void GLimp_InitExtensions(qboolean fixedFunction) {
 					GLint glint = 0;
 					qglGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &glint);
 					glConfig.numTextureUnits = (int)glint;
+
 					if (glConfig.numTextureUnits > 1)
 					{
 						ri.Printf(PRINT_ALL, "...using GL_ARB_multitexture\n");
 					}
+
 					else
 					{
 						qglMultiTexCoord2fARB = NULL;
@@ -1090,7 +1085,6 @@ success:
 	// This depends on SDL_INIT_VIDEO, hence having it here
 	ri.IN_Init(SDL_window);
 }
-
 
 /*
 =======================================================================================================================================

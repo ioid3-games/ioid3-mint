@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_init.c -- functions that are not called every frame
@@ -325,7 +319,7 @@ void GL_CheckErrs(char *file, int line) {
 		return;
 	}
 
-	switch(err) {
+	switch (err) {
 		case GL_INVALID_ENUM:
 			strcpy(s, "GL_INVALID_ENUM");
 			break;
@@ -351,7 +345,6 @@ void GL_CheckErrs(char *file, int line) {
 
 	ri.Error(ERR_FATAL, "GL_CheckErrors: %s in %s at line %d", s , file, line);
 }
-
 
 /*
 ** R_GetModeInfo
@@ -417,7 +410,6 @@ static void R_ModeList_f(void) {
 
 	ri.Printf(PRINT_ALL, "\n");
 }
-
 
 /* 
 ==============================================================================
@@ -563,7 +555,7 @@ const void *RB_TakeScreenshotCmd(const void *data) {
 	else if (cmd->type == ST_PNG)
 		RB_TakeScreenshotPNG(cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName);
 	
-	return(const void *)(cmd + 1); 	
+	return(const void *)(cmd + 1);	
 }
 
 /*
@@ -782,7 +774,7 @@ void R_ScreenShotTGA_f(void) {
 	if (!silent) {
 		ri.Printf(PRINT_ALL, "Wrote %s\n", checkname);
 	}
-} 
+}
 
 void R_ScreenShotJPEG_f(void) {
 	char checkname[MAX_OSPATH];
@@ -840,7 +832,7 @@ void R_ScreenShotJPEG_f(void) {
 	if (!silent) {
 		ri.Printf(PRINT_ALL, "Wrote %s\n", checkname);
 	}
-} 
+}
 
 void R_ScreenShotPNG_f(void) {
 	char checkname[MAX_OSPATH];
@@ -917,7 +909,6 @@ void R_ExportCubemaps(void) {
 
 	cmd->commandId = RC_EXPORT_CUBEMAPS;
 }
-
 
 /*
 =======================================================================================================================================
@@ -1002,7 +993,7 @@ const void *RB_TakeVideoFrameCmd(const void *data) {
 		ri.CL_WriteAVIVideoFrame(cmd->encodeBuffer, avipadwidth * cmd->height);
 	}
 
-	return(const void *)(cmd + 1); 	
+	return(const void *)(cmd + 1);	
 }
 
 //============================================================================
@@ -1051,7 +1042,7 @@ void GL_SetDefaultState(void) {
 	if (glRefConfig.seamlessCubeMap)
 		qglEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	qglClearColor(0.0f, 0.0f, 0.0f, 1.0f); 	// FIXME: get color of sky
+	qglClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// FIXME: get color of sky
 }
 
 /*
@@ -1150,7 +1141,7 @@ GfxMemInfo_f
 =======================================================================================================================================
 */
 void GfxMemInfo_f(void) {
-	switch(glRefConfig.memInfo) {
+	switch (glRefConfig.memInfo) {
 		case MI_NONE:
 		{
 			ri.Printf(PRINT_ALL, "No extension found for GPU memory info.\n");
@@ -1635,7 +1626,6 @@ void RE_Shutdown(qboolean destroyWindow) {
 	tr.registered = qfalse;
 }
 
-
 /*
 =======================================================================================================================================
 RE_EndRegistration
@@ -1649,7 +1639,6 @@ void RE_EndRegistration(void) {
 		RB_ShowImages();
 	}
 }
-
 
 /*
 @@@@@@@@@@@@@@@@@@@@@

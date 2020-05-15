@@ -4,27 +4,21 @@ Copyright(C)2007 - 2009 Robert Beckebans < trebor_7@users.sourceforge.net>
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_vbo.c
@@ -103,7 +97,7 @@ vao_t *R_CreateVao(const char *name, byte *vertexes, int vertexesSize, byte *ind
 	vao_t *vao;
 	int glUsage;
 
-	switch(usage) {
+	switch (usage) {
 		case VAO_USAGE_STATIC:
 			glUsage = GL_STATIC_DRAW;
 			break;
@@ -140,7 +134,6 @@ vao_t *R_CreateVao(const char *name, byte *vertexes, int vertexesSize, byte *ind
 		qglBindVertexArray(vao->vao);
 	}
 
-
 	vao->vertexesSize = vertexesSize;
 
 	qglGenBuffers(1, &vao->vertexesVBO);
@@ -176,7 +169,6 @@ vao_t *R_CreateVao2(const char *name, int numVertexes, srfVert_t *verts, int num
 	byte           *data;
 	int dataSize;
 	int dataOfs;
-
 	int glUsage = GL_STATIC_DRAW;
 
 	if (!numVertexes || !numIndexes)
@@ -253,8 +245,6 @@ vao_t *R_CreateVao2(const char *name, int numVertexes, srfVert_t *verts, int num
 		qglGenVertexArrays(1, &vao->vao);
 		qglBindVertexArray(vao->vao);
 	}
-
-
 	// create VBO
 	dataSize *= numVertexes;
 	data = ri.Hunk_AllocateTempMemory(dataSize);
@@ -318,7 +308,6 @@ vao_t *R_CreateVao2(const char *name, int numVertexes, srfVert_t *verts, int num
 
 	return vao;
 }
-
 
 /*
 =======================================================================================================================================
@@ -393,7 +382,6 @@ void R_BindNullVao(void) {
 
 	GL_CheckErrors();
 }
-
 
 /*
 =======================================================================================================================================
@@ -558,7 +546,6 @@ void R_VaoList_f(void) {
 			 (indexesSize %(1024 * 1024)) * 100 / (1024 * 1024));
 }
 
-
 /*
 =======================================================================================================================================
 RB_UpdateTessVao
@@ -674,10 +661,8 @@ static struct {
 	vao_t *vao;
 	buffered_t surfaceIndexSets[VAOCACHE_MAX_SURFACES];
 	int numSurfaces;
-
 	int batchLengths[VAOCACHE_MAX_BATCHES];
 	int numBatches;
-
 	int vertexOffset;
 	int indexOffset;
 }
@@ -699,7 +684,7 @@ void VaoCache_Commit(void) {
 		if (*batchLength == vcq.numSurfaces) {
 			buffered_t *indexSet2 = indexSet;
 			for (surf = vcq.surfaces; surf < end; surf++, indexSet2++) {
-				if (surf->indexes != indexSet2->data ||(surf->numIndexes * sizeof(glIndex_t)) != indexSet2->size)
+				if (surf->indexes != indexSet2->data || (surf->numIndexes * sizeof(glIndex_t)) != indexSet2->size)
 					break;
 			}
 

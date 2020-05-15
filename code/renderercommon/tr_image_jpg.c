@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -102,8 +96,8 @@ void R_LoadJPG(const char *filename, int *numTexLevels, textureLevel_t **pic) {
    */
   q_jpeg_error_mgr_t jerr;
   /* More stuff */
-  JSAMPARRAY buffer; 		/* Output row buffer */
-  unsigned int row_stride; 	/* physical row width in output buffer */
+  JSAMPARRAY buffer;		/* Output row buffer */
+  unsigned int row_stride;	/* physical row width in output buffer */
   unsigned int pixelcount, memcount;
   unsigned int sindex, dindex;
   byte *out;
@@ -192,7 +186,7 @@ void R_LoadJPG(const char *filename, int *numTexLevels, textureLevel_t **pic) {
   pixelcount = cinfo.output_width * cinfo.output_height;
 
   if (!cinfo.output_width || !cinfo.output_height
-      ||((pixelcount * 4) / cinfo.output_width) / 4 != cinfo.output_height
+      || ((pixelcount * 4) / cinfo.output_width) / 4 != cinfo.output_height
       || pixelcount > 0x1FFFFFFF || cinfo.output_components != 3
 )
   {
@@ -271,13 +265,12 @@ void R_LoadJPG(const char *filename, int *numTexLevels, textureLevel_t **pic) {
   /* And we're done! */
 }
 
-
 /* Expanded data destination object for stdio output */
 
 typedef struct {
   struct jpeg_destination_mgr pub; /* public fields */
 
-  byte* outfile; 		/* target stream */
+  byte* outfile;		/* target stream */
 	int size;
 } my_destination_mgr;
 
@@ -296,7 +289,6 @@ init_destination(j_compress_ptr cinfo) {
   dest->pub.next_output_byte = dest->outfile;
   dest->pub.free_in_buffer = dest->size;
 }
-
 
 /*
  * Empty the output buffer --- called whenever buffer fills up.
@@ -346,7 +338,6 @@ empty_output_buffer(j_compress_ptr cinfo) {
 static void term_destination(j_compress_ptr cinfo) {
 }
 
-
 /*
  * Prepare for output to a stdio stream.
  * The caller must have already opened the stream, and is responsible
@@ -389,9 +380,9 @@ size_t RE_SaveJPGToBuffer(byte *buffer, size_t bufSize, int quality,
   	int image_width, int image_height, byte *image_buffer, int padding) {
   struct jpeg_compress_struct cinfo;
   q_jpeg_error_mgr_t jerr;
-  JSAMPROW row_pointer[1]; 	/* pointer to JSAMPLE row[s] */
+  JSAMPROW row_pointer[1];	/* pointer to JSAMPLE row[s] */
   my_dest_ptr dest;
-	int row_stride; 		/* physical row width in image buffer */
+	int row_stride;		/* physical row width in image buffer */
   size_t outcount;
 
   /* Step 1: allocate and initialize JPEG compression object */
@@ -419,10 +410,10 @@ size_t RE_SaveJPGToBuffer(byte *buffer, size_t bufSize, int quality,
   jpegDest(&cinfo, buffer, bufSize);
 
   /* Step 3: set parameters for compression */
-  cinfo.image_width = image_width; 	/* image width and height, in pixels */
+  cinfo.image_width = image_width;	/* image width and height, in pixels */
   cinfo.image_height = image_height;
-  cinfo.input_components = 3; 		/* #of color components per pixel */
-  cinfo.in_color_space = JCS_RGB; 	/* colorspace of input image */
+  cinfo.input_components = 3;		/* #of color components per pixel */
+  cinfo.in_color_space = JCS_RGB;	/* colorspace of input image */
 
   jpeg_set_defaults(&cinfo);
   jpeg_set_quality(&cinfo, quality, TRUE /* limit to baseline - JPEG values */);

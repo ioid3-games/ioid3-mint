@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_shade_calc.c
@@ -35,7 +29,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 #define WAVEVALUE(table, base, amplitude, phase, freq)((base) +  table[((int64_t)(((phase) +  tess.shaderTime * (freq)) * FUNCTABLE_SIZE))& FUNCTABLE_MASK] * (amplitude))
 
 static float *TableForFunc(genFunc_t func) {
-	switch(func) {
+	switch (func) {
 	case GF_SIN:
 		return tr.sinTable;
 	case GF_TRIANGLE:
@@ -219,7 +213,6 @@ void RB_CalcBulgeVertexes(deformStage_t *ds) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 RB_CalcMoveVertexes
@@ -249,7 +242,6 @@ void RB_CalcMoveVertexes(deformStage_t *ds) {
 		VectorAdd(xyz, offset, xyz);
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -394,7 +386,7 @@ static void AutospriteDeform(void) {
 		mid[2] = 0.25f * (xyz[2] + xyz[6] + xyz[10] + xyz[14]);
 
 		VectorSubtract(xyz, mid, delta);
-		radius = VectorLength(delta) * 0.707f; 		// / sqrt(2)
+		radius = VectorLength(delta) * 0.707f;		// / sqrt(2)
 
 		VectorScale(leftDir, radius, left);
 		VectorScale(upDir, radius, up);
@@ -420,7 +412,6 @@ static void AutospriteDeform(void) {
 		RB_AddQuadStamp(mid, left, up, color);
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -539,7 +530,6 @@ static void Autosprite2Deform(void) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 RB_DeformTessGeometry
@@ -558,7 +548,7 @@ void RB_DeformTessGeometry(void) {
 	for (i = 0; i < tess.shader->numDeforms; i++) {
 		ds = &tess.shader->deforms[i];
 
-		switch(ds->deformation) {
+		switch (ds->deformation) {
         case DEFORM_NONE:
             break;
 		case DEFORM_NORMALS:
@@ -696,7 +686,6 @@ void RB_CalcModulateColorsByFog(unsigned char *colors) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 
@@ -816,7 +805,7 @@ void RB_CalcFogTexCoords(float *st) {
 
 			eyeT = DotProduct(backEnd.or.viewOrigin, fogDepthVector) +  fogDepthVector[3];
 		} else {
-			eyeT = 1; 	// non - surface fog always has eye inside
+			eyeT = 1;	// non - surface fog always has eye inside
 		}
 		// see if the viewpoint is outside
 		// this is needed for clipping distance even for constant fog
@@ -846,13 +835,13 @@ void RB_CalcFogTexCoords(float *st) {
 				// partially clipped fogs use the T axis
 				if (eyeOutside) {
 					if (t < 1.0) {
-						t = 1.0/32; 	// point is outside, so no fogging
+						t = 1.0/32;	// point is outside, so no fogging
 					} else {
-						t = 1.0/32 + 30.0/32 * t / (t - eyeT); 	// cut the distance at the fog plane
+						t = 1.0/32 + 30.0/32 * t / (t - eyeT);	// cut the distance at the fog plane
 					}
 				} else {
 					if (t < 0) {
-						t = 1.0/32; 	// point is outside, so no fogging
+						t = 1.0/32;	// point is outside, so no fogging
 					} else {
 						t = 31.0/32;
 					}

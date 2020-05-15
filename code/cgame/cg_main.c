@@ -1,49 +1,43 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-// cg_main.c -- initialization and primary entry point for cgame
+
+/**************************************************************************************************************************************
+ Initialization and primary entry point for cgame.
+**************************************************************************************************************************************/
+
 #include "cg_local.h"
 #include "../ui/ui_public.h"
-
 #ifdef MISSIONPACK_HUD
 #include "../ui/ui_shared.h"
 // display context for new ui stuff
 displayContextDef_t cgDC;
 #endif
-
 int forceModelModificationCount = -1;
 #ifdef MISSIONPACK
 int redTeamNameModificationCount = -1;
 int blueTeamNameModificationCount = -1;
 #endif
-
 void CG_Init(connstate_t state, int maxSplitView, int playVideo);
 void CG_Ingame_Init(int serverMessageNum, int serverCommandSequence, int maxSplitView, int playerNum0, int playerNum1, int playerNum2, int playerNum3);
 void CG_Shutdown(void);
@@ -57,93 +51,92 @@ static void CG_UpdateGlconfig(qboolean initial);
 =======================================================================================================================================
 vmMain
 
-This is the only way control passes into the module.
-This must be the very first function compiled into the .q3vm file
+This is the only way control passes into the module. This must be the very first function compiled into the .q3vm file.
 =======================================================================================================================================
 */
 Q_EXPORT intptr_t vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11) {
 
-	switch(command) {
-	case CG_GETAPINAME:
-			return(intptr_t)CG_API_NAME;
-	case CG_GETAPIVERSION:
-		return(CG_API_MAJOR_VERSION << 16)|(CG_API_MINOR_VERSION & 0xFFFF);
-	case CG_INIT:
-		CG_Init(arg0, arg1, arg2);
-		return 0;
-	case CG_INGAME_INIT:
-		CG_Ingame_Init(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-		return 0;
-	case CG_SHUTDOWN:
-		UI_Shutdown();
-		CG_Shutdown();
-		return 0;
-	case CG_CONSOLE_COMMAND:
-		return CG_ConsoleCommand(arg0, arg1);
-	case CG_REFRESH:
-		CG_Refresh(arg0, arg1, arg2, arg3, arg4);
-		return 0;
-	case CG_CROSSHAIR_PLAYER:
-		return CG_CrosshairPlayer(arg0);
-	case CG_LAST_ATTACKER:
-		return CG_LastAttacker(arg0);
-	case CG_VOIP_STRING:
-		return(intptr_t)CG_VoIPString(arg0);
-	case CG_KEY_EVENT:
-		CG_DistributeKeyEvent(arg0, arg1, arg2, arg3, -1, 0);
-		return 0;
-	case CG_CHAR_EVENT:
-		CG_DistributeCharEvent(arg0, arg1);
-		return 0;
-	case CG_MOUSE_EVENT:
-		if (cg.connected && (Key_GetCatcher()& KEYCATCH_CGAME)) {
-			CG_MouseEvent(arg0, arg1, arg2);
-		} else {
-			UI_MouseEvent(arg0, arg1, arg2);
-		}
+	switch (command) {
+		case CG_GETAPINAME:
+			return (intptr_t)CG_API_NAME;
+		case CG_GETAPIVERSION:
+			return (CG_API_MAJOR_VERSION << 16)|(CG_API_MINOR_VERSION & 0xFFFF);
+		case CG_INIT:
+			CG_Init(arg0, arg1, arg2);
+			return 0;
+		case CG_INGAME_INIT:
+			CG_Ingame_Init(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+			return 0;
+		case CG_SHUTDOWN:
+			UI_Shutdown();
+			CG_Shutdown();
+			return 0;
+		case CG_CONSOLE_COMMAND:
+			return CG_ConsoleCommand(arg0, arg1);
+		case CG_REFRESH:
+			CG_Refresh(arg0, arg1, arg2, arg3, arg4);
+			return 0;
+		case CG_CROSSHAIR_PLAYER:
+			return CG_CrosshairPlayer(arg0);
+		case CG_LAST_ATTACKER:
+			return CG_LastAttacker(arg0);
+		case CG_VOIP_STRING:
+			return (intptr_t)CG_VoIPString(arg0);
+		case CG_KEY_EVENT:
+			CG_DistributeKeyEvent(arg0, arg1, arg2, arg3, -1, 0);
+			return 0;
+		case CG_CHAR_EVENT:
+			CG_DistributeCharEvent(arg0, arg1);
+			return 0;
+		case CG_MOUSE_EVENT:
+			if (cg.connected && (Key_GetCatcher() & KEYCATCH_CGAME)) {
+				CG_MouseEvent(arg0, arg1, arg2);
+			} else {
+				UI_MouseEvent(arg0, arg1, arg2);
+			}
 
-		return 0;
-	case CG_MOUSE_POSITION:
-		return CG_MousePosition(arg0);
-	case CG_SET_MOUSE_POSITION:
-		CG_SetMousePosition(arg0, arg1, arg2);
-		return 0;
-	case CG_SET_ACTIVE_MENU:
-		UI_SetActiveMenu(arg0);
-		// stop cinematic when disconnect or start demo playback
-		if (arg0 == UIMENU_NONE && cg.cinematicPlaying) {
-			CG_StopCinematic_f();
-		}
+			return 0;
+		case CG_MOUSE_POSITION:
+			return CG_MousePosition(arg0);
+		case CG_SET_MOUSE_POSITION:
+			CG_SetMousePosition(arg0, arg1, arg2);
+			return 0;
+		case CG_SET_ACTIVE_MENU:
+			UI_SetActiveMenu(arg0);
+			// stop cinematic when disconnect or start demo playback
+			if (arg0 == UIMENU_NONE && cg.cinematicPlaying) {
+				CG_StopCinematic_f();
+			}
 
-		return 0;
-	case CG_JOYSTICK_AXIS_EVENT:
-		CG_JoystickAxisEvent(arg0, arg1, arg2, arg3, arg4);
-		return 0;
-	case CG_JOYSTICK_BUTTON_EVENT:
-		CG_JoystickButtonEvent(arg0, arg1, arg2, arg3, arg4);
-		return 0;
-	case CG_JOYSTICK_HAT_EVENT:
-		CG_JoystickHatEvent(arg0, arg1, arg2, arg3, arg4);
-		return 0;
-	case CG_CONSOLE_TEXT:
-		CG_AddNotifyText(arg0, arg1);
-		return 0;
-	case CG_CONSOLE_CLOSE:
-		CG_CloseConsole();
-		return 0;
-	case CG_CREATE_USER_CMD:
-		return(intptr_t)CG_CreateUserCmd(arg0, arg1, arg2, IntAsFloat(arg3), IntAsFloat(arg4), arg5);
-	case CG_UPDATE_GLCONFIG:
-		CG_UpdateGlconfig(qfalse);
-		return 0;
-	case CG_CONSOLE_COMPLETEARGUMENT:
-		return CG_ConsoleCompleteArgument(arg0, arg1, arg2);
-	default:
-		CG_Error("cgame vmMain: unknown command %i", command);
-		break;
+			return 0;
+		case CG_JOYSTICK_AXIS_EVENT:
+			CG_JoystickAxisEvent(arg0, arg1, arg2, arg3, arg4);
+			return 0;
+		case CG_JOYSTICK_BUTTON_EVENT:
+			CG_JoystickButtonEvent(arg0, arg1, arg2, arg3, arg4);
+			return 0;
+		case CG_JOYSTICK_HAT_EVENT:
+			CG_JoystickHatEvent(arg0, arg1, arg2, arg3, arg4);
+			return 0;
+		case CG_CONSOLE_TEXT:
+			CG_AddNotifyText(arg0, arg1);
+			return 0;
+		case CG_CONSOLE_CLOSE:
+			CG_CloseConsole();
+			return 0;
+		case CG_CREATE_USER_CMD:
+			return (intptr_t)CG_CreateUserCmd(arg0, arg1, arg2, IntAsFloat(arg3), IntAsFloat(arg4), arg5);
+		case CG_UPDATE_GLCONFIG:
+			CG_UpdateGlconfig(qfalse);
+			return 0;
+		case CG_CONSOLE_COMPLETEARGUMENT:
+			return CG_ConsoleCompleteArgument(arg0, arg1, arg2);
+		default:
+			CG_Error("cgame vmMain: unknown command %i", command);
+			break;
 	}
 
-	return - 1;
+	return -1;
 }
 
 cg_t cg;
@@ -156,7 +149,6 @@ vmCvar_t con_conspeed;
 vmCvar_t con_autochat;
 vmCvar_t con_autoclear;
 vmCvar_t cg_dedicated;
-
 vmCvar_t cg_railTrailTime;
 vmCvar_t cg_centertime;
 vmCvar_t cg_viewbob;
@@ -216,12 +208,12 @@ vmCvar_t cg_drawAttacker;
 vmCvar_t cg_synchronousClients;
 vmCvar_t cg_singlePlayer;
 #ifndef MISSIONPACK_HUD
-vmCvar_t 	cg_teamChatTime;
-vmCvar_t 	cg_teamChatHeight;
+vmCvar_t cg_teamChatTime;
+vmCvar_t cg_teamChatHeight;
 #endif
-vmCvar_t 	cg_stats;
-vmCvar_t 	cg_buildScript;
-vmCvar_t 	cg_forceModel;
+vmCvar_t cg_stats;
+vmCvar_t cg_buildScript;
+vmCvar_t cg_forceModel;
 vmCvar_t cg_paused;
 vmCvar_t cg_blood;
 vmCvar_t cg_predictItems;
@@ -235,8 +227,8 @@ vmCvar_t cg_noVoiceChats;
 vmCvar_t cg_noVoiceText;
 #endif
 vmCvar_t cg_hudFiles;
-vmCvar_t 	cg_scorePlum;
-vmCvar_t 	cg_smoothClients;
+vmCvar_t cg_scorePlum;
+vmCvar_t cg_smoothClients;
 vmCvar_t pmove_overbounce;
 vmCvar_t pmove_fixed;
 //vmCvar_t cg_pmove_fixed;
@@ -288,33 +280,28 @@ vmCvar_t cg_hudFont;
 vmCvar_t cg_hudFontBorder;
 vmCvar_t cg_numberFont;
 vmCvar_t cg_numberFontBorder;
-
 vmCvar_t cg_introPlayed;
 vmCvar_t cg_joystickDebug;
 vmCvar_t ui_stretch;
-
 #ifdef MISSIONPACK
-vmCvar_t 	cg_redTeamName;
-vmCvar_t 	cg_blueTeamName;
+vmCvar_t cg_redTeamName;
+vmCvar_t cg_blueTeamName;
 vmCvar_t cg_enableDust;
 vmCvar_t cg_enableBreath;
 vmCvar_t cg_recordSPDemo;
 vmCvar_t cg_recordSPDemoName;
 vmCvar_t cg_obeliskRespawnDelay;
 #endif
-
 vmCvar_t cg_defaultModelGender;
 vmCvar_t cg_defaultMaleModel;
 vmCvar_t cg_defaultMaleHeadModel;
 vmCvar_t cg_defaultFemaleModel;
 vmCvar_t cg_defaultFemaleHeadModel;
-
 vmCvar_t cg_defaultTeamModelGender;
 vmCvar_t cg_defaultMaleTeamModel;
 vmCvar_t cg_defaultMaleTeamHeadModel;
 vmCvar_t cg_defaultFemaleTeamModel;
 vmCvar_t cg_defaultFemaleTeamHeadModel;
-
 vmCvar_t cg_color1[MAX_SPLITVIEW];
 vmCvar_t cg_color2[MAX_SPLITVIEW];
 vmCvar_t cg_handicap[MAX_SPLITVIEW];
@@ -328,12 +315,10 @@ vmCvar_t cg_thirdPersonRange[MAX_SPLITVIEW];
 vmCvar_t cg_thirdPersonAngle[MAX_SPLITVIEW];
 vmCvar_t cg_thirdPersonHeight[MAX_SPLITVIEW];
 vmCvar_t cg_thirdPersonSmooth[MAX_SPLITVIEW];
-
 #ifdef MISSIONPACK
 vmCvar_t cg_currentSelectedPlayer[MAX_SPLITVIEW];
 vmCvar_t cg_currentSelectedPlayerName[MAX_SPLITVIEW];
 #endif
-
 typedef struct {
 	vmCvar_t *vmCvar;
 	char *cvarName;
@@ -356,17 +341,15 @@ typedef struct {
 
 #define RANGE_ALL 0, 0, qfalse
 #define RANGE_BOOL 0, 1, qtrue
-#define RANGE_INT(min, max)min, max, qtrue
-#define RANGE_FLOAT(min, max)min, max, qfalse
+#define RANGE_INT(min, max) min, max, qtrue
+#define RANGE_FLOAT(min, max) min, max, qfalse
 
 static cvarTable_t cgameCvarTable[] = {
 	{NULL, "cgameversion", PRODUCT_NAME " " PRODUCT_VERSION " " PLATFORM_STRING " " PRODUCT_DATE, CVAR_ROM, RANGE_ALL},
-
 	{&con_conspeed, "scr_conspeed", "3", 0, RANGE_FLOAT(0.1, 100)},
 	{&con_autochat, "con_autochat", "0", CVAR_ARCHIVE, RANGE_ALL},
 	{&con_autoclear, "con_autoclear", "0", CVAR_ARCHIVE, RANGE_ALL},
 	{&cg_dedicated, "dedicated", "0", 0, RANGE_ALL},
-
 	{&cg_ignore, "cg_ignore", "0", 0, RANGE_ALL}, // used for debugging
 	{&cg_zoomFov, "cg_zoomfov", "22.5", CVAR_ARCHIVE, RANGE_FLOAT(1, 160)},
 	{&cg_fov, "cg_fov", "90", CVAR_ARCHIVE, RANGE_FLOAT(1, 160)},
@@ -430,12 +413,14 @@ static cvarTable_t cgameCvarTable[] = {
 	{&cg_predictItems, "cg_predictItems", "1", CVAR_ARCHIVE|CVAR_USERINFO_ALL, RANGE_BOOL},
 #ifdef MISSIONPACK
 	{&cg_deferPlayers, "cg_deferPlayers", "0", CVAR_ARCHIVE, RANGE_BOOL},
-#else {&cg_deferPlayers, "cg_deferPlayers", "1", CVAR_ARCHIVE, RANGE_BOOL},
+#else
+	{&cg_deferPlayers, "cg_deferPlayers", "1", CVAR_ARCHIVE, RANGE_BOOL},
 #endif
 	{&cg_drawTeamOverlay, "cg_drawTeamOverlay", "0", CVAR_ARCHIVE, RANGE_INT(0, 3)},
 #ifdef MISSIONPACK_HUD
 	{&cg_teamOverlayUserinfo, "teamoverlay", "1", CVAR_ROM|CVAR_USERINFO_ALL, RANGE_ALL},
-#else {&cg_teamOverlayUserinfo, "teamoverlay", "0", CVAR_ROM|CVAR_USERINFO_ALL, RANGE_ALL},
+#else
+	{&cg_teamOverlayUserinfo, "teamoverlay", "0", CVAR_ROM|CVAR_USERINFO_ALL, RANGE_ALL},
 #endif
 	{&cg_stats, "cg_stats", "0", 0, RANGE_ALL},
 	{&cg_drawFriend, "cg_drawFriend", "1", CVAR_ARCHIVE, RANGE_BOOL},
@@ -444,8 +429,7 @@ static cvarTable_t cgameCvarTable[] = {
 	{&cg_noVoiceChats, "cg_noVoiceChats", "0", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_noVoiceText, "cg_noVoiceText", "0", CVAR_ARCHIVE, RANGE_BOOL},
 #endif
-	// the following variables are created in other parts of the system,
-	// but we also reference them here
+	// the following variables are created in other parts of the system, but we also reference them here
 	{&cg_buildScript, "com_buildScript", "0", 0, RANGE_ALL}, // force loading of all possible data amd error on failures
 	{&cg_paused, "cl_paused", "0", CVAR_ROM, RANGE_ALL},
 	{&cg_blood, "com_blood", "1", CVAR_ARCHIVE, RANGE_ALL},
@@ -503,7 +487,8 @@ static cvarTable_t cgameCvarTable[] = {
 	{&cg_skybox, "cg_skybox", "1", CVAR_ARCHIVE, RANGE_INT(0, 2)},
 #ifdef MISSIONPACK_HUD
 	{&cg_drawPickupItems, "cg_drawPickupItems", "0", CVAR_ARCHIVE, RANGE_BOOL},
-#else {&cg_drawScores, "cg_drawScores", "1", CVAR_ARCHIVE, RANGE_BOOL},
+#else
+	{&cg_drawScores, "cg_drawScores", "1", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_drawPickupItems, "cg_drawPickupItems", "1", CVAR_ARCHIVE, RANGE_BOOL},
 #endif
 	{&cg_oldBubbles, "cg_oldBubbles", "1", CVAR_ARCHIVE, RANGE_BOOL},
@@ -512,13 +497,12 @@ static cvarTable_t cgameCvarTable[] = {
 	{&cg_forceBitmapFonts, "cg_forceBitmapFonts", "0", CVAR_ARCHIVE|CVAR_LATCH, RANGE_BOOL},
 	{&cg_drawGrappleHook, "cg_drawGrappleHook", "1", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_drawBBox, "cg_drawBBox", "0", CVAR_CHEAT, RANGE_BOOL},
-	{&cg_consoleFont, "cg_consoleFont", "fonts/LiberationMono - Bold.ttf", CVAR_ARCHIVE|CVAR_LATCH, RANGE_ALL},
+	{&cg_consoleFont, "cg_consoleFont", "fonts/LiberationMono-Regular.ttf", CVAR_ARCHIVE|CVAR_LATCH, RANGE_ALL},
 	{&cg_consoleFontSize, "cg_consoleFontSize", "8", CVAR_ARCHIVE|CVAR_LATCH, RANGE_INT(4, 24)},
-	{&cg_hudFont, "cg_hudFont", "fonts/LiberationSans - Bold.ttf", CVAR_ARCHIVE|CVAR_LATCH, RANGE_ALL},
+	{&cg_hudFont, "cg_hudFont", "fonts/LiberationSans-Bold.ttf", CVAR_ARCHIVE|CVAR_LATCH, RANGE_ALL},
 	{&cg_hudFontBorder, "cg_hudFontBorder", "2", CVAR_ARCHIVE|CVAR_LATCH, RANGE_FLOAT(0, 10)},
 	{&cg_numberFont, "cg_numberFont", "", CVAR_ARCHIVE|CVAR_LATCH, RANGE_ALL},
 	{&cg_numberFontBorder, "cg_numberFontBorder", "0", CVAR_ARCHIVE|CVAR_LATCH, RANGE_FLOAT(0, 10)},
-
 	{&cg_defaultModelGender, "default_model_gender", DEFAULT_MODEL_GENDER, CVAR_ARCHIVE, RANGE_ALL},
 	{&cg_defaultMaleModel, "default_male_model", DEFAULT_MODEL_MALE, CVAR_ARCHIVE, RANGE_ALL},
 	{&cg_defaultMaleHeadModel, "default_male_headmodel", DEFAULT_HEAD_MALE, CVAR_ARCHIVE, RANGE_ALL},
@@ -529,7 +513,6 @@ static cvarTable_t cgameCvarTable[] = {
 	{&cg_defaultMaleTeamHeadModel, "default_male_team_headmodel", DEFAULT_TEAM_HEAD_MALE, CVAR_ARCHIVE, RANGE_ALL},
 	{&cg_defaultFemaleTeamModel, "default_female_team_model", DEFAULT_TEAM_MODEL_FEMALE, CVAR_ARCHIVE, RANGE_ALL},
 	{&cg_defaultFemaleTeamHeadModel, "default_female_team_headmodel", DEFAULT_TEAM_HEAD_FEMALE, CVAR_ARCHIVE, RANGE_ALL},
-
 	{&cg_introPlayed, "com_introPlayed", "0", CVAR_ARCHIVE, RANGE_BOOL},
 	{&cg_joystickDebug, "in_joystickDebug", "0", CVAR_TEMP, RANGE_BOOL},
 	{&ui_stretch, "ui_stretch", "0", CVAR_ARCHIVE, RANGE_BOOL},
@@ -541,7 +524,6 @@ static userCvarTable_t userCvarTable[] = {
 	{cg_handicap, "handicap", "100", CVAR_USERINFO|CVAR_ARCHIVE, RANGE_ALL},
 	{cg_teamtask, "teamtask", "0", CVAR_USERINFO, RANGE_ALL},
 	{cg_teampref, "teampref", "", CVAR_USERINFO, RANGE_ALL},
-
 	{cg_autoswitch, "cg_autoswitch", "1", CVAR_ARCHIVE, RANGE_BOOL},
 	{cg_cyclePastGauntlet, "cg_cyclePastGauntlet", "1", CVAR_ARCHIVE, RANGE_BOOL},
 	{cg_drawGun, "cg_drawGun", "1", CVAR_ARCHIVE, RANGE_INT(0, 3)},
@@ -550,7 +532,6 @@ static userCvarTable_t userCvarTable[] = {
 	{cg_thirdPersonAngle, "cg_thirdPersonAngle", "0", CVAR_CHEAT, RANGE_ALL},
 	{cg_thirdPersonHeight, "cg_thirdPersonHeight", "24", 0, RANGE_INT(0, 32)},
 	{cg_thirdPersonSmooth, "cg_thirdPersonSmooth", "0", 0, RANGE_ALL}, // this cvar exists because it's behavior is too buggy to enable by default
-
 #ifdef MISSIONPACK
 	{cg_currentSelectedPlayer, "cg_currentSelectedPlayer", "0", CVAR_ARCHIVE, RANGE_ALL},
 	{cg_currentSelectedPlayerName, "cg_currentSelectedPlayerName", "", CVAR_ARCHIVE, RANGE_ALL }
@@ -559,7 +540,6 @@ static userCvarTable_t userCvarTable[] = {
 
 static int cgameCvarTableSize = ARRAY_LEN(cgameCvarTable);
 static int userCvarTableSize = ARRAY_LEN(userCvarTable);
-
 /*
 =======================================================================================================================================
 CG_RegisterCvar
@@ -583,8 +563,7 @@ void CG_RegisterCgameCvars(void) {
 	int i;
 
 	for (i = 0, cv = cgameCvarTable; i < cgameCvarTableSize; i++, cv++) {
-		CG_RegisterCvar(cv->vmCvar, cv->cvarName, cv->defaultString,
-						cv->cvarFlags, cv->rangeMin, cv->rangeMax, cv->rangeIntegral);
+		CG_RegisterCvar(cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags, cv->rangeMin, cv->rangeMax, cv->rangeIntegral);
 	}
 }
 
@@ -594,11 +573,11 @@ CG_RegisterUserCvars
 =======================================================================================================================================
 */
 void CG_RegisterUserCvars(void) {
-	int userInfo[MAX_SPLITVIEW] = { CVAR_USERINFO, CVAR_USERINFO2, CVAR_USERINFO3, CVAR_USERINFO4 };
-	char *modelNames[MAX_SPLITVIEW] = { DEFAULT_MODEL, DEFAULT_MODEL2, DEFAULT_MODEL3, DEFAULT_MODEL4 };
-	char *headModelNames[MAX_SPLITVIEW] = { DEFAULT_HEAD, DEFAULT_HEAD2, DEFAULT_HEAD3, DEFAULT_HEAD4 };
-	char *teamModelNames[MAX_SPLITVIEW] = { DEFAULT_TEAM_MODEL, DEFAULT_TEAM_MODEL2, DEFAULT_TEAM_MODEL3, DEFAULT_TEAM_MODEL4 };
-	char *teamHeadModelNames[MAX_SPLITVIEW] = { DEFAULT_TEAM_HEAD, DEFAULT_TEAM_HEAD2, DEFAULT_TEAM_HEAD3, DEFAULT_TEAM_HEAD4 };
+	int userInfo[MAX_SPLITVIEW] = {CVAR_USERINFO, CVAR_USERINFO2, CVAR_USERINFO3, CVAR_USERINFO4};
+	char *modelNames[MAX_SPLITVIEW] = {DEFAULT_MODEL, DEFAULT_MODEL2, DEFAULT_MODEL3, DEFAULT_MODEL4};
+	char *headModelNames[MAX_SPLITVIEW] = {DEFAULT_HEAD, DEFAULT_HEAD2, DEFAULT_HEAD3, DEFAULT_HEAD4};
+	char *teamModelNames[MAX_SPLITVIEW] = {DEFAULT_TEAM_MODEL, DEFAULT_TEAM_MODEL2, DEFAULT_TEAM_MODEL3, DEFAULT_TEAM_MODEL4};
+	char *teamHeadModelNames[MAX_SPLITVIEW] = {DEFAULT_TEAM_HEAD, DEFAULT_TEAM_HEAD2, DEFAULT_TEAM_HEAD3, DEFAULT_TEAM_HEAD4};
 	char *name;
 	userCvarTable_t *uservar;
 	vmCvar_t *vmcvar;
@@ -614,16 +593,13 @@ void CG_RegisterUserCvars(void) {
 			}
 
 			cvarFlags = uservar->baseCvarFlags;
-
 			// set correct userinfo flag
 			if (cvarFlags & CVAR_USERINFO) {
-				cvarFlags & = ~CVAR_USERINFO;
+				cvarFlags &= ~CVAR_USERINFO;
 				cvarFlags |= userInfo[j];
 			}
 
-			CG_RegisterCvar(vmcvar, Com_LocalPlayerCvarName(j, uservar->baseName),
-							uservar->defaultString, cvarFlags,
-							uservar->rangeMin, uservar->rangeMax, uservar->rangeIntegral);
+			CG_RegisterCvar(vmcvar, Com_LocalPlayerCvarName(j, uservar->baseName), uservar->defaultString, cvarFlags, uservar->rangeMin, uservar->rangeMax, uservar->rangeIntegral);
 		}
 	}
 	// cvars with per - player defaults
@@ -635,10 +611,8 @@ void CG_RegisterUserCvars(void) {
 		}
 
 		trap_Cvar_Register(NULL, Com_LocalPlayerCvarName(i, "name"), name, userInfo[i]|CVAR_ARCHIVE);
-
 		trap_Cvar_Register(NULL, Com_LocalPlayerCvarName(i, "model"), modelNames[i], userInfo[i]|CVAR_ARCHIVE);
 		trap_Cvar_Register(NULL, Com_LocalPlayerCvarName(i, "headmodel"), headModelNames[i], userInfo[i]|CVAR_ARCHIVE);
-
 		trap_Cvar_Register(NULL, Com_LocalPlayerCvarName(i, "team_model"), teamModelNames[i], userInfo[i]|CVAR_ARCHIVE);
 		trap_Cvar_Register(NULL, Com_LocalPlayerCvarName(i, "team_headmodel"), teamHeadModelNames[i], userInfo[i]|CVAR_ARCHIVE);
 	}
@@ -655,8 +629,7 @@ void CG_RegisterCvars(void) {
 	CG_RegisterCgameCvars();
 	CG_RegisterUserCvars();
 	CG_RegisterInputCvars();
-
-	// ZTM: TODO: Move cgs.localServer init somewhere else?
+	// ZTM: TODO: move cgs.localServer init somewhere else?
 	// see if we are also running the server on this machine
 	trap_Cvar_VariableStringBuffer("sv_running", var, sizeof(var));
 	cgs.localServer = atoi(var);
@@ -668,8 +641,8 @@ void CG_RegisterCvars(void) {
 #endif
 }
 
-/*																																			
-===================
+/*
+=======================================================================================================================================
 CG_ForceModelChange
 =======================================================================================================================================
 */
@@ -679,7 +652,7 @@ static void CG_ForceModelChange(void) {
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		const char *playerInfo;
 
-		playerInfo = CG_ConfigString(CS_PLAYERS+i);
+		playerInfo = CG_ConfigString(CS_PLAYERS + i);
 
 		if (!playerInfo[0]) {
 			continue;
@@ -733,6 +706,7 @@ CG_UpdateCvars
 =======================================================================================================================================
 */
 void CG_UpdateCvars(void) {
+
 	CG_UpdateCgameCvars();
 	CG_UpdateUserCvars();
 	CG_UpdateInputCvars();
@@ -741,10 +715,8 @@ void CG_UpdateCvars(void) {
 		return;
 	}
 	// check for modications here
-
 #ifndef MISSIONPACK_HUD
-	// If team overlay is on, ask for updates from the server.  If it's off,
-	// let the server know so we don't receive it
+	// if team overlay is on, ask for updates from the server. If it's off, let the server know so we don't receive it
 	if (drawTeamOverlayModificationCount != cg_drawTeamOverlay.modificationCount) {
 		drawTeamOverlayModificationCount = cg_drawTeamOverlay.modificationCount;
 
@@ -755,12 +727,9 @@ void CG_UpdateCvars(void) {
 		}
 	}
 #endif
-
 #ifdef MISSIONPACK
 	// if force model or a team name changed
-	if (forceModelModificationCount != cg_forceModel.modificationCount
-		|| redTeamNameModificationCount != cg_redTeamName.modificationCount
-		|| blueTeamNameModificationCount != cg_blueTeamName.modificationCount) {
+	if (forceModelModificationCount != cg_forceModel.modificationCount || redTeamNameModificationCount != cg_redTeamName.modificationCount || blueTeamNameModificationCount != cg_blueTeamName.modificationCount) {
 		forceModelModificationCount = cg_forceModel.modificationCount;
 		redTeamNameModificationCount = cg_redTeamName.modificationCount;
 		blueTeamNameModificationCount = cg_blueTeamName.modificationCount;
@@ -770,30 +739,43 @@ void CG_UpdateCvars(void) {
 	// if force model changed
 	if (forceModelModificationCount != cg_forceModel.modificationCount) {
 		forceModelModificationCount = cg_forceModel.modificationCount;
+
 		CG_ForceModelChange();
 	}
 #endif
 }
 
+/*
+=======================================================================================================================================
+CG_CrosshairPlayer
+=======================================================================================================================================
+*/
 int CG_CrosshairPlayer(int localPlayerNum) {
+
 	if (!cg.snap || localPlayerNum < 0 || localPlayerNum >= CG_MaxSplitView()) {
-		return - 1;
+		return -1;
 	}
 
 	if (cg.time > (cg.localPlayers[localPlayerNum].crosshairPlayerTime + 1000)) {
-		return - 1;
+		return -1;
 	}
 
 	return cg.localPlayers[localPlayerNum].crosshairPlayerNum;
 }
 
+/*
+=======================================================================================================================================
+CG_LastAttacker
+=======================================================================================================================================
+*/
 int CG_LastAttacker(int localPlayerNum) {
+
 	if (!cg.snap || localPlayerNum < 0 || localPlayerNum >= CG_MaxSplitView()) {
-		return - 1;
+		return -1;
 	}
 
 	if (!cg.localPlayers[localPlayerNum].attackerTime || cg.localPlayers[localPlayerNum].playerNum == -1) {
-		return - 1;
+		return -1;
 	}
 
 	return cg.snap->pss[localPlayerNum].persistant[PERS_ATTACKER];
@@ -807,24 +789,23 @@ CG_RemoveNotifyLine
 void CG_RemoveNotifyLine(localPlayer_t *player) {
 	int i, offset, totalLength;
 
-	if (!player || player->numConsoleLines == 0)
+	if (!player || player->numConsoleLines == 0) {
 		return;
+	}
 
 	offset = player->consoleLines[0].length;
 	totalLength = strlen(player->consoleText) - offset;
-
 	// slide up consoleText
-	for (i = 0; i <= totalLength; i++)
+	for (i = 0; i <= totalLength; i++) {
 		player->consoleText[i] = player->consoleText[i + offset];
-
+	}
 	// pop up the first consoleLine
-	for (i = 1; i < player->numConsoleLines; i++)
+	for (i = 1; i < player->numConsoleLines; i++) {
 		player->consoleLines[i - 1] = player->consoleLines[i];
-
+	}
 	// clear last slot
 	player->consoleLines[player->numConsoleLines - 1].length = 0;
 	player->consoleLines[player->numConsoleLines - 1].time = 0;
-
 	player->numConsoleLines --;
 }
 
@@ -854,9 +835,7 @@ void CG_AddNotifyText(int realTime, qboolean restoredText) {
 	}
 
 	buffer = text;
-
-	// TTimo - prefix for text that shows up in console but not in notify
-	// backported from RTCW
+	// prefix for text that shows up in console but not in notify, backported from RTCW
 	if (!Q_strncmp(buffer, "[skipnotify]", 12)) {
 		skipnotify = qtrue;
 		buffer += 12;
@@ -864,13 +843,12 @@ void CG_AddNotifyText(int realTime, qboolean restoredText) {
 
 	CG_ConsolePrint(buffer);
 
-	if (skipnotify || restoredText ||(Key_GetCatcher()& KEYCATCH_CONSOLE)) {
+	if (skipnotify || restoredText || (Key_GetCatcher()& KEYCATCH_CONSOLE)) {
 		return;
 	}
 	// [player #] perfix for text that only shows up in notify area for one local player
 	if (!Q_strncmp(buffer, "[player ", 8) && buffer[8] >= '1' && buffer[8] < '1'+MAX_SPLITVIEW && buffer[9] == ']') {
 		localPlayerBits = 1 << (buffer[8] - '1');
-
 		buffer += 10;
 	} else {
 		localPlayerBits = ~0;
@@ -889,8 +867,10 @@ void CG_AddNotifyText(int realTime, qboolean restoredText) {
 			int j, length;
 
 			length = 0;
-			for (j = 0; j < player->numConsoleLines - 1; j++)
+
+			for (j = 0; j < player->numConsoleLines - 1; j++) {
 				length += player->consoleLines[j].length;
+			}
 
 			player->consoleText[length] = '\0';
 
@@ -898,18 +878,19 @@ void CG_AddNotifyText(int realTime, qboolean restoredText) {
 				player->numConsoleLines --;
 			}
 			// free lines until there is enough space to fit buffer
-			while (strlen(player->consoleText) +  bufferLen > MAX_CONSOLE_TEXT) {
+			while (strlen(player->consoleText) + bufferLen > MAX_CONSOLE_TEXT) {
 				CG_RemoveNotifyLine(player);
 			}
 			// skip leading \r
 			Q_strcat(player->consoleText, MAX_CONSOLE_TEXT, buffer + 1);
+
 			player->consoleLines[player->numConsoleLines].time = cg.time;
 			player->consoleLines[player->numConsoleLines].length = bufferLen - 1;
 			player->numConsoleLines++;
 			continue;
 		}
 		// free lines until there is enough space to fit buffer
-		while (strlen(player->consoleText) +  bufferLen > MAX_CONSOLE_TEXT) {
+		while (strlen(player->consoleText) + bufferLen > MAX_CONSOLE_TEXT) {
 			CG_RemoveNotifyLine(player);
 		}
 		// append to existing line
@@ -929,6 +910,7 @@ void CG_AddNotifyText(int realTime, qboolean restoredText) {
 		}
 
 		Q_strcat(player->consoleText, MAX_CONSOLE_TEXT, buffer);
+
 		player->consoleLines[player->numConsoleLines].time = cg.time;
 		player->consoleLines[player->numConsoleLines].length = bufferLen;
 		player->numConsoleLines++;
@@ -939,24 +921,24 @@ void CG_AddNotifyText(int realTime, qboolean restoredText) {
 =======================================================================================================================================
 CG_NotifyPrintf
 
-Only printed in notify area for localPlayerNum(and client console)
+Only printed in notify area for localPlayerNum (and client console).
 =======================================================================================================================================
 */
 void QDECL CG_NotifyPrintf(int localPlayerNum, const char *msg, ...) {
-	va_list		argptr;
+	va_list argptr;
 	char text[1024];
 	int prefixLen;
 
 	Com_sprintf(text, sizeof(text), "[player %d]", localPlayerNum + 1);
+
 	prefixLen = strlen(text);
 
 	va_start(argptr, msg);
 	Q_vsnprintf(text+prefixLen, sizeof(text) - prefixLen, msg, argptr);
 	va_end(argptr);
-
 	// switch order of [player %d][skipnotify] so skip is first
-	if (!Q_strncmp(text+prefixLen, "[skipnotify]", 12)) {
-		memmove(text+12, text, prefixLen); // "[player %d]"
+	if (!Q_strncmp(text + prefixLen, "[skipnotify]", 12)) {
+		memmove(text + 12, text, prefixLen); // "[player %d]"
 		memcpy(text, "[skipnotify]", 12);
 	}
 
@@ -967,11 +949,11 @@ void QDECL CG_NotifyPrintf(int localPlayerNum, const char *msg, ...) {
 =======================================================================================================================================
 CG_NotifyBitsPrintf
 
-Only printed in notify area for players specified in localPlayerBits(and client console)
+Only printed in notify area for players specified in localPlayerBits (and client console).
 =======================================================================================================================================
 */
 void QDECL CG_NotifyBitsPrintf(int localPlayerBits, const char *msg, ...) {
-	va_list		argptr;
+	va_list argptr;
 	char text[1024];
 	int i;
 
@@ -980,14 +962,19 @@ void QDECL CG_NotifyBitsPrintf(int localPlayerBits, const char *msg, ...) {
 	va_end(argptr);
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		if (localPlayerBits &(1 << i)) {
+		if (localPlayerBits & (1 << i)) {
 			CG_NotifyPrintf(i, "%s", text);
 		}
 	}
 }
 
+/*
+=======================================================================================================================================
+CG_DPrintf
+=======================================================================================================================================
+*/
 void QDECL CG_DPrintf(const char *msg, ...) {
-	va_list		argptr;
+	va_list argptr;
 	char text[1024];
 	char var[MAX_TOKEN_CHARS];
 
@@ -1000,62 +987,81 @@ void QDECL CG_DPrintf(const char *msg, ...) {
 	va_start(argptr, msg);
 	Q_vsnprintf(text, sizeof(text), msg, argptr);
 	va_end(argptr);
-
 	trap_Print(text);
 }
 
+/*
+=======================================================================================================================================
+CG_Printf
+=======================================================================================================================================
+*/
 void QDECL CG_Printf(const char *msg, ...) {
-	va_list		argptr;
+	va_list argptr;
 	char text[1024];
 
 	va_start(argptr, msg);
 	Q_vsnprintf(text, sizeof(text), msg, argptr);
 	va_end(argptr);
-
 	trap_Print(text);
 }
 
+/*
+=======================================================================================================================================
+CG_Error
+=======================================================================================================================================
+*/
 void QDECL CG_Error(const char *msg, ...) {
-	va_list		argptr;
+	va_list argptr;
 	char text[1024];
 
 	va_start(argptr, msg);
 	Q_vsnprintf(text, sizeof(text), msg, argptr);
 	va_end(argptr);
-
 	trap_Error(text);
 }
 
+/*
+=======================================================================================================================================
+Com_Error
+=======================================================================================================================================
+*/
 void QDECL Com_Error(int level, const char *error, ...) {
-	va_list		argptr;
+	va_list argptr;
 	char text[1024];
 
 	va_start(argptr, error);
 	Q_vsnprintf(text, sizeof(text), error, argptr);
 	va_end(argptr);
-
 	trap_Error(text);
 }
 
+/*
+=======================================================================================================================================
+Com_Printf
+=======================================================================================================================================
+*/
 void QDECL Com_Printf(const char *msg, ...) {
-	va_list		argptr;
+	va_list argptr;
 	char text[1024];
 
 	va_start(argptr, msg);
 	Q_vsnprintf(text, sizeof(text), msg, argptr);
 	va_end(argptr);
-
 	trap_Print(text);
 }
 
+/*
+=======================================================================================================================================
+Com_DPrintf
+=======================================================================================================================================
+*/
 void QDECL Com_DPrintf(const char *msg, ...) {
-	va_list		argptr;
+	va_list argptr;
 	char text[1024];
 
 	va_start(argptr, msg);
 	Q_vsnprintf(text, sizeof(text), msg, argptr);
 	va_end(argptr);
-
 	CG_DPrintf("%s", text);
 }
 
@@ -1068,7 +1074,6 @@ const char *CG_Argv(int arg) {
 	static char buffer[MAX_STRING_CHARS];
 
 	trap_Argv(arg, buffer, sizeof(buffer));
-
 	return buffer;
 }
 
@@ -1081,7 +1086,6 @@ char *CG_Cvar_VariableString(const char *var_name) {
 	static char buffer[MAX_STRING_CHARS];
 
 	trap_Cvar_VariableStringBuffer(var_name, buffer, sizeof(buffer));
-
 	return buffer;
 }
 
@@ -1093,8 +1097,6 @@ CG_MaxSplitView
 int CG_MaxSplitView(void) {
 	return cgs.maxSplitView;
 }
-
-//========================================================================
 
 /*
 =======================================================================================================================================
@@ -1117,7 +1119,7 @@ void CG_SetupDlightstyles(void) {
 			break;
 		}
 
-		token = COM_Parse(&str);   // ent num
+		token = COM_Parse(&str); // ent num
 		entnum = atoi(token);
 
 		if (entnum < 0 || entnum >= MAX_GENTITIES) {
@@ -1126,10 +1128,11 @@ void CG_SetupDlightstyles(void) {
 
 		cent = &cg_entities[entnum];
 
-		token = COM_Parse(&str);   // stylestring
+		token = COM_Parse(&str); // stylestring
+
 		Q_strncpyz(cent->dl_stylestring, token, sizeof(cent->dl_stylestring));
 
-		token = COM_Parse(&str);   // offset
+		token = COM_Parse(&str); // offset
 		cent->dl_frame = atoi(token);
 		cent->dl_oldframe = cent->dl_frame - 1;
 
@@ -1137,16 +1140,14 @@ void CG_SetupDlightstyles(void) {
 			cent->dl_oldframe = strlen(cent->dl_stylestring);
 		}
 
-		token = COM_Parse(&str);   // sound id
+		token = COM_Parse(&str); // sound id
 		cent->dl_sound = atoi(token);
 
-		token = COM_Parse(&str);   // attenuation
+		token = COM_Parse(&str); // attenuation
 		cent->dl_atten = atoi(token);
 
 		for (j = 0; j < strlen(cent->dl_stylestring); j++) {
-
-			cent->dl_stylestring[j] += cent->dl_atten;  // adjust character for attenuation/amplification
-
+			cent->dl_stylestring[j] += cent->dl_atten; // adjust character for attenuation/amplification
 			// clamp result
 			if (cent->dl_stylestring[j] < 'a') {
 				cent->dl_stylestring[j] = 'a';
@@ -1162,13 +1163,11 @@ void CG_SetupDlightstyles(void) {
 	}
 }
 
-//========================================================================
-
 /*
 =======================================================================================================================================
 CG_RegisterItemSounds
 
-The server says this item is used on this level
+The server says this item is used on this level.
 =======================================================================================================================================
 */
 static void CG_RegisterItemSounds(int itemNum) {
@@ -1185,11 +1184,13 @@ static void CG_RegisterItemSounds(int itemNum) {
 	// parse the space separated precache string for other media
 	s = item->sounds;
 
-	if (!s || !s[0])
+	if (!s || !s[0]) {
 		return;
+	}
 
 	while (*s) {
 		start = s;
+
 		while (*s && *s != ' ') {
 			s++;
 		}
@@ -1197,19 +1198,19 @@ static void CG_RegisterItemSounds(int itemNum) {
 		len = s - start;
 
 		if (len >= MAX_QPATH || len < 5) {
-			CG_Error("PrecacheItem: %s has bad precache string",
-				item->classname);
+			CG_Error("PrecacheItem: %s has bad precache string", item->classname);
 			return;
 		}
 
 		memcpy(data, start, len);
+
 		data[len] = 0;
 
 		if (*s) {
 			s++;
 		}
 
-		if (!strcmp(data+len - 3, "wav")) {
+		if (!strcmp(data + len - 3, "wav")) {
 			trap_S_RegisterSound(data, qfalse);
 		}
 	}
@@ -1219,12 +1220,12 @@ static void CG_RegisterItemSounds(int itemNum) {
 =======================================================================================================================================
 CG_RegisterSounds
 
-called during a precache command
+Called during a precache command.
 =======================================================================================================================================
 */
 static void CG_RegisterSounds(void) {
 	int i;
-	char items[MAX_ITEMS+1];
+	char items[MAX_ITEMS + 1];
 	char name[MAX_QPATH];
 	const char *soundName;
 
@@ -1232,7 +1233,6 @@ static void CG_RegisterSounds(void) {
 #ifdef MISSIONPACK
 	CG_LoadVoiceChats();
 #endif
-
 	cgs.media.oneMinuteSound = trap_S_RegisterSound("sound/feedback/1_minute.wav", qtrue);
 	cgs.media.fiveMinuteSound = trap_S_RegisterSound("sound/feedback/5_minute.wav", qtrue);
 	cgs.media.suddenDeathSound = trap_S_RegisterSound("sound/feedback/sudden_death.wav", qtrue);
@@ -1247,27 +1247,20 @@ static void CG_RegisterSounds(void) {
 #ifdef MISSIONPACK
 	cgs.media.countPrepareTeamSound = trap_S_RegisterSound("sound/feedback/prepare_team.wav", qtrue);
 #endif
-
 	if (cgs.gametype >= GT_TEAM || cg_buildScript.integer) {
-
-		// ZTM: Disabled capture award sound because it causes capture sound to play twice
-		//      this might make sense if it was a different sound, but you'd probably want to
-		//      silence GTS_*_CAPTURE which is a callange of its own
+		// ZTM: disabled capture award sound because it causes capture sound to play twice this might make sense if it
+		// was a different sound, but you'd probably want to silence GTS_*_CAPTURE which is a callange of its own
 		//cgs.media.captureAwardSound = trap_S_RegisterSound("sound/teamplay/flagcapture_yourteam.wav", qtrue);
 		cgs.media.redLeadsSound = trap_S_RegisterSound("sound/feedback/redleads.wav", qtrue);
 		cgs.media.blueLeadsSound = trap_S_RegisterSound("sound/feedback/blueleads.wav", qtrue);
 		cgs.media.teamsTiedSound = trap_S_RegisterSound("sound/feedback/teamstied.wav", qtrue);
 		cgs.media.hitTeamSound = trap_S_RegisterSound("sound/feedback/hit_teammate.wav", qtrue);
-
 		cgs.media.redScoredSound = trap_S_RegisterSound("sound/teamplay/voc_red_scores.wav", qtrue);
 		cgs.media.blueScoredSound = trap_S_RegisterSound("sound/teamplay/voc_blue_scores.wav", qtrue);
-
 		cgs.media.captureYourTeamSound = trap_S_RegisterSound("sound/teamplay/flagcapture_yourteam.wav", qtrue);
 		cgs.media.captureOpponentSound = trap_S_RegisterSound("sound/teamplay/flagcapture_opponent.wav", qtrue);
-
 		cgs.media.returnYourTeamSound = trap_S_RegisterSound("sound/teamplay/flagreturn_yourteam.wav", qtrue);
 		cgs.media.returnOpponentSound = trap_S_RegisterSound("sound/teamplay/flagreturn_opponent.wav", qtrue);
-
 		cgs.media.takenYourTeamSound = trap_S_RegisterSound("sound/teamplay/flagtaken_yourteam.wav", qtrue);
 		cgs.media.takenOpponentSound = trap_S_RegisterSound("sound/teamplay/flagtaken_opponent.wav", qtrue);
 
@@ -1277,10 +1270,9 @@ static void CG_RegisterSounds(void) {
 			cgs.media.enemyTookYourFlagSound = trap_S_RegisterSound("sound/teamplay/voc_enemy_flag.wav", qtrue);
 			cgs.media.yourTeamTookEnemyFlagSound = trap_S_RegisterSound("sound/teamplay/voc_team_flag.wav", qtrue);
 		}
-
 #ifdef MISSIONPACK
 		if (cgs.gametype == GT_1FCTF || cg_buildScript.integer) {
-			// FIXME: get a replacement for this sound ?
+			// FIXME: get a replacement for this sound?
 			cgs.media.neutralFlagReturnedSound = 0; //trap_S_RegisterSound("sound/teamplay/voc_red_returned.wav", qtrue);
 			cgs.media.yourTeamTookTheFlagSound = trap_S_RegisterSound("sound/teamplay/voc_team_1flag.wav", qtrue);
 			cgs.media.enemyTookTheFlagSound = trap_S_RegisterSound("sound/teamplay/voc_enemy_1flag.wav", qtrue);
@@ -1308,7 +1300,6 @@ static void CG_RegisterSounds(void) {
 	cgs.media.gibBounce1Sound = trap_S_RegisterSound("sound/player/gibimp1.wav", qfalse);
 	cgs.media.gibBounce2Sound = trap_S_RegisterSound("sound/player/gibimp2.wav", qfalse);
 	cgs.media.gibBounce3Sound = trap_S_RegisterSound("sound/player/gibimp3.wav", qfalse);
-
 #ifdef MISSIONPACK
 	cgs.media.useInvulnerabilitySound = trap_S_RegisterSound("sound/items/invul_activate.wav", qfalse);
 	cgs.media.invulnerabilityImpactSound1 = trap_S_RegisterSound("sound/items/invul_impact_01.wav", qfalse);
@@ -1319,28 +1310,22 @@ static void CG_RegisterSounds(void) {
 	cgs.media.obeliskHitSound2 = trap_S_RegisterSound("sound/items/obelisk_hit_02.wav", qfalse);
 	cgs.media.obeliskHitSound3 = trap_S_RegisterSound("sound/items/obelisk_hit_03.wav", qfalse);
 	cgs.media.obeliskRespawnSound = trap_S_RegisterSound("sound/items/obelisk_respawn.wav", qfalse);
-
 	cgs.media.ammoregenSound = trap_S_RegisterSound("sound/items/cl_ammoregen.wav", qfalse);
 	cgs.media.doublerSound = trap_S_RegisterSound("sound/items/cl_doubler.wav", qfalse);
 	cgs.media.guardSound = trap_S_RegisterSound("sound/items/cl_guard.wav", qfalse);
 	cgs.media.scoutSound = trap_S_RegisterSound("sound/items/cl_scout.wav", qfalse);
 #endif
-
 	cgs.media.teleInSound = trap_S_RegisterSound("sound/world/telein.wav", qfalse);
 	cgs.media.teleOutSound = trap_S_RegisterSound("sound/world/teleout.wav", qfalse);
 	cgs.media.respawnSound = trap_S_RegisterSound("sound/items/respawn1.wav", qfalse);
-
 	cgs.media.noAmmoSound = trap_S_RegisterSound("sound/weapons/noammo.wav", qfalse);
-
 	cgs.media.talkSound = trap_S_RegisterSound("sound/player/talk.wav", qfalse);
 	cgs.media.landSound = trap_S_RegisterSound("sound/player/land1.wav", qfalse);
-
 	cgs.media.hitSound = trap_S_RegisterSound("sound/feedback/hit.wav", qfalse);
 #ifdef MISSIONPACK
 	cgs.media.hitSoundHighArmor = trap_S_RegisterSound("sound/feedback/hithi.wav", qfalse);
 	cgs.media.hitSoundLowArmor = trap_S_RegisterSound("sound/feedback/hitlo.wav", qfalse);
 #endif
-
 	cgs.media.impressiveSound = trap_S_RegisterSound("sound/feedback/impressive.wav", qtrue);
 	cgs.media.excellentSound = trap_S_RegisterSound("sound/feedback/excellent.wav", qtrue);
 	cgs.media.deniedSound = trap_S_RegisterSound("sound/feedback/denied.wav", qtrue);
@@ -1352,43 +1337,33 @@ static void CG_RegisterSounds(void) {
 	cgs.media.firstExcellentSound = trap_S_RegisterSound("sound/feedback/first_excellent.wav", qtrue);
 	cgs.media.firstHumiliationSound = trap_S_RegisterSound("sound/feedback/first_gauntlet.wav", qtrue);
 #endif
-
 	cgs.media.takenLeadSound = trap_S_RegisterSound("sound/feedback/takenlead.wav", qtrue);
 	cgs.media.tiedLeadSound = trap_S_RegisterSound("sound/feedback/tiedlead.wav", qtrue);
 	cgs.media.lostLeadSound = trap_S_RegisterSound("sound/feedback/lostlead.wav", qtrue);
-
 #ifdef MISSIONPACK
 	cgs.media.voteNow = trap_S_RegisterSound("sound/feedback/vote_now.wav", qtrue);
 	cgs.media.votePassed = trap_S_RegisterSound("sound/feedback/vote_passed.wav", qtrue);
 	cgs.media.voteFailed = trap_S_RegisterSound("sound/feedback/vote_failed.wav", qtrue);
 #endif
-
 	cgs.media.watrInSound = trap_S_RegisterSound("sound/player/watr_in.wav", qfalse);
 	cgs.media.watrOutSound = trap_S_RegisterSound("sound/player/watr_out.wav", qfalse);
 	cgs.media.watrUnSound = trap_S_RegisterSound("sound/player/watr_un.wav", qfalse);
-
 	cgs.media.jumpPadSound = trap_S_RegisterSound("sound/world/jumppad.wav", qfalse);
 
 	for (i = 0; i < 4; i++) {
-		Com_sprintf(name, sizeof(name), "sound/player/footsteps/step%i.wav", i+1);
+		Com_sprintf(name, sizeof(name), "sound/player/footsteps/step%i.wav", i + 1);
 		cgs.media.footsteps[FOOTSTEP_NORMAL][i] = trap_S_RegisterSound(name, qfalse);
-
-		Com_sprintf(name, sizeof(name), "sound/player/footsteps/boot%i.wav", i+1);
+		Com_sprintf(name, sizeof(name), "sound/player/footsteps/boot%i.wav", i + 1);
 		cgs.media.footsteps[FOOTSTEP_BOOT][i] = trap_S_RegisterSound(name, qfalse);
-
-		Com_sprintf(name, sizeof(name), "sound/player/footsteps/flesh%i.wav", i+1);
+		Com_sprintf(name, sizeof(name), "sound/player/footsteps/flesh%i.wav", i + 1);
 		cgs.media.footsteps[FOOTSTEP_FLESH][i] = trap_S_RegisterSound(name, qfalse);
-
-		Com_sprintf(name, sizeof(name), "sound/player/footsteps/mech%i.wav", i+1);
+		Com_sprintf(name, sizeof(name), "sound/player/footsteps/mech%i.wav", i + 1);
 		cgs.media.footsteps[FOOTSTEP_MECH][i] = trap_S_RegisterSound(name, qfalse);
-
-		Com_sprintf(name, sizeof(name), "sound/player/footsteps/energy%i.wav", i+1);
+		Com_sprintf(name, sizeof(name), "sound/player/footsteps/energy%i.wav", i + 1);
 		cgs.media.footsteps[FOOTSTEP_ENERGY][i] = trap_S_RegisterSound(name, qfalse);
-
-		Com_sprintf(name, sizeof(name), "sound/player/footsteps/splash%i.wav", i+1);
+		Com_sprintf(name, sizeof(name), "sound/player/footsteps/splash%i.wav", i + 1);
 		cgs.media.footsteps[FOOTSTEP_SPLASH][i] = trap_S_RegisterSound(name, qfalse);
-
-		Com_sprintf(name, sizeof(name), "sound/player/footsteps/clank%i.wav", i+1);
+		Com_sprintf(name, sizeof(name), "sound/player/footsteps/clank%i.wav", i + 1);
 		cgs.media.footsteps[FOOTSTEP_METAL][i] = trap_S_RegisterSound(name, qfalse);
 	}
 	// only register the items that the server says we need
@@ -1401,14 +1376,14 @@ static void CG_RegisterSounds(void) {
 	}
 
 	for (i = 1; i < MAX_SOUNDS; i++) {
-		soundName = CG_ConfigString(CS_SOUNDS+i);
+		soundName = CG_ConfigString(CS_SOUNDS + i);
 
 		if (!soundName[0]) {
 			break;
 		}
 
 		if (soundName[0] == '*') {
-			continue; 	// custom sound
+			continue; // custom sound
 		}
 
 		cgs.gameSounds[i] = trap_S_RegisterSound(soundName, qfalse);
@@ -1424,9 +1399,9 @@ static void CG_RegisterSounds(void) {
 	cgs.media.sfx_rockexp = trap_S_RegisterSound("sound/weapons/rocket/rocklx1a.wav", qfalse);
 	cgs.media.sfx_plasmaexp = trap_S_RegisterSound("sound/weapons/plasma/plasmx1a.wav", qfalse);
 #ifdef MISSIONPACK
-	cgs.media.sfx_proxexp = trap_S_RegisterSound("sound/weapons/proxmine/wstbexpl.wav" , qfalse);
-	cgs.media.sfx_nghit = trap_S_RegisterSound("sound/weapons/nailgun/wnalimpd.wav" , qfalse);
-	cgs.media.sfx_nghitflesh = trap_S_RegisterSound("sound/weapons/nailgun/wnalimpl.wav" , qfalse);
+	cgs.media.sfx_proxexp = trap_S_RegisterSound("sound/weapons/proxmine/wstbexpl.wav", qfalse);
+	cgs.media.sfx_nghit = trap_S_RegisterSound("sound/weapons/nailgun/wnalimpd.wav", qfalse);
+	cgs.media.sfx_nghitflesh = trap_S_RegisterSound("sound/weapons/nailgun/wnalimpl.wav", qfalse);
 	cgs.media.sfx_nghitmetal = trap_S_RegisterSound("sound/weapons/nailgun/wnalimpm.wav", qfalse);
 	cgs.media.sfx_chghit = trap_S_RegisterSound("sound/weapons/vulcan/wvulimpd.wav", qfalse);
 	cgs.media.sfx_chghitflesh = trap_S_RegisterSound("sound/weapons/vulcan/wvulimpl.wav", qfalse);
@@ -1438,29 +1413,23 @@ static void CG_RegisterSounds(void) {
 	cgs.media.kamikazeFarSound = trap_S_RegisterSound("sound/items/kam_explode_far.wav", qfalse);
 	cgs.media.winnerSound = trap_S_RegisterSound("sound/feedback/voc_youwin.wav", qfalse);
 	cgs.media.loserSound = trap_S_RegisterSound("sound/feedback/voc_youlose.wav", qfalse);
-
 	cgs.media.wstbimplSound = trap_S_RegisterSound("sound/weapons/proxmine/wstbimpl.wav", qfalse);
 	cgs.media.wstbimpmSound = trap_S_RegisterSound("sound/weapons/proxmine/wstbimpm.wav", qfalse);
 	cgs.media.wstbimpdSound = trap_S_RegisterSound("sound/weapons/proxmine/wstbimpd.wav", qfalse);
 	cgs.media.wstbactvSound = trap_S_RegisterSound("sound/weapons/proxmine/wstbactv.wav", qfalse);
 #endif
-
 	cgs.media.regenSound = trap_S_RegisterSound("sound/items/regen.wav", qfalse);
 	cgs.media.protectSound = trap_S_RegisterSound("sound/items/protect3.wav", qfalse);
 	cgs.media.n_healthSound = trap_S_RegisterSound("sound/items/n_health.wav", qfalse);
 	cgs.media.hgrenb1aSound = trap_S_RegisterSound("sound/weapons/grenade/hgrenb1a.wav", qfalse);
 	cgs.media.hgrenb2aSound = trap_S_RegisterSound("sound/weapons/grenade/hgrenb2a.wav", qfalse);
-
 #ifdef MISSIONPACK
 	if (cgs.gametype >= GT_TEAM || cg_buildScript.integer) {
 		CG_CachePlayerSounds(cg_defaultMaleTeamModel.string);
 		CG_CachePlayerSounds(cg_defaultFemaleTeamModel.string);
 	}
 #endif
-
 }
-
-//===================================================================================
 
 /*
 =======================================================================================================================================
@@ -1471,20 +1440,16 @@ This function may execute for a couple of minutes with a slow disk.
 */
 static void CG_RegisterGraphics(void) {
 	int i;
-	char items[MAX_ITEMS+1];
+	char items[MAX_ITEMS + 1];
 
 	// clear any references to old media
 	memset(&cg.refdef, 0, sizeof(cg.refdef));
+
 	trap_R_ClearScene();
-
 	CG_LoadingString(cgs.mapname);
-
 	trap_R_LoadWorldMap(cgs.mapname);
-
 	CG_LoadingString("entities");
-
 	CG_ParseEntitiesFromString();
-
 	// precache status bar pics
 	CG_LoadingString("game media");
 
@@ -1493,16 +1458,12 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.botSkillShaders[2] = trap_R_RegisterShader("menu/art/skill3.tga");
 	cgs.media.botSkillShaders[3] = trap_R_RegisterShader("menu/art/skill4.tga");
 	cgs.media.botSkillShaders[4] = trap_R_RegisterShader("menu/art/skill5.tga");
-
 	cgs.media.viewBloodShader = trap_R_RegisterShader("viewBloodBlend");
-
 	cgs.media.deferShader = trap_R_RegisterShaderNoMip("gfx/2d/defer.tga");
-
 	cgs.media.scoreboardName = trap_R_RegisterShaderNoMip("menu/tab/name.tga");
 	cgs.media.scoreboardPing = trap_R_RegisterShaderNoMip("menu/tab/ping.tga");
 	cgs.media.scoreboardScore = trap_R_RegisterShaderNoMip("menu/tab/score.tga");
 	cgs.media.scoreboardTime = trap_R_RegisterShaderNoMip("menu/tab/time.tga");
-
 	cgs.media.smokePuffShader = trap_R_RegisterShader("smokePuff");
 	cgs.media.shotgunSmokePuffShader = trap_R_RegisterShader("shotgunSmokePuff");
 #ifdef MISSIONPACK
@@ -1513,19 +1474,16 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.bloodTrailShader = trap_R_RegisterShader("bloodTrail");
 	cgs.media.lagometerShader = trap_R_RegisterShader("lagometer");
 	cgs.media.connectionShader = trap_R_RegisterShader("disconnected");
-
 	cgs.media.waterBubbleShader = trap_R_RegisterShader("waterBubble");
-
 	cgs.media.tracerShader = trap_R_RegisterShader("gfx/misc/tracer");
 	cgs.media.selectShader = trap_R_RegisterShader("gfx/2d/select");
 
 	for (i = 0; i < NUM_CROSSHAIRS; i++) {
-		cgs.media.crosshairShader[i] = trap_R_RegisterShader(va("gfx/2d/crosshair%c", 'a'+i));
+		cgs.media.crosshairShader[i] = trap_R_RegisterShader(va("gfx/2d/crosshair%c", 'a' + i));
 	}
 
 	cgs.media.backTileShader = trap_R_RegisterShader("gfx/2d/backtile");
 	cgs.media.noammoShader = trap_R_RegisterShader("icons/noammo");
-
 	// powerup shaders
 	cgs.media.quadShader = trap_R_RegisterShader("powerups/quad");
 	cgs.media.quadWeaponShader = trap_R_RegisterShader("powerups/quadWeapon");
@@ -1534,7 +1492,6 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.invisShader = trap_R_RegisterShader("powerups/invisibility");
 	cgs.media.regenShader = trap_R_RegisterShader("powerups/regen");
 	cgs.media.hastePuffShader = trap_R_RegisterShader("hasteSmokePuff");
-
 #ifdef MISSIONPACK
 	if (cgs.gametype == GT_HARVESTER || cg_buildScript.integer) {
 		cgs.media.redCubeModel = trap_R_RegisterModel("models/powerups/orb/r_orb.md3");
@@ -1568,7 +1525,6 @@ static void CG_RegisterGraphics(void) {
 		cgs.media.neutralFlagBaseModel = trap_R_RegisterModel("models/mapobjects/flagbase/ntrl_base.md3");
 #endif
 	}
-
 #ifdef MISSIONPACK
 	if (cgs.gametype == GT_1FCTF || cg_buildScript.integer) {
 		cgs.media.neutralFlagModel = trap_R_RegisterModel("models/flags/n_flag.md3");
@@ -1596,7 +1552,6 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.redKamikazeShader = trap_R_RegisterShader("models/weaphits/kamikred");
 	cgs.media.dustPuffShader = trap_R_RegisterShader("hasteSmokePuff");
 #endif
-
 	if (cgs.gametype >= GT_TEAM || cg_buildScript.integer) {
 		cgs.media.friendShader = trap_R_RegisterShader("sprites/foe");
 		cgs.media.redQuadShader = trap_R_RegisterShader("powerups/blueflag");
@@ -1608,10 +1563,8 @@ static void CG_RegisterGraphics(void) {
 
 	cgs.media.armorModel = trap_R_RegisterModel("models/powerups/armor/armor_yel.md3");
 	cgs.media.armorIcon = trap_R_RegisterShaderNoMip("icons/iconr_yellow");
-
 	cgs.media.machinegunBrassModel = trap_R_RegisterModel("models/weapons2/shells/m_shell.md3");
 	cgs.media.shotgunBrassModel = trap_R_RegisterModel("models/weapons2/shells/s_shell.md3");
-
 	cgs.media.gibAbdomen = trap_R_RegisterModel("models/gibs/abdomen.md3");
 	cgs.media.gibArm = trap_R_RegisterModel("models/gibs/arm.md3");
 	cgs.media.gibChest = trap_R_RegisterModel("models/gibs/chest.md3");
@@ -1622,15 +1575,10 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.gibLeg = trap_R_RegisterModel("models/gibs/leg.md3");
 	cgs.media.gibSkull = trap_R_RegisterModel("models/gibs/skull.md3");
 	cgs.media.gibBrain = trap_R_RegisterModel("models/gibs/brain.md3");
-
 	cgs.media.smoke2 = trap_R_RegisterModel("models/weapons2/shells/s_shell.md3");
-
 	cgs.media.balloonShader = trap_R_RegisterShader("sprites/balloon3");
-
 	cgs.media.coronaShader = trap_R_RegisterShader("flareShader");
-
 	cgs.media.bloodExplosionShader = trap_R_RegisterShader("bloodExplosion");
-
 	cgs.media.bulletFlashModel = trap_R_RegisterModel("models/weaphits/bullet.md3");
 	cgs.media.ringFlashModel = trap_R_RegisterModel("models/weaphits/ring02.md3");
 	cgs.media.dishFlashModel = trap_R_RegisterModel("models/weaphits/boom01.md3");
@@ -1655,7 +1603,6 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.heartShader = trap_R_RegisterShaderNoMip("ui/assets/statusbar/selectedhealth.tga");
 	cgs.media.invulnerabilityPowerupModel = trap_R_RegisterModel("models/powerups/shield/shield.md3");
 #endif
-
 	cgs.media.medalImpressive = trap_R_RegisterShaderNoMip("medal_impressive");
 	cgs.media.medalExcellent = trap_R_RegisterShaderNoMip("medal_excellent");
 	cgs.media.medalGauntlet = trap_R_RegisterShaderNoMip("medal_gauntlet");
@@ -1665,7 +1612,6 @@ static void CG_RegisterGraphics(void) {
 
 	memset(cg_items, 0, sizeof(cg_items));
 	memset(cg_weapons, 0, sizeof(cg_weapons));
-
 	// only register the items that the server says we need
 	Q_strncpyz(items, CG_ConfigString(CS_ITEMS), sizeof(items));
 
@@ -1683,7 +1629,6 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.shadowMarkShader = trap_R_RegisterShader("markShadow");
 	cgs.media.wakeMarkShader = trap_R_RegisterShader("wake");
 	cgs.media.bloodMarkShader = trap_R_RegisterShader("bloodMark");
-
 	// register the inline models
 	cgs.numInlineModels = trap_CM_NumInlineModels();
 
@@ -1697,8 +1642,11 @@ static void CG_RegisterGraphics(void) {
 		int j;
 
 		Com_sprintf(name, sizeof(name), "*%i", i);
+
 		cgs.inlineDrawModel[i] = trap_R_RegisterModel(name);
+
 		trap_R_ModelBounds(cgs.inlineDrawModel[i], mins, maxs, 0, 0, 0);
+
 		for (j = 0; j < 3; j++) {
 			cgs.inlineModelMidpoints[i][j] = mins[j] + 0.5 * (maxs[j] - mins[j]);
 		}
@@ -1707,7 +1655,7 @@ static void CG_RegisterGraphics(void) {
 	for (i = 1; i < MAX_MODELS; i++) {
 		const char *modelName;
 
-		modelName = CG_ConfigString(CS_MODELS+i);
+		modelName = CG_ConfigString(CS_MODELS + i);
 
 		if (!modelName[0]) {
 			break;
@@ -1715,7 +1663,6 @@ static void CG_RegisterGraphics(void) {
 
 		cgs.gameModels[i] = trap_R_RegisterModel(modelName);
 	}
-
 #ifdef MISSIONPACK
 	// new stuff
 	cgs.media.patrolShader = trap_R_RegisterShaderNoMip("ui/assets/statusbar/patrol.tga");
@@ -1738,17 +1685,15 @@ static void CG_RegisterGraphics(void) {
 		CG_CachePlayerModels(cg_defaultFemaleTeamModel.string, cg_defaultFemaleTeamHeadModel.string);
 	}
 #endif
-
 	CG_ClearParticles();
 /*
 	for (i = 1; i < MAX_PARTICLES_AREAS; i++) {
-		{
-			int rval;
+		int rval;
 
-			rval = CG_NewParticleArea(CS_PARTICLES + i);
+		rval = CG_NewParticleArea(CS_PARTICLES + i);
 
-			if (!rval)
-				break;
+		if (!rval) {
+			break;
 		}
 	}
 */
@@ -1760,8 +1705,10 @@ CG_LocalPlayerAdded
 =======================================================================================================================================
 */
 void CG_LocalPlayerAdded(int localPlayerNum, int playerNum) {
-	if (playerNum < 0 || playerNum >= MAX_CLIENTS)
+
+	if (playerNum < 0 || playerNum >= MAX_CLIENTS) {
 		return;
+	}
 
 	cg.localPlayers[localPlayerNum].playerNum = playerNum;
 
@@ -1774,23 +1721,24 @@ CG_LocalPlayerRemoved
 =======================================================================================================================================
 */
 void CG_LocalPlayerRemoved(int localPlayerNum) {
-	if (cg.localPlayers[localPlayerNum].playerNum == -1)
+
+	if (cg.localPlayers[localPlayerNum].playerNum == -1) {
 		return;
+	}
 
 	Com_Memset(&cg.localPlayers[localPlayerNum], 0, sizeof(cg.localPlayers[0]));
 
 	cg.localPlayers[localPlayerNum].playerNum = -1;
 }
 
-#ifdef MISSIONPACK
-/*																																			
-=======================
+/*
+=======================================================================================================================================
 CG_BuildSpectatorString
-
 =======================================================================================================================================
 */
 void CG_BuildSpectatorString(void) {
 	int i;
+
 	cg.spectatorList[0] = 0;
 
 	for (i = 0; i < MAX_CLIENTS; i++) {
@@ -1799,10 +1747,9 @@ void CG_BuildSpectatorString(void) {
 		}
 	}
 }
-#endif
 
-/*																																			
-===================
+/*
+=======================================================================================================================================
 CG_RegisterPlayers
 =======================================================================================================================================
 */
@@ -1832,7 +1779,7 @@ static void CG_RegisterPlayers(void) {
 			continue;
 		}
 
-		playerInfo = CG_ConfigString(CS_PLAYERS+i);
+		playerInfo = CG_ConfigString(CS_PLAYERS + i);
 
 		if (!playerInfo[0]) {
 			continue;
@@ -1841,12 +1788,9 @@ static void CG_RegisterPlayers(void) {
 		CG_LoadingPlayer(i);
 		CG_NewPlayerInfo(i);
 	}
-#ifdef MISSIONPACK
-	CG_BuildSpectatorString();
-#endif
-}
 
-//===========================================================================
+	CG_BuildSpectatorString();
+}
 
 /*
 =======================================================================================================================================
@@ -1854,6 +1798,7 @@ CG_ConfigString
 =======================================================================================================================================
 */
 const char *CG_ConfigString(int index) {
+
 	if (index < 0 || index >= MAX_CONFIGSTRINGS) {
 		CG_Error("CG_ConfigString: bad index: %i", index);
 	}
@@ -1861,12 +1806,9 @@ const char *CG_ConfigString(int index) {
 	return cgs.gameState.stringData + cgs.gameState.stringOffsets[index];
 }
 
-//==================================================================
-
 /*
 =======================================================================================================================================
 CG_StartMusic
-
 =======================================================================================================================================
 */
 void CG_StartMusic(void) {
@@ -1875,12 +1817,17 @@ void CG_StartMusic(void) {
 
 	// start the background music
 	s = (char *)CG_ConfigString(CS_MUSIC);
+
 	Q_strncpyz(parm1, COM_Parse(&s), sizeof(parm1));
 	Q_strncpyz(parm2, COM_Parse(&s), sizeof(parm2));
-
 	trap_S_StartBackgroundTrack(parm1, parm2, 1.0f, 1.0f);
 }
-#ifdef MISSIONPACK_HUD
+
+/*
+=======================================================================================================================================
+CG_GetMenuBuffer
+=======================================================================================================================================
+*/
 char *CG_GetMenuBuffer(const char *filename) {
 	int len;
 	fileHandle_t f;
@@ -1900,31 +1847,43 @@ char *CG_GetMenuBuffer(const char *filename) {
 	}
 
 	trap_FS_Read(buf, len, f);
+
 	buf[len] = 0;
+
 	trap_FS_FCloseFile(f);
 
 	return buf;
 }
 
-//
-//==============================
-// new hud stuff(mission pack)
-//==============================
-//
+/*
+=======================================================================================================================================
+
+	New hud stuff (mission pack)
+
+=======================================================================================================================================
+*/
+
+/*
+=======================================================================================================================================
+CG_Asset_Parse
+=======================================================================================================================================
+*/
 qboolean CG_Asset_Parse(int handle) {
 	pc_token_t token;
 	const char *tempStr;
 
-	if (!trap_PC_ReadToken(handle, &token))
+	if (!trap_PC_ReadToken(handle, &token)) {
 		return qfalse;
+	}
 
 	if (Q_stricmp(token.string, "{") != 0) {
 		return qfalse;
 	}
-    
+
 	while (1) {
-		if (!trap_PC_ReadToken(handle, &token))
+		if (!trap_PC_ReadToken(handle, &token)) {
 			return qfalse;
+		}
 
 		if (Q_stricmp(token.string, "}") == 0) {
 			return qtrue;
@@ -1980,7 +1939,7 @@ qboolean CG_Asset_Parse(int handle) {
 			}
 
 			if (cg_hudFont.string[0]) {
-				// ZTM: HACK: Team Arena hud.menu list bigFont as 20 point but status numbers are drawn at 36 point.
+				// ZTM: HACK: Team Arena hud.menu list bigFont as 20 point but status numbers are drawn at 36 point
 				if (!strcmp(tempStr, "fonts/bigfont") && pointSize == 20 && CG_InitTrueTypeFont(cg_hudFont.string, 36, 0, &cgDC.Assets.bigFont)) {
 					Com_DPrintf("Overriding HUD bigFont '%s'(%d pt)with '%s'(36 pt)\n", tempStr, pointSize, cg_hudFont.string);
 					continue;
@@ -2106,29 +2065,36 @@ qboolean CG_Asset_Parse(int handle) {
 	return qfalse;
 }
 
+/*
+=======================================================================================================================================
+CG_ParseMenu
+=======================================================================================================================================
+*/
 void CG_ParseMenu(const char *menuFile) {
 	pc_token_t token;
 	int handle;
 
 	handle = trap_PC_LoadSource(menuFile, NULL);
 
-	if (!handle)
+	if (!handle) {
 		handle = trap_PC_LoadSource("ui/testhud.menu", NULL);
+	}
 
-	if (!handle)
+	if (!handle) {
 		return;
+	}
 
 	while (1) {
 		if (!trap_PC_ReadToken(handle, &token)) {
 			break;
 		}
 
-		//if(Q_stricmp(token, "{")) {
+		//if (Q_stricmp(token, "{")) {
 		//	Com_Printf("Missing { in menu file\n");
 		//	break;
 		//}
 
-		//if(cgDC.menuCount == MAX_MENUS) {
+		//if (cgDC.menuCount == MAX_MENUS) {
 		//	Com_Printf("Too many menus!\n");
 		//	break;
 		//}
@@ -2154,6 +2120,11 @@ void CG_ParseMenu(const char *menuFile) {
 	trap_PC_FreeSource(handle);
 }
 
+/*
+=======================================================================================================================================
+CG_Load_Menu
+=======================================================================================================================================
+*/
 qboolean CG_Load_Menu(char **p) {
 	char *token;
 
@@ -2164,7 +2135,6 @@ qboolean CG_Load_Menu(char **p) {
 	}
 
 	while (1) {
-
 		token = COM_ParseExt(p, qtrue);
 
 		if (Q_stricmp(token, "}") == 0) {
@@ -2181,6 +2151,11 @@ qboolean CG_Load_Menu(char **p) {
 	return qfalse;
 }
 
+/*
+=======================================================================================================================================
+CG_LoadMenus
+=======================================================================================================================================
+*/
 void CG_LoadMenus(const char *menuFile) {
 	char *token;
 	char *p;
@@ -2210,11 +2185,11 @@ void CG_LoadMenus(const char *menuFile) {
 	}
 
 	trap_FS_Read(buf, len, f);
-	buf[len] = 0;
-	trap_FS_FCloseFile(f);
-	
-	COM_Compress(buf);
 
+	buf[len] = 0;
+
+	trap_FS_FCloseFile(f);
+	COM_Compress(buf);
 	Menu_Reset();
 
 	p = buf;
@@ -2226,12 +2201,12 @@ void CG_LoadMenus(const char *menuFile) {
 			break;
 		}
 
-		//if(Q_stricmp(token, "{")) {
+		//if (Q_stricmp(token, "{")) {
 		//	Com_Printf("Missing { in menu file\n");
 		//	break;
 		//}
 
-		//if(cgDC.menuCount == MAX_MENUS) {
+		//if (cgDC.menuCount == MAX_MENUS) {
 		//	Com_Printf("Too many menus!\n");
 		//	break;
 		//}
@@ -2252,12 +2227,23 @@ void CG_LoadMenus(const char *menuFile) {
 	Com_DPrintf("UI menu load time = %d milli seconds\n", trap_Milliseconds() - start);
 }
 
+/*
+=======================================================================================================================================
+CG_OwnerDrawHandleKey
+=======================================================================================================================================
+*/
 static qboolean CG_OwnerDrawHandleKey(int ownerDraw, int flags, float *special, int key) {
 	return qfalse;
 }
 
+/*
+=======================================================================================================================================
+CG_FeederCount
+=======================================================================================================================================
+*/
 static int CG_FeederCount(float feederID) {
 	int i, count;
+
 	count = 0;
 
 	if (feederID == FEEDER_REDTEAM_LIST) {
@@ -2279,26 +2265,40 @@ static int CG_FeederCount(float feederID) {
 	return count;
 }
 
-// FIXME: might need to cache this info
-static playerInfo_t * CG_InfoFromScoreIndex(int index, int team, int *scoreIndex) {
+/*
+=======================================================================================================================================
+CG_InfoFromScoreIndex
+
+FIXME: might need to cache this info.
+=======================================================================================================================================
+*/
+static playerInfo_t *CG_InfoFromScoreIndex(int index, int team, int *scoreIndex) {
 	int i, count;
 
 	if (cgs.gametype >= GT_TEAM) {
 		count = 0;
+
 		for (i = 0; i < cg.numScores; i++) {
 			if (cg.scores[i].team == team) {
 				if (count == index) {
 					*scoreIndex = i;
 					return &cgs.playerinfo[cg.scores[i].playerNum];
 				}
+
 				count++;
 			}
 		}
 	}
+
 	*scoreIndex = index;
 	return &cgs.playerinfo[cg.scores[index].playerNum];
 }
 
+/*
+=======================================================================================================================================
+CG_FeederItemText
+=======================================================================================================================================
+*/
 static const char *CG_FeederItemText(float feederID, int index, int column, qhandle_t *handle) {
 	gitem_t *item;
 	int scoreIndex = 0;
@@ -2318,33 +2318,34 @@ static const char *CG_FeederItemText(float feederID, int index, int column, qhan
 	sp = &cg.scores[scoreIndex];
 
 	if (info && info->infoValid) {
-		switch(column) {
+		switch (column) {
 			case 0:
-				if (info->powerups &(1 << PW_NEUTRALFLAG)) {
+				if (info->powerups & (1 << PW_NEUTRALFLAG)) {
 					item = BG_FindItemForPowerup(PW_NEUTRALFLAG);
 					*handle = cg_items[BG_ItemNumForItem(item)].icon;
-				} else if (info->powerups &(1 << PW_REDFLAG)) {
+				} else if (info->powerups & (1 << PW_REDFLAG)) {
 					item = BG_FindItemForPowerup(PW_REDFLAG);
 					*handle = cg_items[BG_ItemNumForItem(item)].icon;
-				} else if (info->powerups &(1 << PW_BLUEFLAG)) {
+				} else if (info->powerups & (1 << PW_BLUEFLAG)) {
 					item = BG_FindItemForPowerup(PW_BLUEFLAG);
 					*handle = cg_items[BG_ItemNumForItem(item)].icon;
 				} else {
 					if (info->botSkill > 0 && info->botSkill <= 5) {
 						*handle = cgs.media.botSkillShaders[info->botSkill - 1];
 					} else if (info->handicap < 100) {
-					return va("%i", info->handicap);
+						return va("%i", info->handicap);
 					}
 				}
 
-			break;
+				break;
 			case 1:
 				if (team == -1) {
 					return "";
 				} else {
 					*handle = CG_StatusHandle(info->teamTask);
 				}
-		  break;
+
+				break;
 			case 2:
 				if (Com_ClientListContains(&cg.readyPlayers, sp->playerNum)) {
 					return "Ready";
@@ -2364,32 +2365,43 @@ static const char *CG_FeederItemText(float feederID, int index, int column, qhan
 					}
 				}
 
-			break;
+				break;
 			case 3:
 				return info->name;
-			break;
+				break;
 			case 4:
 				return va("%i", info->score);
-			break;
+				break;
 			case 5:
 				return va("%4i", sp->time);
-			break;
+				break;
 			case 6:
 				if (sp->ping == -1) {
 					return "connecting";
-				} 
+				}
+
 				return va("%4i", sp->ping);
-			break;
+				break;
 		}
 	}
 
 	return "";
 }
 
+/*
+=======================================================================================================================================
+CG_FeederItemImage
+=======================================================================================================================================
+*/
 static qhandle_t CG_FeederItemImage(float feederID, int index) {
 	return 0;
 }
 
+/*
+=======================================================================================================================================
+CG_FeederSelection
+=======================================================================================================================================
+*/
 static void CG_FeederSelection(float feederID, int index) {
 #if 0 // this only gets called from Menu_SetFeederSelection
 	if (!cg.cur_lc) {
@@ -2399,12 +2411,15 @@ static void CG_FeederSelection(float feederID, int index) {
 	if (cgs.gametype >= GT_TEAM) {
 		int i, count;
 		int team = (feederID == FEEDER_REDTEAM_LIST) ? TEAM_RED : TEAM_BLUE;
+
 		count = 0;
+
 		for (i = 0; i < cg.numScores; i++) {
 			if (cg.scores[i].team == team) {
 				if (index == count) {
 					cg.cur_lc->selectedScore = i;
 				}
+
 				count++;
 			}
 		}
@@ -2414,58 +2429,89 @@ static void CG_FeederSelection(float feederID, int index) {
 #endif
 }
 
+/*
+=======================================================================================================================================
+CG_Cvar_Get
+=======================================================================================================================================
+*/
 static float CG_Cvar_Get(const char *cvar) {
 	char buff[128];
+
 	memset(buff, 0, sizeof(buff));
-	trap_Cvar_VariableStringBuffer(cvar, buff, sizeof(buff));
+
+	trap_Cvar_LatchedVariableStringBuffer(cvar, buff, sizeof(buff));
 	return atof(buff);
 }
 
+/*
+=======================================================================================================================================
+CG_OwnerDrawWidth
+=======================================================================================================================================
+*/
 static int CG_OwnerDrawWidth(int ownerDraw, float scale) {
-	switch(ownerDraw) {
-	  case CG_GAME_TYPE:
+
+	switch (ownerDraw) {
+		case CG_GAME_TYPE:
 			return CG_Text_Width(CG_GameTypeString(), scale, 0);
-	  case CG_GAME_STATUS:
+		case CG_GAME_STATUS:
 			return CG_Text_Width(CG_GetGameStatusText(), scale, 0);
 			break;
-	  case CG_KILLER:
+		case CG_KILLER:
 			return CG_Text_Width(CG_GetKillerText(), scale, 0);
 			break;
-	  case CG_RED_NAME:
+		case CG_RED_NAME:
 			return CG_Text_Width(cg_redTeamName.string, scale, 0);
 			break;
-	  case CG_BLUE_NAME:
+		case CG_BLUE_NAME:
 			return CG_Text_Width(cg_blueTeamName.string, scale, 0);
 			break;
-
 	}
 
 	return 0;
 }
 
+/*
+=======================================================================================================================================
+CG_PlayCinematic
+=======================================================================================================================================
+*/
 static int CG_PlayCinematic(const char *name, float x, float y, float w, float h) {
 	CG_AdjustFrom640(&x, &y, &w, &h);
-  return trap_CIN_PlayCinematic(name, x, y, w, h, CIN_loop);
-}
-
-static void CG_StopCinematic(int handle) {
-  trap_CIN_StopCinematic(handle);
-}
-
-static void CG_DrawCinematic(int handle, float x, float y, float w, float h) {
-	CG_AdjustFrom640(&x, &y, &w, &h);
-  trap_CIN_SetExtents(handle, x, y, w, h);
-  trap_CIN_DrawCinematic(handle);
-}
-
-static void CG_RunCinematicFrame(int handle) {
-  trap_CIN_RunCinematic(handle);
+	return trap_CIN_PlayCinematic(name, x, y, w, h, CIN_loop);
 }
 
 /*
 =======================================================================================================================================
-CG_LoadHudMenu();
+CG_StopCinematic
+=======================================================================================================================================
+*/
+static void CG_StopCinematic(int handle) {
+	trap_CIN_StopCinematic(handle);
+}
 
+/*
+=======================================================================================================================================
+CG_DrawCinematic
+=======================================================================================================================================
+*/
+static void CG_DrawCinematic(int handle, float x, float y, float w, float h) {
+	CG_AdjustFrom640(&x, &y, &w, &h);
+	trap_CIN_SetExtents(handle, x, y, w, h);
+	trap_CIN_DrawCinematic(handle);
+}
+
+/*
+=======================================================================================================================================
+CG_RunCinematicFrame
+=======================================================================================================================================
+*/
+static void CG_RunCinematicFrame(int handle) {
+	trap_CIN_RunCinematic(handle);
+}
+
+/*
+=======================================================================================================================================
+CG_LoadHudMenu
 =======================================================================================================================================
 */
 void CG_LoadHudMenu(void) {
@@ -2482,7 +2528,7 @@ void CG_LoadHudMenu(void) {
 	cgDC.registerModel = &trap_R_RegisterModel;
 	cgDC.modelBounds = &trap_R_ModelBounds;
 	cgDC.fillRect = &CG_FillRect;
-	cgDC.drawRect = &CG_DrawRect;   
+	cgDC.drawRect = &CG_DrawRect;
 	cgDC.drawSides = &CG_DrawSides;
 	cgDC.drawTopBottom = &CG_DrawTopBottom;
 	cgDC.clearScene = &trap_R_ClearScene;
@@ -2495,7 +2541,7 @@ void CG_LoadHudMenu(void) {
 	cgDC.runScript = &CG_RunMenuScript;
 	cgDC.getTeamColor = &CG_GetTeamColor;
 	cgDC.setCVar = trap_Cvar_Set;
-	cgDC.getCVarString = trap_Cvar_VariableStringBuffer;
+	cgDC.getCVarString = trap_Cvar_LatchedVariableStringBuffer;
 	cgDC.getCVarValue = CG_Cvar_Get;
 	cgDC.drawTextWithCursor = &CG_Text_PaintWithCursor;
 	cgDC.setOverstrikeMode = &trap_Key_SetOverstrikeMode;
@@ -2527,10 +2573,9 @@ void CG_LoadHudMenu(void) {
 	cgDC.popScreenPlacement = &CG_PopScreenPlacement;
 	
 	Init_Display(&cgDC);
-
 	Menu_Reset();
-	
 	trap_Cvar_VariableStringBuffer("cg_hudFiles", buff, sizeof(buff));
+
 	hudSet = buff;
 
 	if (hudSet[0] == '\0') {
@@ -2550,15 +2595,14 @@ void CG_HudMenuHacks(void) {
 	menuDef_t *menu;
 
 	Init_Display(&cgDC);
-
 	// make voice chat head stick to left side in widescreen
 	menu = Menus_FindByName("voiceMenu");
 
 	if (menu && !menu->forceScreenPlacement) {
 		Menu_SetScreenPlacement(menu, PLACE_LEFT, PLACE_TOP);
 	}
-	// Make vertical power up area stick to the left or right side in widescreen.
-	// Team Arena has it on the right side but also handle custom huds that use left side.
+	// make vertical power up area stick to the left or right side in widescreen
+	// Team Arena has it on the right side but also handle custom huds that use left side
 	menu = Menus_FindByName("powerup area");
 
 	if (menu && !menu->forceScreenPlacement) {
@@ -2578,12 +2622,20 @@ void CG_HudMenuHacks(void) {
 	}
 }
 
+/*
+=======================================================================================================================================
+CG_AssetCache
+=======================================================================================================================================
+*/
 void CG_AssetCache(void) {
-	//if(Assets.textFont == NULL) {
-	//  trap_R_RegisterFont("fonts/arial.ttf", 72, &Assets.textFont);
+
+	//if (Assets.textFont == NULL) {
+	//	trap_R_RegisterFont("fonts/arial.ttf", 72, &Assets.textFont);
 	//}
+
 	//Assets.background = trap_R_RegisterShaderNoMip(ASSET_BACKGROUND);
 	//Com_Printf("Menu Size: %i bytes\n", sizeof(cgDC.Menus));
+
 	cgDC.Assets.gradientBar = trap_R_RegisterShaderNoMip(ASSET_GRADIENTBAR);
 	cgDC.Assets.fxBasePic = trap_R_RegisterShaderNoMip(ART_FX_BASE);
 	cgDC.Assets.fxPic[0] = trap_R_RegisterShaderNoMip(ART_FX_RED);
@@ -2608,13 +2660,12 @@ void CG_AssetCache(void) {
 	cgDC.Assets.sliderBar = trap_R_RegisterShaderNoMip(ASSET_SLIDER_BAR);
 	cgDC.Assets.sliderThumb = trap_R_RegisterShaderNoMip(ASSET_SLIDER_THUMB);
 }
-#endif
 
 /*
 =======================================================================================================================================
 CG_ClearState
 
-Called at init and killing server from UI
+Called at init and killing server from UI.
 =======================================================================================================================================
 */
 void CG_ClearState(qboolean everything, int maxSplitView) {
@@ -2661,25 +2712,21 @@ void CG_SetConnectionState(connstate_t state) {
 =======================================================================================================================================
 CG_Init
 
-Called after every cgame load, such as main menu, level change, or subsystem restart
+Called after every cgame load, such as main menu, level change, or subsystem restart.
 =======================================================================================================================================
 */
 void CG_Init(connstate_t state, int maxSplitView, int playVideo) {
-	Swap_Init();
 
+	Swap_Init();
 	// clear everything
 	CG_ClearState(qtrue, maxSplitView);
-
 	CG_SetConnectionState(state);
-
 	CG_RegisterCvars();
-
 	CG_InitConsoleCommands();
-
 	// load a few needed things before we do any screen updates
-	cgs.media.whiteShader		 = trap_R_RegisterShader("white");
-	cgs.media.consoleShader		 = trap_R_RegisterShader("console");
-	cgs.media.nodrawShader		 = trap_R_RegisterShaderEx("nodraw", LIGHTMAP_NONE, qtrue);
+	cgs.media.whiteShader = trap_R_RegisterShader("white");
+	cgs.media.consoleShader = trap_R_RegisterShader("console");
+	cgs.media.nodrawShader = trap_R_RegisterShaderEx("nodraw", LIGHTMAP_NONE, qtrue);
 	cgs.media.whiteDynamicShader = trap_R_RegisterShaderEx("white", LIGHTMAP_NONE, qtrue);
 
 	CG_ConsoleInit();
@@ -2688,14 +2735,11 @@ void CG_Init(connstate_t state, int maxSplitView, int playVideo) {
 		Key_SetCatcher(KEYCATCH_CONSOLE);
 		return;
 	}
-
 #ifdef MISSIONPACK_HUD
 	Init_Display(&cgDC);
 	String_Init();
 #endif
-
 	UI_Init(cg.connected, maxSplitView);
-
 	// if the user didn't give any commands, run default action
 	if (playVideo == 1) {
 		trap_Cmd_ExecuteText(EXEC_NOW, "cinematic idlogo.RoQ\n");
@@ -2711,8 +2755,7 @@ void CG_Init(connstate_t state, int maxSplitView, int playVideo) {
 =======================================================================================================================================
 CG_Ingame_Init
 
-Called after every level change or subsystem restart
-Will perform callbacks to make the loading info screen update.
+Called after every level change or subsystem restart. Will perform callbacks to make the loading info screen update.
 =======================================================================================================================================
 */
 void CG_Ingame_Init(int serverMessageNum, int serverCommandSequence, int maxSplitView, int playerNum0, int playerNum1, int playerNum2, int playerNum3) {
@@ -2729,7 +2772,7 @@ void CG_Ingame_Init(int serverMessageNum, int serverCommandSequence, int maxSpli
 	playerNums[3] = playerNum3;
 
 	for (i = 0; i < CG_MaxSplitView(); i++) {
-		// clear team preference if was previously set(only want it used for one game)
+		// clear team preference if was previously set (only want it used for one game)
 		trap_Cvar_Set(Com_LocalPlayerCvarName(i, "teampref"), "");
 
 		if (playerNums[i] < 0 || playerNums[i] >= MAX_CLIENTS) {
@@ -2748,13 +2791,11 @@ void CG_Ingame_Init(int serverMessageNum, int serverCommandSequence, int maxSpli
 		cg.localPlayers[i].weaponSelect = WP_MACHINEGUN;
 	}
 
-	cgs.redflag = cgs.blueflag = -1; // For compatibily, default to unset for
+	cgs.redflag = cgs.blueflag = -1; // for compatibily, default to unset for
 	cgs.flagStatus = -1;
 	// old servers
-
 	// get the gamestate from the client system
 	trap_GetGameState(&cgs.gameState);
-
 	// check game protocol
 	s = CG_ConfigString(CS_GAME_PROTOCOL);
 
@@ -2768,61 +2809,43 @@ void CG_Ingame_Init(int serverMessageNum, int serverCommandSequence, int maxSpli
 	cgs.levelStartTime = atoi(s);
 
 	trap_SetMapTitle(CG_ConfigString(CS_MESSAGE));
-	trap_SetNetFields(sizeof(entityState_t), sizeof(entityState_t) - sizeof(int), bg_entityStateFields, bg_numEntityStateFields,
-					   sizeof(playerState_t), 0, bg_playerStateFields, bg_numPlayerStateFields);
+	trap_SetNetFields(sizeof(entityState_t), sizeof(entityState_t) - sizeof(int), bg_entityStateFields, bg_numEntityStateFields, sizeof(playerState_t), 0, bg_playerStateFields, bg_numPlayerStateFields);
 
 	CG_ParseServerinfo();
-
 	// load the new map
 	CG_LoadingString("collision map");
-
 	trap_CM_LoadMap(cgs.mapname);
 
-	cg.loading = qtrue; 		// force players to load instead of defer
+	cg.loading = qtrue; // force players to load instead of defer
 
 	CG_LoadingString("sounds");
-
 	CG_RegisterSounds();
-
 	CG_LoadingString("graphics");
-
 	CG_RegisterGraphics();
-
 	CG_LoadingString("players");
-
-	CG_RegisterPlayers(); 		// if low on memory, some players will be deferred
-
+	CG_RegisterPlayers(); // if low on memory, some players will be deferred
 #ifdef MISSIONPACK_HUD
 	CG_AssetCache();
-	CG_LoadHudMenu();      // load new hud stuff
+	CG_LoadHudMenu(); // load new hud stuff
 #endif
-
-	cg.loading = qfalse; 	// future players will be deferred
+	cg.loading = qfalse; // future players will be deferred
 
 	CG_InitLocalEntities();
-
 	CG_InitMarkPolys();
-
 	// remove the last loading update
 	cg.infoScreenText[0] = 0;
-
-	// Make sure we have update values(scores)
+	// make sure we have update values (scores)
 	CG_SetConfigValues();
-
 	CG_StartMusic();
 
 	cg.lightstylesInited = qfalse;
 
 	CG_LoadingString("");
-
 #ifdef MISSIONPACK
 	CG_InitTeamChat();
 #endif
-
 	CG_ShaderStateChanged();
-
 	trap_S_ClearLoopingSounds(qtrue);
-
 	CG_RestoreSnapshot();
 }
 
@@ -2830,10 +2853,11 @@ void CG_Ingame_Init(int serverMessageNum, int serverCommandSequence, int maxSpli
 =======================================================================================================================================
 CG_KillServer
 
-Called by UI to kill local server
+Called by UI to kill local server.
 =======================================================================================================================================
 */
 void CG_KillServer(void) {
+
 	if (!cgs.localServer) {
 		return;
 	}
@@ -2849,7 +2873,7 @@ void CG_KillServer(void) {
 =======================================================================================================================================
 CG_Shutdown
 
-Called before every level change or subsystem restart
+Called before every level change or subsystem restart.
 =======================================================================================================================================
 */
 void CG_Shutdown(void) {
@@ -2858,21 +2882,21 @@ void CG_Shutdown(void) {
 	for (i = 0; i < CG_MaxSplitView(); i++) {
 		trap_SetViewAngles(i, cg.localPlayers[i].viewangles);
 	}
-	// some mods may need to do cleanup work here,
-	// like closing files or archiving session data
+	// some mods may need to do cleanup work here, like closing files or archiving session data
 }
 
 /*
 =======================================================================================================================================
 CG_Refresh
 
-Draw the frame
+Draw the frame.
 =======================================================================================================================================
 */
 void CG_Refresh(int serverTime, stereoFrame_t stereoView, qboolean demoPlayback, connstate_t state, int realTime) {
 	int i;
 
 	CG_SetConnectionState(state);
+
 	cg.realFrameTime = realTime - cg.realTime;
 	cg.realTime = realTime;
 
@@ -2889,6 +2913,7 @@ void CG_Refresh(int serverTime, stereoFrame_t stereoView, qboolean demoPlayback,
 		y = 0;
 		width = SCREEN_WIDTH;
 		height = SCREEN_HEIGHT;
+
 		CG_SetScreenPlacement(PLACE_CENTER, PLACE_CENTER);
 		CG_AdjustFrom640(&x, &y, &width, &height);
 
@@ -2915,7 +2940,7 @@ void CG_Refresh(int serverTime, stereoFrame_t stereoView, qboolean demoPlayback,
 		CG_DrawActiveFrame(serverTime, stereoView, demoPlayback);
 	}
 
-	if ((state > CA_DISCONNECTED && state <= CA_LOADING) ||(Key_GetCatcher()& KEYCATCH_UI)) {
+	if ((state > CA_DISCONNECTED && state <= CA_LOADING) || (Key_GetCatcher()& KEYCATCH_UI)) {
 		if (ui_stretch.integer) {
 			CG_SetScreenPlacement(PLACE_STRETCH, PLACE_STRETCH);
 		} else {
@@ -2936,18 +2961,22 @@ void CG_Refresh(int serverTime, stereoFrame_t stereoView, qboolean demoPlayback,
 =======================================================================================================================================
 CG_BindUICommand
 
-Returns qtrue if bind command should be executed while user interface is shown
+Returns qtrue if bind command should be executed while user interface is shown.
 =======================================================================================================================================
 */
 static qboolean CG_BindUICommand(const char *cmd) {
-	if (Key_GetCatcher()& KEYCATCH_CONSOLE)
+
+	if (Key_GetCatcher() & KEYCATCH_CONSOLE) {
 		return qfalse;
+	}
 
-	if (!Q_stricmp(cmd, "toggleconsole"))
+	if (!Q_stricmp(cmd, "toggleconsole")) {
 		return qtrue;
+	}
 
-	if (!Q_stricmp(cmd, "togglemenu"))
+	if (!Q_stricmp(cmd, "togglemenu")) {
 		return qtrue;
+	}
 
 	return qfalse;
 }
@@ -2956,49 +2985,46 @@ static qboolean CG_BindUICommand(const char *cmd) {
 =======================================================================================================================================
 CG_ParseBinding
 
-Execute the commands in the bind string
-
-key up events only perform actions if the game key binding is
-a button command(leading + sign).  These will be processed even in
-console mode and menu mode, to keep the character from continuing
-an action started before a mode switch.
-
+Execute the commands in the bind string.
+Key up events only perform actions if the game key binding is a button command (leading + sign). These will be processed even in
+console mode and menu mode, to keep the character from continuing an action started before a mode switch.
 =======================================================================================================================================
 */
 void CG_ParseBinding(int key, qboolean down, unsigned time, connstate_t state, int keyCatcher, int joystickNum, int axisNum) {
 	char buf[MAX_STRING_CHARS], *p = buf, *end;
 	qboolean allCommands, allowUpCmds;
 
-	if (state == CA_DISCONNECTED && keyCatcher == 0)
+	if (state == CA_DISCONNECTED && keyCatcher == 0) {
 		return;
+	}
 
 	trap_Key_GetBindingBuf(key, buf, sizeof(buf));
 
-	if (!buf[0])
+	if (!buf[0]) {
 		return;
-
+	}
 	// run all bind commands if console, ui, etc aren't reading keys
 	allCommands = (keyCatcher == 0);
-
 	// allow button up commands if in game even if key catcher is set
 	allowUpCmds = (state != CA_DISCONNECTED);
 
 	while (1) {
-		while (isspace(*p))
+		while (isspace(*p)) {
 			p++;
+		}
+
 		end = strchr(p, '; ');
 
-		if (end)
+		if (end) {
 			*end = '\0';
+		}
 
 		if (*p == '+') {
-			// button commands add keynum and time as parameters
-			// so that multiple sources can be discriminated and
-			// subframe corrected
-			if (allCommands ||(allowUpCmds && !down)) {
+			// button commands add keynum and time as parameters so that multiple sources can be discriminated and subframe corrected
+			if (allCommands || (allowUpCmds && !down)) {
 				char cmd[1024];
-				Com_sprintf(cmd, sizeof(cmd), "%c%s %d %d %d %d\n",
-					(down) ? '+' : ' - ', p + 1, key, time, joystickNum, axisNum);
+
+				Com_sprintf(cmd, sizeof(cmd), "%c%s %d %d %d %d\n", (down) ? '+' : '-', p + 1, key, time, joystickNum, axisNum);
 				trap_Cmd_ExecuteText(EXEC_APPEND, cmd);
 			}
 		} else if (down) {
@@ -3009,8 +3035,10 @@ void CG_ParseBinding(int key, qboolean down, unsigned time, connstate_t state, i
 			}
 		}
 
-		if (!end)
+		if (!end) {
 			break;
+		}
+
 		p = end + 1;
 	}
 }
@@ -3019,7 +3047,7 @@ void CG_ParseBinding(int key, qboolean down, unsigned time, connstate_t state, i
 =======================================================================================================================================
 Message_Key
 
-In game talk message
+In game talk message.
 =======================================================================================================================================
 */
 void Message_Key(int key, qboolean down) {
@@ -3030,7 +3058,7 @@ void Message_Key(int key, qboolean down) {
 	}
 
 	if (key & K_CHAR_FLAG) {
-		key & = ~K_CHAR_FLAG;
+		key &= ~K_CHAR_FLAG;
 		MField_CharEvent(&cg.messageField, key);
 		return;
 	}
@@ -3044,7 +3072,6 @@ void Message_Key(int key, qboolean down) {
 	if (key == K_ENTER || key == K_KP_ENTER) {
 		if (cg.messageField.buffer[0] && cg.connected) {
 			Com_sprintf(buffer, sizeof(buffer), "%s %s\n", cg.messageCommand, MField_Buffer(&cg.messageField));
-
 			trap_SendClientCommand(buffer);
 		}
 
@@ -3066,7 +3093,7 @@ void CG_DistributeKeyEvent(int key, qboolean down, unsigned time, connstate_t st
 
 	CG_SetConnectionState(state);
 
-	switch(key) {
+	switch (key) {
 		case K_KP_PGUP:
 		case K_KP_EQUALS:
 		case K_KP_5:
@@ -3088,7 +3115,7 @@ void CG_DistributeKeyEvent(int key, qboolean down, unsigned time, connstate_t st
 			break;
 	}
 	// console key is hardcoded, so the user can never unbind it
-	if (key == K_CONSOLE ||(key == K_ESCAPE && (trap_Key_IsDown(K_LEFTSHIFT) || trap_Key_IsDown(K_RIGHTSHIFT)))) {
+	if (key == K_CONSOLE || (key == K_ESCAPE && (trap_Key_IsDown(K_LEFTSHIFT) || trap_Key_IsDown(K_RIGHTSHIFT)))) {
 		if (down) {
 			Con_ToggleConsole_f();
 		}
@@ -3097,12 +3124,8 @@ void CG_DistributeKeyEvent(int key, qboolean down, unsigned time, connstate_t st
 	}
 
 	keyCatcher = Key_GetCatcher();
-
 	// keys can still be used for bound actions
-	if ((key < 128 || key == K_MOUSE1
-		|| key == K_JOY_A || key == K_2JOY_A || key == K_3JOY_A || key == K_4JOY_A) &&
-		(trap_GetDemoState() == DS_PLAYBACK || state == CA_CINEMATIC) && keyCatcher == 0) {
-
+	if ((key < 128 || key == K_MOUSE1 || key == K_JOY_A || key == K_2JOY_A || key == K_3JOY_A || key == K_4JOY_A) && (trap_GetDemoState() == DS_PLAYBACK || state == CA_CINEMATIC) && keyCatcher == 0) {
 		if (cg_cameraMode.integer == 0) {
 			trap_Cvar_Set("nextdemo", "");
 			key = K_ESCAPE;
@@ -3122,7 +3145,7 @@ void CG_DistributeKeyEvent(int key, qboolean down, unsigned time, connstate_t st
 			return;
 		}
 		// skip console
-		keyCatcher & = ~KEYCATCH_CONSOLE;
+		keyCatcher &= ~KEYCATCH_CONSOLE;
 	} else {
 		// send the bound action
 		CG_ParseBinding(key, down, time, state, keyCatcher, joystickNum, axisNum);
@@ -3153,9 +3176,7 @@ void CG_DistributeCharEvent(int character, connstate_t state) {
 	CG_SetConnectionState(state);
 
 	key = (character|K_CHAR_FLAG);
-
 	keyCatcher = Key_GetCatcher();
-
 	// distribute the character event to the apropriate handler
 	if (keyCatcher & KEYCATCH_CONSOLE) {
 		Console_Key(key, qtrue);
@@ -3187,15 +3208,12 @@ void CG_UpdateMouseState(int localPlayerNum) {
 	if (Key_GetCatcher()& KEYCATCH_UI) {
 		// call mouse move event, no grab, hide system cursor
 		state |= MOUSE_CGAME;
-	}
 	// not controlling view angles
-	else if (cg.demoPlayback || cg.connState != CA_ACTIVE
-			||(cg.snap && (cg.snap->pss[localPlayerNum].pm_flags &(PMF_FOLLOW|PMF_SCOREBOARD)))) {
+	} else if (cg.demoPlayback || cg.connState != CA_ACTIVE || (cg.snap && (cg.snap->pss[localPlayerNum].pm_flags & (PMF_FOLLOW|PMF_SCOREBOARD)))) {
 		// no grab, show system cursor
 		state |= MOUSE_SYSTEMCURSOR;
-	}
 	// if console isn't open, not UI, and not other non - view angle modes
-	else if (state == 0) {
+	} else if (state == 0) {
 		// change viewangles, grab mouse, hide system cursor
 		state = MOUSE_CLIENT;
 	}
@@ -3204,7 +3222,6 @@ void CG_UpdateMouseState(int localPlayerNum) {
 }
 
 static int keyCatchers = 0;
-
 /*
 =======================================================================================================================================
 Key_GetCatcher
@@ -3220,10 +3237,11 @@ Key_SetCatcher
 =======================================================================================================================================
 */
 void Key_SetCatcher(int catcher) {
-	// If the catcher state is changing, clear all key states
+
+	// if the catcher state is changing, clear all key states
 	if (catcher != keyCatchers) {
 		trap_Key_ClearStates();
-		// If catcher is 0, disable held key repeating so binds don't repeat
+		// if catcher is 0, disable held key repeating so binds don't repeat
 		trap_Key_SetRepeat(catcher != 0);
 	}
 
@@ -3231,32 +3249,43 @@ void Key_SetCatcher(int catcher) {
 
 	CG_UpdateMouseState(0);
 }
-
+#ifndef MISSIONPACK_HUD
 /*
 =======================================================================================================================================
 CG_EventHandling
-==================
+
  type 0 - no event handling
       1 - team menu
       2 - hud editor
-
+=======================================================================================================================================
 */
-#ifndef MISSIONPACK_HUD
 void CG_EventHandling(int type) {
+
 }
 
+/*
+=======================================================================================================================================
+CG_KeyEvent
+=======================================================================================================================================
+*/
 void CG_KeyEvent(int key, qboolean down) {
+
 }
 
+/*
+=======================================================================================================================================
+CG_MouseEvent
+=======================================================================================================================================
+*/
 void CG_MouseEvent(int localPlayerNum, int x, int y) {
+
 }
 #endif
-
 /*
 =======================================================================================================================================
 CG_MousePosition
 
-returns bitshifted combo of x and y in window coords
+Returns bitshifted combo of x and y in window coords.
 =======================================================================================================================================
 */
 static int CG_MousePosition(int localPlayerNum) {
@@ -3274,6 +3303,7 @@ static int CG_MousePosition(int localPlayerNum) {
 	ay = 0;
 	aw = 1;
 	ah = 1;
+
 	CG_AdjustFrom640(&ax, &ay, &aw, &ah);
 
 	xbias = ax/aw;
@@ -3291,7 +3321,7 @@ static int CG_MousePosition(int localPlayerNum) {
 =======================================================================================================================================
 CG_SetMousePosition
 
-x and y are in window coords
+x and y are in window coords.
 =======================================================================================================================================
 */
 static void CG_SetMousePosition(int localPlayerNum, int x, int y) {
@@ -3308,6 +3338,7 @@ static void CG_SetMousePosition(int localPlayerNum, int x, int y) {
 	ay = 0;
 	aw = 1;
 	ah = 1;
+
 	CG_AdjustFrom640(&ax, &ay, &aw, &ah);
 
 	xbias = ax/aw;
@@ -3323,15 +3354,16 @@ static void CG_SetMousePosition(int localPlayerNum, int x, int y) {
 =======================================================================================================================================
 CG_JoystickEvent
 
-Internal function for general joystick event handling(not called for up events).
+Internal function for general joystick event handling (not called for up events).
 =======================================================================================================================================
 */
 void CG_JoystickEvent(int localPlayerNum, const joyevent_t *joyevent) {
+
 	if (cg_joystickDebug.integer) {
 		char str[32];
 
 		trap_JoyEventToString(joyevent, str, sizeof(str));
-		CG_Printf("Player %d pressed %s\n", localPlayerNum+1, str);
+		CG_Printf("Player %d pressed %s\n", localPlayerNum + 1, str);
 	}
 }
 
@@ -3339,7 +3371,7 @@ void CG_JoystickEvent(int localPlayerNum, const joyevent_t *joyevent) {
 =======================================================================================================================================
 CG_JoystickAxisEvent
 
-Joystick values stay set until changed
+Joystick values stay set until changed.
 =======================================================================================================================================
 */
 void CG_JoystickAxisEvent(int localPlayerNum, int axis, int value, unsigned time, connstate_t state) {
@@ -3367,16 +3399,15 @@ void CG_JoystickAxisEvent(int localPlayerNum, int axis, int value, unsigned time
 
 	oldvalue = cg.localPlayers[localPlayerNum].joystickAxis[axis];
 	cg.localPlayers[localPlayerNum].joystickAxis[axis] = value;
-
 	// stick released or switched pos/neg
 	if (value == 0 || !!(value < 0) != !!(oldvalue < 0)) {
 		if (oldvalue < 0) {
 			if (negKey != -1) {
-				CG_DistributeKeyEvent(negKey, qfalse, time, state, localPlayerNum, - (axis+1));
+				CG_DistributeKeyEvent(negKey, qfalse, time, state, localPlayerNum, - (axis + 1));
 			}
 		} else if (oldvalue > 0) {
 			if (posKey != -1) {
-				CG_DistributeKeyEvent(posKey, qfalse, time, state, localPlayerNum, axis+1);
+				CG_DistributeKeyEvent(posKey, qfalse, time, state, localPlayerNum, axis + 1);
 			}
 		}
 	}
@@ -3385,13 +3416,13 @@ void CG_JoystickAxisEvent(int localPlayerNum, int axis, int value, unsigned time
 		CG_JoystickEvent(localPlayerNum, &negEvent);
 
 		if (negKey != -1) {
-			CG_DistributeKeyEvent(negKey, qtrue, time, state, localPlayerNum, - (axis+1));
+			CG_DistributeKeyEvent(negKey, qtrue, time, state, localPlayerNum, - (axis + 1));
 		}
 	} else if (value > 0 && oldvalue <= 0) {
 		CG_JoystickEvent(localPlayerNum, &posEvent);
 
 		if (posKey != -1) {
-			CG_DistributeKeyEvent(posKey, qtrue, time, state, localPlayerNum, axis+1);
+			CG_DistributeKeyEvent(posKey, qtrue, time, state, localPlayerNum, axis + 1);
 		}
 	}
 }
@@ -3467,7 +3498,6 @@ void CG_JoystickHatEvent(int localPlayerNum, int hat, int value, unsigned time, 
 
 	oldvalue = cg.localPlayers[localPlayerNum].joystickHats[hat];
 	cg.localPlayers[localPlayerNum].joystickHats[hat] = value;
-
 	// released
 	for (i = 0; i < 4; i++) {
 		if ((oldvalue &(1 << i)) && !(value &(1 << i))) {
@@ -3477,7 +3507,7 @@ void CG_JoystickHatEvent(int localPlayerNum, int hat, int value, unsigned time, 
 		}
 	}
 
-	switch(value) {
+	switch (value) {
 		case HAT_RIGHTUP:
 		case HAT_RIGHTDOWN:
 		case HAT_LEFTUP:
@@ -3519,15 +3549,17 @@ static char *CG_VoIPString(int localPlayerNum) {
 
 	if (Q_stricmpn(voipSendTarget, "team", 4) == 0) {
 		int i, slen, nlen;
+
 		for (slen = i = 0; i < cgs.maxplayers; i++) {
-			if (!cgs.playerinfo[i].infoValid || i == cg.localPlayers[localPlayerNum].playerNum)
+			if (!cgs.playerinfo[i].infoValid || i == cg.localPlayers[localPlayerNum].playerNum) {
 				continue;
+			}
 
-			if (cgs.playerinfo[i].team != cgs.playerinfo[cg.localPlayers[localPlayerNum].playerNum].team)
+			if (cgs.playerinfo[i].team != cgs.playerinfo[cg.localPlayers[localPlayerNum].playerNum].team) {
 				continue;
+			}
 
-			nlen = Com_sprintf(&voipString[slen], sizeof(voipString) - slen,
-					"%s%d", (slen > 0) ? ", " : "", i);
+			nlen = Com_sprintf(&voipString[slen], sizeof(voipString) - slen, "%s%d", (slen > 0) ? ", " : "", i);
 
 			if (slen + nlen + 1 >= sizeof(voipString)) {
 				CG_Printf(S_COLOR_YELLOW "WARNING: voipString overflowed\n");
@@ -3536,17 +3568,16 @@ static char *CG_VoIPString(int localPlayerNum) {
 
 			slen += nlen;
 		}
-		// Notice that if the Com_sprintf was truncated, slen was not updated
-		// so this will remove any trailing commas or partially - completed numbers
+		// notice that if the Com_sprintf was truncated, slen was not updated
+		// so this will remove any trailing commas or partially-completed numbers
 		voipString[slen] = '\0';
-	} else if (Q_stricmpn(voipSendTarget, "crosshair", 9) == 0)
-		Com_sprintf(voipString, sizeof(voipString), "%d",
-				CG_CrosshairPlayer(localPlayerNum));
-	else if (Q_stricmpn(voipSendTarget, "attacker", 8) == 0)
-		Com_sprintf(voipString, sizeof(voipString), "%d",
-				CG_LastAttacker(localPlayerNum));
-	else
+	} else if (Q_stricmpn(voipSendTarget, "crosshair", 9) == 0) {
+		Com_sprintf(voipString, sizeof(voipString), "%d", CG_CrosshairPlayer(localPlayerNum));
+	} else if (Q_stricmpn(voipSendTarget, "attacker", 8) == 0) {
+		Com_sprintf(voipString, sizeof(voipString), "%d", CG_LastAttacker(localPlayerNum));
+	} else {
 		return NULL;
+	}
 
 	return voipString;
 }
@@ -3565,11 +3596,10 @@ static void CG_UpdateGlconfig(qboolean initial) {
 
 	trap_GetGlconfig(&cgs.glconfig);
 
-	resized = !initial && (oldWidth != cgs.glconfig.vidWidth
-						 || oldHeight != cgs.glconfig.vidHeight);
+	resized = !initial && (oldWidth != cgs.glconfig.vidWidth || oldHeight != cgs.glconfig.vidHeight);
 
-	if (initial ||(resized && cg.connState != CA_ACTIVE)) {
-		// Viewport scale and offset
+	if (initial || (resized && cg.connState != CA_ACTIVE)) {
+		// viewport scale and offset
 		cg.viewport = 0;
 		cg.numViewports = 1;
 		CG_CalcVrect();
@@ -3580,4 +3610,3 @@ static void CG_UpdateGlconfig(qboolean initial) {
 		UI_WindowResized();
 	}
 }
-

@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -151,45 +145,45 @@ Suite 120, Rockville, Maryland 20850 USA.
 
 //punctuation
 typedef struct punctuation_s {
-	char *p; 						//punctuation character(s)
-	int n; 							//punctuation indication
-	struct punctuation_s *next; 		//next punctuation
+	char *p;						//punctuation character(s)
+	int n;							//punctuation indication
+	struct punctuation_s *next;		//next punctuation
 } punctuation_t;
 
 //token
 typedef struct token_s {
-	char string[MAX_TOKEN]; 			//available token
-	int type; 						//last read token type
-	int subtype; 					//last read token sub type
+	char string[MAX_TOKEN];			//available token
+	int type;						//last read token type
+	int subtype;					//last read token sub type
 #ifdef NUMBERVALUE
-	unsigned long int intvalue; 	//integer value
-	float floatvalue; 			//floating point value
+	unsigned long int intvalue;	//integer value
+	float floatvalue;			//floating point value
 #endif //NUMBERVALUE
-	char *whitespace_p; 				//start of white space before token
-	char *endwhitespace_p; 			//start of white space before token
-	int line; 						//line the token was on
-	int linescrossed; 				//lines crossed in white space
-	struct token_s *next; 			//next token in chain
+	char *whitespace_p;				//start of white space before token
+	char *endwhitespace_p;			//start of white space before token
+	int line;						//line the token was on
+	int linescrossed;				//lines crossed in white space
+	struct token_s *next;			//next token in chain
 } token_t;
 
 //script file
 typedef struct script_s {
-	char filename[1024]; 			//file name of the script
-	char *buffer; 					//buffer containing the script
-	char *script_p; 					//current pointer in the script
-	char *end_p; 					//pointer to the end of the script
-	char *lastscript_p; 				//script pointer before reading token
-	char *whitespace_p; 				//begin of the white space
-	char *endwhitespace_p; 			//end of the white space
-	int length; 						//length of the script in bytes
-	int line; 						//current line in script
-	int lastline; 					//line before reading token
-	int tokenavailable; 				//set by UnreadLastToken
-	int flags; 						//several script flags
-	punctuation_t *punctuations; 	//the punctuations used in the script
+	char filename[1024];			//file name of the script
+	char *buffer;					//buffer containing the script
+	char *script_p;					//current pointer in the script
+	char *end_p;					//pointer to the end of the script
+	char *lastscript_p;				//script pointer before reading token
+	char *whitespace_p;				//begin of the white space
+	char *endwhitespace_p;			//end of the white space
+	int length;						//length of the script in bytes
+	int line;						//current line in script
+	int lastline;					//line before reading token
+	int tokenavailable;				//set by UnreadLastToken
+	int flags;						//several script flags
+	punctuation_t *punctuations;	//the punctuations used in the script
 	punctuation_t **punctuationtable;
-	token_t token; 					//available token
-	struct script_s *next; 			//next script in a chain
+	token_t token;					//available token
+	struct script_s *next;			//next script in a chain
 } script_t;
 
 //read a token from the script
@@ -241,8 +235,8 @@ void FreeScript(script_t *script);
 //set the base folder to load files from
 void PS_SetBaseFolder(const char *path);
 //print a script error with filename and line number
-void QDECL ScriptError(script_t *script, char *str, ...)__attribute__((format(printf, 2, 3)));
+void QDECL ScriptError(script_t *script, char *str, ...)__attribute__ ((format(printf, 2, 3)));
 //print a script warning with filename and line number
-void QDECL ScriptWarning(script_t *script, char *str, ...)__attribute__((format(printf, 2, 3)));
+void QDECL ScriptWarning(script_t *script, char *str, ...)__attribute__ ((format(printf, 2, 3)));
 
 

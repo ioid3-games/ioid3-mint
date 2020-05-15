@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_sky.c
@@ -50,7 +44,7 @@ static vec3_t sky_clip[6] = {
 	{0, -1, 1},
 	{0, 1, 1},
 	{1, 0, 1},
-	{ - 1, 0, 1} 
+	{ - 1, 0, 1}
 };
 
 static float sky_mins[2][6], sky_maxs[2][6];
@@ -119,7 +113,7 @@ static void AddSkyPolygon(int nump, vec3_t vecs) {
 			dv = -vecs[ - j - 1];
 
 		if (dv < 0.001)
-			continue; 	// don't divide by zero
+			continue;	// don't divide by zero
 		j = vec_to_st[axis][0];
 
 		if (j < 0)
@@ -204,7 +198,7 @@ static void ClipSkyPolygon(int nump, vec3_t vecs, int stage) {
 	newc[0] = newc[1] = 0;
 
 	for (i = 0, v = vecs; i < nump; i++, v += 3) {
-		switch(sides[i]) {
+		switch (sides[i]) {
 		case SIDE_FRONT:
 			VectorCopy(v, newv[0][newc[0]]);
 			newc[0]++;
@@ -259,7 +253,7 @@ RB_ClipSkyPolygons
 =======================================================================================================================================
 */
 void RB_ClipSkyPolygons(shaderCommands_t *input) {
-	vec3_t p[5]; 	// need one extra point for clipping
+	vec3_t p[5];	// need one extra point for clipping
 	int i, j;
 
 	ClearSkyBox();
@@ -306,7 +300,7 @@ static void MakeSkyVec(float s, float t, int axis, float outSt[2], vec3_t outXYZ
 	int j, k;
 	float boxSize;
 
-	boxSize = backEnd.viewParms.zFar / 1.75; 		// div sqrt(3)
+	boxSize = backEnd.viewParms.zFar / 1.75;		// div sqrt(3)
 
 	// use custom size, but make sure the sky is not far clipped
 	if (tr.skyFogDepthForOpaque > 0 && tr.skyFogDepthForOpaque < boxSize) {
@@ -592,7 +586,7 @@ static void FillCloudBox(const shader_t *shader, int stage) {
 		}
 
 		else {
-			switch(i) {
+			switch (i) {
 			case 0:
 			case 1:
 			case 2:
@@ -673,7 +667,7 @@ void R_BuildCloudData(shaderCommands_t *input) {
 
 	assert(shader->isSky);
 
-	sky_min = 1.0 / 256.0f; 		// FIXME: not correct?
+	sky_min = 1.0 / 256.0f;		// FIXME: not correct?
 	sky_max = 255.0 / 256.0f;
 
 	// set up for drawing
@@ -782,7 +776,7 @@ void RB_DrawSun(float scale, shader_t *shader) {
 		GL_SetModelviewMatrix(modelview);
 	}
 
-	dist = 	backEnd.viewParms.zFar / 1.75; 		// div sqrt(3)
+	dist = 	backEnd.viewParms.zFar / 1.75;		// div sqrt(3)
 	size = dist * scale;
 
 	VectorScale(tr.sunDirection, dist, origin);
@@ -804,7 +798,6 @@ void RB_DrawSun(float scale, shader_t *shader) {
 	// back to normal depth range
 	qglDepthRange(0.0, 1.0);
 }
-
 
 
 
@@ -877,7 +870,6 @@ void RB_StageIteratorSky(void) {
 	// note that sky was drawn so we will draw a sun later
 	backEnd.skyRenderedThisView = qtrue;
 }
-
 
 
 

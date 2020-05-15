@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 #ifndef TR_COMMON_H
@@ -59,12 +53,12 @@ typedef enum
 #define MIP_RAW_IMAGE(IMGFLAG_MIPMAP|IMGFLAG_PICMIP)
 
 typedef struct image_s {
-	char imgName[MAX_QPATH]; 		// game path, including extension
-	int width, height; 				// source image
-	int uploadWidth, uploadHeight; 	// after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
-	GLuint texnum; 					// gl texture binding
+	char imgName[MAX_QPATH];		// game path, including extension
+	int width, height;				// source image
+	int uploadWidth, uploadHeight;	// after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
+	GLuint texnum;					// gl texture binding
 
-	int frameUsed; 			// for texture usage in frame statistics
+	int frameUsed;			// for texture usage in frame statistics
 
 	int internalFormat;
 	int TMU;
@@ -83,11 +77,11 @@ typedef struct textureLevel_s {
 	GLenum  format;
 	int width, height;
 	GLsizei size;
-	void    *data;
+	void *data;
 } textureLevel_t;
 
 extern	refimport_t ri;
-extern glconfig_t glConfig; 		// outside of TR since it shouldn't be cleared during ref re - init
+extern glconfig_t glConfig;		// outside of TR since it shouldn't be cleared during ref re - init
 
 // used by shader functions, including noise in renderercommon
 #define FOG_TABLE_SIZE		256
@@ -115,25 +109,25 @@ extern glconfig_t glConfig; 		// outside of TR since it shouldn't be cleared dur
 //
 // cvars
 //
-extern cvar_t *r_stencilbits; 			// number of desired stencil bits
-extern cvar_t *r_depthbits; 			// number of desired depth bits
-extern cvar_t *r_colorbits; 			// number of desired color bits, only relevant for fullscreen
-extern cvar_t *r_texturebits; 			// number of desired texture bits
+extern cvar_t *r_stencilbits;			// number of desired stencil bits
+extern cvar_t *r_depthbits;			// number of desired depth bits
+extern cvar_t *r_colorbits;			// number of desired color bits, only relevant for fullscreen
+extern cvar_t *r_texturebits;			// number of desired texture bits
 extern cvar_t *r_ext_multisample;
 										// 0 = use framebuffer depth
 										// 16 = use 16 - bit textures
 										// 32 = use 32 - bit textures
 										// all else = error
 
-extern cvar_t *r_mode; 				// video mode
+extern cvar_t *r_mode;				// video mode
 extern cvar_t *r_noborder;
 extern cvar_t *r_fullscreen;
-extern cvar_t *r_ignorehwgamma; 		// overrides hardware gamma capabilities
+extern cvar_t *r_ignorehwgamma;		// overrides hardware gamma capabilities
 extern cvar_t *r_drawBuffer;
 extern cvar_t *r_swapInterval;
 
-extern cvar_t *r_allowExtensions; 				// global enable/disable of OpenGL extensions
-extern cvar_t *r_ext_compressed_textures; 		// these control use of specific extensions
+extern cvar_t *r_allowExtensions;				// global enable/disable of OpenGL extensions
+extern cvar_t *r_ext_compressed_textures;		// these control use of specific extensions
 extern cvar_t *r_ext_multitexture;
 extern cvar_t *r_ext_compiled_vertex_array;
 extern cvar_t *r_ext_texture_env_add;
@@ -151,7 +145,7 @@ qboolean	R_GetModeInfo(int *width, int *height, float *windowAspect, int mode);
 
 float R_NoiseGet4f(float x, float y, float z, double t);
 int R_RandomOn(double t);
-void  R_NoiseInit(void);
+void R_NoiseInit(void);
 
 void R_LoadImage(const char *name, int *numLevels, textureLevel_t **pic);
 image_t *R_FindImageFile(const char *name, imgType_t type, imgFlags_t flags);

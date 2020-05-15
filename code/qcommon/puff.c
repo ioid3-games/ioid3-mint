@@ -61,7 +61,7 @@
  * - Use indexes instead of pointers for readability
  * 1.4  31 Mar 2002 - Simplify construct()code set check
  * - Fix some comments
- * - Add FIXLCODES #define
+ * - Add FIXLCODES#define
  * 1.5   6 Apr 2002 - Minor comment fixes
  * 1.6   7 Aug 2002 - Minor format changes
  * 1.7   3 Mar 2003 - Added test code for distribution
@@ -650,12 +650,12 @@ local int32_t dynamic(struct state *s) {
 
     /* build huffman table for literal/length codes */
     err = construct(&lencode, lengths, nlen);
-    if (err < 0 ||(err > 0 && nlen - lencode.count[0] != 1))
+    if (err < 0 || (err > 0 && nlen - lencode.count[0] != 1))
         return - 7;      /* only allow incomplete codes if just one code */
 
     /* build huffman table for distance codes */
     err = construct(&distcode, lengths + nlen, ndist);
-    if (err < 0 ||(err > 0 && ndist - distcode.count[0] != 1))
+    if (err < 0 || (err > 0 && ndist - distcode.count[0] != 1))
         return - 8;      /* only allow incomplete codes if just one code */
 
     /* decode data until end - of - block code */

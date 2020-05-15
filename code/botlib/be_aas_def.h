@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -128,37 +122,37 @@ typedef struct aas_settings_s {
 
 //routing cache
 typedef struct aas_routingcache_s {
-	byte type; 									//portal or area cache
-	float time; 									//last time accessed or updated
-	int size; 									//size of the routing cache
-	int cluster; 								//cluster the cache is for
-	int areanum; 								//area the cache is created for
-	vec3_t origin; 								//origin within the area
-	float starttraveltime; 						//travel time to start with
-	int travelflags; 							//combinations of the travel flags
+	byte type;									//portal or area cache
+	float time;									//last time accessed or updated
+	int size;									//size of the routing cache
+	int cluster;								//cluster the cache is for
+	int areanum;								//area the cache is created for
+	vec3_t origin;								//origin within the area
+	float starttraveltime;						//travel time to start with
+	int travelflags;							//combinations of the travel flags
 	struct aas_routingcache_s *prev, *next;
 	struct aas_routingcache_s *time_prev, *time_next;
-	unsigned char *reachabilities; 				//reachabilities used for routing
-	unsigned short int traveltimes[1]; 			//travel time for every area(variable sized)
+	unsigned char *reachabilities;				//reachabilities used for routing
+	unsigned short int traveltimes[1];			//travel time for every area(variable sized)
 } aas_routingcache_t;
 
 //fields for the routing algorithm
 typedef struct aas_routingupdate_s {
 	int cluster;
-	int areanum; 								//area number of the update
-	vec3_t start; 								//start point the area was entered
-	unsigned short int tmptraveltime; 			//temporary travel time
-	unsigned short int *areatraveltimes; 		//travel times within the area
-	qboolean inlist; 							//true if the update is in the list
+	int areanum;								//area number of the update
+	vec3_t start;								//start point the area was entered
+	unsigned short int tmptraveltime;			//temporary travel time
+	unsigned short int *areatraveltimes;		//travel times within the area
+	qboolean inlist;							//true if the update is in the list
 	struct aas_routingupdate_s *next;
 	struct aas_routingupdate_s *prev;
 } aas_routingupdate_t;
 
 //reversed reachability link
 typedef struct aas_reversedlink_s {
-	int linknum; 								//the aas_areareachability_t
-	int areanum; 								//reachable from this area
-	struct aas_reversedlink_s *next; 			//next link
+	int linknum;								//the aas_areareachability_t
+	int areanum;								//reachable from this area
+	struct aas_reversedlink_s *next;			//next link
 } aas_reversedlink_t;
 
 //reversed area reachability
@@ -173,9 +167,9 @@ typedef struct aas_reachabilityareas_s {
 } aas_reachabilityareas_t;
 
 typedef struct aas_s {
-	int loaded; 									//true when an AAS file is loaded
-	int initialized; 							//true when AAS has been initialized
-	int savefile; 								//set true when file should be saved
+	int loaded;									//true when an AAS file is loaded
+	int initialized;							//true when AAS has been initialized
+	int savefile;								//set true when file should be saved
 	int bspchecksum;
 	//current time
 	float time;
@@ -228,10 +222,10 @@ typedef struct aas_s {
 	int numreachabilityareas;
 	float reachabilitytime;
 	//enities linked in the areas
-	aas_link_t *linkheap; 						//heap with link structures
-	int linkheapsize; 							//size of the link heap
-	aas_link_t *freelinks; 						//first free link
-	aas_link_t **arealinkedentities; 			//entities linked into areas
+	aas_link_t *linkheap;						//heap with link structures
+	int linkheapsize;							//size of the link heap
+	aas_link_t *freelinks;						//first free link
+	aas_link_t **arealinkedentities;			//entities linked into areas
 	//entities
 	int maxentities;
 	int maxclients;
@@ -253,8 +247,8 @@ typedef struct aas_s {
 	aas_routingcache_t ***clusterareacache;
 	aas_routingcache_t **portalcache;
 	//cache list sorted on time
-	aas_routingcache_t *oldestcache; 		// start of cache list sorted on time
-	aas_routingcache_t *newestcache; 		// end of cache list sorted on time
+	aas_routingcache_t *oldestcache;		// start of cache list sorted on time
+	aas_routingcache_t *newestcache;		// end of cache list sorted on time
 	//maximum travel time through portal areas
 	int *portalmaxtraveltimes;
 	//areas the reachabilities go through

@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -39,15 +33,14 @@ Suite 120, Rockville, Maryland 20850 USA.
 
 #include "../qcommon/q_shared.h"
 #include "botlib.h"
-#include "be_interface.h"			//for botimport.Print
+#include "be_interface.h" //for botimport.Print
 #include "l_crc.h"
 
 
 // FIXME: byte swap?
 
 // this is a 16 bit, non - reflected CRC using the polynomial 0x1021
-// and the initial and final xor values shown below...  in other words, the
-// CCITT standard CRC used by XMODEM
+// and the initial and final xor values shown below... in other words, the CCITT standard CRC used by XMODEM
 
 #define CRC_INIT_VALUE	0xffff
 #define CRC_XOR_VALUE	0x0000
@@ -104,7 +97,7 @@ void CRC_Init(unsigned short *crcvalue) {
 // Changes Globals:		 - 
 //===========================================================================
 void CRC_ProcessByte(unsigned short *crcvalue, byte data) {
-	*crcvalue = (*crcvalue << 8)^ crctable[(*crcvalue >> 8)^ data];
+	*crcvalue = (*crcvalue << 8) ^ crctable[(*crcvalue >> 8) ^ data];
 } //end of the function CRC_ProcessByte
 //===========================================================================
 //
@@ -128,10 +121,10 @@ unsigned short CRC_ProcessString(unsigned char *data, int length) {
 	CRC_Init(&crcvalue);
 
 	for (i = 0; i < length; i++) {
-		ind = (crcvalue >> 8)^ data[i];
+		ind = (crcvalue >> 8) ^ data[i];
 
 		if (ind < 0 || ind > 256)ind = 0;
-		crcvalue = (crcvalue << 8)^ crctable[ind];
+		crcvalue = (crcvalue << 8) ^ crctable[ind];
 	} //end for
 	return CRC_Value(crcvalue);
 } //end of the function CRC_ProcessString
@@ -145,6 +138,6 @@ void CRC_ContinueProcessString(unsigned short *crc, char *data, int length) {
 	int i;
 
 	for (i = 0; i < length; i++) {
-		*crc = (*crc << 8)^ crctable[(*crc >> 8)^ data[i]];
+		*crc = (*crc << 8) ^ crctable[(*crc >> 8) ^ data[i]];
 	} //end for
 } //end of the function CRC_ProcessString

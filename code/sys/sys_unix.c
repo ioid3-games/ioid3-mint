@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -400,9 +394,11 @@ void Sys_ListFilteredFiles(const char *basedir, char *subdirs, char *filter, cha
 				if (strlen(subdirs)) {
 					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s/%s", subdirs, d->d_name);
 				}
+
 				else {
 					Com_sprintf(newsubdirs, sizeof(newsubdirs), "%s", d->d_name);
 				}
+
 				Sys_ListFilteredFiles(basedir, newsubdirs, filter, list, numfiles);
 			}
 		}
@@ -437,11 +433,9 @@ char **Sys_ListFiles(const char *directory, const char *extension, char *filter,
 	char *list[MAX_FOUND_FILES];
 	int i;
 	struct stat   st;
-
 	int extLen;
 
 	if (filter) {
-
 		nfiles = 0;
 		Sys_ListFilteredFiles(directory, "", filter, list, &nfiles);
 
@@ -708,7 +702,7 @@ static void Sys_ZenityCommand(dialogType_t type, const char *message, const char
 	Sys_ClearExecBuffer();
 	Sys_AppendToExecBuffer("zenity");
 
-	switch(type) {
+	switch (type) {
 		default:
 		case DT_INFO:      Sys_AppendToExecBuffer("--info"); break;
 		case DT_WARNING:   Sys_AppendToExecBuffer("--warning"); break;
@@ -739,7 +733,7 @@ static void Sys_KdialogCommand(dialogType_t type, const char *message, const cha
 	Sys_ClearExecBuffer();
 	Sys_AppendToExecBuffer("kdialog");
 
-	switch(type) {
+	switch (type) {
 		default:
 		case DT_INFO:      Sys_AppendToExecBuffer("--msgbox"); break;
 		case DT_WARNING:   Sys_AppendToExecBuffer("--sorry"); break;
@@ -762,7 +756,7 @@ static void Sys_XmessageCommand(dialogType_t type, const char *message, const ch
 	Sys_AppendToExecBuffer("xmessage");
 	Sys_AppendToExecBuffer("-buttons");
 
-	switch(type) {
+	switch (type) {
 		default:           Sys_AppendToExecBuffer("OK:0"); break;
 		case DT_YES_NO:    Sys_AppendToExecBuffer("Yes:0, No:1"); break;
 		case DT_OK_CANCEL: Sys_AppendToExecBuffer("OK:0, Cancel:1"); break;
@@ -817,7 +811,7 @@ dialogResult_t Sys_Dialog(dialogType_t type, const char *message, const char *ti
 			exitCode = Sys_Exec();
 
 			if (exitCode >= 0) {
-				switch(type) {
+				switch (type) {
 					case DT_YES_NO:    return exitCode ? DR_NO : DR_YES;
 					case DT_OK_CANCEL: return exitCode ? DR_CANCEL : DR_OK;
 					default:           return DR_OK;

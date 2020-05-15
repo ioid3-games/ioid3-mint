@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_marks.c -- polygon projection on the world polygons
@@ -304,7 +298,6 @@ R_BoxSurfaces_r
 =======================================================================================================================================
 */
 void R_BoxSurfaces_r(mnode_t *node, vec3_t mins, vec3_t maxs, surfaceType_t **list, int *listbmodel, int listsize, int *listlength, vec3_t dir) {
-
 	int s, c;
 	int *mark;
 
@@ -351,7 +344,6 @@ void R_AddMarkFragments(int numClipPoints, vec3_t clipPoints[2][MAX_VERTS_ON_POL
 	pingPong = 0;
 
 	for (i = 0; i < numPlanes; i++) {
-
 		R_ChopPolyBehindPlane(numClipPoints, clipPoints[pingPong],
 						   &numClipPoints, clipPoints[!pingPong],
 							normals[i], dists[i], 0.5);
@@ -367,7 +359,7 @@ void R_AddMarkFragments(int numClipPoints, vec3_t clipPoints[2][MAX_VERTS_ON_POL
 	}
 	// add this fragment to the returned list
 	if (numClipPoints + (*returnedPoints) > maxPoints) {
-		return; 	// not enough space for this polygon
+		return;	// not enough space for this polygon
 	}
 	/*
 	// all the clip points should be within the bounding box
@@ -518,7 +510,6 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 		}
 
 		if (*surfaces[i] == SF_GRID) {
-
 			cv = (srfBspSurface_t *)surfaces[i];
 			for (m = 0; m < cv->height - 1; m++) {
 				for (n = 0; n < cv->width - 1; n++) {
@@ -560,6 +551,7 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 					VectorSubtract(clipPoints[0][2], clipPoints[0][1], v2);
 					CrossProduct(v1, v2, normal);
 					VectorNormalizeFast(normal);
+
 					if (DotProduct(normal, localProjectionDir) < -0.1) {
 						// add the fragments of this triangle
 						R_AddMarkFragments(numClipPoints, clipPoints,
@@ -569,7 +561,7 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 										   &returnedPoints, &returnedFragments, mins, maxs, lastBmodel, localProjectionDir);
 
 						if (returnedFragments == maxFragments) {
-							return returnedFragments; 	// not enough space for more fragments
+							return returnedFragments;	// not enough space for more fragments
 						}
 					}
 
@@ -587,6 +579,7 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 					VectorSubtract(clipPoints[0][2], clipPoints[0][1], v2);
 					CrossProduct(v1, v2, normal);
 					VectorNormalizeFast(normal);
+
 					if (DotProduct(normal, localProjectionDir) < -0.05) {
 						// add the fragments of this triangle
 						R_AddMarkFragments(numClipPoints, clipPoints,
@@ -596,7 +589,7 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 										   &returnedPoints, &returnedFragments, mins, maxs, lastBmodel, localProjectionDir);
 
 						if (returnedFragments == maxFragments) {
-							return returnedFragments; 	// not enough space for more fragments
+							return returnedFragments;	// not enough space for more fragments
 						}
 					}
 				}
@@ -604,7 +597,6 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 		}
 
 		else if (*surfaces[i] == SF_FACE) {
-
 			srfBspSurface_t *surf = (srfBspSurface_t *)surfaces[i];
 
 			// check the normal of this face
@@ -625,13 +617,12 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 								   &returnedPoints, &returnedFragments, mins, maxs, lastBmodel, localProjectionDir);
 
 				if (returnedFragments == maxFragments) {
-					return returnedFragments; 	// not enough space for more fragments
+					return returnedFragments;	// not enough space for more fragments
 				}
 			}
 		}
 
 		else if (*surfaces[i] == SF_TRIANGLES && r_marksOnTriangleMeshes->integer) {
-
 			srfBspSurface_t *surf = (srfBspSurface_t *)surfaces[i];
 
 			for (k = 0, tri = surf->indexes; k < surf->numIndexes; k += 3, tri += 3) {
@@ -648,7 +639,7 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 								   maxFragments, fragmentBuffer, &returnedPoints, &returnedFragments, mins, maxs, lastBmodel, localProjectionDir);
 
 				if (returnedFragments == maxFragments) {
-					return returnedFragments; 	// not enough space for more fragments
+					return returnedFragments;	// not enough space for more fragments
 				}
 			}
 		}
@@ -656,7 +647,6 @@ int R_MarkFragments(int numPoints, const vec3_t *points, const vec3_t projection
 
 	return returnedFragments;
 }
-
 
 
 

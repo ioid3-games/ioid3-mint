@@ -4,27 +4,21 @@ Copyright(C)2008 Przemyslaw Iskra < sparky@pld - linux.org>
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -622,7 +616,7 @@ PPC_PushData(unsigned int datum) {
 static long int fastMaskHi = 0, fastMaskLo = 31;
 static void
 PPC_MakeFastMask(int mask) {
-#if defined(__GNUC__) && (__GNUC__ >= 4 ||(__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
+#if defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
 	/* count leading zeros */
 	fastMaskHi = __builtin_clz(mask);
 
@@ -638,7 +632,6 @@ PPC_MakeFastMask(int mask) {
 		fastMaskLo --;
 #endif
 }
-
 
 /*
  * register definitions
@@ -876,7 +869,6 @@ VM_AnalyzeFunction(
 			}
 		}
 
-
 		if (
 			(op == OP_CALL)
 				||
@@ -890,7 +882,6 @@ VM_AnalyzeFunction(
 				vp->regR |= rTYPE_STATIC;
 			}
 		}
-
 
 		if (opi & opRetIF) {
 			value_provider[opstack_depth] = i_now;
@@ -971,6 +962,7 @@ VM_AnalyzeFunction(
 		// need stack to save caller safe registers
 		*prepareStack = 1;
 	}
+
 	*gpr_start_pos = gpr_start;
 
 	long int fpr_start = fpr_vstart;
@@ -993,6 +985,7 @@ VM_AnalyzeFunction(
 		// need stack to save caller safe registers
 		*prepareStack = 1;
 	}
+
 	*fpr_start_pos = fpr_start;
 }
 
@@ -1030,7 +1023,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 	while ((i_now = i_now->next)) {
 		emitStart(i_now->i_count);
 
-		switch(i_now->op) {
+		switch (i_now->op) {
 			default:
 			case OP_UNDEF:
 			case OP_IGNORE:
@@ -1061,12 +1054,14 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 						in(iSTL, gpr_list[i], save_pos, r1);
 						save_pos += GPRLEN;
 					}
+
 					save_pos = (save_pos + 15)& ~0x0f;
 
 					for (i = fpr_start_pos; i < fpr_vstart; i++) {
 						in(iSTFD, fpr_list[i], save_pos, r1);
 						save_pos += FPRLEN;
 					}
+
 					prepareStack = 2;
 				}
 
@@ -1090,6 +1085,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 						if (i_const->arg.us[1] != 0)
 							in(iORI, r3, r3, i_const->arg.us[1]);
 					}
+
 					gpr_pos --;
 				} else {
 					MAYBE_EMIT_CONST();
@@ -1117,6 +1113,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 						in(iLL, gpr_list[i], save_pos, r1);
 						save_pos += GPRLEN;
 					}
+
 					save_pos = (save_pos + 15)& ~0x0f;
 
 					for (i = fpr_start_pos; i < fpr_vstart; i++) {
@@ -1184,6 +1181,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					if (rFIRST != r3)
 						in(iMR, rFIRST, r3); // push return value on the top of the opstack
 				}
+
 				break;
 
 			case OP_PUSH:
@@ -1219,10 +1217,12 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					signed long int hi, lo;
 					hi = i_now->arg.ss[0];
 					lo = i_now->arg.ss[1];
+
 					if (lo < 0)
 						hi += 1;
 
 					gpr_pos++;
+
 					if (hi == 0) {
 						in(iADDI, rFIRST, rPSTACK, lo);
 					} else {
@@ -1231,6 +1231,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 							in(iADDI, rFIRST, rFIRST, lo);
 					}
 				}
+
 				break;
 
 			case OP_JUMP:
@@ -1250,6 +1251,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					in(iMTCTR, r0);
 					in(iBCTR);
 				}
+
 				gpr_pos --;
 				break;
 
@@ -1257,6 +1259,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 			case OP_NE:
 				if (i_const && i_const->arg.si >= -0x8000 && i_const->arg.si < 0x10000) {
 					EMIT_FALSE_CONST();
+
 					if (i_const->arg.si >= 0x8000)
 						in(iCMPLWI, cr7, rSECOND, i_const->arg.i);
 					else
@@ -1265,6 +1268,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					MAYBE_EMIT_CONST();
 					in(iCMPW, cr7, rSECOND, rFIRST);
 				}
+
 				emitJump(
 					i_now->arg.i,
 					(i_now->op == OP_EQ ? branchTrue : branchFalse),
@@ -1282,6 +1286,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					MAYBE_EMIT_CONST();
 					in(iCMPW, cr7, rSECOND, rFIRST);
 				}
+
 				emitJump(
 					i_now->arg.i,
 					(i_now->op == OP_LTI ? branchTrue : branchFalse),
@@ -1299,6 +1304,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					MAYBE_EMIT_CONST();
 					in(iCMPW, cr7, rSECOND, rFIRST);
 				}
+
 				emitJump(
 					i_now->arg.i,
 					(i_now->op == OP_GTI ? branchTrue : branchFalse),
@@ -1316,6 +1322,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					MAYBE_EMIT_CONST();
 					in(iCMPLW, cr7, rSECOND, rFIRST);
 				}
+
 				emitJump(
 					i_now->arg.i,
 					(i_now->op == OP_LTU ? branchTrue : branchFalse),
@@ -1333,6 +1340,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					MAYBE_EMIT_CONST();
 					in(iCMPLW, cr7, rSECOND, rFIRST);
 				}
+
 				emitJump(
 					i_now->arg.i,
 					(i_now->op == OP_GTU ? branchTrue : branchFalse),
@@ -1414,6 +1422,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					in(iLFSX, fFIRST, rFIRST, rDATABASE);
 					gpr_pos --;
 				}
+
 				break;
 
 			case OP_STORE1:
@@ -1464,6 +1473,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					in(iSTFSX, fFIRST, rFIRST, rDATABASE);
 					fpr_pos --;
 				}
+
 				gpr_pos --;
 				break;
 
@@ -1478,6 +1488,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					in(iSTFSX, fFIRST, rDATABASE, r0);
 					fpr_pos --;
 				}
+
 				break;
 
 			case OP_BLOCK_COPY:
@@ -1533,6 +1544,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 #endif
 				{
 					unsigned long int r5_ori = 0;
+
 					if (i_now->arg.si >= -0x8000 && i_now->arg.si < 0x8000) {
 						in(iLI, r5, i_now->arg.si);
 					} else if (i_now->arg.i < 0x10000) {
@@ -1552,6 +1564,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 
 					if (rFIRST != r4)
 						in(iMR, r4, rFIRST);
+
 					if (rSECOND != r3)
 						in(iMR, r3, rSECOND);
 
@@ -1583,11 +1596,13 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					signed short int hi, lo;
 					hi = i_const->arg.ss[0];
 					lo = i_const->arg.ss[1];
+
 					if (lo < 0)
 						hi += 1;
 
 					if (hi != 0)
 						in(iADDIS, rSECOND, rSECOND, hi);
+
 					if (lo != 0)
 						in(iADDI, rSECOND, rSECOND, lo);
 
@@ -1598,6 +1613,7 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 					MAYBE_EMIT_CONST();
 					in(iADD, rSECOND, rSECOND, rFIRST);
 				}
+
 				gpr_pos --;
 				break;
 
@@ -1770,7 +1786,6 @@ VM_CompileFunction(source_instruction_t * const i_first) {
 	}
 }
 
-
 /*
  * check which jumps are short enough to use signed 16bit immediate branch
  */
@@ -1888,7 +1903,7 @@ PPC_ComputeCode(vm_t *vm) {
 
 		// invert instruction condition
 		long int bo = 0;
-		switch(sj_now->bo) {
+		switch (sj_now->bo) {
 			case branchTrue:
 				bo = branchFalse;
 				break;
@@ -2071,7 +2086,6 @@ VM_Compile(vm_t *vm, vmHeader_t *header) {
 
 	/* mark memory as executable and not writeable */
 	if (mprotect(vm->codeBase, vm->codeLength, PROT_READ|PROT_EXEC)) {
-
 		// it has failed, make sure memory is unmapped before throwing the error
 		VM_Destroy_Compiled(vm);
 		DIE("mprotect failed");

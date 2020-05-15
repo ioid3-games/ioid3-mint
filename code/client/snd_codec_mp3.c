@@ -59,21 +59,21 @@ snd_codec_t mp3_codec = {
 // structure used for info purposes
 struct snd_codec_mp3_info
 {
-	byte encbuf[MP3_DATA_BUFSIZ]; 	// left over bytes not consumed
+	byte encbuf[MP3_DATA_BUFSIZ];	// left over bytes not consumed
 					// by the decoder.
-	struct mad_stream madstream; 	// uses encbuf as buffer.
-	struct mad_frame madframe; 	// control structures for libmad.
+	struct mad_stream madstream;	// uses encbuf as buffer.
+	struct mad_frame madframe;	// control structures for libmad.
 	struct mad_synth madsynth;
 
-	byte *pcmbuf; 			// buffer for not - used samples.
-	int buflen; 			// length of buffer data.
-	int pcmbufsize; 			// amount of allocated memory for
+	byte *pcmbuf;			// buffer for not - used samples.
+	int buflen;			// length of buffer data.
+	int pcmbufsize;			// amount of allocated memory for
 					// pcmbuf. This should have at least
 					// the size of a decoded mp3 frame.
 
-	byte *dest; 			// copy decoded data here.
-	int destlen; 			// amount of already copied data.
-	int destsize; 			// amount of bytes we must decode.
+	byte *dest;			// copy decoded data here.
+	int destlen;			// amount of already copied data.
+	int destsize;			// amount of bytes we must decode.
 };
 
 /*************** MP3 utility functions ***************/
@@ -110,7 +110,6 @@ int S_MP3_ReadData(snd_stream_t *stream, struct mad_stream *madstream, byte *enc
 
 	return retval;
 }
-
 
 /*
 =======================================================================================================================================
@@ -176,7 +175,7 @@ int S_MP3_Scanfile(snd_stream_t *stream) {
 				stream->info.width = MP3_SAMPLE_WIDTH;
 				stream->info.channels = MAD_NCHANNELS(&madheader);
 				stream->info.samples = 0;
-				stream->info.size = 0; 				// same here.
+				stream->info.size = 0;				// same here.
 				stream->info.dataofs = 0;
 			}
 
@@ -253,14 +252,14 @@ unsigned long genrand(void) {
 
         for(kk = 0; kk < MP3_DITH_N - MP3_DITH_M; kk++) {
             y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
-            mt[kk] = mt[kk+MP3_DITH_M] ^(y >> 1)^ mag01[y & 0x1];
+            mt[kk] = mt[kk+MP3_DITH_M] ^(y >> 1) ^ mag01[y & 0x1];
         }
         for(; kk < MP3_DITH_N - 1; kk++) {
             y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
-            mt[kk] = mt[kk+ (MP3_DITH_M - MP3_DITH_N)] ^(y >> 1)^ mag01[y & 0x1];
+            mt[kk] = mt[kk+ (MP3_DITH_M - MP3_DITH_N)] ^(y >> 1) ^ mag01[y & 0x1];
         }
         y = (mt[MP3_DITH_N - 1]&UPPER_MASK)|(mt[0]&LOWER_MASK);
-        mt[MP3_DITH_N - 1] = mt[MP3_DITH_M - 1] ^(y >> 1)^ mag01[y & 0x1];
+        mt[MP3_DITH_N - 1] = mt[MP3_DITH_M - 1] ^(y >> 1) ^ mag01[y & 0x1];
 
         mti = 0;
     }
@@ -335,7 +334,6 @@ signed int S_MP3_Scale(mad_fixed_t sample) {
 }
 
 
-
 /*
 =======================================================================================================================================
 S_MP3_PCMCopy
@@ -387,7 +385,6 @@ int S_MP3_PCMCopy(byte *buf, struct mad_pcm *pcm, int bufofs,
 
 	return sampleofs;
 }
-
 
 /*
 =======================================================================================================================================

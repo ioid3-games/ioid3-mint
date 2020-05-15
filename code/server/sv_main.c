@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -35,26 +29,26 @@ cvar_t *sv_voip;
 cvar_t *sv_voipProtocol;
 #endif
 
-serverStatic_t svs; 				// persistant server info
-server_t sv; 					// local server
-vm_t *gvm = NULL; 				// game virtual machine
+serverStatic_t svs;				// persistant server info
+server_t sv;					// local server
+vm_t *gvm = NULL;				// game virtual machine
 
-cvar_t *sv_fps = NULL; 			// time rate for running non - clients
-cvar_t *sv_timeout; 			// seconds without any message
-cvar_t *sv_zombietime; 			// seconds to sink messages after disconnect
-cvar_t *sv_rconPassword; 		// password for remote server commands
-cvar_t *sv_privatePassword; 		// password for the privateClient slots
+cvar_t *sv_fps = NULL;			// time rate for running non-clients
+cvar_t *sv_timeout;				// seconds without any message
+cvar_t *sv_zombietime;			// seconds to sink messages after disconnect
+cvar_t *sv_rconPassword;		// password for remote server commands
+cvar_t *sv_privatePassword;		// password for the privateClient slots
 cvar_t *sv_allowDownload;
 cvar_t *sv_maxclients;
 cvar_t *sv_cheats;
 
-cvar_t *sv_privateClients; 		// number of clients reserved for password
+cvar_t *sv_privateClients;		// number of clients reserved for password
 cvar_t *sv_hostname;
-cvar_t *sv_master[MAX_MASTER_SERVERS]; 	// master server ip address
-cvar_t *sv_reconnectlimit; 		// minimum seconds between connect messages
-cvar_t *sv_showloss; 			// report when usercmds are lost
-cvar_t *sv_padPackets; 			// add nop bytes to messages
-cvar_t *sv_killserver; 			// menu system can set to 1 to shut server down
+cvar_t *sv_master[MAX_MASTER_SERVERS];	// master server ip address
+cvar_t *sv_reconnectlimit;		// minimum seconds between connect messages
+cvar_t *sv_showloss;			// report when usercmds are lost
+cvar_t *sv_padPackets;			// add nop bytes to messages
+cvar_t *sv_killserver;			// menu system can set to 1 to shut server down
 cvar_t *sv_mapname;
 cvar_t *sv_mapChecksum;
 cvar_t *sv_serverid;
@@ -67,7 +61,7 @@ cvar_t *sv_gametypeName;
 cvar_t *sv_gametypeNetName;
 cvar_t *sv_pure;
 cvar_t *sv_floodProtect;
-cvar_t *sv_lanForceRate; // dedicated 1(LAN)server forces local client rates to 99999(bug #491)
+cvar_t *sv_lanForceRate; // dedicated 1 (LAN) server forces local client rates to 99999(bug #491)
 cvar_t *sv_banFile;
 
 cvar_t *sv_public;
@@ -87,7 +81,7 @@ EVENT MESSAGES
 =======================================================================================================================================
 SV_ExpandNewlines
 
-Converts newlines to "\n" so a line prints nicer
+Converts newlines to "\n" so a line prints nicer.
 =======================================================================================================================================
 */
 static char *SV_ExpandNewlines(char *in) {
@@ -95,6 +89,7 @@ static char *SV_ExpandNewlines(char *in) {
 	int l;
 
 	l = 0;
+
 	while (*in && l < sizeof(string) - 3) {
 		if (*in == '\n') {
 			string[l++] = '\\';
@@ -111,14 +106,14 @@ static char *SV_ExpandNewlines(char *in) {
 	return string;
 }
 
+#if 0 // unused
 /*
 =======================================================================================================================================
 SV_ReplacePendingServerCommands
 
-FIXME: This is ugly
+FIXME: This is ugly.
 =======================================================================================================================================
 */
-#if 0 // unused
 static int SV_ReplacePendingServerCommands(client_t *client, const char *cmd) {
 	int i, index, csnum1, csnum2;
 
@@ -128,6 +123,7 @@ static int SV_ReplacePendingServerCommands(client_t *client, const char *cmd) {
 		if (!Q_strncmp(cmd, client->reliableCommands[index], strlen("cs"))) {
 			sscanf(cmd, "cs %i", &csnum1);
 			sscanf(client->reliableCommands[index], "cs %i", &csnum2);
+
 			if (csnum1 == csnum2) {
 				Q_strncpyz(client->reliableCommands[index], cmd, sizeof(client->reliableCommands[index]));
 				/*
@@ -143,13 +139,11 @@ static int SV_ReplacePendingServerCommands(client_t *client, const char *cmd) {
 	return qfalse;
 }
 #endif
-
 /*
 =======================================================================================================================================
 SV_AddServerCommand
 
-The given command will be transmitted to the client, and is guaranteed to
-not have future snapshot_t executed before it is executed
+The given command will be transmitted to the client, and is guaranteed to not have future snapshot_t executed before it is executed.
 =======================================================================================================================================
 */
 void SV_AddServerCommand(client_t *client, int localPlayerNum, const char *cmd) {
@@ -161,14 +155,13 @@ void SV_AddServerCommand(client_t *client, int localPlayerNum, const char *cmd) 
 //		return;
 //	}
 	// do not send commands until the gamestate has been sent
-	if (client->state < CS_PRIMED)
+	if (client->state < CS_PRIMED) {
 		return;
+	}
 
 	client->reliableSequence++;
-	// if we would be losing an old command that hasn't been acknowledged,
-	// we must drop the connection
-	// we check == instead of >= so a broadcast print added by SV_DropClient()
-	// doesn't cause a recursive drop client
+	// if we would be losing an old command that hasn't been acknowledged, we must drop the connection
+	// we check == instead of >= so a broadcast print added by SV_DropClient() doesn't cause a recursive drop client
 	if (client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS + 1) {
 		Com_Printf(" ===== pending server commands ===== \n");
 		for (i = client->reliableAcknowledge + 1; i <= client->reliableSequence; i++) {
@@ -194,18 +187,16 @@ void SV_AddServerCommand(client_t *client, int localPlayerNum, const char *cmd) 
 	}
 }
 
-
 /*
 =======================================================================================================================================
 SV_SendServerCommand
 
-Sends a reliable command string to be interpreted by 
-the client game module: "cp", "print", "chat", etc
-A NULL client will broadcast to all clients
+Sends a reliable command string to be interpreted by the client game module: "cp", "print", "chat", etc.
+A NULL client will broadcast to all clients.
 =======================================================================================================================================
 */
 void QDECL SV_SendServerCommand(client_t *cl, int localPlayerNum, const char *fmt, ...) {
-	va_list		argptr;
+	va_list argptr;
 	byte message[MAX_MSGLEN];
 	client_t *client;
 	int j;
@@ -213,7 +204,6 @@ void QDECL SV_SendServerCommand(client_t *cl, int localPlayerNum, const char *fm
 	va_start(argptr, fmt);
 	Q_vsnprintf((char *)message, sizeof(message), fmt, argptr);
 	va_end(argptr);
-
 	// reserve 4 bytes for splitscreen prefix: "lc%d "
 	if (strlen((char *)message) >= sizeof(((client_t *)NULL) ->reliableCommands[0]) - 4) {
 		Com_Printf(S_COLOR_YELLOW "WARNING: Dropped long reliable command for client %d: %s\n", (int)(cl - svs.clients), message);
@@ -234,7 +224,6 @@ void QDECL SV_SendServerCommand(client_t *cl, int localPlayerNum, const char *fm
 	}
 }
 
-
 /*
 =======================================================================================================================================
 
@@ -243,46 +232,43 @@ MASTER SERVER FUNCTIONS
 =======================================================================================================================================
 */
 
+#define HEARTBEAT_MSEC 300 * 1000
+#define MASTERDNS_MSEC 24 * 60 * 60 * 1000
+static netadr_t adr[MAX_MASTER_SERVERS][2]; // [2] for v4 and v6 address for the same address string
 /*
 =======================================================================================================================================
 SV_MasterHeartbeat
 
-Send a message to the masters every few minutes to
-let it know we are alive, and log information.
-We will also have a heartbeat sent when a server
-changes from empty to non - empty, and full to non - full,
-but not on every player enter or exit.
+Send a message to the masters every few minutes to let it know we are alive, and log information. We will also have a heartbeat sent
+when a server changes from empty to non-empty, and full to non-full, but not on every player enter or exit.
 =======================================================================================================================================
 */
-#define HEARTBEAT_MSEC	300*1000
-#define MASTERDNS_MSEC	24*60*60*1000
-static netadr_t adr[MAX_MASTER_SERVERS][2]; // [2] for v4 and v6 address for the same address string.
 void SV_MasterHeartbeat(const char *message) {
 	int i;
 	int res;
 	int netenabled;
 
-	// Do not send heartbeats in single player.
+	// do not send heartbeats in single player.
 	if (Com_GameIsSinglePlayer()) {
 		return;
 	}
 
 	netenabled = Cvar_VariableIntegerValue("net_enabled");
 
-	if (!(netenabled &(NET_ENABLEV4|NET_ENABLEV6)))
-		return; 		// only public servers send heartbeats
-
+	if (!(netenabled &(NET_ENABLEV4|NET_ENABLEV6))) {
+		return; // only public servers send heartbeats
+	}
 	// if not time yet, don't send anything
-	if (svs.time < svs.nextHeartbeatTime)
+	if (svs.time < svs.nextHeartbeatTime) {
 		return;
+	}
 
 	svs.nextHeartbeatTime = svs.time + HEARTBEAT_MSEC;
-
 	// send to group masters
 	for (i = 0; i < MAX_MASTER_SERVERS; i++) {
-		if (!sv_master[i]->string[0])
+		if (!sv_master[i]->string[0]) {
 			continue;
-
+		}
 		// see if we haven't already resolved the name or if it's been over 24 hours
 		// resolving usually causes hitches on win95, so only do it when needed
 		if (sv_master[i]->modified || svs.time > svs.masterResolveTime[i]) {
@@ -297,11 +283,12 @@ void SV_MasterHeartbeat(const char *message) {
 					// if no port was specified, use the default master port
 					adr[i][0].port = BigShort(PORT_MASTER);
 				}
-				
-				if (res)
+
+				if (res) {
 					Com_Printf("%s resolved to %s\n", sv_master[i]->string, NET_AdrToStringwPort(adr[i][0]));
-				else
+				} else {
 					Com_Printf("%s has no IPv4 address.\n", sv_master[i]->string);
+				}
 			}
 			
 			if (netenabled & NET_ENABLEV6) {
@@ -312,11 +299,12 @@ void SV_MasterHeartbeat(const char *message) {
 					// if no port was specified, use the default master port
 					adr[i][1].port = BigShort(PORT_MASTER);
 				}
-				
-				if (res)
+
+				if (res) {
 					Com_Printf("%s resolved to %s\n", sv_master[i]->string, NET_AdrToStringwPort(adr[i][1]));
-				else
+				} else {
 					Com_Printf("%s has no IPv6 address.\n", sv_master[i]->string);
+				}
 			}
 		}
 
@@ -324,17 +312,16 @@ void SV_MasterHeartbeat(const char *message) {
 			continue;
 		}
 
-
 		Com_DPrintf("Sending heartbeat to %s\n", sv_master[i]->string);
+		// this command should be changed if the server info / status format ever incompatably changes
 
-		// this command should be changed if the server info / status format
-		// ever incompatably changes
-
-		if (adr[i][0].type != NA_BAD)
+		if (adr[i][0].type != NA_BAD) {
 			NET_OutOfBandPrint(NS_SERVER, adr[i][0], "heartbeat %s\n", message);
+		}
 
-		if (adr[i][1].type != NA_BAD)
+		if (adr[i][1].type != NA_BAD) {
 			NET_OutOfBandPrint(NS_SERVER, adr[i][1], "heartbeat %s\n", message);
+		}
 	}
 }
 
@@ -342,27 +329,26 @@ void SV_MasterHeartbeat(const char *message) {
 =======================================================================================================================================
 SV_CheckPublicStatus
 
-Checks for change of public status, informs all masters that
-this server is going down or forces normal heartbeat if needed.
+Checks for change of public status, informs all masters that this server is going down or forces normal heartbeat if needed.
 =======================================================================================================================================
 */
 void SV_CheckPublicStatus(void) {
 	static int publicOld = 0;
 
-	// Check if public status changed.
+	// check if public status changed
 	if (sv_public->modified) {
-		// Check if switched to or from public.
+		// check if switched to or from public
 		if (sv_public->integer > 0 || publicOld > 0) {
-			// Send heartbeat
+			// send heartbeat
 			if (sv_public->integer != 1) {
-				// Send shutdown server heartbeats
+				// send shutdown server heartbeats
 				svs.nextHeartbeatTime = -9999;
 				SV_MasterHeartbeat(FLATLINE_FOR_MASTER);
 				svs.nextHeartbeatTime = -9999;
 				SV_MasterHeartbeat(FLATLINE_FOR_MASTER);
 			} else {
 				svs.nextHeartbeatTime = -9999;
-				// SV_MasterHeartbeat will be called as usual.
+				// SV_MasterHeartbeat will be called as usual
 			}
 		}
 
@@ -376,10 +362,11 @@ void SV_CheckPublicStatus(void) {
 =======================================================================================================================================
 SV_MasterShutdown
 
-Informs all masters that this server is going down
+Informs all masters that this server is going down.
 =======================================================================================================================================
 */
 void SV_MasterShutdown(void) {
+
 	// "sv_public 1" is for internet public play
 	if (!sv_public || sv_public->integer != 1) {
 		return;
@@ -387,15 +374,11 @@ void SV_MasterShutdown(void) {
 	// send a heartbeat right now
 	svs.nextHeartbeatTime = -9999;
 	SV_MasterHeartbeat(FLATLINE_FOR_MASTER);
-
 	// send it again to minimize chance of drops
 	svs.nextHeartbeatTime = -9999;
 	SV_MasterHeartbeat(FLATLINE_FOR_MASTER);
-
-	// when the master tries to poll the server, it won't respond, so
-	// it will be removed from the list
+	// when the master tries to poll the server, it won't respond, so it will be removed from the list
 }
-
 
 /*
 =======================================================================================================================================
@@ -405,9 +388,9 @@ CONNECTIONLESS COMMANDS
 =======================================================================================================================================
 */
 
-// This is deliberately quite large to make it more of an effort to DoS
-#define MAX_BUCKETS			16384
-#define MAX_HASHES			1024
+// this is deliberately quite large to make it more of an effort to DoS
+#define MAX_BUCKETS 16384
+#define MAX_HASHES 1024
 
 static leakyBucket_t buckets[MAX_BUCKETS];
 static leakyBucket_t *bucketHashes[MAX_HASHES];
@@ -419,14 +402,18 @@ SVC_HashForAddress
 =======================================================================================================================================
 */
 static long SVC_HashForAddress(netadr_t address) {
-	byte 		*ip = NULL;
+	byte *ip = NULL;
 	size_t size = 0;
 	int i;
 	long hash = 0;
 
-	switch(address.type) {
-		case NA_IP:  ip = address.ip;  size = 4; break;
-		case NA_IP6: ip = address.ip6; size = 16; break;
+	switch (address.type) {
+		case NA_IP:
+			ip = address.ip;
+			size = 4; break;
+		case NA_IP6:
+			ip = address.ip6;
+			size = 16; break;
 		default: break;
 	}
 
@@ -454,19 +441,19 @@ static leakyBucket_t *SVC_BucketForAddress(netadr_t address, int burst, int peri
 	int now = Sys_Milliseconds();
 
 	for (bucket = bucketHashes[hash]; bucket; bucket = bucket->next) {
-		switch(bucket->type) {
+		switch (bucket->type) {
 			case NA_IP:
 				if (memcmp(bucket->ipv._4, address.ip, 4) == 0) {
 					return bucket;
 				}
-				break;
 
+				break;
 			case NA_IP6:
 				if (memcmp(bucket->ipv._6, address.ip6, 16) == 0) {
 					return bucket;
 				}
-				break;
 
+				break;
 			default:
 				break;
 		}
@@ -479,8 +466,7 @@ static leakyBucket_t *SVC_BucketForAddress(netadr_t address, int burst, int peri
 		interval = now - bucket->lastTime;
 
 		// Reclaim expired buckets
-		if (bucket->lastTime > 0 && (interval > (burst * period) ||
-					interval < 0)) {
+		if (bucket->lastTime > 0 && (interval > (burst * period) || interval < 0)) {
 			if (bucket->prev != NULL) {
 				bucket->prev->next = bucket->next;
 			} else {
@@ -496,18 +482,24 @@ static leakyBucket_t *SVC_BucketForAddress(netadr_t address, int burst, int peri
 
 		if (bucket->type == NA_BAD) {
 			bucket->type = address.type;
-			switch(address.type) {
-				case NA_IP:  Com_Memcpy(bucket->ipv._4, address.ip, 4);   break;
-				case NA_IP6: Com_Memcpy(bucket->ipv._6, address.ip6, 16); break;
-				default: break;
+
+			switch (address.type) {
+				case NA_IP:
+					Com_Memcpy(bucket->ipv._4, address.ip, 4);
+					break;
+				case NA_IP6:
+					Com_Memcpy(bucket->ipv._6, address.ip6, 16);
+					break;
+				default:
+					break;
 			}
 
 			bucket->lastTime = now;
 			bucket->burst = 0;
 			bucket->hash = hash;
-
-			// Add to the head of the relevant hash chain
+			// add to the head of the relevant hash chain
 			bucket->next = bucketHashes[hash];
+
 			if (bucketHashes[hash] != NULL) {
 				bucketHashes[hash]->prev = bucket;
 			}
@@ -518,7 +510,7 @@ static leakyBucket_t *SVC_BucketForAddress(netadr_t address, int burst, int peri
 			return bucket;
 		}
 	}
-	// Couldn't allocate a bucket for this address
+	// couldn't allocate a bucket for this address
 	return NULL;
 }
 
@@ -528,6 +520,7 @@ SVC_RateLimit
 =======================================================================================================================================
 */
 qboolean SVC_RateLimit(leakyBucket_t *bucket, int burst, int period) {
+
 	if (bucket != NULL) {
 		int now = Sys_Milliseconds();
 		int interval = now - bucket->lastTime;
@@ -544,7 +537,6 @@ qboolean SVC_RateLimit(leakyBucket_t *bucket, int burst, int period) {
 
 		if (bucket->burst < burst) {
 			bucket->burst++;
-
 			return qfalse;
 		}
 	}
@@ -556,7 +548,7 @@ qboolean SVC_RateLimit(leakyBucket_t *bucket, int burst, int period) {
 =======================================================================================================================================
 SVC_RateLimitAddress
 
-Rate limit for a particular address
+Rate limit for a particular address.
 =======================================================================================================================================
 */
 qboolean SVC_RateLimitAddress(netadr_t from, int burst, int period) {
@@ -569,9 +561,8 @@ qboolean SVC_RateLimitAddress(netadr_t from, int burst, int period) {
 =======================================================================================================================================
 SVC_Status
 
-Responds with all the info that qplug or qspy can see about the server
-and all connected players.  Used for getting detailed information after
-the simple info query.
+Responds with all the info that qplug or qspy can see about the server and all connected players. Used for getting detailed information
+after the simple info query.
 =======================================================================================================================================
 */
 static void SVC_Status(netadr_t from) {
@@ -585,7 +576,7 @@ static void SVC_Status(netadr_t from) {
 	int playerLength;
 	char infostring[MAX_INFO_STRING];
 
-	// Don't reply if sv_public is - 1 or lower
+	// Don't reply if sv_public is -1 or lower
 	if (sv_public->integer <= -1) {
 		return;
 	}
@@ -595,24 +586,21 @@ static void SVC_Status(netadr_t from) {
 	}
 	// Prevent using getstatus as an amplifier
 	if (SVC_RateLimitAddress(from, 10, 1000)) {
-		Com_DPrintf("SVC_Status: rate limit from %s exceeded, dropping request\n",
-			NET_AdrToString(from));
+		Com_DPrintf("SVC_Status: rate limit from %s exceeded, dropping request\n", NET_AdrToString(from));
 		return;
 	}
-	// Allow getstatus to be DoSed relatively easily, but prevent
-	// excess outbound bandwidth usage when being flooded inbound
+	// allow getstatus to be DoSed relatively easily, but prevent excess outbound bandwidth usage when being flooded inbound
 	if (SVC_RateLimit(&outboundLeakyBucket, 10, 100)) {
 		Com_DPrintf("SVC_Status: rate limit exceeded, dropping request\n");
 		return;
 	}
-	// A maximum challenge length of 128 should be more than plenty.
-	if (strlen(Cmd_Argv(1)) > 128)
+	// a maximum challenge length of 128 should be more than plenty
+	if (strlen(Cmd_Argv(1)) > 128) {
 		return;
+	}
 
 	strcpy(infostring, Cvar_InfoString(CVAR_SERVERINFO));
-
-	// echo back the parameter to status. so master servers can use it as a challenge
-	// to prevent timed spoofed reply packets that add ghost servers
+	// echo back the parameter to status. so master servers can use it as a challenge to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1));
 
 	status[0] = 0;
@@ -621,17 +609,19 @@ static void SVC_Status(netadr_t from) {
 	for (i = 0; i < sv_maxclients->integer; i++) {
 		pl = &svs.players[i];
 
-		if (!pl->inUse)
+		if (!pl->inUse) {
 			continue;
+		}
+
 		cl = pl->client;
 
 		if (cl->state >= CS_CONNECTED) {
 			ps = SV_GamePlayerNum(i);
-			Com_sprintf(player, sizeof(player), "%i %i \"%s\"\n",
-				ps->score, cl->ping, pl->name);
+			Com_sprintf(player, sizeof(player), "%i %i \"%s\"\n", ps->score, cl->ping, pl->name);
 			playerLength = strlen(player);
+
 			if (statusLength + playerLength >= sizeof(status)) {
-				break; 		// can't hold any more
+				break; // can't hold any more
 			}
 
 			strcpy(status + statusLength, player);
@@ -646,8 +636,7 @@ static void SVC_Status(netadr_t from) {
 =======================================================================================================================================
 SVC_Info
 
-Responds with a short info message that should be enough to determine
-if a user is interested in a server to do a full status
+Responds with a short info message that should be enough to determine if a user is interested in a server to do a full status.
 =======================================================================================================================================
 */
 void SVC_Info(netadr_t from) {
@@ -655,7 +644,7 @@ void SVC_Info(netadr_t from) {
 	char *gamedir;
 	char infostring[MAX_INFO_STRING];
 
-	// Don't reply if sv_public is - 1 or lower
+	// don't reply if sv_public is -1 or lower
 	if (sv_public->integer <= -1) {
 		return;
 	}
@@ -663,43 +652,40 @@ void SVC_Info(netadr_t from) {
 	if (Com_GameIsSinglePlayer()) {
 		return;
 	}
-	// Prevent using getinfo as an amplifier
+	// prevent using getinfo as an amplifier
 	if (SVC_RateLimitAddress(from, 10, 1000)) {
-		Com_DPrintf("SVC_Info: rate limit from %s exceeded, dropping request\n",
-			NET_AdrToString(from));
+		Com_DPrintf("SVC_Info: rate limit from %s exceeded, dropping request\n", NET_AdrToString(from));
 		return;
 	}
-	// Allow getinfo to be DoSed relatively easily, but prevent
-	// excess outbound bandwidth usage when being flooded inbound
+	// allow getinfo to be DoSed relatively easily, but prevent excess outbound bandwidth usage when being flooded inbound
 	if (SVC_RateLimit(&outboundLeakyBucket, 10, 100)) {
 		Com_DPrintf("SVC_Info: rate limit exceeded, dropping request\n");
 		return;
 	}
-	// If not a public server and request is from a master server, don't reply.
+	// if not a public server and request is from a master server, don't reply
 	if (sv_public->integer != 1) {
 		// NOTE: the addresses will only have been resolved if sent a heartbeat
 		for (i = 0; i < MAX_MASTER_SERVERS; i++) {
-			if (!sv_master[i]->string[0])
+			if (!sv_master[i]->string[0]) {
 				continue;
+			}
 
 			for (count = 0; count < 2; count++) {
-				// From one of the master servers, server is not public so ignore it.
+				// From one of the master servers, server is not public so ignore it
 				if (NET_CompareAdr(from, adr[i][count])) {
 					return;
 				}
 			}
 		}
 	}
-
 	/*
-	 * Check whether Cmd_Argv(1)has a sane length. This was not done in the original Quake3 version which led
-	 * to the Infostring bug discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory.
-	 */
-
-	// A maximum challenge length of 128 should be more than plenty.
-	if (strlen(Cmd_Argv(1)) > 128)
+	* Check whether Cmd_Argv(1)has a sane length. This was not done in the original Quake3 version which led
+	* to the Infostring bug discovered by Luigi Auriemma. See http://aluigi.altervista.org/ for the advisory
+	*/
+	// a maximum challenge length of 128 should be more than plenty
+	if (strlen(Cmd_Argv(1)) > 128) {
 		return;
-
+	}
 	// don't count privateclients
 	count = humans = 0;
 
@@ -713,13 +699,9 @@ void SVC_Info(netadr_t from) {
 	}
 
 	infostring[0] = 0;
-
-	// echo back the parameter to status. so servers can use it as a challenge
-	// to prevent timed spoofed reply packets that add ghost servers
+	// echo back the parameter to status. so servers can use it as a challenge to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey(infostring, "challenge", Cmd_Argv(1));
-
 	Info_SetValueForKey(infostring, "gamename", com_gamename->string);
-
 #ifdef LEGACY_PROTOCOL
 	if (com_legacyprotocol->integer > 0)
 		Info_SetValueForKey(infostring, "protocol", va("%i", com_legacyprotocol->integer));
@@ -731,8 +713,7 @@ void SVC_Info(netadr_t from) {
 	Info_SetValueForKey(infostring, "mapname", sv_mapname->string);
 	Info_SetValueForKey(infostring, "clients", va("%i", count));
 	Info_SetValueForKey(infostring, "g_humanplayers", va("%i", humans));
-	Info_SetValueForKey(infostring, "sv_maxclients",
-		va("%i", sv_maxclients->integer - sv_privateClients->integer));
+	Info_SetValueForKey(infostring, "sv_maxclients", va("%i", sv_maxclients->integer - sv_privateClients->integer));
 	Info_SetValueForKey(infostring, "gametype", sv_gametypeNetName->string);
 	Info_SetValueForKey(infostring, "pure", va("%i", sv_pure->integer));
 	Info_SetValueForKey(infostring, "g_needpass", va("%d", Cvar_VariableIntegerValue("g_needpass")));
@@ -740,13 +721,11 @@ void SVC_Info(netadr_t from) {
 	if (sv_cheats->integer) {
 		Info_SetValueForKey(infostring, "cheats", va("%i", sv_cheats->integer));
 	}
-
 #ifdef USE_VOIP
 	if (sv_voipProtocol->string && *sv_voipProtocol->string) {
 		Info_SetValueForKey(infostring, "voip", sv_voipProtocol->string);
 	}
 #endif
-
 	if (sv_minPing->integer) {
 		Info_SetValueForKey(infostring, "minPing", va("%i", sv_minPing->integer));
 	}
@@ -756,6 +735,7 @@ void SVC_Info(netadr_t from) {
 	}
 
 	gamedir = Cvar_VariableString("fs_game");
+
 	if (*gamedir) {
 		Info_SetValueForKey(infostring, "game", gamedir);
 	}
@@ -766,7 +746,6 @@ void SVC_Info(netadr_t from) {
 /*
 =======================================================================================================================================
 SVC_FlushRedirect
-
 =======================================================================================================================================
 */
 static void SV_FlushRedirect(char *outputbuf) {
@@ -777,13 +756,11 @@ static void SV_FlushRedirect(char *outputbuf) {
 =======================================================================================================================================
 SVC_RemoteCommand
 
-An rcon packet arrived from the network.
-Shift down the remaining args
-Redirect all printfs
+An rcon packet arrived from the network. Shift down the remaining args. Redirect all printfs.
 =======================================================================================================================================
 */
 static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
-	qboolean	valid;
+	qboolean valid;
 	char remaining[1024];
 	// TTimo - scaled down to accumulate, but not overflow anything network wise, print wise etc.
 	// (OOB messages are the bottleneck here)
@@ -791,10 +768,9 @@ static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 	char sv_outputbuf[SV_OUTPUTBUF_LENGTH];
 	char *cmd_aux;
 
-	// Prevent using rcon as an amplifier and make dictionary attacks impractical
+	// prevent using rcon as an amplifier and make dictionary attacks impractical
 	if (SVC_RateLimitAddress(from, 10, 1000)) {
-		Com_DPrintf("SVC_RemoteCommand: rate limit from %s exceeded, dropping request\n",
-			NET_AdrToString(from));
+		Com_DPrintf("SVC_RemoteCommand: rate limit from %s exceeded, dropping request\n", NET_AdrToString(from));
 		return;
 	}
 
@@ -802,7 +778,7 @@ static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 		strcmp(Cmd_Argv(1), sv_rconPassword->string)) {
 		static leakyBucket_t bucket;
 
-		// Make DoS via rcon impractical
+		// make DoS via rcon impractical
 		if (SVC_RateLimit(&bucket, 10, 1000)) {
 			Com_DPrintf("SVC_RemoteCommand: rate limit exceeded, dropping request\n");
 			return;
@@ -824,22 +800,26 @@ static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 		Com_Printf("Bad rconpassword.\n");
 	} else {
 		remaining[0] = 0;
-		
 		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id = 543
 		// get the command directly, "rcon < pass > < command>" to avoid quoting issues
 		// extract the command by walking
-		// since the cmd formatting can fuckup(amount of spaces), using a dumb step by step parsing
+		// since the cmd formatting can fuckup (amount of spaces), using a dumb step by step parsing
 		cmd_aux = Cmd_Cmd();
 		cmd_aux += 4;
-		while (cmd_aux[0] == ' ')
+
+		while (cmd_aux[0] == ' ') {
 			cmd_aux++;
-		while (cmd_aux[0] && cmd_aux[0]!= ' ') // password
+		}
+
+		while (cmd_aux[0] && cmd_aux[0]!= ' ') { // password
 			cmd_aux++;
-		while (cmd_aux[0] == ' ')
+		}
+
+		while (cmd_aux[0] == ' ') {
 			cmd_aux++;
-		
+		}
+
 		Q_strcat(remaining, sizeof(remaining), cmd_aux);
-		
 		Cmd_ExecuteString(remaining);
 
 	}
@@ -851,10 +831,8 @@ static void SVC_RemoteCommand(netadr_t from, msg_t *msg) {
 =======================================================================================================================================
 SV_ConnectionlessPacket
 
-A connectionless packet has four leading 0xff
-characters to distinguish it from a game channel.
-Clients that are in the game can still send
-connectionless packets.
+A connectionless packet has four leading 0xff characters to distinguish it from a game channel.
+Clients that are in the game can still send connectionless packets.
 =======================================================================================================================================
 */
 static void SV_ConnectionlessPacket(netadr_t from, msg_t *msg) {
@@ -862,7 +840,7 @@ static void SV_ConnectionlessPacket(netadr_t from, msg_t *msg) {
 	char *c;
 
 	MSG_BeginReadingOOB(msg);
-	MSG_ReadLong(msg); 		// skip the - 1 marker
+	MSG_ReadLong(msg); // skip the -1 marker
 
 	if (!Q_strncmp("connect", (char *)&msg->data[4], 7)) {
 		Huff_Decompress(msg, 12);
@@ -876,7 +854,7 @@ static void SV_ConnectionlessPacket(netadr_t from, msg_t *msg) {
 
 	if (!Q_stricmp(c, "getstatus")) {
 		SVC_Status(from);
-  } else if (!Q_stricmp(c, "getinfo")) {
+	} else if (!Q_stricmp(c, "getinfo")) {
 		SVC_Info(from);
 	} else if (!Q_stricmp(c, "getchallenge")) {
 		SV_GetChallenge(from);
@@ -885,16 +863,12 @@ static void SV_ConnectionlessPacket(netadr_t from, msg_t *msg) {
 	} else if (!Q_stricmp(c, "rcon")) {
 		SVC_RemoteCommand(from, msg);
 	} else if (!Q_stricmp(c, "disconnect")) {
-		// if a client starts up a local server, we may see some spurious
-		// server disconnect messages when their new server sees our final
+		// if a client starts up a local server, we may see some spurious server disconnect messages when their new server sees our final
 		// sequenced messages to the old client
 	} else {
-		Com_DPrintf("bad connectionless packet from %s:\n%s\n",
-			NET_AdrToString(from), s);
+		Com_DPrintf("bad connectionless packet from %s:\n%s\n", NET_AdrToString(from), s);
 	}
 }
-
-//============================================================================
 
 /*
 =======================================================================================================================================
@@ -914,9 +888,9 @@ void SV_PacketEvent(netadr_t from, msg_t *msg) {
 	// read the qport out of the message so we can fix up
 	// stupid address translating routers
 	MSG_BeginReadingOOB(msg);
-	MSG_ReadLong(msg); 				// sequence number
-	qport = MSG_ReadShort(msg)& 0xffff;
+	MSG_ReadLong(msg); // sequence number
 
+	qport = MSG_ReadShort(msg)& 0xffff;
 	// find which client the message is from
 	for (i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++) {
 		if (cl->state == CS_FREE) {
@@ -926,13 +900,11 @@ void SV_PacketEvent(netadr_t from, msg_t *msg) {
 		if (!NET_CompareBaseAdr(from, cl->netchan.remoteAddress)) {
 			continue;
 		}
-		// it is possible to have multiple clients from a single IP
-		// address, so they are differentiated by the qport variable
+		// it is possible to have multiple clients from a single IP address, so they are differentiated by the qport variable
 		if (cl->netchan.qport != qport) {
 			continue;
 		}
-		// the IP port can't be used to differentiate them, because
-		// some address translating routers periodically change UDP
+		// the IP port can't be used to differentiate them, because some address translating routers periodically change UDP
 		// port assignments
 		if (cl->netchan.remoteAddress.port != from.port) {
 			Com_Printf("SV_PacketEvent: fixing up a translated port\n");
@@ -940,11 +912,10 @@ void SV_PacketEvent(netadr_t from, msg_t *msg) {
 		}
 		// make sure it is a valid, in sequence packet
 		if (SV_Netchan_Process(cl, msg)) {
-			// zombie clients still need to do the Netchan_Process
-			// to make sure they don't need to retransmit the final
+			// zombie clients still need to do the Netchan_Process to make sure they don't need to retransmit the final
 			// reliable message, but they don't do any other processing
 			if (cl->state != CS_ZOMBIE) {
-				cl->lastPacketTime = svs.time; 	// don't timeout
+				cl->lastPacketTime = svs.time; // don't timeout
 				SV_ExecuteClientMessage(cl, msg);
 			}
 		}
@@ -953,12 +924,11 @@ void SV_PacketEvent(netadr_t from, msg_t *msg) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 SV_CalcPings
 
-Updates the cl->ping variables
+Updates the cl->ping variables.
 =======================================================================================================================================
 */
 static void SV_CalcPings(void) {
@@ -983,6 +953,7 @@ static void SV_CalcPings(void) {
 
 		total = 0;
 		count = 0;
+
 		for (j = 0; j < PACKET_BACKUP; j++) {
 			if (cl->frames[j].messageAcked <= 0) {
 				continue;
@@ -996,7 +967,8 @@ static void SV_CalcPings(void) {
 		if (!count) {
 			cl->ping = 999;
 		} else {
-			cl->ping = total/count;
+			cl->ping = total / count;
+
 			if (cl->ping > 999) {
 				cl->ping = 999;
 			}
@@ -1017,13 +989,10 @@ static void SV_CalcPings(void) {
 =======================================================================================================================================
 SV_CheckTimeouts
 
-If a packet has not been received from a client for timeout->integer 
-seconds, drop the conneciton.  Server time is used instead of
+If a packet has not been received from a client for timeout->integer seconds, drop the conneciton. Server time is used instead of
 realtime to avoid dropping the local client while debugging.
-
-When a client is normally dropped, the client_t goes into a zombie state
-for a few seconds to make sure any final reliable message gets resent
-if necessary
+When a client is normally dropped, the client_t goes into a zombie state for a few seconds to make sure any final reliable message gets
+resent if necessary
 =======================================================================================================================================
 */
 static void SV_CheckTimeouts(void) {
@@ -1041,27 +1010,24 @@ static void SV_CheckTimeouts(void) {
 			cl->lastPacketTime = svs.time;
 		}
 
-		if (cl->state == CS_ZOMBIE
-		&& cl->lastPacketTime < zombiepoint) {
+		if (cl->state == CS_ZOMBIE && cl->lastPacketTime < zombiepoint) {
 			// using the client id cause the cl->name is empty at this point
 			Com_DPrintf("Going from CS_ZOMBIE to CS_FREE for client %d\n", i);
-			SV_FreeClient(cl); 	// can now be reused
+			SV_FreeClient(cl); // can now be reused
 			continue;
 		}
 
 		if (cl->state >= CS_CONNECTED && cl->lastPacketTime < droppoint) {
-			// wait several frames so a debugger session doesn't
-			// cause a timeout
+			// wait several frames so a debugger session doesn't cause a timeout
 			if (++cl->timeoutCount > 5) {
 				SV_DropClient(cl, "timed out");
-				SV_FreeClient(cl); 	// don't bother with zombie state
+				SV_FreeClient(cl); // don't bother with zombie state
 			}
 		} else {
 			cl->timeoutCount = 0;
 		}
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -1087,42 +1053,49 @@ static qboolean SV_CheckPaused(void) {
 
 	if (count > 1) {
 		// don't pause
-		if (sv_paused->integer)
+		if (sv_paused->integer) {
 			Cvar_Set("sv_paused", "0");
+		}
+
 		return qfalse;
 	}
 
-	if (!sv_paused->integer)
+	if (!sv_paused->integer) {
 		Cvar_Set("sv_paused", "1");
+	}
+
 	return qtrue;
 }
 
 /*
 =======================================================================================================================================
 SV_FrameMsec
+
 Return time in millseconds until processing of the next server frame.
 =======================================================================================================================================
 */
 int SV_FrameMsec() {
+
 	if (sv_fps) {
 		int frameMsec;
 		
 		frameMsec = 1000.0f / sv_fps->value;
 		
-		if (frameMsec < sv.timeResidual)
+		if (frameMsec < sv.timeResidual) {
 			return 0;
-		else
+		} else {
 			return frameMsec - sv.timeResidual;
-	} else
+		}
+	} else {
 		return 1;
+	}
 }
 
 /*
 =======================================================================================================================================
 SV_Frame
 
-Player movement occurs as a result of packet events, which
-happen before SV_Frame is called
+Player movement occurs as a result of packet events, which happen before SV_Frame is called.
 =======================================================================================================================================
 */
 void SV_Frame(int msec) {
@@ -1137,12 +1110,11 @@ void SV_Frame(int msec) {
 	}
 
 	if (!com_sv_running->integer) {
-		// Running as a server, but no map loaded
+		// running as a server, but no map loaded
 #ifdef DEDICATED
-		// Block until something interesting happens
+		// block until something interesting happens
 		Sys_Sleep(-1);
 #endif
-
 		return;
 	}
 	// allow pause if only the local client is connected
@@ -1163,11 +1135,11 @@ void SV_Frame(int msec) {
 
 	sv.timeResidual += msec;
 
-	if (!com_dedicated->integer)SV_BotFrame(sv.time + sv.timeResidual);
-
-	// if time is about to hit the 32nd bit, kick all clients
-	// and clear sv.time, rather
-	// than checking for negative time wraparound everywhere.
+	if (!com_dedicated->integer) {
+		SV_BotFrame(sv.time + sv.timeResidual);
+	}
+	// if time is about to hit the 32nd bit, kick all clients and clear sv.time, rather
+	// than checking for negative time wraparound everywhere
 	// 2giga - milliseconds = 23 days, so it won't be too often
 	if (svs.time > 0x70000000) {
 		SV_Shutdown("Restarting server due to time wrapping");
@@ -1199,19 +1171,19 @@ void SV_Frame(int msec) {
 	if (com_speeds->integer) {
 		startTime = Sys_Milliseconds();
 	} else {
-		startTime = 0; 	// quite a compiler warning
+		startTime = 0; // quite a compiler warning
 	}
 	// update ping based on the all received frames
 	SV_CalcPings();
 
-	if (com_dedicated->integer)SV_BotFrame(sv.time);
-
+	if (com_dedicated->integer) {
+		SV_BotFrame(sv.time);
+	}
 	// run the game simulation in chunks
 	while (sv.timeResidual >= frameMsec) {
 		sv.timeResidual -= frameMsec;
 		svs.time += frameMsec;
 		sv.time += frameMsec;
-
 		// let everything in the world think and move
 		VM_Call(gvm, GAME_RUN_FRAME, sv.time);
 	}
@@ -1221,13 +1193,10 @@ void SV_Frame(int msec) {
 	}
 	// check timeouts
 	SV_CheckTimeouts();
-
 	// send messages back to the clients
 	SV_SendClientMessages();
-
 	// send a heartbeat to the master if needed
 	SV_CheckPublicStatus();
-
 	// "sv_public 1" is for internet public play
 	if (sv_public->integer != 1) {
 		return;
@@ -1236,75 +1205,78 @@ void SV_Frame(int msec) {
 	SV_MasterHeartbeat(HEARTBEAT_FOR_MASTER);
 }
 
+#define UDPIP_HEADER_SIZE 28
+#define UDPIP6_HEADER_SIZE 48
 /*
 =======================================================================================================================================
 SV_RateMsec
 
-Return the number of msec until another message can be sent to
-a client based on its rate settings
+Return the number of msec until another message can be sent to a client based on its rate settings.
 =======================================================================================================================================
 */
-
-#define UDPIP_HEADER_SIZE 28
-#define UDPIP6_HEADER_SIZE 48
-
 int SV_RateMsec(client_t *client) {
 	int rate, rateMsec;
 	int messageSize;
-	
+
 	messageSize = client->netchan.lastSentSize;
 	rate = client->rate;
 
 	if (sv_maxRate->integer) {
-		if (sv_maxRate->integer < 1000)
+		if (sv_maxRate->integer < 1000) {
 			Cvar_Set("sv_MaxRate", "1000");
+		}
 
-		if (sv_maxRate->integer < rate)
+		if (sv_maxRate->integer < rate) {
 			rate = sv_maxRate->integer;
+		}
 	}
 
 	if (sv_minRate->integer) {
-		if (sv_minRate->integer < 1000)
+		if (sv_minRate->integer < 1000) {
 			Cvar_Set("sv_minRate", "1000");
+		}
 
-		if (sv_minRate->integer > rate)
+		if (sv_minRate->integer > rate) {
 			rate = sv_minRate->integer;
+		}
 	}
 
-	if (client->netchan.remoteAddress.type == NA_IP6)
+	if (client->netchan.remoteAddress.type == NA_IP6) {
 		messageSize += UDPIP6_HEADER_SIZE;
-	else
+	} else {
 		messageSize += UDPIP_HEADER_SIZE;
-		
+	}
+
 	rateMsec = messageSize * 1000 / ((int)(rate * com_timescale->value));
 	rate = Sys_Milliseconds() - client->netchan.lastSentTime;
-	
-	if (rate > rateMsec)
+
+	if (rate > rateMsec) {
 		return 0;
-	else
+	} else {
 		return rateMsec - rate;
+	}
 }
 
 /*
 =======================================================================================================================================
 SV_SendQueuedPackets
 
-Send download messages and queued packets in the time that we're idle, i.e.
-not computing a server frame or sending client snapshots.
-Return the time in msec until we expect to be called next
+Send download messages and queued packets in the time that we're idle, i.e. not computing a server frame or sending client snapshots.
+Return the time in msec until we expect to be called next.
 =======================================================================================================================================
 */
-
 int SV_SendQueuedPackets() {
 	int numBlocks;
 	int dlStart, deltaT, delayT;
 	static int dlNextRound = 0;
 	int timeVal = INT_MAX;
 
-	// Send out fragmented packets now that we're idle
+	// send out fragmented packets now that we're idle
 	delayT = SV_SendQueuedMessages();
-	if (delayT >= 0)
+
+	if (delayT >= 0) {
 		timeVal = delayT;
+	}
 
 	if (sv_dlRate->integer) {
 		// Rate limiting. This is very imprecise for high
@@ -1313,17 +1285,15 @@ int SV_SendQueuedPackets() {
 		deltaT = dlNextRound - dlStart;
 
 		if (deltaT > 0) {
-			if (deltaT < timeVal)
+			if (deltaT < timeVal) {
 				timeVal = deltaT + 1;
-		}
-
-		else {
+			}
+		} else {
 			numBlocks = SV_SendDownloadMessages();
 
 			if (numBlocks) {
 				// There are active downloads
 				deltaT = Sys_Milliseconds() - dlStart;
-
 				delayT = 1000 * numBlocks * MAX_DOWNLOAD_BLKSIZE;
 				delayT / = sv_dlRate->integer * 1024;
 
@@ -1335,24 +1305,25 @@ int SV_SendQueuedPackets() {
 					// all of the bandwidth. This will result in an
 					// effective maximum rate of 1MB/s per user, but the
 					// low download window size limits this anyways.
-					if (timeVal > 2)
+					if (timeVal > 2) {
 						timeVal = 2;
+					}
 
 					dlNextRound = dlStart + deltaT + 1;
-				}
-				else
-				{
+				} else {
 					dlNextRound = dlStart + delayT;
 					delayT -= deltaT;
 
-					if (delayT < timeVal)
+					if (delayT < timeVal) {
 						timeVal = delayT;
+					}
 				}
 			}
 		}
 	} else {
-		if (SV_SendDownloadMessages())
+		if (SV_SendDownloadMessages()) {
 			timeVal = 0;
+		}
 	}
 
 	return timeVal;

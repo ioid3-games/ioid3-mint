@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -171,7 +165,7 @@ static qboolean IN_IsConsoleKey(keyNum_t key, int character) {
 	for (i = 0; i < numConsoleKeys; i++) {
 		consoleKey_t *c = &consoleKeys[i];
 
-		switch(c->type) {
+		switch (c->type) {
 			case QUAKE_KEY:
 				if (key && c->u.key == key)
 					return qtrue;
@@ -208,7 +202,7 @@ static keyNum_t IN_TranslateSDLToQ3Key(SDL_Keysym *keysym, qboolean down) {
 		// These happen to match the ASCII chars
 		key = (int)keysym->sym;
 	} else {
-		switch(keysym->sym) {
+		switch (keysym->sym) {
 			case SDLK_PAGEUP:       key = K_PGUP;          break;
 			case SDLK_KP_9:         key = K_KP_PGUP;       break;
 			case SDLK_PAGEDOWN:     key = K_PGDN;          break;
@@ -297,6 +291,7 @@ static keyNum_t IN_TranslateSDLToQ3Key(SDL_Keysym *keysym, qboolean down) {
 					// to SDL 1.2.
 					key = K_WORLD_0 + (int)keysym->scancode;
 				}
+
 				break;
 		}
 	}
@@ -424,7 +419,6 @@ static void IN_DeactivateMouse(qboolean isFullscreen, qboolean showSystemCursor)
 	}
 }
 
-
 /*
 =======================================================================================================================================
 IN_SetGameControllerDefaults
@@ -492,7 +486,7 @@ static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum
 			continue;
 		}
 
-		switch(bind.bindType) {
+		switch (bind.bindType) {
 			case SDL_CONTROLLER_BINDTYPE_BUTTON:
 				event.type = JOYEVENT_BUTTON;
 				event.value.button = bind.value.button;
@@ -501,7 +495,7 @@ static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum
 				event.type = JOYEVENT_HAT;
 				event.value.hat.num = bind.value.hat.hat;
 
-				switch(bind.value.hat.hat_mask) {
+				switch (bind.value.hat.hat_mask) {
 					case SDL_HAT_UP:
 						event.value.hat.mask = HAT_UP;
 						break;
@@ -531,6 +525,7 @@ static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum
 						event.value.hat.mask = HAT_CENTERED;
 						break;
 				}
+
 				break;
 			case SDL_CONTROLLER_BINDTYPE_NONE:
 			default:
@@ -542,7 +537,7 @@ static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum
 
 	for (b = 0; b < ARRAY_LEN(buttonRemap); b++) {
 		bind = SDL_GameControllerGetBindForButton(controller, buttonRemap[b].sdlButton);
-		switch(bind.bindType) {
+		switch (bind.bindType) {
 			case SDL_CONTROLLER_BINDTYPE_BUTTON:
 				event.type = JOYEVENT_BUTTON;
 				event.value.button = bind.value.button;
@@ -551,7 +546,7 @@ static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum
 				event.type = JOYEVENT_HAT;
 				event.value.hat.num = bind.value.hat.hat;
 
-				switch(bind.value.hat.hat_mask) {
+				switch (bind.value.hat.hat_mask) {
 					case SDL_HAT_UP:
 						event.value.hat.mask = HAT_UP;
 						break;
@@ -581,6 +576,7 @@ static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum
 						event.value.hat.mask = HAT_CENTERED;
 						break;
 				}
+
 				break;
 			case SDL_CONTROLLER_BINDTYPE_AXIS:
 				event.type = JOYEVENT_AXIS;
@@ -601,7 +597,6 @@ static qboolean IN_SetGameControllerDefaults(int localPlayerNum, int joystickNum
 	SDL_GameControllerClose(controller);
 	return qtrue;
 }
-
 
 struct {
 	qboolean buttons[MAX_JOYSTICK_BUTTONS];
@@ -858,7 +853,7 @@ static void IN_JoyMove(void) {
 				Uint8 state = SDL_JoystickGetHat(stick[joy], i), value;
 
 				if (state != stick_state[joy].oldhats[i]) {
-					switch(state)
+					switch (state)
 					{
 						case SDL_HAT_UP:
 							value = HAT_UP;
@@ -929,7 +924,7 @@ static void IN_ProcessEvents(void) {
 			return;
 
 	while (SDL_PollEvent(&e)) {
-		switch(e.type) {
+		switch (e.type) {
 			case SDL_KEYDOWN:
 				if (e.key.repeat && Key_GetRepeat() == qfalse)
 					break;
@@ -999,6 +994,7 @@ static void IN_ProcessEvents(void) {
 						}
           }
         }
+
 				break;
 
 			case SDL_MOUSEMOTION:
@@ -1007,13 +1003,14 @@ static void IN_ProcessEvents(void) {
 						break;
 					Com_QueueEvent(in_eventTime, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL);
 				}
+
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 				{
 					int b;
-					switch(e.button.button)
+					switch (e.button.button)
 					{
 						case SDL_BUTTON_LEFT:   b = K_MOUSE1;     break;
 						case SDL_BUTTON_MIDDLE: b = K_MOUSE3;     break;
@@ -1029,9 +1026,11 @@ static void IN_ProcessEvents(void) {
 
 						default:                b = K_AUX1 + (e.button.button - SDL_BUTTON_X2 + 1)% 16; break;
 					}
+
 					Com_QueueEvent(in_eventTime, SE_KEY, b,
 						(e.type == SDL_MOUSEBUTTONDOWN ? qtrue : qfalse), 0, NULL);
 				}
+
 				break;
 
 			case SDL_MOUSEWHEEL:
@@ -1039,6 +1038,7 @@ static void IN_ProcessEvents(void) {
 					Com_QueueEvent(in_eventTime, SE_KEY, K_MWHEELUP, qtrue, 0, NULL);
 					Com_QueueEvent(in_eventTime, SE_KEY, K_MWHEELUP, qfalse, 0, NULL);
 				}
+
 				else if (e.wheel.y < 0) {
 					Com_QueueEvent(in_eventTime, SE_KEY, K_MWHEELDOWN, qtrue, 0, NULL);
 					Com_QueueEvent(in_eventTime, SE_KEY, K_MWHEELDOWN, qfalse, 0, NULL);
@@ -1048,10 +1048,12 @@ static void IN_ProcessEvents(void) {
 					Com_QueueEvent(in_eventTime, SE_KEY, K_MWHEELRIGHT, qtrue, 0, NULL);
 					Com_QueueEvent(in_eventTime, SE_KEY, K_MWHEELRIGHT, qfalse, 0, NULL);
 				}
+
 				else if (e.wheel.x < 0) {
 					Com_QueueEvent(in_eventTime, SE_KEY, K_MWHEELLEFT, qtrue, 0, NULL);
 					Com_QueueEvent(in_eventTime, SE_KEY, K_MWHEELLEFT, qfalse, 0, NULL);
 				}
+
 				break;
 
 			case SDL_CONTROLLERDEVICEADDED:
@@ -1067,7 +1069,7 @@ static void IN_ProcessEvents(void) {
 				break;
 
 			case SDL_WINDOWEVENT:
-				switch(e.window.event) {
+				switch (e.window.event) {
 					case SDL_WINDOWEVENT_RESIZED:
 						{
 							int width, height;
@@ -1095,6 +1097,7 @@ static void IN_ProcessEvents(void) {
 					case SDL_WINDOWEVENT_FOCUS_LOST:   Cvar_SetValue("com_unfocused", 1); break;
 					case SDL_WINDOWEVENT_FOCUS_GAINED: Cvar_SetValue("com_unfocused", 0); break;
 				}
+
 				break;
 
 			case SDL_DROPFILE:
@@ -1110,6 +1113,7 @@ static void IN_ProcessEvents(void) {
 
 					SDL_free(filename);
 				}
+
 				break;
 
 			default:

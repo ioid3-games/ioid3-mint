@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // snd_mix.c -- portable code to mix sounds for snd_dma.c
@@ -171,7 +165,6 @@ void S_TransferPaintBuffer(int endtime) {
 			paintbuffer[i].left = paintbuffer[i].right = sin((s_paintedtime+i) *0.1) *20000*256;
 	}
 
-
 	if (dma.samplebits == 16 && dma.channels == 2) {	// optimized case
 		S_TransferStereo16(pbuf, endtime);
 	} else {	// general case
@@ -186,6 +179,7 @@ void S_TransferPaintBuffer(int endtime) {
 				if ((i % dma.channels) >= 2) {
 					val = 0;
 				}
+
 				else
 				{
 					val = *p >> 8;
@@ -207,6 +201,7 @@ void S_TransferPaintBuffer(int endtime) {
 				if ((i % dma.channels) >= 2) {
 					val = 0;
 				}
+
 				else
 				{
 					val = *p >> 8;
@@ -228,6 +223,7 @@ void S_TransferPaintBuffer(int endtime) {
 				if ((i % dma.channels) >= 2) {
 					val = 0;
 				}
+
 				else
 				{
 					val = *p >> 8;
@@ -244,7 +240,6 @@ void S_TransferPaintBuffer(int endtime) {
 		}
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -322,7 +317,6 @@ static void S_PaintChannelFrom16_scalar(channel_t *ch, const sfx_t *sc, int coun
 
 
 		for (i = 0; i < count; i++) {
-
 			aoff = ooff;
 			ooff = ooff + ch->dopplerScale * sc->soundChannels;
 			boff = ooff;
@@ -330,9 +324,11 @@ static void S_PaintChannelFrom16_scalar(channel_t *ch, const sfx_t *sc, int coun
 			for (j = aoff; j < boff; j += sc->soundChannels) {
 				if (j == SND_CHUNK_SIZE) {
 					chunk = chunk->next;
+
 					if (!chunk) {
 						chunk = sc->soundData;
 					}
+
 					samples = chunk->sndChunk;
 					ooff -= SND_CHUNK_SIZE;
 				}
@@ -502,6 +498,7 @@ void S_PaintChannelFromMuLaw(channel_t *ch, sfx_t *sc, int count, int sampleOffs
 				if (!chunk) {
 					chunk = sc->soundData;
 				}
+
 				samples = (byte *)chunk->sndChunk;
 				ooff = 0.0;
 			}
@@ -554,7 +551,7 @@ void S_PaintChannels(int endtime) {
 		// paint in the channels.
 		ch = s_channels;
 		for (i = 0; i < MAX_CHANNELS; i++, ch++) {		
-			if (!ch->thesfx ||(ch->leftvol < 0.25 && ch->rightvol < 0.25)) {
+			if (!ch->thesfx || (ch->leftvol < 0.25 && ch->rightvol < 0.25)) {
 				continue;
 			}
 
@@ -586,7 +583,7 @@ void S_PaintChannels(int endtime) {
 		// paint in the looped channels.
 		ch = loop_channels;
 		for (i = 0; i < numLoopChannels; i++, ch++) {		
-			if (!ch->thesfx ||(!ch->leftvol && !ch->rightvol)) {
+			if (!ch->thesfx || (!ch->leftvol && !ch->rightvol)) {
 				continue;
 			}
 
@@ -618,6 +615,7 @@ void S_PaintChannels(int endtime) {
 					} else {
 						S_PaintChannelFrom16		(ch, sc, count, sampleOffset, ltime - s_paintedtime);
 					}
+
 					ltime += count;
 				}
 			} while(ltime < end);

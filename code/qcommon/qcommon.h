@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // qcommon.h -- definitions common between client and server, but not game.or ref modules
@@ -100,7 +94,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 //Ignore __attribute__ on non - gcc platforms
 #ifndef __GNUC__
 #ifndef __attribute__
-#define __attribute__(x)
+#define __attribute__ (x)
 #endif
 #endif
 
@@ -110,14 +104,14 @@ Suite 120, Rockville, Maryland 20850 USA.
 // msg.c
 //
 typedef struct {
-	qboolean	allowoverflow; 	// if false, do a Com_Error
-	qboolean	overflowed; 		// set to true if the buffer size failed(with allowoverflow set)
-	qboolean	oob; 			// set to true if the buffer size failed(with allowoverflow set)
+	qboolean	allowoverflow;	// if false, do a Com_Error
+	qboolean	overflowed;		// set to true if the buffer size failed(with allowoverflow set)
+	qboolean	oob;			// set to true if the buffer size failed(with allowoverflow set)
 	byte *data;
 	int maxsize;
 	int cursize;
 	int readcount;
-	int bit; 				// for bitwise reads and writes
+	int bit;				// for bitwise reads and writes
 } msg_t;
 
 void MSG_Init(msg_t *buf, byte *data, int length);
@@ -235,7 +229,7 @@ typedef struct {
 	byte ip6[16];
 
 	unsigned short port;
-	unsigned long scope_id; 	// Needed for IPv6 link - local addresses
+	unsigned long scope_id;	// Needed for IPv6 link - local addresses
 } netadr_t;
 
 void NET_Init(void);
@@ -244,7 +238,7 @@ void NET_Restart_f(void);
 void NET_Config(qboolean enableNetworking);
 void NET_FlushPacketQueue(void);
 void NET_SendPacket(netsrc_t sock, int length, const void *data, netadr_t to);
-void QDECL NET_OutOfBandPrint(netsrc_t net_socket, netadr_t adr, const char *format, ...)__attribute__((format(printf, 3, 4)));
+void QDECL NET_OutOfBandPrint(netsrc_t net_socket, netadr_t adr, const char *format, ...)__attribute__ ((format(printf, 3, 4)));
 void QDECL NET_OutOfBandData(netsrc_t sock, netadr_t adr, byte *format, int len);
 
 qboolean	NET_CompareAdr(netadr_t a, netadr_t b);
@@ -275,11 +269,10 @@ Netchan handles packet fragmentation and out of order / duplicate suppression
 
 typedef struct {
 	netsrc_t sock;
-
-	int dropped; 			// between last packet and previous
+	int dropped;			// between last packet and previous
 
 	netadr_t remoteAddress;
-	int qport; 				// qport value to write when transmitting
+	int qport;				// qport value to write when transmitting
 
 	// sequencing variables
 	int incomingSequence;
@@ -287,7 +280,7 @@ typedef struct {
 
 	// incoming fragment assembly buffer
 	int fragmentSequence;
-	int fragmentLength; 	
+	int fragmentLength;	
 	byte fragmentBuffer[MAX_MSGLEN];
 
 	// outgoing fragment buffer
@@ -296,7 +289,6 @@ typedef struct {
 	int unsentFragmentStart;
 	int unsentLength;
 	byte unsentBuffer[MAX_MSGLEN];
-
 	int challenge;
 	int lastSentTime;
 	int lastSentSize;
@@ -783,7 +775,7 @@ int FS_FTell(fileHandle_t f);
 
 void FS_Flush(fileHandle_t f);
 
-void 	QDECL FS_Printf(fileHandle_t f, const char *fmt, ...)__attribute__((format(printf, 2, 3)));
+void 	QDECL FS_Printf(fileHandle_t f, const char *fmt, ...)__attribute__ ((format(printf, 2, 3)));
 // like fprintf
 
 int FS_FOpenFileByMode(const char *qpath, fileHandle_t *f, fsMode_t mode);
@@ -930,8 +922,8 @@ typedef struct {
 	int evTime;
 	sysEventType_t evType;
 	int evValue, evValue2;
-	int evPtrLength; 	// bytes of data pointed to by evPtr, for journaling
-	void *evPtr; 			// this must be manually freed if not NULL
+	int evPtrLength;	// bytes of data pointed to by evPtr, for journaling
+	void *evPtr;			// this must be manually freed if not NULL
 } sysEvent_t;
 
 void Com_QueueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr);
@@ -943,13 +935,13 @@ void Info_Print(const char *s);
 
 void Com_BeginRedirect(char *buffer, int buffersize, void(*flush)(char *));
 void Com_EndRedirect(void);
-void 		QDECL Com_Printf(const char *fmt, ...)__attribute__((format(printf, 1, 2)));
-void 		QDECL Com_DPrintf(const char *fmt, ...)__attribute__((format(printf, 1, 2)));
-void 		QDECL Com_Error(int code, const char *fmt, ...)__attribute__((noreturn, format(printf, 2, 3)));
-void 		Com_Quit_f(void)__attribute__((noreturn));
+void 		QDECL Com_Printf(const char *fmt, ...)__attribute__ ((format(printf, 1, 2)));
+void 		QDECL Com_DPrintf(const char *fmt, ...)__attribute__ ((format(printf, 1, 2)));
+void 		QDECL Com_Error(int code, const char *fmt, ...)__attribute__ ((noreturn, format(printf, 2, 3)));
+void 		Com_Quit_f(void)__attribute__ ((noreturn));
 void Com_GameRestart(qboolean disconnect);
 void Com_ExecuteCfg(void);
-int Com_Milliseconds(void); 	// will be journaled properly
+int Com_Milliseconds(void);	// will be journaled properly
 unsigned	Com_BlockChecksum(const void *buffer, int length);
 char *Com_MD5File(const char *filename, int length, const char *prefix, int prefix_len);
 int Com_Filter(char *filter, char *name, int casesensitive);
@@ -977,7 +969,7 @@ extern	cvar_t *com_sv_running;
 extern	cvar_t *com_cl_running;
 extern	cvar_t *com_version;
 extern	cvar_t *com_singlePlayerActive;
-extern	cvar_t *com_buildScript; 		// for building release pak files
+extern	cvar_t *com_buildScript;		// for building release pak files
 extern	cvar_t *com_journal;
 extern	cvar_t *com_cameraMode;
 extern	cvar_t *com_ansiColor;
@@ -1016,7 +1008,7 @@ extern	cvar_t *com_renderer;
 // com_speeds times
 extern	int time_game;
 extern	int time_frontend;
-extern	int time_backend; 		// renderer backend time
+extern	int time_backend;		// renderer backend time
 
 extern	int com_frameTime;
 
@@ -1061,14 +1053,14 @@ temp file loading
 #define Z_Malloc(size)					Z_MallocDebug(size, #size, __FILE__, __LINE__)
 #define S_Malloc(size)					S_MallocDebug(size, #size, __FILE__, __LINE__)
 #define Z_Free(ptr)						Z_FreeDebug(ptr, #ptr, __FILE__, __LINE__)
-void *Z_TagMallocDebug(int size, int tag, char *label, char *file, int line); 	// NOT 0 filled memory
-void *Z_MallocDebug(int size, char *label, char *file, int line); 			// returns 0 filled memory
-void *S_MallocDebug(int size, char *label, char *file, int line); 			// returns 0 filled memory
+void *Z_TagMallocDebug(int size, int tag, char *label, char *file, int line);	// NOT 0 filled memory
+void *Z_MallocDebug(int size, char *label, char *file, int line);			// returns 0 filled memory
+void *S_MallocDebug(int size, char *label, char *file, int line);			// returns 0 filled memory
 void Z_FreeDebug(void *ptr, char *label, char *file, int line);
 #else
-void *Z_TagMalloc(int size, int tag); 	// NOT 0 filled memory
-void *Z_Malloc(int size); 			// returns 0 filled memory
-void *S_Malloc(int size); 			// NOT 0 filled memory only for small allocations
+void *Z_TagMalloc(int size, int tag);	// NOT 0 filled memory
+void *Z_Malloc(int size);			// returns 0 filled memory
+void *S_Malloc(int size);			// NOT 0 filled memory only for small allocations
 void Z_Free(void *ptr);
 #endif
 int Z_FreeTags(int tag);
@@ -1128,7 +1120,7 @@ REFRESH DLL
 =======================================================================================================================================
 */
 
-extern	refexport_t re; 		// interface to refresh .dll
+extern	refexport_t re;		// interface to refresh .dll
 
 void Com_ShutdownRef(void);
 void Com_InitRef(refimport_t *ri);
@@ -1200,7 +1192,7 @@ void Key_WriteBindings(fileHandle_t f);
 void S_ClearSoundBuffer(void);
 // call before filesystem access
 
-void SCR_DebugGraph(float value); 	// FIXME: move logging to common?
+void SCR_DebugGraph(float value);	// FIXME: move logging to common?
 
 // AVI files have the start of pixel lines 4 byte - aligned
 #define AVI_LINE_PADDING 4
@@ -1244,9 +1236,9 @@ qboolean Sys_PathIsAbsolute(const char *path);
 
 char *Sys_GetCurrentUser(void);
 
-void QDECL Sys_Error(const char *error, ...)__attribute__((noreturn, format(printf, 1, 2)));
-void Sys_Quit(void)__attribute__((noreturn));
-char *Sys_GetClipboardData(void); 	// note that this isn't journaled...
+void QDECL Sys_Error(const char *error, ...)__attribute__ ((noreturn, format(printf, 1, 2)));
+void Sys_Quit(void)__attribute__ ((noreturn));
+char *Sys_GetClipboardData(void);	// note that this isn't journaled...
 qboolean Sys_GetCapsLockMode(void);
 qboolean Sys_GetNumLockMode(void);
 
@@ -1288,7 +1280,7 @@ char *Sys_GogPath(void);
 char *Sys_DefaultAppPath(void);
 #endif
 
-void  Sys_SetDefaultHomePath(const char *path);
+void Sys_SetDefaultHomePath(const char *path);
 char *Sys_DefaultHomePath(void);
 const char *Sys_Dirname(char *path);
 const char *Sys_Basename(char *path);

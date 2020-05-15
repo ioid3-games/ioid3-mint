@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 #ifndef __QFILES_H__
@@ -38,7 +32,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 //Ignore __attribute__ on non - gcc platforms
 #ifndef __GNUC__
 #ifndef __attribute__
-#define __attribute__(x)
+#define __attribute__ (x)
 #endif
 #endif
 
@@ -68,19 +62,16 @@ QVM files
 
 typedef struct {
 	int vmMagic;
-
 	int instructionCount;
-
 	int codeOffset;
 	int codeLength;
-
 	int dataOffset;
 	int dataLength;
-	int litLength; 			// (dataLength - litLength)should be byteswapped on load
-	int bssLength; 			// zero filled memory appended to datalength
+	int litLength;			// (dataLength - litLength)should be byteswapped on load
+	int bssLength;			// zero filled memory appended to datalength
 
 	//!!! below here is VM_MAGIC_VER2 !!!
-	int jtrgLength; 			// number of jump table targets
+	int jtrgLength;			// number of jump table targets
 } vmHeader_t;
 
 /*
@@ -114,7 +105,7 @@ typedef struct md3Frame_s {
 } md3Frame_t;
 
 typedef struct md3Tag_s {
-	char name[MAX_QPATH]; 	// tag name
+	char name[MAX_QPATH];	// tag name
 	vec3_t origin;
 	vec3_t axis[3];
 } md3Tag_t;
@@ -130,29 +121,27 @@ typedef struct md3Tag_s {
 ** XyzNormals		sizeof(md3XyzNormal_t) * numVerts * numFrames
 */
 typedef struct {
-	int ident; 				// 
+	int ident;				// 
 
-	char name[MAX_QPATH]; 	// polyset name
+	char name[MAX_QPATH];	// polyset name
 
 	int flags;
-	int numFrames; 			// all surfaces in a model should have the same
+	int numFrames;			// all surfaces in a model should have the same
 
-	int numShaders; 			// all surfaces in a model should have the same
+	int numShaders;			// all surfaces in a model should have the same
 	int numVerts;
-
 	int numTriangles;
 	int ofsTriangles;
+	int ofsShaders;			// offset from start of md3Surface_t
+	int ofsSt;				// texture coords are common for all frames
+	int ofsXyzNormals;		// numVerts * numFrames
 
-	int ofsShaders; 			// offset from start of md3Surface_t
-	int ofsSt; 				// texture coords are common for all frames
-	int ofsXyzNormals; 		// numVerts * numFrames
-
-	int ofsEnd; 				// next surface follows
+	int ofsEnd;				// next surface follows
 } md3Surface_t;
 
 typedef struct {
 	char name[MAX_QPATH];
-	int shaderIndex; 	// for in - game use
+	int shaderIndex;	// for in - game use
 } md3Shader_t;
 
 typedef struct {
@@ -172,21 +161,18 @@ typedef struct {
 	int ident;
 	int version;
 
-	char name[MAX_QPATH]; 	// model name
+	char name[MAX_QPATH];	// model name
 
 	int flags;
-
 	int numFrames;
-	int numTags; 			
+	int numTags;			
 	int numSurfaces;
-
 	int numSkins;
+	int ofsFrames;			// offset for first frame
+	int ofsTags;			// numFrames * numTags
+	int ofsSurfaces;		// first surface, others follow
 
-	int ofsFrames; 			// offset for first frame
-	int ofsTags; 			// numFrames * numTags
-	int ofsSurfaces; 		// first surface, others follow
-
-	int ofsEnd; 				// end of file
+	int ofsEnd;				// end of file
 } md3Header_t;
 
 /*
@@ -244,10 +230,8 @@ typedef struct {
 
 	int numShaders;             // all surfaces in a model should have the same
 	int numVerts;
-
 	int numTriangles;
 	int ofsTriangles;
-
 	int ofsShaders;             // offset from start of md3Surface_t
 	int ofsSt;                  // texture coords are common for all frames
 	int ofsXyzNormals;          // numVerts * numBaseFrames
@@ -266,13 +250,10 @@ typedef struct {
 	char name[MAX_QPATH];           // model name
 
 	int flags;
-
 	int numFrames;
 	int numTags;
 	int numSurfaces;
-
 	int numSkins;
-
 	int ofsFrames;                  // offset for first frame, stores the bounds and localOrigin
 	int ofsTagNames;                // numTags
 	int ofsTags;                    // numFrames * numTags
@@ -309,8 +290,8 @@ MDR file format
 #define MDR_MAX_BONES	128
 
 typedef struct {
-	int boneIndex; 	// these are indexes into the boneReferences,
-	float boneWeight; 		// not the global per - frame bone list
+	int boneIndex;	// these are indexes into the boneReferences,
+	float boneWeight;		// not the global per - frame bone list
 	vec3_t offset;
 } mdrWeight_t;
 
@@ -318,7 +299,7 @@ typedef struct {
 	vec3_t normal;
 	vec2_t texCoords;
 	int numWeights;
-	mdrWeight_t weights[1]; 		// variable sized
+	mdrWeight_t weights[1];		// variable sized
 } mdrVertex_t;
 
 typedef struct {
@@ -328,15 +309,14 @@ typedef struct {
 typedef struct {
 	int ident;
 
-	char name[MAX_QPATH]; 	// polyset name
+	char name[MAX_QPATH];	// polyset name
 	char shader[MAX_QPATH];
-	int shaderIndex; 	// for in - game use
+	int shaderIndex;	// for in - game use
 
-	int ofsHeader; 	// this will be a negative number
+	int ofsHeader;	// this will be a negative number
 
 	int numVerts;
 	int ofsVerts;
-
 	int numTriangles;
 	int ofsTriangles;
 
@@ -347,8 +327,7 @@ typedef struct {
 	// to re - interpolate all the bones for each surface.
 	int numBoneReferences;
 	int ofsBoneReferences;
-
-	int ofsEnd; 		// next surface follows
+	int ofsEnd;		// next surface follows
 } mdrSurface_t;
 
 typedef struct {
@@ -356,11 +335,11 @@ typedef struct {
 } mdrBone_t;
 
 typedef struct {
-	vec3_t bounds[2]; 		// bounds of all surfaces of all LOD's for this frame
-	vec3_t localOrigin; 		// midpoint of bounds, used for sphere cull
-	float radius; 			// dist from localOrigin to corner
+	vec3_t bounds[2];		// bounds of all surfaces of all LOD's for this frame
+	vec3_t localOrigin;		// midpoint of bounds, used for sphere cull
+	float radius;			// dist from localOrigin to corner
 	char name[16];
-	mdrBone_t bones[1]; 		// [numBones]
+	mdrBone_t bones[1];		// [numBones]
 } mdrFrame_t;
 
 typedef struct {
@@ -368,16 +347,16 @@ typedef struct {
 } mdrCompBone_t;
 
 typedef struct {
-        vec3_t bounds[2]; 		// bounds of all surfaces of all LOD's for this frame
-        vec3_t localOrigin; 		// midpoint of bounds, used for sphere cull
-      	float radius; 			// dist from localOrigin to corner
-        mdrCompBone_t bones[1]; 		// [numBones]
+        vec3_t bounds[2];		// bounds of all surfaces of all LOD's for this frame
+        vec3_t localOrigin;		// midpoint of bounds, used for sphere cull
+      	float radius;			// dist from localOrigin to corner
+        mdrCompBone_t bones[1];		// [numBones]
 } mdrCompFrame_t;
 
 typedef struct {
 	int numSurfaces;
-	int ofsSurfaces; 		// first surface, others follow
-	int ofsEnd; 				// next lod follows
+	int ofsSurfaces;		// first surface, others follow
+	int ofsEnd;				// next lod follows
 } mdrLOD_t;
 
 typedef struct {
@@ -389,12 +368,12 @@ typedef struct {
 	int ident;
 	int version;
 
-	char name[MAX_QPATH]; 	// model name
+	char name[MAX_QPATH];	// model name
 
 	// frames and bones are shared by all levels of detail
 	int numFrames;
 	int numBones;
-	int ofsFrames; 			// mdrFrame_t[numFrames]
+	int ofsFrames;			// mdrFrame_t[numFrames]
 
 	// each level of detail has completely separate sets of surfaces
 	int numLODs;
@@ -402,8 +381,7 @@ typedef struct {
 
       	int numTags;
       	int ofsTags;
-
-	int ofsEnd; 				// end of file
+	int ofsEnd;				// end of file
 } mdrHeader_t;
 
 
@@ -452,15 +430,12 @@ typedef struct {
 	int shaderIndex;                // for in - game use
 
 	int minLod;
-
 	int ofsHeader;                  // this will be a negative number
 
 	int numVerts;
 	int ofsVerts;
-
 	int numTriangles;
 	int ofsTriangles;
-
 	int ofsCollapseMap;           // numVerts * int
 
 	// Bone references are a set of ints representing all the bones
@@ -470,7 +445,6 @@ typedef struct {
 	// to re - interpolate all the bones for each surface.
 	int numBoneReferences;
 	int ofsBoneReferences;
-
 	int ofsEnd;                     // next surface follows
 } mdsSurface_t;
 
@@ -590,15 +564,12 @@ typedef struct {
 	int shaderIndex;                // for in - game use
 
 	int minLod;
-
 	int ofsHeader;                  // this will be a negative number
 
 	int numVerts;
 	int ofsVerts;
-
 	int numTriangles;
 	int ofsTriangles;
-
 	int ofsCollapseMap;           // numVerts * int
 
 	// Bone references are a set of ints representing all the bones
@@ -608,15 +579,14 @@ typedef struct {
 	// to re - interpolate all the bones for each surface.
 	int numBoneReferences;
 	int ofsBoneReferences;
-
 	int ofsEnd;                     // next surface follows
 } mdmSurface_t;
 
 /*typedef struct {
-	vec3_t bounds[2]; 			// bounds of all surfaces of all LOD's for this frame
-	vec3_t localOrigin; 		// midpoint of bounds, used for sphere cull
-	float radius; 				// dist from localOrigin to corner
-	vec3_t parentOffset; 		// one bone is an ascendant of all other bones, it starts the hierachy at this position
+	vec3_t bounds[2];			// bounds of all surfaces of all LOD's for this frame
+	vec3_t localOrigin;		// midpoint of bounds, used for sphere cull
+	float radius;				// dist from localOrigin to corner
+	vec3_t parentOffset;		// one bone is an ascendant of all other bones, it starts the hierachy at this position
 } mdmFrame_t; */
 
 typedef struct {
@@ -626,27 +596,23 @@ typedef struct {
 } mdmLOD_t;
 
 /*typedef struct {
-	char name[MAX_QPATH]; 	// name of tag
+	char name[MAX_QPATH];	// name of tag
 	float torsoWeight;
-	int boneIndex; 			// our index in the bones
+	int boneIndex;			// our index in the bones
 
 	int numBoneReferences;
 	int ofsBoneReferences;
-
-	int ofsEnd; 				// next tag follows
+	int ofsEnd;				// next tag follows
 } mdmTag_t; */
 
 // Tags always only have one parent bone
 typedef struct {
 	char name[MAX_QPATH];           // name of tag
 	vec3_t axis[3];
-
 	int boneIndex;
 	vec3_t offset;
-
 	int numBoneReferences;
 	int ofsBoneReferences;
-
 	int ofsEnd;                     // next tag follows
 } mdmTag_t;
 
@@ -655,7 +621,7 @@ typedef struct {
 	int version;
 
 	char name[MAX_QPATH];           // model name
-/*	char bonesfile[MAX_QPATH]; 	// bone file
+/*	char bonesfile[MAX_QPATH];	// bone file
 
 #ifdef UTILS
 	int skel;
@@ -669,7 +635,7 @@ typedef struct {
 
 	// frames and bones are shared by all levels of detail
 /*	int numFrames;
-	int ofsFrames; 			// mdmFrame_t[numFrames]
+	int ofsFrames;			// mdmFrame_t[numFrames]
 */
 	int numSurfaces;
 	int ofsSurfaces;
@@ -677,7 +643,6 @@ typedef struct {
 	// tag data
 	int numTags;
 	int ofsTags;
-
 	int ofsEnd;                     // end of file
 } mdmHeader_t;
 
@@ -794,23 +759,21 @@ typedef struct tikiFrame_s {
 ** XyzNormals		sizeof(md3XyzNormal_t) * numVerts * numFrames
 */
 typedef struct {
-	int ident; 				// 
+	int ident;				// 
 
-	char name[MAX_QPATH]; 	// polyset name
+	char name[MAX_QPATH];	// polyset name
 
-	int numFrames; 			// all surfaces in a model should have the same
+	int numFrames;			// all surfaces in a model should have the same
 	int numVerts;
 	int minLod;
-
 	int numTriangles;
 	int ofsTriangles;
+	int ofsCollapseMap;		// numVerts * int
 
-	int ofsCollapseMap; 		// numVerts * int
+	int ofsSt;				// texture coords are common for all frames
+	int ofsXyzNormals;		// numVerts * numFrames
 
-	int ofsSt; 				// texture coords are common for all frames
-	int ofsXyzNormals; 		// numVerts * numFrames
-
-	int ofsEnd; 				// next surface follows
+	int ofsEnd;				// next surface follows
 } tanSurface_t;
 
 typedef struct {
@@ -819,26 +782,25 @@ typedef struct {
 } tanTagData_t;
 
 typedef struct {
-	char name[MAX_QPATH]; 	// tag name
+	char name[MAX_QPATH];	// tag name
 } tanTag_t;
 
 typedef struct {
 	int ident;
 	int version;
 
-	char name[MAX_QPATH]; 	// model name
+	char name[MAX_QPATH];	// model name
 
 	int numFrames;
 	int numTags;
 	int numSurfaces;
 	float totaltime;
 	vec3_t totaldelta;
-
-	int ofsFrames; 			// offset for first frame
-	int ofsSurfaces; 		// first surface, others follow
+	int ofsFrames;			// offset for first frame
+	int ofsSurfaces;		// first surface, others follow
 	int ofsTags[TIKI_MAX_TAGS]; // tanTag_t + numFrames * tanTagData_t
 
-	int ofsEnd; 				// end of file
+	int ofsEnd;				// end of file
 } tanHeader_t;
 
 /*

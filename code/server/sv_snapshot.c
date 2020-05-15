@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -100,6 +94,7 @@ static void SV_EmitPacketEntities(clientSnapshot_t *from, clientSnapshot_t *to, 
 	oldent = NULL;
 	newindex = 0;
 	oldindex = 0;
+
 	while (newindex < to->num_entities || oldindex < from_num_entities) {
 		if (newindex >= to->num_entities) {
 			newnum = 9999;
@@ -117,8 +112,7 @@ static void SV_EmitPacketEntities(clientSnapshot_t *from, clientSnapshot_t *to, 
 
 		if (newnum == oldnum) {
 			// delta update from old position
-			// because the force parm is qfalse, this will not result
-			// in any bytes being emitted if the entity has not changed at all
+			// because the force parm is qfalse, this will not result in any bytes being emitted if the entity has not changed at all
 			MSG_WriteDeltaEntity(msg, oldent, newent, qfalse);
 			oldindex++;
 			newindex++;
@@ -140,10 +134,8 @@ static void SV_EmitPacketEntities(clientSnapshot_t *from, clientSnapshot_t *to, 
 		}
 	}
 
-	MSG_WriteBits(msg, (MAX_GENTITIES - 1), GENTITYNUM_BITS); 	// end of packetentities
+	MSG_WriteBits(msg, (MAX_GENTITIES - 1), GENTITYNUM_BITS); // end of packetentities
 }
-
-
 
 /*
 =======================================================================================================================================
@@ -158,7 +150,6 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 
 	// this is the snapshot we are creating
 	frame = &client->frames[client->netchan.outgoingSequence & PACKET_MASK];
-
 	// snapshot wasn't ever built
 	if (!frame->playerStates.pointer) {
 		return;
@@ -168,8 +159,7 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 		// client is asking for a retransmit
 		oldframe = NULL;
 		lastframe = 0;
-	} else if (client->netchan.outgoingSequence - client->deltaMessage 
-		 >= (PACKET_BACKUP - 3)) {
+	} else if (client->netchan.outgoingSequence - client->deltaMessage >= (PACKET_BACKUP - 3)) {
 		// client hasn't gotten a good message through in a long time
 		Com_DPrintf("%s: Delta request from out of date packet.\n", SV_ClientName(client));
 		oldframe = NULL;
@@ -178,7 +168,6 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 		// we have a valid snapshot to delta from
 		oldframe = &client->frames[client->deltaMessage & PACKET_MASK];
 		lastframe = client->netchan.outgoingSequence - client->deltaMessage;
-
 		// the snapshot's entities may still have rolled off the buffer, though
 		if (oldframe->first_entity <= svs.nextSnapshotEntities - svs.numSnapshotEntities) {
 			Com_DPrintf("%s: Delta request from out of date entities.\n", SV_ClientName(client));
@@ -188,20 +177,14 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 	}
 
 	MSG_WriteByte(msg, svc_snapshot);
-
 	// NOTE, MRE: now sent at the start of every message from server to client
 	// let the client know which reliable clientCommands we have received
 	//MSG_WriteLong(msg, client->lastClientCommand);
-
-	// send over the current server time so the client can drift
-	// its view of time to try to match
+	// send over the current server time so the client can drift its view of time to try to match
 	if (client->oldServerTime) {
-		// The server has not yet got an acknowledgement of the
-		// new gamestate from this client, so continue to send it
-		// a time as if the server has not restarted. Note from
-		// the client's perspective this time is strictly speaking
-		// incorrect, but since it'll be busy loading a map at
-		// the time it doesn't really matter.
+		// the server has not yet got an acknowledgement of the new gamestate from this client, so continue to send it
+		// a time as if the server has not restarted. Note from the client's perspective this time is strictly speaking
+		// incorrect, but since it'll be busy loading a map at the time it doesn't really matter.
 		MSG_WriteLong(msg, sv.time + client->oldServerTime);
 	} else {
 		MSG_WriteLong(msg, sv.time);
@@ -219,7 +202,6 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 	}
 
 	MSG_WriteByte(msg, snapFlags);
-
 	// send playerstates
 	if (frame->numPSs > MAX_SPLITVIEW) {
 		Com_DPrintf(S_COLOR_YELLOW "Warning: Almost sent numPSs as %d(max = %d)\n", frame->numPSs, MAX_SPLITVIEW);
@@ -231,7 +213,6 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 	for (i = 0; i < MAX_SPLITVIEW; i++) {
 		MSG_WriteByte(msg, frame->localPlayerIndex[i]);
 		MSG_WriteByte(msg, frame->playerNums[i]);
-
 		// send over the areabits
 		MSG_WriteByte(msg, frame->areabytes[i]);
 		MSG_WriteData(msg, frame->areabits[i], frame->areabytes[i]);
@@ -243,15 +224,13 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 		}
 		// delta encode the playerstate
 		if (oldframe && oldframe->localPlayerIndex[i] != -1) {
-			MSG_WriteDeltaPlayerstate(msg, SV_SnapshotPlayer(oldframe, oldframe->localPlayerIndex[i]),
-											SV_SnapshotPlayer(frame, frame->localPlayerIndex[i]));
+			MSG_WriteDeltaPlayerstate(msg, SV_SnapshotPlayer(oldframe, oldframe->localPlayerIndex[i]), SV_SnapshotPlayer(frame, frame->localPlayerIndex[i]));
 		} else {
 			MSG_WriteDeltaPlayerstate(msg, NULL, SV_SnapshotPlayer(frame, frame->localPlayerIndex[i]));
 		}
 	}
 	// delta encode the entities
 	SV_EmitPacketEntities(oldframe, frame, msg);
-
 	// padding for rate debugging
 	if (sv_padPackets->integer) {
 		for (i = 0; i < sv_padPackets->integer; i++) {
@@ -260,12 +239,11 @@ static void SV_WriteSnapshotToClient(client_t *client, msg_t *msg) {
 	}
 }
 
-
 /*
 =======================================================================================================================================
 SV_UpdateServerCommandsToClient
 
-(re)send all server commands the client hasn't acknowledged yet
+(Re)send all server commands the client hasn't acknowledged yet.
 =======================================================================================================================================
 */
 void SV_UpdateServerCommandsToClient(client_t *client, msg_t *msg) {
@@ -295,7 +273,6 @@ void SV_WriteBaselineToClient(client_t *client, msg_t *msg) {
 	}
 
 	client->needBaseline = qfalse;
-
 	// write the baselines
 	for (start = 0; start < MAX_GENTITIES; start++) {
 		base = (sharedEntityState_t *)DA_ElementPointer(sv.svEntitiesBaseline, start);
@@ -320,7 +297,7 @@ Build a client snapshot structure
 typedef struct {
 	int numSnapshotEntities;
 	int maxSnapshotEntities;
-	int snapshotEntities[MAX_SNAPSHOT_ENTITIES * MAX_SPLITVIEW]; 	
+	int snapshotEntities[MAX_SNAPSHOT_ENTITIES * MAX_SPLITVIEW];	
 } snapshotEntityNumbers_t;
 
 /*
@@ -345,7 +322,6 @@ static int QDECL SV_QsortEntityNumbers(const void *a, const void *b) {
 	return 1;
 }
 
-
 /*
 =======================================================================================================================================
 SV_AddEntToSnapshot
@@ -360,7 +336,6 @@ static void SV_AddEntToSnapshot(clientSnapshot_t *frame, svEntity_t *svEnt, shar
 	}
 
 	svEnt->snapshotCounter = sv.snapshotCounter;
-
 	// if we are full, silently discard entities
 	if (eNums->numSnapshotEntities == eNums->maxSnapshotEntities) {
 		return;
@@ -385,8 +360,7 @@ static void SV_AddEntToSnapshot(clientSnapshot_t *frame, svEntity_t *svEnt, shar
 SV_AddEntitiesVisibleFromPoint
 =======================================================================================================================================
 */
-static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t origin, clientSnapshot_t *frame,
-									snapshotEntityNumbers_t *eNums, qboolean portal) {
+static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t origin, clientSnapshot_t *frame, snapshotEntityNumbers_t *eNums, qboolean portal) {
 	int e, i;
 	sharedEntity_t *ent;
 	svEntity_t *svEnt;
@@ -396,8 +370,7 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 	byte *clientpvs;
 	byte *bitvector;
 
-	// during an error shutdown message we may need to transmit
-	// the shutdown message after the server has shutdown, so
+	// during an error shutdown message we may need to transmit the shutdown message after the server has shutdown, so
 	// specfically check for it
 	if (!sv.state) {
 		return;
@@ -406,15 +379,12 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 	leafnum = CM_PointLeafnum(origin);
 	clientarea = CM_LeafArea(leafnum);
 	clientcluster = CM_LeafCluster(leafnum);
-
 	// calculate the visible areas
 	frame->areabytes[psIndex] = CM_WriteAreaBits(frame->areabits[psIndex], clientarea);
-
 	clientpvs = CM_ClusterPVS(clientcluster);
 
 	for (e = 0; e < sv.num_entities; e++) {
 		ent = SV_GentityNum(e);
-
 		// never send entities that aren't linked in
 		if (!ent->r.linked) {
 			continue;
@@ -430,12 +400,12 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 		}
 		// entities can be flagged to be sent to a given mask of clients
 		if (ent->r.svFlags & SVF_PLAYERMASK) {
-			if (!Com_ClientListContains(&ent->r.sendPlayers, playerNum))
+			if (!Com_ClientListContains(&ent->r.sendPlayers, playerNum)) {
 				continue;
+			}
 		}
 
 		svEnt = SV_SvEntityForGentity(ent);
-
 		// don't double add an entity through portals
 		if (svEnt->snapshotCounter == sv.snapshotCounter) {
 			continue;
@@ -444,6 +414,7 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 		if (ent->r.cullDistance) {
 			vec3_t dir;
 			VectorSubtract(ent->s.origin, origin, dir);
+
 			if (VectorLengthSquared(dir) > (float)ent->r.cullDistance * ent->r.cullDistance) {
 				continue;
 			}
@@ -456,29 +427,27 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 		// ignore if not touching a PV leaf
 		// check area
 		if (!CM_AreasConnected(clientarea, svEnt->areanum)) {
-			// doors can legally straddle two areas, so
-			// we may need to check another one
+			// doors can legally straddle two areas, so we may need to check another one
 			if (!CM_AreasConnected(clientarea, svEnt->areanum2)) {
-				continue; 		// blocked by a door
+				continue; // blocked by a door
 			}
 		}
 
 		bitvector = clientpvs;
-
 		// check individual leafs
 		if (!svEnt->numClusters) {
 			continue;
 		}
 
 		l = 0;
+
 		for (i = 0; i < svEnt->numClusters; i++) {
 			l = svEnt->clusternums[i];
 			if (bitvector[l >> 3] &(1 << (l&7))) {
 				break;
 			}
 		}
-		// if we haven't found it to be visible,
-		// check overflow clusters that coudln't be stored
+		// if we haven't found it to be visible check overflow clusters that coudln't be stored
 		if (i == svEnt->numClusters) {
 			if (svEnt->lastCluster) {
 				for (; l <= svEnt->lastCluster; l++) {
@@ -488,7 +457,7 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 				}
 
 				if (l == svEnt->lastCluster) {
-					continue; 	// not visible
+					continue; // not visible
 				}
 			} else {
 				continue;
@@ -557,7 +526,6 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 		}
 		// add it
 		SV_AddEntToSnapshot(frame, svEnt, ent, eNums);
-
 		// if it's a portal entity, add everything visible from its camera position
 		if (ent->r.svFlags & SVF_PORTAL) {
 			if (ent->r.portalCullDistance) {
@@ -571,7 +539,6 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 
 			SV_AddEntitiesVisibleFromPoint(psIndex, playerNum, ent->s.origin2, frame, eNums, qtrue);
 		}
-
 	}
 }
 
@@ -579,11 +546,8 @@ static void SV_AddEntitiesVisibleFromPoint(int psIndex, int playerNum, vec3_t or
 =======================================================================================================================================
 SV_BuildClientSnapshot
 
-Decides which entities are going to be visible to the client, and
-copies off the playerstate and areabits.
-
-This properly handles multiple recursive portals, but the render
-currently doesn't.
+Decides which entities are going to be visible to the client, and copies off the playerstate and areabits.
+This properly handles multiple recursive portals, but the render currently doesn't.
 =======================================================================================================================================
 */
 static void SV_BuildClientSnapshot(client_t *client) {
@@ -599,15 +563,13 @@ static void SV_BuildClientSnapshot(client_t *client) {
 
 	// bump the counter used to prevent double adding
 	sv.snapshotCounter++;
-
 	// this is the frame we are creating
 	frame = &client->frames[client->netchan.outgoingSequence & PACKET_MASK];
-
 	// clear everything in this snapshot
 	entityNumbers.numSnapshotEntities = 0;
-	Com_Memset(frame->areabits, 0, sizeof(frame->areabits));
 
-  // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id = 62
+	Com_Memset(frame->areabits, 0, sizeof(frame->areabits));
+	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id = 62
 	frame->num_entities = 0;
 	
 	if (client->state == CS_ZOMBIE) {
@@ -637,8 +599,7 @@ static void SV_BuildClientSnapshot(client_t *client) {
 	if (!frame->numPSs) {
 		return;
 	}
-	// never send player's own entity, because it can
-	// be regenerated from the playerstate
+	// never send player's own entity, because it can be regenerated from the playerstate
 	for (i = 0; i < frame->numPSs; i++) {
 		playerNum = SV_SnapshotPlayer(frame, i) ->playerNum;
 
@@ -647,29 +608,22 @@ static void SV_BuildClientSnapshot(client_t *client) {
 		}
 
 		svEnt = &sv.svEntities[playerNum];
-
 		svEnt->snapshotCounter = sv.snapshotCounter;
 	}
-	// Now that local players have been marked as no send, add visible entities.
+	// now that local players have been marked as no send, add visible entities.
 	for (i = 0; i < frame->numPSs; i++) {
 		// find the player's viewpoint
 		VectorCopy(SV_SnapshotPlayer(frame, i) ->origin, org);
 		org[2] += SV_SnapshotPlayer(frame, i) ->viewheight;
-
 		// allow MAX_SNAPSHOT_ENTITIES to be added for this view point
 		entityNumbers.maxSnapshotEntities = entityNumbers.numSnapshotEntities + MAX_SNAPSHOT_ENTITIES;
-
-		// add all the entities directly visible to the eye, which
-		// may include portal entities that merge other viewpoints
+		// add all the entities directly visible to the eye, which may include portal entities that merge other viewpoints
 		SV_AddEntitiesVisibleFromPoint(i, SV_SnapshotPlayer(frame, i) ->playerNum, org, frame, &entityNumbers, qfalse);
 	}
 	// if there were portals visible, there may be out of order entities
 	// in the list which will need to be resorted for the delta compression
-	// to work correctly.  This also catches the error condition
-	// of an entity being included twice.
-	qsort(entityNumbers.snapshotEntities, entityNumbers.numSnapshotEntities,
-		sizeof(entityNumbers.snapshotEntities[0]), SV_QsortEntityNumbers);
-
+	// to work correctly.  This also catches the error condition of an entity being included twice
+	qsort(entityNumbers.snapshotEntities, entityNumbers.numSnapshotEntities, sizeof(entityNumbers.snapshotEntities[0]), SV_QsortEntityNumbers);
 	// now that all viewpoint's areabits have been OR'd together, invert
 	// all of them to make it a mask vector, which is what the renderer wants
 	for (psIndex = 0; psIndex < frame->numPSs; psIndex++) {
@@ -713,19 +667,20 @@ static void SV_WriteVoipToClient(client_t *cl, msg_t *msg) {
 			packet = cl->voipPacket[(i + cl->queuedVoipIndex)% ARRAY_LEN(cl->voipPacket)];
 
 			if (!*cl->downloadName) {
-        			totalbytes += packet->len;
-	        		if (totalbytes > (msg->maxsize - msg->cursize) / 2)
-		        		break;
+				totalbytes += packet->len;
 
-        			MSG_WriteByte(msg, svc_voipOpus);
-        			MSG_WriteShort(msg, packet->sender);
-	        		MSG_WriteByte(msg, (byte)packet->generation);
-		        	MSG_WriteLong(msg, packet->sequence);
-		        	MSG_WriteByte(msg, packet->frames);
-        			MSG_WriteShort(msg, packet->len);
-        			MSG_WriteBits(msg, packet->flags, VOIP_FLAGCNT);
-	        		MSG_WriteData(msg, packet->data, packet->len);
-                        }
+				if (totalbytes > (msg->maxsize - msg->cursize) / 2)
+					break;
+
+					MSG_WriteByte(msg, svc_voipOpus);
+					MSG_WriteShort(msg, packet->sender);
+					MSG_WriteByte(msg, (byte)packet->generation);
+					MSG_WriteLong(msg, packet->sequence);
+					MSG_WriteByte(msg, packet->frames);
+					MSG_WriteShort(msg, packet->len);
+					MSG_WriteBits(msg, packet->flags, VOIP_FLAGCNT);
+					MSG_WriteData(msg, packet->data, packet->len);
+				}
 
 			Z_Free(packet);
 		}
@@ -736,31 +691,28 @@ static void SV_WriteVoipToClient(client_t *cl, msg_t *msg) {
 	}
 }
 #endif
-
 /*
 =======================================================================================================================================
 SV_SendMessageToClient
 
-Called by SV_SendClientSnapshot and SV_SendClientGameState
+Called by SV_SendClientSnapshot and SV_SendClientGameState.
 =======================================================================================================================================
 */
 void SV_SendMessageToClient(msg_t *msg, client_t *client) {
+
 	// record information about the message
 	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageSize = msg->cursize;
 	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageSent = svs.time;
 	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageAcked = -1;
-
 	// send the datagram
 	SV_Netchan_Transmit(client, msg);
 }
-
 
 /*
 =======================================================================================================================================
 SV_SendClientSnapshot
 
-Also called by SV_FinalMessage
-
+Also called by SV_FinalMessage.
 =======================================================================================================================================
 */
 void SV_SendClientSnapshot(client_t *client) {
@@ -769,41 +721,32 @@ void SV_SendClientSnapshot(client_t *client) {
 
 	// build the snapshot
 	SV_BuildClientSnapshot(client);
-
-	// bots need to have their snapshots build, but
-	// the query them directly without needing to be sent
+	// bots need to have their snapshots build, but the query them directly without needing to be sent
 	if (client->netchan.remoteAddress.type == NA_BOT) {
 		return;
 	}
 
 	MSG_Init(&msg, msg_buf, sizeof(msg_buf));
-	msg.allowoverflow = qtrue;
 
+	msg.allowoverflow = qtrue;
 	// NOTE, MRE: all server->client messages now acknowledge
 	// let the client know which reliable clientCommands we have received
 	MSG_WriteLong(&msg, client->lastClientCommand);
-
 	// (re)send any reliable server commands
 	SV_UpdateServerCommandsToClient(client, &msg);
-
-	// if client is awaiting gamestate(or downloading a pk3), hold off sending snapshot as it
-	// can't be loaded until after cgame is loaded.
-	// must send snapshot to kicked(zombie)clients for them to process disconnect.
+	// if client is awaiting gamestate (or downloading a pk3), hold off sending snapshot as it can't be loaded until after cgame is loaded
+	// must send snapshot to kicked(zombie)clients for them to process disconnect
 	if (client->state != CS_ACTIVE && client->state != CS_ZOMBIE) {
 		client->needBaseline = qtrue;
 	} else {
 		// entities delta baseline
 		SV_WriteBaselineToClient(client, &msg);
-
-		// send over all the relevant entityState_t
-		// and playerState_t
+		// send over all the relevant entityState_t and playerState_t
 		SV_WriteSnapshotToClient(client, &msg);
 	}
-
 #ifdef USE_VOIP
 	SV_WriteVoipToClient(client, &msg);
 #endif
-
 	// check for overflow
 	if (msg.overflowed) {
 		Com_Printf("WARNING: msg overflowed for %s\n", SV_ClientName(client));
@@ -812,7 +755,6 @@ void SV_SendClientSnapshot(client_t *client) {
 
 	SV_SendMessageToClient(&msg, client);
 }
-
 
 /*
 =======================================================================================================================================
@@ -827,25 +769,27 @@ void SV_SendClientMessages(void) {
 	for (i = 0; i < sv_maxclients->integer; i++) {
 		c = &svs.clients[i];
 		
-		if (!c->state)
-			continue; 		// not connected
+		if (!c->state) {
+			continue; // not connected
+		}
 
-		if (svs.time - c->lastSnapshotTime < c->snapshotMsec * com_timescale->value)
-			continue; 		// It's not time yet
+		if (svs.time - c->lastSnapshotTime < c->snapshotMsec * com_timescale->value) {
+			continue; // it's not time yet
+		}
 
-		if (*c->downloadName)
-			continue; 		// Client is downloading, don't send snapshots
+		if (*c->downloadName) {
+			continue; // client is downloading, don't send snapshots
+		}
 
 		if (c->netchan.unsentFragments || c->netchan_start_queue) {
 			c->rateDelayed = qtrue;
-			continue; 		// Drop this snapshot if the packet queue is still full or delta compression will break
+			continue; // drop this snapshot if the packet queue is still full or delta compression will break
 		}
 
-		if (!(c->netchan.remoteAddress.type == NA_LOOPBACK ||
-		    (sv_lanForceRate->integer && Sys_IsLANAddress(c->netchan.remoteAddress)))) {
+		if (!(c->netchan.remoteAddress.type == NA_LOOPBACK || (sv_lanForceRate->integer && Sys_IsLANAddress(c->netchan.remoteAddress)))) {
 			// rate control for clients not on LAN 
 			if (SV_RateMsec(c) > 0) {
-				// Not enough time since last packet passed through the line
+				// not enough time since last packet passed through the line
 				c->rateDelayed = qtrue;
 				continue;
 			}

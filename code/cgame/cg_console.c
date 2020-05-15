@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -37,21 +31,21 @@ typedef struct {
 	qboolean initialized;
 
 	char lines[CON_MAXLINES][CON_LINELENGTH];
-	int current; 		// line where next message will be printed
-	int display; 		// bottom of console displays this line
-	int x; 			// offset in current line for next print
-	int startx; 		// initial index in current line. it's 2 if colored line wrapped around
+	int current;		// line where next message will be printed
+	int display;		// bottom of console displays this line
+	int x;			// offset in current line for next print
+	int startx;		// initial index in current line. it's 2 if colored line wrapped around
 
 	int topline; // 0 <= topline < CON_MAXLINES
 
-	float displayFrac; 	// aproaches finalFrac at scr_conspeed
-	float finalFrac; 		// 0.0 to 1.0 lines of console to display
+	float displayFrac;	// aproaches finalFrac at scr_conspeed
+	float finalFrac;		// 0.0 to 1.0 lines of console to display
 
 	char version[80];
 	int sideMargin;
 	int screenFakeWidth; // width in fake 640x480, it can be more than 640
 
-	int lineSplit; 		// current line wrapped around without a terminating newline
+	int lineSplit;		// current line wrapped around without a terminating newline
 } console_t;
 
 console_t con;
@@ -61,8 +55,8 @@ console_t con;
 #define COMMAND_HISTORY		32
 
 mfield_t historyEditLines[COMMAND_HISTORY];
-int nextHistoryLine; 		// the last line in the history buffer, not masked
-int historyLine; 	// the line being displayed from history buffer
+int nextHistoryLine;		// the last line in the history buffer, not masked
+int historyLine;	// the line being displayed from history buffer
 							// will be <= nextHistoryLine
 
 mfield_t g_consoleField;
@@ -103,7 +97,7 @@ void Con_ToggleConsole_f(void) {
 
 	g_consoleField.widthInChars = g_console_field_width;
 
-	Key_SetCatcher(Key_GetCatcher()^ KEYCATCH_CONSOLE);
+	Key_SetCatcher(Key_GetCatcher() ^ KEYCATCH_CONSOLE);
 }
 
 /*
@@ -332,7 +326,7 @@ void Con_DrawSolidConsole(connstate_t state, float frac) {
 	CG_SetScreenPlacement(PLACE_LEFT, PLACE_TOP);
 
 	// draw the text
-	rows = (lines - lineHeight) /lineHeight; 		// rows of text to draw
+	rows = (lines - lineHeight) /lineHeight;		// rows of text to draw
 
 	y = lines - (lineHeight*3);
 
@@ -404,9 +398,9 @@ Scroll it up or down and draw it
 void CG_RunConsole(connstate_t state) {
 	// decide on the destination height of the console
 	if (Key_GetCatcher()& KEYCATCH_CONSOLE)
-		con.finalFrac = 0.5; 		// half screen
+		con.finalFrac = 0.5;		// half screen
 	else
-		con.finalFrac = 0; 				// none visible
+		con.finalFrac = 0;				// none visible
 	
 	// scroll towards the destination height
 	if (con.finalFrac < con.displayFrac) {
@@ -414,7 +408,6 @@ void CG_RunConsole(connstate_t state) {
 
 		if (con.finalFrac > con.displayFrac)
 			con.displayFrac = con.finalFrac;
-
 	} else if (con.finalFrac > con.displayFrac) {
 		con.displayFrac += con_conspeed.value*cg.realFrameTime*0.001;
 
@@ -456,7 +449,7 @@ void Con_Bottom(void) {
 void CG_CloseConsole(void) {
 	MField_Clear(&g_consoleField);
 	Key_SetCatcher(Key_GetCatcher()& ~KEYCATCH_CONSOLE);
-	con.finalFrac = 0; 				// none visible
+	con.finalFrac = 0;				// none visible
 	con.displayFrac = 0;
 }
 
@@ -476,7 +469,6 @@ Handles history and console scrollback
 =======================================================================================================================================
 */
 void Console_Key(int key, qboolean down) {
-
 	if (!down) {
 		return;
 	}
@@ -510,16 +502,17 @@ void Console_Key(int key, qboolean down) {
 		Com_Printf("]%s\n", editLine);
 		// leading slash is an explicit command
 		if (editLine[0] == '\\' || editLine[0] == '/') {
-			trap_Cmd_ExecuteText(EXEC_APPEND, editLine+1); 	// valid command
+			trap_Cmd_ExecuteText(EXEC_APPEND, editLine+1);	// valid command
 			trap_Cmd_ExecuteText(EXEC_APPEND, "\n");
 		} else {
 			// other text will be chat messages
 			if (!editLine[0]) {
-				return; 	// empty lines just scroll the console without adding to history
+				return;	// empty lines just scroll the console without adding to history
 			} else {
 				if (con_autochat.integer) {
 					trap_Cmd_ExecuteText(EXEC_APPEND, "cmd say ");
 				}
+
 				trap_Cmd_ExecuteText(EXEC_APPEND, editLine);
 				trap_Cmd_ExecuteText(EXEC_APPEND, "\n");
 			}
@@ -536,7 +529,7 @@ void Console_Key(int key, qboolean down) {
 		CG_SaveConsoleHistory();
 
 		if (cg.connState == CA_DISCONNECTED) {
-			trap_UpdateScreen(); 	// force an update, because the command
+			trap_UpdateScreen();	// force an update, because the command
 		}							// may take some time
 		return;
 	}
@@ -558,7 +551,7 @@ void Console_Key(int key, qboolean down) {
 	}
 	// command history(ctrl - p ctrl - n for unix style)
 
-	if ((key == K_MWHEELUP && (trap_Key_IsDown(K_LEFTSHIFT) || trap_Key_IsDown(K_RIGHTSHIFT))) ||(key == K_UPARROW) ||(key == K_KP_UPARROW) ||
+	if ((key == K_MWHEELUP && (trap_Key_IsDown(K_LEFTSHIFT) || trap_Key_IsDown(K_RIGHTSHIFT))) || (key == K_UPARROW) || (key == K_KP_UPARROW) ||
 		((tolower(key) == 'p') && (trap_Key_IsDown(K_LEFTCTRL) || trap_Key_IsDown(K_RIGHTCTRL)))) {
 		if (nextHistoryLine - historyLine < COMMAND_HISTORY 
 			&& historyLine > 0) {
@@ -569,7 +562,7 @@ void Console_Key(int key, qboolean down) {
 		return;
 	}
 
-	if ((key == K_MWHEELDOWN && (trap_Key_IsDown(K_LEFTSHIFT) || trap_Key_IsDown(K_RIGHTSHIFT))) ||(key == K_DOWNARROW) ||(key == K_KP_DOWNARROW) ||
+	if ((key == K_MWHEELDOWN && (trap_Key_IsDown(K_LEFTSHIFT) || trap_Key_IsDown(K_RIGHTSHIFT))) || (key == K_DOWNARROW) || (key == K_KP_DOWNARROW) ||
 		((tolower(key) == 'n') && (trap_Key_IsDown(K_LEFTCTRL) || trap_Key_IsDown(K_RIGHTCTRL)))) {
 		historyLine++;
 

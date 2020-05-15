@@ -46,20 +46,20 @@ static const char rcsid[] =
 #endif /* LIBC_SCCS and not lint */
 
 static char *med3(char *, char *, char *, cmp_t *);
-static void  swapfunc(char *, char *, int, int);
+static void swapfunc(char *, char *, int, int);
 
 /*
  * Qsort routine from Bentley & McIlroy's "Engineering a Sort Function".
  */
 #define swapcode(TYPE, parmi, parmj, n) { 		\
-	long i = (n) / sizeof(TYPE); 			\
-	register TYPE *pi = (TYPE *)(parmi); 		\
-	register TYPE *pj = (TYPE *)(parmj); 		\
+	long i = (n) / sizeof(TYPE);			\
+	register TYPE *pi = (TYPE *)(parmi);		\
+	register TYPE *pj = (TYPE *)(parmj);		\
 	do { 						\
-		register TYPE	t = *pi; 		\
-		*pi++ = *pj; 				\
-		*pj++ = t; 				\
-        } while(-- i > 0); 				\
+		register TYPE	t = *pi;		\
+		*pi++ = *pj;				\
+		*pj++ = t;				\
+        } while(-- i > 0);				\
 }
 
 #define SWAPINIT(a, es)swaptype = ((char *)a - (char *)0)% sizeof(long) || \
@@ -78,9 +78,9 @@ swapfunc(a, b, n, swaptype)
 
 #define swap(a, b)					\
 	if (swaptype == 0) {				\
-		long t = * (long *)(a); 			\
-		*(long *)(a) = * (long *)(b); 		\
-		*(long *)(b) = t; 			\
+		long t = * (long *)(a);			\
+		*(long *)(a) = * (long *)(b);		\
+		*(long *)(b) = t;			\
 	} else						\
 		swapfunc(a, b, es, swaptype)
 
@@ -218,6 +218,7 @@ char *strcat(char *strDestination, const char *strSource) {
 	while (*strSource) {
 		*s++ = *strSource++;
 	}
+
 	*s = 0;
 	return strDestination;
 }
@@ -230,6 +231,7 @@ char *strcpy(char *strDestination, const char *strSource) {
 	while (*strSource) {
 		*s++ = *strSource++;
 	}
+
 	*s = 0;
 	return strDestination;
 }
@@ -530,7 +532,7 @@ double sin(double x) {
 	index = 1024 * x / (M_PI * 0.5);
 	quad = (index >> 10)& 3;
 	index & = 1023;
-	switch(quad) {
+	switch (quad) {
 	case 0:
 		return sintable[index];
 	case 1:
@@ -551,7 +553,7 @@ double cos(double x) {
 	index = 1024 * x / (M_PI * 0.5);
 	quad = (index >> 10)& 3;
 	index & = 1023;
-	switch(quad) {
+	switch (quad) {
 	case 3:
 		return sintable[index];
 	case 0:
@@ -862,7 +864,7 @@ double atof(const char *string) {
 		string++;
 	}
 	// check sign
-	switch(*string) {
+	switch (*string) {
 	case '+':
 		string++;
 		sign = 1;
@@ -934,7 +936,7 @@ double _atof(const char **stringPtr) {
 		string++;
 	}
 	// check sign
-	switch(*string) {
+	switch (*string) {
 	case '+':
 		string++;
 		sign = 1;
@@ -1179,7 +1181,7 @@ int atoi(const char *string) {
 		string++;
 	}
 	// check sign
-	switch(*string) {
+	switch (*string) {
 	case '+':
 		string++;
 		sign = 1;
@@ -1227,7 +1229,7 @@ int _atoi(const char **stringPtr) {
 		string++;
 	}
 	// check sign
-	switch(*string) {
+	switch (*string) {
 	case '+':
 		string++;
 		sign = 1;
@@ -1393,6 +1395,7 @@ unsigned int _hextoi(const char **stringPtr) {
 		} else
 			break;
 	}
+
 	*stringPtr = string;
 	return value;
 }
@@ -1595,13 +1598,13 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
       {
 	min = 10*min + char_to_int(ch);
 	ch = *format++;
-      } 
+      }
       else if (ch == '*')
       {
 	min = va_arg(args, int);
 	ch = *format++;
 	state = DP_S_DOT;
-      } 
+      }
       else 
 	state = DP_S_DOT;
       break;
@@ -1610,7 +1613,7 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
       {
 	state = DP_S_MAX;
 	ch = *format++;
-      } 
+      }
       else 
 	state = DP_S_MOD;
       break;
@@ -1621,13 +1624,13 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
 	  max = 0;
 	max = 10*max + char_to_int(ch);
 	ch = *format++;
-      } 
+      }
       else if (ch == '*')
       {
 	max = va_arg(args, int);
 	ch = *format++;
 	state = DP_S_MOD;
-      } 
+      }
       else 
 	state = DP_S_MOD;
       break;
@@ -1778,13 +1781,11 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args) {
 	  long int *num;
 	  num = va_arg(args, long int *);
 	  *num = currlen;
-        } 
-	else if (cflags == DP_C_LLONG) {
+        } else if (cflags == DP_C_LLONG) {
 	  LLONG *num;
 	  num = va_arg(args, LLONG *);
 	  *num = currlen;
-        } 
-	else 
+        } else 
 	{
 		int *num;
 	  num = va_arg(args, int *);
@@ -1845,7 +1846,7 @@ static int fmtstr(char *buffer, size_t *currlen, size_t maxlen,
     total += dopr_outch(buffer, currlen, maxlen, ' ');
  -- padlen;
   }
-  while(*value && ((max < 0) ||(cnt < max)))
+  while(*value && ((max < 0) || (cnt < max)))
   {
     total += dopr_outch(buffer, currlen, maxlen, *value++);
     ++cnt;
@@ -2232,7 +2233,7 @@ int sscanf(const char *buffer, const char *fmt, ...) {
 			type = 0;
 		}
 
-		switch(cmd) {
+		switch (cmd) {
 		case 'i':
 		case 'd':
 			if (type == 'L')
@@ -2301,7 +2302,7 @@ void *bsearch(const void *key, const void *base, size_t nmemb, size_t size,
                cmp_t *compar) {
 	size_t low = 0, high = nmemb, mid;
 	int comp;
-	void   *ptr;
+	void *ptr;
 
 	while (low < high) {
 		mid = low + (high - low) / 2;

@@ -4,27 +4,21 @@ Copyright(C)2006 Tony J. White(tjw@tjw.org)
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -303,7 +297,7 @@ void CL_cURL_BeginDownload(const char *localName, const char *remoteURL) {
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_PROTOCOLS,
 		CURLPROTO_HTTP|CURLPROTO_HTTPS|CURLPROTO_FTP|CURLPROTO_FTPS);
 	qcurl_easy_setopt_warn(clc.downloadCURL, CURLOPT_BUFFERSIZE, CURL_MAX_READ_SIZE);
-	clc.downloadCURLM = qcurl_multi_init(); 	
+	clc.downloadCURLM = qcurl_multi_init();	
 	if (!clc.downloadCURLM) {
 		qcurl_easy_cleanup(clc.downloadCURL);
 		clc.downloadCURL = NULL;
@@ -326,7 +320,6 @@ void CL_cURL_BeginDownload(const char *localName, const char *remoteURL) {
 	// snapshot until after downloads are finished and CGame is reloaded.
 	if (!(clc.sv_allowDownload & DLF_NO_DISCONNECT) &&
 		!clc.cURLDisconnected) {
-
 		CL_AddReliableCommand("disconnect", qtrue);
 		CL_WritePacket();
 		CL_WritePacket();
@@ -363,7 +356,7 @@ void CL_cURL_PerformDownload(void) {
 		long code;
 
 		qcurl_easy_getinfo(msg->easy_handle, CURLINFO_RESPONSE_CODE,
-			&code); 	
+			&code);	
 		Com_Error(ERR_DROP, "Download Error: %s Code: %ld URL: %s",
 			qcurl_easy_strerror(msg->data.result),
 			code, clc.downloadURL);

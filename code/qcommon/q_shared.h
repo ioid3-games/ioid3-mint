@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -67,12 +61,12 @@ Suite 120, Rockville, Maryland 20850 USA.
 //Ignore __attribute__ on non - gcc platforms
 #ifndef __GNUC__
 #ifndef __attribute__
-#define __attribute__(x)
+#define __attribute__ (x)
 #endif
 #endif
 
 #ifdef __GNUC__
-#define UNUSED_VAR __attribute__((unused))
+#define UNUSED_VAR __attribute__ ((unused))
 #else
 #define UNUSED_VAR
 #endif
@@ -82,7 +76,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 #elif(defined __SUNPRO_C)
 #define Q_EXPORT __global
 #elif((__GNUC__ >= 3) && (!__EMX__) && (!sun))
-#define Q_EXPORT __attribute__((visibility("default")))
+#define Q_EXPORT __attribute__ ((visibility("default")))
 #else
 #define Q_EXPORT
 #endif
@@ -123,7 +117,7 @@ typedef int intptr_t;
 #include <limits.h>
 
 #ifdef _MSC_VER
-  #include <io.h>
+#include <io.h>
 
   typedef __int64 int64_t;
   typedef __int32 int32_t;
@@ -134,7 +128,7 @@ typedef int intptr_t;
   typedef unsigned __int16 uint16_t;
   typedef unsigned __int8 uint8_t;
 #else
-  #include <stdint.h>
+#include <stdint.h>
 #endif
 
 #ifdef _WIN32
@@ -142,9 +136,9 @@ typedef int intptr_t;
   // abstracting this to make it portable
 	int Q_vsnprintf(char *str, size_t size, const char *format, va_list ap);
 
-  #define rint(x)(floor(x) + 0.5f)
+#define rint(x)(floor(x) + 0.5f)
 #else
-  #define Q_vsnprintf vsnprintf
+#define Q_vsnprintf vsnprintf
 #endif
 
 #endif
@@ -175,7 +169,7 @@ typedef int clipHandle_t;
 #define PADP(base, alignment)	((void *)PAD((intptr_t)(base), (alignment)))
 
 #ifdef __GNUC__
-#define QALIGN(x)__attribute__((aligned(x)))
+#define QALIGN(x)__attribute__ ((aligned(x)))
 #else
 #define QALIGN(x)
 #endif
@@ -382,8 +376,8 @@ int Q_isnan(float x);
   extern int qvmftolsse(void);
   extern void qsnapvectorsse(vec3_t vec);
 
-  #define Q_ftol qftolsse
-  #define Q_SnapVector qsnapvectorsse
+#define Q_ftol qftolsse
+#define Q_SnapVector qsnapvectorsse
 
   extern int(*Q_VMftol)(void);
 #elif id386
@@ -400,8 +394,8 @@ int Q_isnan(float x);
 #else
   // Q_ftol must expand to a function name so the pluggable renderer can take
   // its address
-  #define Q_ftol lrintf
-  #define Q_SnapVector(vec)\
+#define Q_ftol lrintf
+#define Q_SnapVector(vec)\
 	do\
 	{\
 		vec3_t *temp = (vec); \
@@ -415,9 +409,9 @@ int Q_isnan(float x);
 // if your system does not have lrintf()and round()you can try this block. Please also open a bug report at bugzilla.icculus.org
 // or write a mail to the ioq3 mailing list.
 #else
-  #define Q_ftol(v)((long)(v))
-  #define Q_round(v)do { if ((v) < 0)(v) -= 0.5f; else(v) + = 0.5f; (v) = Q_ftol((v)); } while(0)
-  #define Q_SnapVector(vec)\
+#define Q_ftol(v)((long)(v))
+#define Q_round(v)do { if ((v) < 0)(v) -= 0.5f; else(v) + = 0.5f; (v) = Q_ftol((v)); } while(0)
+#define Q_SnapVector(vec)\
 	do\
 	{\
 		vec3_t *temp = (vec); \
@@ -455,7 +449,7 @@ static ID_INLINE float Q_fabs(float x) {
 
 #else
 float Q_fabs(float f);
-float Q_rsqrt(float f); 		// reciprocal square root
+float Q_rsqrt(float f);		// reciprocal square root
 #endif
 
 #define SQRTFAST(x)((x) * Q_rsqrt(x))
@@ -525,7 +519,7 @@ float RadiusFromBounds(const vec3_t mins, const vec3_t maxs);
 void ClearBounds(vec3_t mins, vec3_t maxs);
 void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs);
 
-#if !defined(Q3_VM) ||(defined(Q3_VM) && defined(__Q3_VM_MATH))
+#if !defined(Q3_VM) || (defined(Q3_VM) && defined(__Q3_VM_MATH))
 static ID_INLINE int VectorEmpty(const vec3_t v) {
 	if (v[0] != 0 || v[1] != 0 || v[2] != 0) {
 		return 0;
@@ -638,7 +632,7 @@ int FloatAsInt(float f);
 float IntAsFloat(int i);
 #endif
 
-vec_t VectorNormalize(vec3_t v); 		// returns vector length
+vec_t VectorNormalize(vec3_t v);		// returns vector length
 vec_t VectorNormalize2(const vec3_t v, vec3_t out);
 void Vector4Scale(const vec4_t in, vec_t scale, vec4_t out);
 void VectorRotate(vec3_t in, vec3_t matrix[3], vec3_t out);
@@ -721,8 +715,8 @@ char *COM_Parse(char **data_p);
 char *COM_ParseExt(char **data_p, qboolean allowLineBreaks);
 char *COM_ParseExt2(char **data_p, qboolean allowLineBreaks, char delimiter);
 int COM_Compress(char *data_p);
-void COM_ParseError(char *format, ...)__attribute__((format(printf, 1, 2)));
-void COM_ParseWarning(char *format, ...)__attribute__((format(printf, 1, 2)));
+void COM_ParseError(char *format, ...)__attribute__ ((format(printf, 1, 2)));
+void COM_ParseWarning(char *format, ...)__attribute__ ((format(printf, 1, 2)));
 //int COM_ParseInfos(char *buf, int max, char infos[][MAX_INFO_STRING]);
 
 #define MAX_TOKENLENGTH		1024
@@ -841,7 +835,7 @@ void Parse1DMatrix(char **buf_p, int x, float *m);
 void Parse2DMatrix(char **buf_p, int y, int x, float *m);
 void Parse3DMatrix(char **buf_p, int z, int y, int x, float *m);
 int Com_HexStrToInt(const char *str);
-int QDECL Com_sprintf(char *dest, int size, const char *fmt, ...)__attribute__((format(printf, 3, 4)));
+int QDECL Com_sprintf(char *dest, int size, const char *fmt, ...)__attribute__ ((format(printf, 3, 4)));
 
 char *Com_SkipTokens(char *s, int numTokens, char *sep);
 char *Com_SkipCharset(char *s, char *sep);
@@ -936,7 +930,7 @@ float LittleFloatPtr(const float *l);
 void Swap_Init(void);
 #endif
 
-char * QDECL va(char *format, ...)__attribute__((format(printf, 1, 2)));
+char * QDECL va(char *format, ...)__attribute__ ((format(printf, 1, 2)));
 
 #define TRUNCATE_LENGTH	64
 void Com_TruncateLongString(char *buffer, const char *s);
@@ -955,9 +949,9 @@ qboolean Info_Validate(const char *s);
 void Info_NextPair(const char **s, char *key, char *value);
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
-void QDECL Com_Error(int level, const char *error, ...)__attribute__((noreturn, format(printf, 2, 3)));
-void QDECL Com_Printf(const char *msg, ...)__attribute__((format(printf, 1, 2)));
-void QDECL Com_DPrintf(const char *msg, ...)__attribute__((format(printf, 1, 2)));
+void QDECL Com_Error(int level, const char *error, ...)__attribute__ ((noreturn, format(printf, 2, 3)));
+void QDECL Com_Printf(const char *msg, ...)__attribute__ ((format(printf, 1, 2)));
+void QDECL Com_DPrintf(const char *msg, ...)__attribute__ ((format(printf, 1, 2)));
 
 
 /*
@@ -1009,15 +1003,15 @@ typedef struct cvar_s cvar_t;
 struct cvar_s {
 	char *name;
 	char *string;
-	char *resetString; 		// cvar_restart will reset to this value
-	char *overriddenResetString; 	// the reset string as defined by code, set when resetString is overridden by Cvar_SetDefault
-	char *latchedString; 		// for CVAR_LATCH vars
+	char *resetString;		// cvar_restart will reset to this value
+	char *overriddenResetString;	// the reset string as defined by code, set when resetString is overridden by Cvar_SetDefault
+	char *latchedString;		// for CVAR_LATCH vars
 	int flags;
-	qboolean	explicitSet; 		// cvar has been explicitly set
-	qboolean	modified; 			// set each time the cvar is changed
-	int modificationCount; 	// incremented each time the cvar is changed
-	float value; 				// atof(string)
-	int integer; 			// atoi(string)
+	qboolean	explicitSet;		// cvar has been explicitly set
+	qboolean	modified;			// set each time the cvar is changed
+	int modificationCount;	// incremented each time the cvar is changed
+	float value;				// atof(string)
+	int integer;			// atoi(string)
 	qboolean	validate;
 	qboolean	integral;
 	float min;
@@ -1092,8 +1086,8 @@ PlaneTypeForNormal
 typedef struct cplane_s {
 	vec3_t normal;
 	float dist;
-	byte type; 			// for fast side tests: 0, 1, 2 = axial, 3 = nonaxial
-	byte signbits; 		// signx + (signy << 1) +  (signz << 2), used as lookup during collision
+	byte type;			// for fast side tests: 0, 1, 2 = axial, 3 = nonaxial
+	byte signbits;		// signx + (signy << 1) +  (signz << 2), used as lookup during collision
 	byte pad[2];
 } cplane_t;
 
@@ -1117,15 +1111,15 @@ typedef enum {
 
 // a trace is returned when a box is swept through the world
 typedef struct {
-	qboolean	allsolid; 	// if true, plane is not valid
-	qboolean	startsolid; 	// if true, the initial point was in a solid area
-	float fraction; 	// time completed, 1.0 = didn't hit anything
-	vec3_t endpos; 		// final position
-	cplane_t plane; 		// surface normal at impact, transformed to world space
-	int surfaceNum; 		// the contacted surface number plus one
-	int surfaceFlags; 	// surface hit
-	int contents; 	// contents on other side of surface hit
-	int entityNum; 	// entity the contacted sirface is a part of
+	qboolean	allsolid;	// if true, plane is not valid
+	qboolean	startsolid;	// if true, the initial point was in a solid area
+	float fraction;	// time completed, 1.0 = didn't hit anything
+	vec3_t endpos;		// final position
+	cplane_t plane;		// surface normal at impact, transformed to world space
+	int surfaceNum;		// the contacted surface number plus one
+	int surfaceFlags;	// surface hit
+	int contents;	// contents on other side of surface hit
+	int entityNum;	// entity the contacted sirface is a part of
 	float lateralFraction; // fraction of collision tangetially to the trace direction
 } trace_t;
 
@@ -1220,20 +1214,19 @@ typedef struct {
 //   playerState_t in bg_public.h(and thus breaking mod compatiblity).
 
 typedef struct sharedPlayerState_s {
-	int commandTime; 	// cmd->serverTime of last executed command
+	int commandTime;	// cmd->serverTime of last executed command
 
 	vec3_t origin;
 
-	qboolean	linked; 			// set by server
+	qboolean	linked;			// set by server
 
-	int playerNum; 		// ranges from 0 to MAX_CLIENTS - 1
+	int playerNum;		// ranges from 0 to MAX_CLIENTS - 1
 
-	vec3_t viewangles; 		// for fixed views
+	vec3_t viewangles;		// for fixed views
 	int viewheight;
+	int ping;			// server to game info for scoreboard
 
-	int ping; 			// server to game info for scoreboard
-
-	int score; 			// persistant[PERS_SCORE(0)] in game's playerState_t
+	int score;			// persistant[PERS_SCORE(0)] in game's playerState_t
 
 } sharedPlayerState_t;
 
@@ -1260,18 +1253,18 @@ typedef struct usercmd_s {
 //   entityState_t in bg_public.h(and thus breaking mod compatiblity).
 
 typedef struct sharedEntityState_s {
-	int number; 			// entity index
+	int number;			// entity index
 
-	int contents; 		// CONTENTS_TRIGGER, CONTENTS_SOLID, CONTENTS_BODY, etc
+	int contents;		// CONTENTS_TRIGGER, CONTENTS_SOLID, CONTENTS_BODY, etc
 							// a non - solid entity should set to 0
 
-	collisionType_t collisionType; 	// if CT_SUBMODEL, modelindex is an inline model number
+	collisionType_t collisionType;	// if CT_SUBMODEL, modelindex is an inline model number
 									// if CT_CAPSULE, use capsule instead of bbox for clipping against this ent
 									// else(CT_AABB), assume an explicit mins / maxs bounding box
 
 	int modelindex;
 
-	vec3_t mins, maxs; 	// bounding box size
+	vec3_t mins, maxs;	// bounding box size
 
 	vec3_t origin;
 	vec3_t origin2;
@@ -1281,7 +1274,7 @@ typedef struct sharedEntityState_s {
 typedef struct {
 	int offset;
 	int numElements; // 1 to 1024
-	int bits; 		// 0 = float
+	int bits;		// 0 = float
 } vmNetField_t;
 
 typedef enum {

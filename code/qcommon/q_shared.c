@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -49,7 +43,6 @@ float Com_Clamp(float min, float max, float value) {
 
 	return value;
 }
-
 
 /*
 =======================================================================================================================================
@@ -81,7 +74,6 @@ const char *COM_GetExtension(const char *name) {
 	else
 		return "";
 }
-
 
 /*
 =======================================================================================================================================
@@ -494,6 +486,7 @@ char *COM_ParseExt2(char **data_p, qboolean allowLineBreaks, char delimiter) {
 				if (*data == '\n') {
 					com_lines++;
 				}
+
 				data++;
 			}
 
@@ -561,7 +554,6 @@ void COM_MatchToken(char **buf_p, char *match) {
 		Com_Error(ERR_DROP, "MatchToken: %s != %s", token, match);
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -635,7 +627,6 @@ void SkipRestOfLineUntilBrace(char **data) {
 
 	*data = p;
 }
-
 
 void Parse1DMatrix(char **buf_p, int x, float *m) {
 	char *token;
@@ -738,7 +729,7 @@ int Q_isupper(int c) {
 }
 
 int Q_isalpha(int c) {
-	if ((c >= 'a' && c <= 'z') ||(c >= 'A' && c <= 'Z'))
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
 		return(1);
 	return(0);
 }
@@ -833,7 +824,7 @@ int Q_stricmpn(const char *s1, const char *s2, int n) {
 		c2 = *s2++;
 
 		if (!n--) {
-			return 0; 		// strings are equal until end point
+			return 0;		// strings are equal until end point
 		}
 		
 		if (c1 != c2) {
@@ -851,7 +842,7 @@ int Q_stricmpn(const char *s1, const char *s2, int n) {
 		}
 	} while(c1);
 	
-	return 0; 		// strings are equal
+	return 0;		// strings are equal
 }
 
 int Q_strncmp(const char *s1, const char *s2, int n) {
@@ -862,7 +853,7 @@ int Q_strncmp(const char *s1, const char *s2, int n) {
 		c2 = *s2++;
 
 		if (!n--) {
-			return 0; 		// strings are equal until end point
+			return 0;		// strings are equal until end point
 		}
 		
 		if (c1 != c2) {
@@ -870,13 +861,12 @@ int Q_strncmp(const char *s1, const char *s2, int n) {
 		}
 	} while(c1);
 	
-	return 0; 		// strings are equal
+	return 0;		// strings are equal
 }
 
 int Q_stricmp(const char *s1, const char *s2) {
 	return(s1 && s2) ? Q_stricmpn(s1, s2, 99999): - 1;
 }
-
 
 char *Q_strlwr(char *s1) {
   	char *s;
@@ -899,7 +889,6 @@ char *Q_strupr(char *s1) {
 	}
     return s1;
 }
-
 
 // never goes past bounds or leaves without a terminating 0
 void Q_strcat(char *dest, int size, const char *src) {
@@ -944,7 +933,6 @@ const char *Q_stristr(const char *s, const char *find) {
   return s;
 }
 
-
 int Q_PrintStrlen(const char *string) {
 	int len;
 	const char *p;
@@ -968,7 +956,6 @@ int Q_PrintStrlen(const char *string) {
 	return len;
 }
 
-
 char *Q_CleanStr(char *string) {
 	char *d;
 	char *s;
@@ -986,6 +973,7 @@ char *Q_CleanStr(char *string) {
 
 		s++;
 	}
+
 	*d = '\0';
 
 	return string;
@@ -1078,7 +1066,7 @@ FIXME: overflow check?
 */
 char *Info_ValueForKey(const char *s, const char *key) {
 	char pkey[BIG_INFO_KEY];
-	static char value[2][BIG_INFO_VALUE]; 	// use two buffers so compares
+	static char value[2][BIG_INFO_VALUE];	// use two buffers so compares
 											// work without stomping on each other
 	static int valueindex = 0;
 	char *o;
@@ -1122,7 +1110,6 @@ char *Info_ValueForKey(const char *s, const char *key) {
 	return "";
 }
 
-
 /*
 =======================================================================================================================================
 Info_NextPair
@@ -1152,6 +1139,7 @@ void Info_NextPair(const char **head, char *key, char *value) {
 		}
 		*o++ = *s++;
 	}
+
 	*o = 0;
 	s++;
 
@@ -1159,11 +1147,11 @@ void Info_NextPair(const char **head, char *key, char *value) {
 	while (*s != '\\' && *s) {
 		*o++ = *s++;
 	}
+
 	*o = 0;
 
 	*head = s;
 }
-
 
 /*
 =======================================================================================================================================
@@ -1272,7 +1260,6 @@ void Info_RemoveKey_Big(char *s, const char *key) {
 
 
 
-
 /*
 =======================================================================================================================================
 Info_Validate
@@ -1366,7 +1353,6 @@ void Info_SetValueForKey_Big(char *s, const char *key, const char *value) {
 
 	strcat(s, newi);
 }
-
 
 
 

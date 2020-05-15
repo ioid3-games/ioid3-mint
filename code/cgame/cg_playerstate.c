@@ -1,37 +1,32 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-// cg_playerstate.c -- this file acts on changes in a new playerState_t
-// With normal play, this will be done after local prediction, but when
-// following another player or playing back a demo, it will be checked
-// when the snapshot transitions like all the other entities
+
+/**************************************************************************************************************************************
+ This file acts on changes in a new playerState_t.
+ With normal play, this will be done after local prediction, but when following another player or playing back a demo, it will be
+ checked when the snapshot transitions like all the other entities.
+**************************************************************************************************************************************/
 
 #include "cg_local.h"
 
@@ -39,7 +34,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 CG_CheckAmmo
 
-If the ammo has gone low enough to generate the warning, play a sound
+If the ammo has gone low enough to generate the warning, play a sound.
 =======================================================================================================================================
 */
 void CG_CheckAmmo(void) {
@@ -53,7 +48,7 @@ void CG_CheckAmmo(void) {
 	total = 0;
 
 	for (i = WP_MACHINEGUN; i < WP_NUM_WEAPONS; i++) {
-		if (!(weapons &(1 << i))) {
+		if (!(weapons & (1 << i))) {
 			continue;
 		}
 
@@ -61,19 +56,19 @@ void CG_CheckAmmo(void) {
 			continue;
 		}
 
-		switch(i) {
-		case WP_ROCKET_LAUNCHER:
-		case WP_GRENADE_LAUNCHER:
-		case WP_RAILGUN:
-		case WP_SHOTGUN:
+		switch (i) {
+			case WP_ROCKET_LAUNCHER:
+			case WP_GRENADE_LAUNCHER:
+			case WP_RAILGUN:
+			case WP_SHOTGUN:
 #ifdef MISSIONPACK
-		case WP_PROX_LAUNCHER:
+			case WP_PROX_LAUNCHER:
 #endif
-			total += cg.cur_ps->ammo[i] * 1000;
-			break;
-		default:
-			total += cg.cur_ps->ammo[i] * 200;
-			break;
+				total += cg.cur_ps->ammo[i] * 1000;
+				break;
+			default:
+				total += cg.cur_ps->ammo[i] * 200;
+				break;
 		}
 
 		if (total >= 5000) {
@@ -112,7 +107,6 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 
 	// show the attacking player's head and name in corner
 	cg.cur_lc->attackerTime = cg.time;
-
 	// the lower on health you are, the greater the view kick will be
 	health = cg.cur_ps->stats[STAT_HEALTH];
 
@@ -124,13 +118,14 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 
 	kick = damage * scale;
 
-	if (kick < 5)
+	if (kick < 5) {
 		kick = 5;
+	}
 
-	if (kick > 10)
+	if (kick > 10) {
 		kick = 10;
-
-	// if yaw and pitch are both 255, make the damage always centered(falling, etc)
+	}
+	// if yaw and pitch are both 255, make the damage always centered (falling, etc.)
 	if (yawByte == 255 && pitchByte == 255) {
 		cg.cur_lc->damageX = 0;
 		cg.cur_lc->damageY = 0;
@@ -162,7 +157,6 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 		}
 
 		cg.cur_lc->v_dmg_roll = kick * left;
-		
 		cg.cur_lc->v_dmg_pitch = -kick * front;
 
 		if (front <= 0.1) {
@@ -202,7 +196,7 @@ void CG_DamageFeedback(int yawByte, int pitchByte, int damage) {
 =======================================================================================================================================
 CG_Respawn
 
-A respawn happened this snapshot
+A respawn happened this snapshot.
 =======================================================================================================================================
 */
 void CG_Respawn(int playerNum) {
@@ -230,7 +224,6 @@ void CG_Respawn(int playerNum) {
 }
 
 extern char *eventnames[];
-
 /*
 =======================================================================================================================================
 CG_CheckPlayerstateEvents
@@ -251,19 +244,16 @@ void CG_CheckPlayerstateEvents(playerState_t *ps, playerState_t *ops) {
 	cent = &cg.cur_lc->predictedPlayerEntity; // cg_entities[ps->playerNum];
 	// go through the predictable events buffer
 	for (i = ps->eventSequence - MAX_PS_EVENTS; i < ps->eventSequence; i++) {
-		// if we have a new predictable event
-		if (i >= ops->eventSequence
-			// or the server told us to play another event instead of a predicted event we already issued
-			// or something the server told us changed our prediction causing a different event
-			||(i > ops->eventSequence - MAX_PS_EVENTS && ps->events[i &(MAX_PS_EVENTS - 1)] != ops->events[i &(MAX_PS_EVENTS - 1)])) {
-
-			event = ps->events[i &(MAX_PS_EVENTS - 1)];
+		// if we have a new predictable event or the server told us to play another event instead of a predicted event we already issued
+		// or something the server told us changed our prediction causing a different event
+		if (i >= ops->eventSequence || (i > ops->eventSequence - MAX_PS_EVENTS && ps->events[i & (MAX_PS_EVENTS - 1)] != ops->events[i & (MAX_PS_EVENTS - 1)])) {
+			event = ps->events[i & (MAX_PS_EVENTS - 1)];
 			cent->currentState.event = event;
-			cent->currentState.eventParm = ps->eventParms[i &(MAX_PS_EVENTS - 1)];
+			cent->currentState.eventParm = ps->eventParms[i & (MAX_PS_EVENTS - 1)];
+
 			CG_EntityEvent(cent, cent->lerpOrigin);
 
-			cg.cur_lc->predictableEvents[i &(MAX_PREDICTED_EVENTS - 1)] = event;
-
+			cg.cur_lc->predictableEvents[i & (MAX_PREDICTED_EVENTS - 1)] = event;
 			cg.cur_lc->eventSequence++;
 		}
 	}
@@ -288,14 +278,14 @@ void CG_CheckChangedPredictableEvents(playerState_t *ps) {
 		// if this event is not further back in than the maximum predictable events we remember
 		if (i > cg.cur_lc->eventSequence - MAX_PREDICTED_EVENTS) {
 			// if the new playerstate event is different from a previously predicted one
-			if (ps->events[i &(MAX_PS_EVENTS - 1)] != cg.cur_lc->predictableEvents[i &(MAX_PREDICTED_EVENTS - 1)]) {
-
-				event = ps->events[i &(MAX_PS_EVENTS - 1)];
+			if (ps->events[i & (MAX_PS_EVENTS - 1)] != cg.cur_lc->predictableEvents[i & (MAX_PREDICTED_EVENTS - 1)]) {
+				event = ps->events[i & (MAX_PS_EVENTS - 1)];
 				cent->currentState.event = event;
-				cent->currentState.eventParm = ps->eventParms[i &(MAX_PS_EVENTS - 1)];
+				cent->currentState.eventParm = ps->eventParms[i & (MAX_PS_EVENTS - 1)];
+
 				CG_EntityEvent(cent, cent->lerpOrigin);
 
-				cg.cur_lc->predictableEvents[i &(MAX_PREDICTED_EVENTS - 1)] = event;
+				cg.cur_lc->predictableEvents[i & (MAX_PREDICTED_EVENTS - 1)] = event;
 
 				if (cg_showmiss.integer) {
 					CG_Printf("WARNING: changed predicted event\n");
@@ -311,6 +301,7 @@ pushReward
 =======================================================================================================================================
 */
 static void pushReward(sfxHandle_t sfx, qhandle_t shader, int rewardCount) {
+
 	if (cg.cur_lc->rewardStack < (MAX_REWARDSTACK - 1)) {
 		cg.cur_lc->rewardStack++;
 		cg.cur_lc->rewardSound[cg.cur_lc->rewardStack] = sfx;
@@ -354,7 +345,7 @@ void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
 	} else if (ps->persistant[PERS_HITS] < ops->persistant[PERS_HITS]) {
 		trap_S_StartLocalSound(cgs.media.hitTeamSound, CHAN_LOCAL_SOUND);
 	}
-	// health changes of more than - 1 should make pain sounds
+	// health changes of more than -1 should make pain sounds
 	if (ps->stats[STAT_HEALTH] < ops->stats[STAT_HEALTH] - 1) {
 		if (ps->stats[STAT_HEALTH] > 0) {
 			CG_PainEvent(&cg.cur_lc->predictedPlayerEntity, ps->stats[STAT_HEALTH]);
@@ -431,14 +422,11 @@ void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
 	}
 	// if any of the player event bits changed
 	if (ps->persistant[PERS_PLAYEREVENTS] != ops->persistant[PERS_PLAYEREVENTS]) {
-		if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD) != 
-				(ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD)) {
+		if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD) != (ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_DENIEDREWARD)) {
 			trap_S_StartLocalSound(cgs.media.deniedSound, CHAN_ANNOUNCER);
-		} else if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_GAUNTLETREWARD) != 
-				(ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_GAUNTLETREWARD)) {
+		} else if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_GAUNTLETREWARD) != (ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_GAUNTLETREWARD)) {
 			trap_S_StartLocalSound(cgs.media.humiliationSound, CHAN_ANNOUNCER);
-		} else if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_HOLYSHIT) != 
-				(ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_HOLYSHIT)) {
+		} else if ((ps->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_HOLYSHIT) != (ops->persistant[PERS_PLAYEREVENTS] & PLAYEREVENT_HOLYSHIT)) {
 			trap_S_StartLocalSound(cgs.media.holyShitSound, CHAN_ANNOUNCER);
 		}
 
@@ -446,9 +434,7 @@ void CG_CheckLocalSounds(playerState_t *ps, playerState_t *ops) {
 	}
 	// check for flag pickup
 	if (cgs.gametype > GT_TEAM) {
-		if ((ps->powerups[PW_REDFLAG] != ops->powerups[PW_REDFLAG] && ps->powerups[PW_REDFLAG]) ||
-			(ps->powerups[PW_BLUEFLAG] != ops->powerups[PW_BLUEFLAG] && ps->powerups[PW_BLUEFLAG]) ||
-			(ps->powerups[PW_NEUTRALFLAG] != ops->powerups[PW_NEUTRALFLAG] && ps->powerups[PW_NEUTRALFLAG])) {
+		if ((ps->powerups[PW_REDFLAG] != ops->powerups[PW_REDFLAG] && ps->powerups[PW_REDFLAG]) || (ps->powerups[PW_BLUEFLAG] != ops->powerups[PW_BLUEFLAG] && ps->powerups[PW_BLUEFLAG]) || (ps->powerups[PW_NEUTRALFLAG] != ops->powerups[PW_NEUTRALFLAG] && ps->powerups[PW_NEUTRALFLAG])) {
 			trap_S_StartLocalSound(cgs.media.youHaveFlagSound, CHAN_ANNOUNCER);
 		}
 	}
@@ -495,7 +481,7 @@ void CG_CheckGameSounds(void) {
 		return;
 	}
 	// lead changes
-	switch(cg.bestLeadChange) {
+	switch (cg.bestLeadChange) {
 		case LEAD_TAKEN:
 			CG_AddBufferedSound(cgs.media.takenLeadSound);
 			break;
@@ -510,7 +496,6 @@ void CG_CheckGameSounds(void) {
 	}
 	// reset lead change
 	cg.bestLeadChange = LEAD_NONE;
-
 	// timelimit warnings
 	if (cgs.timelimit > 0) {
 		int msec;
@@ -552,17 +537,17 @@ void CG_CheckGameSounds(void) {
 /*
 =======================================================================================================================================
 CG_TransitionPlayerState
-
 =======================================================================================================================================
 */
 void CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops) {
+
 	// check for changing follow mode
 	if (ps->playerNum != ops->playerNum) {
 		cg.thisFrameTeleport = qtrue;
 		// make sure we don't get any unwanted transition effects
 		*ops = *ps;
 	}
-	// damage events(player is getting wounded)
+	// damage events (player is getting wounded)
 	if (ps->damageEvent != ops->damageEvent && ps->damageCount) {
 		CG_DamageFeedback(ps->damageYaw, ps->damagePitch, ps->damageCount);
 	}
@@ -576,20 +561,16 @@ void CG_TransitionPlayerState(playerState_t *ps, playerState_t *ops) {
 		cg.mapRestart = qfalse;
 	}
 
-	if (cg.cur_ps->pm_type != PM_INTERMISSION 
-		&& ps->persistant[PERS_TEAM] != TEAM_SPECTATOR) {
+	if (cg.cur_ps->pm_type != PM_INTERMISSION && ps->persistant[PERS_TEAM] != TEAM_SPECTATOR) {
 		CG_CheckLocalSounds(ps, ops);
 	}
 	// check for going low on ammo
 	CG_CheckAmmo();
-
 	// run events
 	CG_CheckPlayerstateEvents(ps, ops);
-
 	// smooth the ducking viewheight change
 	if (ps->viewheight != ops->viewheight) {
 		cg.cur_lc->duckChange = ps->viewheight - ops->viewheight;
 		cg.cur_lc->duckTime = cg.time;
 	}
 }
-

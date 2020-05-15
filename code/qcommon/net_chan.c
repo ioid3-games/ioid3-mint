@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -120,7 +114,7 @@ void Netchan_TransmitNextFragment(netchan_t *chan) {
 	int outgoingSequence;
 
 	// write the packet header
-	MSG_InitOOB(&send, send_buf, sizeof(send_buf)); 				// < -- only do the oob here
+	MSG_InitOOB(&send, send_buf, sizeof(send_buf));				// < -- only do the oob here
 
 	outgoingSequence = chan->outgoingSequence|FRAGMENT_BIT;
 	MSG_WriteLong(&send, outgoingSequence);
@@ -168,7 +162,6 @@ void Netchan_TransmitNextFragment(netchan_t *chan) {
 		chan->unsentFragments = qfalse;
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -278,7 +271,7 @@ qboolean Netchan_Process(netchan_t *chan, msg_t *msg) {
 		fragmentStart = MSG_ReadShort(msg);
 		fragmentLength = MSG_ReadShort(msg);
 	} else {
-		fragmentStart = 0; 		// stop warning message
+		fragmentStart = 0;		// stop warning message
 		fragmentLength = 0;
 	}
 
@@ -376,8 +369,8 @@ qboolean Netchan_Process(netchan_t *chan, msg_t *msg) {
 		Com_Memcpy(msg->data + 4, chan->fragmentBuffer, chan->fragmentLength);
 		msg->cursize = chan->fragmentLength + 4;
 		chan->fragmentLength = 0;
-		msg->readcount = 4; 	// past the sequence number
-		msg->bit = 32; 	// past the sequence number
+		msg->readcount = 4;	// past the sequence number
+		msg->bit = 32;	// past the sequence number
 
 		// TTimo
 		// clients were not acking fragmented messages
@@ -390,7 +383,6 @@ qboolean Netchan_Process(netchan_t *chan, msg_t *msg) {
 
 	return qtrue;
 }
-
 
 //==============================================================================
 
@@ -443,7 +435,6 @@ qboolean	NET_GetLoopPacket(netsrc_t sock, netadr_t *net_from, msg_t *net_message
 
 }
 
-
 void NET_SendLoopPacket(netsrc_t sock, int length, const void *data, netadr_t to) {
 	int i;
 	loopback_t *loop;
@@ -481,7 +472,7 @@ static void NET_QueuePacket(int length, const void *data, netadr_t to,
 	Com_Memcpy(new->data, data, length);
 	new->length = length;
 	new->to = to;
-	new->release = Sys_Milliseconds() +  (int)((float)offset / com_timescale->value); 	
+	new->release = Sys_Milliseconds() +  (int)((float)offset / com_timescale->value);	
 	new->next = NULL;
 
 	if (!packetQueue) {
@@ -518,7 +509,6 @@ void NET_FlushPacketQueue(void) {
 }
 
 void NET_SendPacket(netsrc_t sock, int length, const void *data, netadr_t to) {
-
 	// sequenced packets are shown in netchan, so just show oob
 	if (showpackets->integer && * (int *)data == -1)	{
 		Com_Printf("send packet %4i\n", length);

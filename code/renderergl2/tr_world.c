@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 #include "tr_local.h"
@@ -147,7 +141,6 @@ static qboolean	R_CullSurface(msurface_t *surf) {
 	return qfalse;
 }
 
-
 /*
 =======================================================================================================================================
 R_DlightSurface
@@ -232,7 +225,7 @@ static int R_DlightSurface(msurface_t *surf, int dlightBits) {
 		}
 	}
 
-	switch(*surf->data) {
+	switch (*surf->data) {
 		case SF_FACE:
 		case SF_GRID:
 		case SF_TRIANGLES:
@@ -327,7 +320,7 @@ static int R_PshadowSurface(msurface_t *surf, int pshadowBits) {
 		}
 	}
 
-	switch(*surf->data) {
+	switch (*surf->data) {
 		case SF_FACE:
 		case SF_GRID:
 		case SF_TRIANGLES:
@@ -358,7 +351,6 @@ static int R_PshadowSurface(msurface_t *surf, int pshadowBits) {
 	return pshadowBits;
 }
 
-
 /*
 =======================================================================================================================================
 R_AddWorldSurface
@@ -366,7 +358,7 @@ R_AddWorldSurface
 */
 static void R_AddWorldSurface(msurface_t *surf, shader_t *shader, int fogNum, int dlightBits, int pshadowBits) {
 	// no sky surfaces or only sky surfaces
-	if ((tr.refdef.rdflags & RDF_NOSKY) && (shader->isSky ||(shader->surfaceParms & SURF_SKY))) {
+	if ((tr.refdef.rdflags & RDF_NOSKY) && (shader->isSky || (shader->surfaceParms & SURF_SKY))) {
 		return;
 	}
 
@@ -479,7 +471,6 @@ void R_AddBrushModelSurfaces(trRefEntity_t *ent) {
 	tr.currentBModel = NULL;
 }
 
-
 /*
 =======================================================================================================================================
 
@@ -566,11 +557,11 @@ static void R_RecursiveWorldNode(mnode_t *node, uint32_t planeBits, uint32_t dli
 				r = BoxOnPlaneSide(node->mins, node->maxs, &tr.viewParms.frustum[0]);
 
 				if (r == 2) {
-					return; 						// culled
+					return;						// culled
 				}
 
 				if (r == 1) {
-					planeBits & = ~1; 			// all descendants will also be in front
+					planeBits & = ~1;			// all descendants will also be in front
 				}
 			}
 
@@ -578,11 +569,11 @@ static void R_RecursiveWorldNode(mnode_t *node, uint32_t planeBits, uint32_t dli
 				r = BoxOnPlaneSide(node->mins, node->maxs, &tr.viewParms.frustum[1]);
 
 				if (r == 2) {
-					return; 						// culled
+					return;						// culled
 				}
 
 				if (r == 1) {
-					planeBits & = ~2; 			// all descendants will also be in front
+					planeBits & = ~2;			// all descendants will also be in front
 				}
 			}
 
@@ -590,11 +581,11 @@ static void R_RecursiveWorldNode(mnode_t *node, uint32_t planeBits, uint32_t dli
 				r = BoxOnPlaneSide(node->mins, node->maxs, &tr.viewParms.frustum[2]);
 
 				if (r == 2) {
-					return; 						// culled
+					return;						// culled
 				}
 
 				if (r == 1) {
-					planeBits & = ~4; 			// all descendants will also be in front
+					planeBits & = ~4;			// all descendants will also be in front
 				}
 			}
 
@@ -602,11 +593,11 @@ static void R_RecursiveWorldNode(mnode_t *node, uint32_t planeBits, uint32_t dli
 				r = BoxOnPlaneSide(node->mins, node->maxs, &tr.viewParms.frustum[3]);
 
 				if (r == 2) {
-					return; 						// culled
+					return;						// culled
 				}
 
 				if (r == 1) {
-					planeBits & = ~8; 			// all descendants will also be in front
+					planeBits & = ~8;			// all descendants will also be in front
 				}
 			}
 
@@ -614,11 +605,11 @@ static void R_RecursiveWorldNode(mnode_t *node, uint32_t planeBits, uint32_t dli
 				r = BoxOnPlaneSide(node->mins, node->maxs, &tr.viewParms.frustum[4]);
 
 				if (r == 2) {
-					return; 						// culled
+					return;						// culled
 				}
 
 				if (r == 1) {
-					planeBits & = ~16; 			// all descendants will also be in front
+					planeBits & = ~16;			// all descendants will also be in front
 				}
 			}
 		}
@@ -633,6 +624,7 @@ static void R_RecursiveWorldNode(mnode_t *node, uint32_t planeBits, uint32_t dli
 
 					// test dlight bounds against node surface bounds
 					dl = &tr.refdef.dlights[i];
+
 					if (node->surfMins[0] >= (dl->origin[0] + dl->radius) || node->surfMaxs[0] <= (dl->origin[0] - dl->radius) ||
 						 node->surfMins[1] >= (dl->origin[1] + dl->radius) || node->surfMaxs[1] <= (dl->origin[1] - dl->radius) ||
 						 node->surfMins[2] >= (dl->origin[2] + dl->radius) || node->surfMaxs[2] <= (dl->origin[2] - dl->radius)) {
@@ -735,7 +727,6 @@ static void R_RecursiveWorldNode(mnode_t *node, uint32_t planeBits, uint32_t dli
 	}
 
 }
-
 
 /*
 =======================================================================================================================================
@@ -872,7 +863,7 @@ static void R_MarkLeaves(void) {
 		}
 		// check for door connection
 		if ((tr.refdef.areamask[leaf->area >> 3] &(1 << (leaf->area&7)))) {
-			continue; 		// not visible
+			continue;		// not visible
 		}
 
 		parent = leaf;
@@ -884,7 +875,6 @@ static void R_MarkLeaves(void) {
 		} while(parent);
 	}
 }
-
 
 /*
 =======================================================================================================================================

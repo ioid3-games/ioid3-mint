@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // tr_light.c
@@ -150,7 +144,7 @@ void R_DlightBmodel(bmodel_t *bmodel) {
 	for (i = 0; i < bmodel->numSurfaces; i++) {
 		surf = tr.world->surfaces + bmodel->firstSurface + i;
 
-		switch(*surf->data) {
+		switch (*surf->data) {
 			case SF_FACE:
 			case SF_GRID:
 			case SF_TRIANGLES:
@@ -166,7 +160,6 @@ void R_DlightBmodel(bmodel_t *bmodel) {
 		}
 	}
 }
-
 
 /*
 =======================================================================================================================================
@@ -254,6 +247,7 @@ static void R_SetupEntityLightingGrid(trRefEntity_t *ent, world_t *world) {
 				if (pos[j] + 1 > world->lightGridBounds[j] - 1) {
 					break; // ignore values outside lightgrid
 				}
+
 				factor *= frac[j];
 				index += gridStep[j];
 			} else {
@@ -274,13 +268,13 @@ static void R_SetupEntityLightingGrid(trRefEntity_t *ent, world_t *world) {
 		if (world->lightGrid16) {
 			uint16_t *data16 = world->lightGrid16 + index * 6;
 			if (!(data16[0] + data16[1] + data16[2] + data16[3] + data16[4] + data16[5])) {
-				continue; 	// ignore samples in walls
+				continue;	// ignore samples in walls
 			}
 		}
 
 		else {
 			if (!(data[0] + data[1] + data[2] + data[3] + data[4] + data[5])) {
-				continue; 	// ignore samples in walls
+				continue;	// ignore samples in walls
 			}
 		}
 
@@ -354,7 +348,6 @@ static void R_SetupEntityLightingGrid(trRefEntity_t *ent, world_t *world) {
 
 	VectorNormalize2(direction, ent->lightDir);
 }
-
 
 /*
 =======================================================================================================================================
@@ -526,7 +519,6 @@ void R_SetupEntityLighting(const trRefdef_t *refdef, trRefEntity_t *ent) {
 		}
 	}
 
-
 	if (r_debugLight->integer) {
 		LogLight(ent);
 	}
@@ -566,7 +558,6 @@ int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec
 	return qtrue;
 }
 
-
 int R_LightDirForPoint(vec3_t point, vec3_t lightDir, vec3_t normal, world_t *world) {
 	trRefEntity_t ent;
 	
@@ -584,7 +575,6 @@ int R_LightDirForPoint(vec3_t point, vec3_t lightDir, vec3_t normal, world_t *wo
 
 	return qtrue;
 }
-
 
 int R_CubemapForPoint(vec3_t point) {
 	int cubemapIndex = -1;

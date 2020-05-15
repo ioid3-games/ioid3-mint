@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 // bsp_mohaa.c -- MoHAA BSP Level Loading, based on bsp_fakk.c and OpenMoHAA
@@ -107,21 +101,18 @@ typedef struct {
 
 typedef struct {
 	int planeNum;
-	int children[2]; 	// negative numbers are - (leafs+1), not nodes
-	int mins[3]; 		// for frustom culling
+	int children[2];	// negative numbers are - (leafs+1), not nodes
+	int mins[3];		// for frustom culling
 	int maxs[3];
 } realDnode_t;
 
 typedef struct {
-	int cluster; 			// -1 = opaque cluster(do I still store these?)
+	int cluster;			// -1 = opaque cluster(do I still store these?)
 	int area;
-
-	int mins[3]; 			// for frustum culling
+	int mins[3];			// for frustum culling
 	int maxs[3];
-
 	int firstLeafSurface;
 	int numLeafSurfaces;
-
 	int firstLeafBrush;
 	int numLeafBrushes;
 
@@ -143,15 +134,15 @@ typedef struct {
 #endif
 
 typedef struct {
-	int planeNum; 			// positive plane side faces out of the leaf
+	int planeNum;			// positive plane side faces out of the leaf
 	int shaderNum;
-	int equationNum; 		// dsideEquation_t index
+	int equationNum;		// dsideEquation_t index
 } realDbrushside_t;
 
 typedef struct {
 	int firstSide;
 	int numSides;
-	int shaderNum; 		// the shader that determines the contents flags
+	int shaderNum;		// the shader that determines the contents flags
 } realDbrush_t;
 
 typedef struct {
@@ -178,19 +169,17 @@ typedef struct {
 	int shaderNum;
 	int fogNum;
 	int surfaceType;
-
 	int firstVert;
 	int numVerts; // ydnar: num verts + foliage origins(for cleaner lighting code in q3map)
 
 	int firstIndex;
 	int numIndexes;
-
 	int lightmapNum;
 	int lightmapX, lightmapY;
 	int lightmapWidth, lightmapHeight;
 
 	vec3_t lightmapOrigin;
-	vec3_t lightmapVecs[3]; 	// for patches, [0] and [1] are lodbounds
+	vec3_t lightmapVecs[3];	// for patches, [0] and [1] are lodbounds
 
 	int patchWidth; // ydnar: num foliage instances
 	int patchHeight; // ydnar: num foliage mesh verts
@@ -569,7 +558,7 @@ bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void
 		for (i = 0; i < numTerSurfaces; i++, in++, out++) {
 			out->shaderNum = LittleShort(in->shader); // ZTM: FIXME: will this mess up unsigned short on big endian?
 			out->fogNum = -1;
-			out->surfaceType = MST_TERRAIN; 	// solid triangle mesh
+			out->surfaceType = MST_TERRAIN;	// solid triangle mesh
 			out->firstVert = bsp->numDrawVerts + i * 9 * 9;
 			out->numVerts = 9 * 9;
 			out->firstIndex = bsp->numDrawIndexes + i * 8 * 8 * 6;
@@ -621,6 +610,7 @@ bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void
 						vert->xyz[0] += 16;
 					else if (x == 8)
 						vert->xyz[0] -= 16;
+
 					if (y == 0)
 						vert->xyz[1] += 16;
 					else if (y == 8)
@@ -711,7 +701,6 @@ bspFile_t *BSP_LoadMOHAA(const bspFormat_t *format, const char *name, const void
 
 	return bsp;
 }
-
 
 /****************************************************
 */

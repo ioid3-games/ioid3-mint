@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)1999 - 2010 id Software LLC, a ZeniMax Media company.
+Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 //
@@ -193,7 +187,6 @@ signed short ClampShort(int i) {
 	return i;
 }
 
-
 // this isn't a real cheap function to call!
 int DirToByte(vec3_t dir) {
 	int i, best;
@@ -226,7 +219,6 @@ void ByteToDir(int b, vec3_t dir) {
 
 	VectorCopy(bytedirs[b], dir);
 }
-
 
 unsigned ColorBytes3(float r, float g, float b) {
 	unsigned	i;
@@ -271,7 +263,6 @@ float NormalizeColor(const vec3_t in, vec3_t out) {
 
 	return max;
 }
-
 
 /*
 =======================================================================================================================================
@@ -364,7 +355,6 @@ RotateAroundDirection
 =======================================================================================================================================
 */
 void RotateAroundDirection(vec3_t axis[3], float yaw) {
-
 	// create an arbitrary axis[1] 
 	PerpendicularVector(axis[1], axis[0]);
 
@@ -378,7 +368,6 @@ void RotateAroundDirection(vec3_t axis[3], float yaw) {
 	// cross to get axis[2]
 	CrossProduct(axis[0], axis[1], axis[2]);
 }
-
 
 
 void vectoangles(const vec3_t value1, vec3_t angles) {
@@ -424,7 +413,6 @@ void vectoangles(const vec3_t value1, vec3_t angles) {
 	angles[YAW] = yaw;
 	angles[ROLL] = 0;
 }
-
 
 /*
 =======================================================================================================================================
@@ -510,7 +498,6 @@ void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up) {
 	CrossProduct(right, forward, up);
 }
 
-
 void VectorRotate(vec3_t in, vec3_t matrix[3], vec3_t out) {
 	out[0] = DotProduct(in, matrix[0]);
 	out[1] = DotProduct(in, matrix[1]);
@@ -570,7 +557,6 @@ float LerpAngle(float from, float to, float frac) {
 	return a;
 }
 
-
 /*
 =======================================================================================================================================
 AngleSubtract
@@ -593,19 +579,16 @@ float AngleSubtract(float a1, float a2) {
 	return a;
 }
 
-
 void AnglesSubtract(vec3_t v1, vec3_t v2, vec3_t v3) {
 	v3[0] = AngleSubtract(v1[0], v2[0]);
 	v3[1] = AngleSubtract(v1[1], v2[1]);
 	v3[2] = AngleSubtract(v1[2], v2[2]);
 }
 
-
 float AngleMod(float a) {
 	a = (360.0/65536) * ((int)(a*(65536/360.0))& 65535);
 	return a;
 }
-
 
 /*
 =======================================================================================================================================
@@ -617,7 +600,6 @@ returns angle normalized to the range [0 <= angle < 360]
 float AngleNormalize360(float angle) {
 	return(360.0 / 65536) * ((int)(angle * (65536 / 360.0))& 65535);
 }
-
 
 /*
 =======================================================================================================================================
@@ -635,7 +617,6 @@ float AngleNormalize180(float angle) {
 	return angle;
 }
 
-
 /*
 =======================================================================================================================================
 AngleDelta
@@ -646,7 +627,6 @@ returns the normalized delta from angle1 to angle2
 float AngleDelta(float angle1, float angle2) {
 	return AngleNormalize180(angle1 - angle2);
 }
-
 
 //============================================================
 
@@ -670,7 +650,6 @@ void SetPlaneSignbits(cplane_t *out) {
 
 	out->signbits = bits;
 }
-
 
 /*
 =======================================================================================================================================
@@ -711,7 +690,6 @@ int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, struct cplane_s *p) {
 	return sides;
 }
 
-
 /*
 =======================================================================================================================================
 RadiusFromBounds
@@ -730,7 +708,6 @@ float RadiusFromBounds(const vec3_t mins, const vec3_t maxs) {
 
 	return VectorLength(corner);
 }
-
 
 void ClearBounds(vec3_t mins, vec3_t maxs) {
 	mins[0] = mins[1] = mins[2] = 99999;
@@ -851,7 +828,6 @@ void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc) {
 	vecc[2] = veca[2] + scale*vecb[2];
 }
 
-
 vec_t _DotProduct(const vec3_t v1, const vec3_t v2) {
 	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
@@ -887,7 +863,6 @@ void Vector4Scale(const vec4_t in, vec_t scale, vec4_t out) {
 	out[3] = in[3] * scale;
 }
 
-
 int Q_log2(int val) {
 	int answer;
 
@@ -898,7 +873,6 @@ int Q_log2(int val) {
 
 	return answer;
 }
-
 
 
 /*
@@ -945,7 +919,6 @@ void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]) {
 	out[2][2] = in1[2][0] * in2[0][2] + in1[2][1] * in2[1][2] +
 				in1[2][2] * in2[2][2];
 }
-
 
 void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up) {
 	float angle;
