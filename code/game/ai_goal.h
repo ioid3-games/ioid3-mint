@@ -21,15 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-// 
-/*****************************************************************************
- * name:		ai_goal.h
- *
- * desc:		goal AI
- *
- * $Archive: /source/code/game/ai_goal.h $
- *
- *****************************************************************************/
 
 #define MAX_AVOIDGOALS 256
 #define MAX_GOALSTACK 8
@@ -50,7 +41,6 @@ typedef struct bot_goal_s {
 	int flags;			// goal flags
 	int iteminfo;		// item information
 } bot_goal_t;
-
 // goal state
 typedef struct bot_goalstate_s {
 	struct weightconfig_s *itemweightconfig;	// weight config

@@ -1,4 +1,4 @@
-O/*
+/*
 =======================================================================================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
@@ -188,7 +188,7 @@ static void CG_DrawPlayerScore(int y, score_t *score, float *color, float fade, 
 
 		localPlayer = qtrue;
 
-		if (ps->persistant[PERS_TEAM] == TEAM_SPECTATOR || cgs.gametype >= GT_TEAM) {
+		if (ps->persistant[PERS_TEAM] == TEAM_SPECTATOR || cgs.gametype > GT_TOURNAMENT) {
 			rank = -1;
 		} else {
 			rank = ps->persistant[PERS_RANK] & ~RANK_TIED_FLAG;
@@ -370,7 +370,7 @@ qboolean CG_DrawOldScoreboard(void) {
 
 	localPlayer = qfalse;
 
-	if (cgs.gametype >= GT_TEAM) {
+	if (cgs.gametype > GT_TOURNAMENT) {
 		// teamplay scoreboard
 		y += lineHeight / 2;
 
@@ -482,7 +482,7 @@ void CG_DrawTourneyScoreboard(void) {
 	// print the two scores
 	y = 160;
 
-	if (cgs.gametype >= GT_TEAM) {
+	if (cgs.gametype > GT_TOURNAMENT) {
 		// teamplay scoreboard
 		CG_DrawString(8, y, "Red Team", UI_LEFT|UI_DROPSHADOW|UI_GIANTFONT|UI_NOSCALE, NULL);
 

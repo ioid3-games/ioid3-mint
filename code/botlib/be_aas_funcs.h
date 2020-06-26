@@ -22,17 +22,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_aas_funcs.h
- *
- * desc:		AAS
- *
- * $Archive: /source/code/botlib/be_aas_funcs.h $
- *
- *****************************************************************************/
-
 #ifndef BSPCINCLUDE
-
 #include "be_aas_main.h"
 #include "be_aas_entity.h"
 #include "be_aas_sample.h"
@@ -45,5 +35,4 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "be_aas_optimize.h"
 #include "be_aas_bsp.h"
 #include "be_aas_move.h"
-
-#endif //BSPCINCLUDE
+#endif // BSPCINCLUDE

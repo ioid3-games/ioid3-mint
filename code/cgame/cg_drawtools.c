@@ -160,7 +160,7 @@ void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
 			if (cg_horizontalPlacement == PLACE_CENTER) {
 				*x += cgs.screenXBias;
 			} else if (cg_horizontalPlacement == PLACE_RIGHT) {
-				*x += cgs.screenXBias*2;
+				*x += cgs.screenXBias * 2;
 			}
 			// offset for widescreen
 			*x += cgs.screenXBias*(viewXBias);
@@ -186,7 +186,7 @@ void CG_AdjustFrom640(float *x, float *y, float *w, float *h) {
 			if (cg_verticalPlacement == PLACE_CENTER) {
 				*y += cgs.screenYBias;
 			} else if (cg_verticalPlacement == PLACE_BOTTOM) {
-				*y += cgs.screenYBias*2;
+				*y += cgs.screenYBias * 2;
 			}
 			// offset for narrow - screen
 			*y += cgs.screenYBias*(viewYBias);

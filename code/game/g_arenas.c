@@ -21,10 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-//
-// g_arenas.c
-//
 
 #include "g_local.h"
 
@@ -87,7 +83,7 @@ void UpdateTournamentInfo(void) {
 #ifdef MISSIONPACK
 		won = qfalse;
 
-		if (g_gametype.integer >= GT_TEAM) {
+		if (g_gametype.integer > GT_TOURNAMENT) {
 			score1 = level.teamScores[TEAM_RED];
 			score2 = level.teamScores[TEAM_BLUE];
 
@@ -120,6 +116,7 @@ void UpdateTournamentInfo(void) {
 
 #else
 		perfect = (level.players[playerNum].ps.persistant[PERS_RANK] == 0 && ent->player->ps.persistant[PERS_KILLED] == 0) ? 1 : 0;
+
 		Com_sprintf(msg, sizeof(msg), "postgame %i %i %i %i %i %i %i %i", level.numNonSpectatorPlayers, playerNum, accuracy,
 			ent->player->ps.persistant[PERS_IMPRESSIVE_COUNT], ent->player->ps.persistant[PERS_EXCELLENT_COUNT],
 			ent->player->ps.persistant[PERS_GAUNTLET_FRAG_COUNT], ent->player->ps.persistant[PERS_SCORE],
@@ -131,7 +128,9 @@ void UpdateTournamentInfo(void) {
 
 	for (i = 0; i < level.numNonSpectatorPlayers; i++) {
 		n = level.sortedPlayers[i];
+
 		Com_sprintf(buf, sizeof(buf), " %i %i %i", n, level.players[n].ps.persistant[PERS_RANK], level.players[n].ps.persistant[PERS_SCORE]);
+
 		msglen += strlen(buf);
 
 		if (msglen >= sizeof(msg)) {
@@ -164,14 +163,14 @@ static gentity_t *SpawnModelOnVictoryPad(gentity_t *pad, vec3_t offset, gentity_
 	body->classname = ent->player->pers.netname;
 	body->player = ent->player;
 	body->s = ent->s;
-	body->s.eType = ET_PLAYER;		// could be ET_INVISIBLE
-	body->s.eFlags = 0;				// clear EF_TALK, etc
-	body->s.powerups = 0;			// clear powerups
-	body->s.loopSound = 0;			// clear lava burning
+	body->s.eType = ET_PLAYER; // could be ET_INVISIBLE
+	body->s.eFlags = 0; // clear EF_TALK, etc.
+	body->s.powerups = 0; // clear powerups
+	body->s.loopSound = 0; // clear lava burning
 	body->s.number = body - g_entities;
 	body->timestamp = level.time;
 	body->physicsObject = qtrue;
-	body->physicsBounce = 0;		// don't bounce
+	body->physicsBounce = 0; // don't bounce
 	body->s.event = 0;
 	body->s.pos.trType = TR_STATIONARY;
 	body->s.groundEntityNum = ENTITYNUM_WORLD;
@@ -188,17 +187,20 @@ static gentity_t *SpawnModelOnVictoryPad(gentity_t *pad, vec3_t offset, gentity_
 
 	body->s.event = 0;
 	body->r.svFlags = ent->r.svFlags;
+
 	VectorCopy(ent->s.mins, body->s.mins);
 	VectorCopy(ent->s.maxs, body->s.maxs);
 	VectorCopy(ent->r.absmin, body->r.absmin);
 	VectorCopy(ent->r.absmax, body->r.absmax);
+
 	body->clipmask = CONTENTS_SOLID|CONTENTS_PLAYERCLIP;
 	body->s.contents = CONTENTS_BODY;
 	body->r.ownerNum = ent->r.ownerNum;
 	body->takedamage = qfalse;
 
 	VectorSubtract(level.intermission_origin, pad->r.currentOrigin, vec);
-	vectoangles(vec, body->s.apos.trBase);
+	VectorToAngles(vec, body->s.apos.trBase);
+
 	body->s.apos.trBase[PITCH] = 0;
 	body->s.apos.trBase[ROLL] = 0;
 
@@ -206,9 +208,7 @@ static gentity_t *SpawnModelOnVictoryPad(gentity_t *pad, vec3_t offset, gentity_
 	VectorMA(pad->r.currentOrigin, offset[0], f, vec);
 	VectorMA(vec, offset[1], r, vec);
 	VectorMA(vec, offset[2], u, vec);
-
 	G_SetOrigin(body, vec);
-
 	trap_LinkEntity(body);
 
 	body->count = place;
@@ -240,13 +240,13 @@ CelebrateStart
 =======================================================================================================================================
 */
 static void CelebrateStart(gentity_t *player) {
-	player->s.torsoAnim = ((player->s.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)| TORSO_GESTURE;
+
+	player->s.torsoAnim = ((player->s.torsoAnim & ANIM_TOGGLEBIT) ^ ANIM_TOGGLEBIT)|TORSO_GESTURE;
 	player->nextthink = level.time + TIMER_GESTURE;
 	player->think = CelebrateStop;
-
 	/*
-	player->player->ps.events[player->player->ps.eventSequence &(MAX_PS_EVENTS - 1)] = EV_TAUNT;
-	player->player->ps.eventParms[player->player->ps.eventSequence &(MAX_PS_EVENTS - 1)] = 0;
+	player->player->ps.events[player->player->ps.eventSequence & (MAX_PS_EVENTS - 1)] = EV_TAUNT;
+	player->player->ps.eventParms[player->player->ps.eventSequence & (MAX_PS_EVENTS - 1)] = 0;
 	player->player->ps.eventSequence++;
 	*/
 	G_AddEvent(player, EV_TAUNT, 0);
@@ -255,7 +255,6 @@ static void CelebrateStart(gentity_t *player) {
 static vec3_t offsetFirst = {0, 0, 74};
 static vec3_t offsetSecond = {-10, 60, 54};
 static vec3_t offsetThird = {-19, -60, 45};
-
 /*
 =======================================================================================================================================
 PodiumPlacementThink
@@ -270,12 +269,15 @@ static void PodiumPlacementThink(gentity_t *podium) {
 
 	AngleVectors(level.intermission_angle, vec, NULL, NULL);
 	VectorMA(level.intermission_origin, trap_Cvar_VariableIntegerValue("g_podiumDist"), vec, origin);
+
 	origin[2] -= trap_Cvar_VariableIntegerValue("g_podiumDrop");
+
 	G_SetOrigin(podium, origin);
 
 	if (podium1) {
 		VectorSubtract(level.intermission_origin, podium->r.currentOrigin, vec);
-		vectoangles(vec, podium1->s.apos.trBase);
+		VectorToAngles(vec, podium1->s.apos.trBase);
+
 		podium1->s.apos.trBase[PITCH] = 0;
 		podium1->s.apos.trBase[ROLL] = 0;
 
@@ -283,13 +285,13 @@ static void PodiumPlacementThink(gentity_t *podium) {
 		VectorMA(podium->r.currentOrigin, offsetFirst[0], f, vec);
 		VectorMA(vec, offsetFirst[1], r, vec);
 		VectorMA(vec, offsetFirst[2], u, vec);
-
 		G_SetOrigin(podium1, vec);
 	}
 
 	if (podium2) {
 		VectorSubtract(level.intermission_origin, podium->r.currentOrigin, vec);
-		vectoangles(vec, podium2->s.apos.trBase);
+		VectorToAngles(vec, podium2->s.apos.trBase);
+
 		podium2->s.apos.trBase[PITCH] = 0;
 		podium2->s.apos.trBase[ROLL] = 0;
 
@@ -297,13 +299,13 @@ static void PodiumPlacementThink(gentity_t *podium) {
 		VectorMA(podium->r.currentOrigin, offsetSecond[0], f, vec);
 		VectorMA(vec, offsetSecond[1], r, vec);
 		VectorMA(vec, offsetSecond[2], u, vec);
-
 		G_SetOrigin(podium2, vec);
 	}
 
 	if (podium3) {
 		VectorSubtract(level.intermission_origin, podium->r.currentOrigin, vec);
-		vectoangles(vec, podium3->s.apos.trBase);
+		VectorToAngles(vec, podium3->s.apos.trBase);
+
 		podium3->s.apos.trBase[PITCH] = 0;
 		podium3->s.apos.trBase[ROLL] = 0;
 
@@ -311,7 +313,6 @@ static void PodiumPlacementThink(gentity_t *podium) {
 		VectorMA(podium->r.currentOrigin, offsetThird[0], f, vec);
 		VectorMA(vec, offsetThird[1], r, vec);
 		VectorMA(vec, offsetThird[2], u, vec);
-
 		G_SetOrigin(podium3, vec);
 	}
 }
@@ -341,11 +342,15 @@ static gentity_t *SpawnPodium(void) {
 
 	AngleVectors(level.intermission_angle, vec, NULL, NULL);
 	VectorMA(level.intermission_origin, trap_Cvar_VariableIntegerValue("g_podiumDist"), vec, origin);
+
 	origin[2] -= trap_Cvar_VariableIntegerValue("g_podiumDrop");
+
 	G_SetOrigin(podium, origin);
 
 	VectorSubtract(level.intermission_origin, podium->r.currentOrigin, vec);
+
 	podium->s.apos.trBase[YAW] = vectoyaw(vec);
+
 	trap_LinkEntity(podium);
 
 	podium->think = PodiumPlacementThink;

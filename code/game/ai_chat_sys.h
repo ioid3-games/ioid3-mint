@@ -42,7 +42,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define CHAT_ALL	0
 #define CHAT_TEAM	1
 #define CHAT_TELL	2
-
 // console message types
 #define CMS_NORMAL	0
 #define CMS_CHAT	1

@@ -22,14 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_aas_main.c
- *
- * desc:		AAS
- *
- * $Archive: /MissionPack/code/botlib/be_aas_main.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ AAS
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "l_memory.h"
@@ -42,6 +37,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "be_aas_def.h"
 
 aas_t aasworld;
+
 libvar_t *saveroutingcache;
 
 /*
@@ -56,6 +52,7 @@ void QDECL AAS_Error(char *fmt, ...) {
 	va_start(arglist, fmt);
 	Q_vsnprintf(str, sizeof(str), fmt, arglist);
 	va_end(arglist);
+
 	botimport.Print(PRT_FATAL, "%s", str);
 }
 
@@ -212,8 +209,8 @@ int AAS_LoadFiles(const char *mapname) {
 	char aasfile[MAX_QPATH];
 
 	Q_strncpyz(aasworld.mapname, mapname, sizeof(aasworld.mapname));
-	// NOTE: first reset the entity links into the AAS areas and BSP leaves the AAS link heap and BSP link heap are reset after respectively the
-	// AAS file and BSP file are loaded
+	// NOTE: first reset the entity links into the AAS areas and BSP leaves
+	// the AAS link heap and BSP link heap are reset after respectively the AAS file and BSP file are loaded
 	AAS_ResetEntityLinks();
 	// load bsp info
 	AAS_LoadBSPFile();
@@ -227,6 +224,7 @@ int AAS_LoadFiles(const char *mapname) {
 	}
 
 	botimport.Print(PRT_DEVELOPER, "loaded %s\n", aasfile);
+
 	Q_strncpyz(aasworld.filename, aasfile, sizeof(aasworld.filename));
 	return BLERR_NOERROR;
 }
@@ -273,7 +271,7 @@ int AAS_LoadMap(const char *mapname) {
 
 /*
 =======================================================================================================================================
-AAS_LoadMap
+AAS_Setup
 
 Called when the library is first loaded.
 =======================================================================================================================================
@@ -285,7 +283,10 @@ int AAS_Setup(void) {
 	// as soon as it's set to 1 the routing cache will be saved
 	saveroutingcache = LibVar("saveroutingcache", "0");
 	// allocate memory for the entities
-	if (aasworld.entities)FreeMemory(aasworld.entities);
+	if (aasworld.entities) {
+		FreeMemory(aasworld.entities);
+	}
+
 	aasworld.entities = (aas_entity_t *)GetClearedHunkMemory(aasworld.maxentities * sizeof(aas_entity_t));
 	// invalidate all the entities
 	AAS_InvalidateEntities();
@@ -314,7 +315,9 @@ void AAS_Shutdown(void) {
 	// free the aas data
 	AAS_DumpAASData();
 	// free the entities
-	if (aasworld.entities)FreeMemory(aasworld.entities);
+	if (aasworld.entities) {
+		FreeMemory(aasworld.entities);
+	}
 	// clear the aasworld structure
 	Com_Memset(&aasworld, 0, sizeof(aas_t));
 	// aas has not been initialized

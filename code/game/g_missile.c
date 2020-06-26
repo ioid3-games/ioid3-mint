@@ -25,6 +25,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "g_local.h"
 
 #define MISSILE_PRESTEP_TIME 50
+
 /*
 =======================================================================================================================================
 G_BounceMissile
@@ -42,7 +43,7 @@ void G_BounceMissile(gentity_t *ent, trace_t *trace) {
 
 	dot = DotProduct(velocity, trace->plane.normal);
 
-	VectorMA(velocity, -2*dot, trace->plane.normal, ent->s.pos.trDelta);
+	VectorMA(velocity, -2 * dot, trace->plane.normal, ent->s.pos.trDelta);
 
 	if (ent->s.eFlags & EF_BOUNCE_HALF) {
 		VectorScale(ent->s.pos.trDelta, 0.65, ent->s.pos.trDelta);
@@ -77,7 +78,7 @@ void G_ExplodeMissile(gentity_t *ent) {
 	// we don't have a valid direction, so just point straight up
 	dir[0] = dir[1] = 0;
 	dir[2] = 1;
-
+	
 	ent->s.eType = ET_GENERAL;
 
 	G_AddEvent(ent, EV_MISSILE_MISS, DirToByte(dir));
@@ -144,7 +145,7 @@ void ProximityMine_Trigger(gentity_t *trigger, gentity_t *other, trace_t *trace)
 			return;
 		}
 	}
-	// ok, now check for ability to damage so we don't get triggered through walls, closed doors, etc...
+	// ok, now check for ability to damage so we don't get triggered through walls, closed doors, etc.
 	if (!CanDamage(other, trigger->s.pos.trBase)) {
 		return;
 	}
@@ -177,12 +178,10 @@ static void ProximityMine_Activate(gentity_t *ent) {
 	// build the proximity trigger
 	trigger = G_Spawn();
 	trigger->classname = "proxmine_trigger";
-
 	r = ent->splashRadius;
 
 	VectorSet(trigger->s.mins, -r, -r, -r);
 	VectorSet(trigger->s.maxs, r, r, r);
-
 	G_SetOrigin(trigger, ent->s.pos.trBase);
 
 	trigger->parent = ent;
@@ -203,7 +202,7 @@ static void ProximityMine_ExplodeOnPlayer(gentity_t *mine) {
 	gentity_t *player;
 
 	player = mine->enemy;
-	player->player->ps.eFlags & = ~EF_TICKING;
+	player->player->ps.eFlags &= ~EF_TICKING;
 
 	if (player->player->invulnerabilityTime > level.time) {
 		G_Damage(player, mine->parent, mine->parent, vec3_origin, mine->s.origin, 1000, DAMAGE_NO_KNOCKBACK, MOD_JUICED);
@@ -212,8 +211,9 @@ static void ProximityMine_ExplodeOnPlayer(gentity_t *mine) {
 	} else {
 		G_SetOrigin(mine, player->s.pos.trBase);
 		// make sure the explosion gets to the client
-		mine->r.svFlags & = ~SVF_NOCLIENT;
+		mine->r.svFlags &= ~SVF_NOCLIENT;
 		mine->splashMethodOfDeath = MOD_PROXIMITY_MINE;
+
 		G_ExplodeMissile(mine);
 	}
 }
@@ -287,7 +287,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 				if (G_InvulnerabilityEffect(other, forward, ent->s.pos.trBase, impactpoint, bouncedir)) {
 					VectorCopy(bouncedir, trace->plane.normal);
 					eFlags = ent->s.eFlags & EF_BOUNCE_HALF;
-					ent->s.eFlags & = ~EF_BOUNCE_HALF;
+					ent->s.eFlags &= ~EF_BOUNCE_HALF;
 					G_BounceMissile(ent, trace);
 					ent->s.eFlags |= eFlags;
 				}
@@ -318,13 +318,12 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 			G_Damage(other, ent, &g_entities[ent->r.ownerNum], velocity, ent->s.origin, ent->damage, 0, ent->methodOfDeath);
 		}
 	}
-
 #ifdef MISSIONPACK
 	if (ent->s.weapon == WP_PROX_LAUNCHER) {
 		if (ent->s.pos.trType != TR_GRAVITY) {
 			return;
 		}
-		// if it's a player, stick it on to them(flag them and remove this entity)
+		// if it's a player, stick it on to them (flag them and remove this entity)
 		if (other->s.eType == ET_PLAYER && other->health > 0) {
 			ProximityMine_Player(ent, other);
 			return;
@@ -336,7 +335,6 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 		ent->s.pos.trType = TR_STATIONARY;
 
 		VectorClear(ent->s.pos.trDelta);
-
 		G_AddEvent(ent, EV_PROXIMITY_MINE_STICK, trace->surfaceFlags);
 
 		ent->think = ProximityMine_Activate;
@@ -352,6 +350,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 		VectorCopy(trace->plane.normal, ent->movedir);
 		VectorSet(ent->s.mins, -4, -4, -4);
 		VectorSet(ent->s.maxs, 4, 4, 4);
+
 		trap_LinkEntity(ent);
 		return;
 	}
@@ -393,6 +392,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 		ent->parent->player->ps.pm_flags |= PMF_GRAPPLE_PULL;
 
 		VectorCopy(ent->r.currentOrigin, ent->parent->player->ps.grapplePoint);
+
 		trap_LinkEntity(ent);
 		trap_LinkEntity(nent);
 		return;
@@ -415,9 +415,7 @@ void G_MissileImpact(gentity_t *ent, trace_t *trace) {
 	G_SetOrigin(ent, trace->endpos);
 	// splash damage (doesn't apply to person directly hit)
 	if (ent->splashDamage) {
-		if (G_RadiusDamage(trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius,
-			other, ent->splashMethodOfDeath)) {
-
+		if (G_RadiusDamage(trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius, other, ent->splashMethodOfDeath)) {
 			if (!hitPlayer) {
 				g_entities[ent->r.ownerNum].player->accuracy_hits++;
 			}
@@ -502,7 +500,6 @@ void G_RunMissile(gentity_t *ent) {
 /*
 =======================================================================================================================================
 fire_plasma
-
 =======================================================================================================================================
 */
 gentity_t *fire_plasma(gentity_t *self, vec3_t start, vec3_t dir) {
@@ -807,7 +804,6 @@ gentity_t *fire_prox(gentity_t *self, vec3_t start, vec3_t dir) {
 	VectorCopy(start, bolt->s.pos.trBase);
 	VectorScale(dir, 700, bolt->s.pos.trDelta);
 	SnapVector(bolt->s.pos.trDelta); // save net bandwidth
-
 	VectorCopy(start, bolt->r.currentOrigin);
 
 	if (self->player) {

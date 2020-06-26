@@ -21,7 +21,10 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-// world.c -- world query functions
+
+/**************************************************************************************************************************************
+ World query functions.
+**************************************************************************************************************************************/
 
 #include "server.h"
 
@@ -29,8 +32,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 SV_ClipHandleForEntity
 
-Returns a headnode that can be used for testing or clipping to a given entity. If the entity is a bsp model, the headnode will be
-returned, otherwise a custom box tree or capsule will be constructed.
+Returns a headnode that can be used for testing or clipping to a given entity.
+If the entity is a bsp model, the headnode will be returned, otherwise a custom box tree will be constructed.
 =======================================================================================================================================
 */
 clipHandle_t SV_ClipHandleForEntity(const sharedEntity_t *ent) {
@@ -43,16 +46,14 @@ clipHandle_t SV_ClipHandleForEntity(const sharedEntity_t *ent) {
 	return CM_TempBoxModel(ent->s.mins, ent->s.maxs, ent->s.collisionType, ent->s.contents);
 }
 
-
 /*
 =======================================================================================================================================
 
-ENTITY CHECKING
+	ENTITY CHECKING
 
-To avoid linearly searching through lists of entities during environment testing,
-the world is carved up with an evenly spaced, axially aligned bsp tree.  Entities
-are kept in chains either at the final leafs, or at the first node that splits
-them, which prevents having to deal with multiple fragments of a single entity.
+	To avoid linearly searching through lists of entities during environment testing, the world is carved up with an evenly spaced,
+	axially aligned bsp tree. Entities are kept in chains either at the final leafs, or at the first node that splits them, which
+	prevents having to deal with multiple fragments of a single entity.
 
 =======================================================================================================================================
 */
@@ -69,7 +70,6 @@ typedef struct worldSector_s {
 
 worldSector_t sv_worldSectors[AREA_NODES];
 int sv_numworldSectors;
-
 
 /*
 =======================================================================================================================================
@@ -113,7 +113,7 @@ static worldSector_t *SV_CreateworldSector(int depth, vec3_t mins, vec3_t maxs) 
 		anode->children[0] = anode->children[1] = NULL;
 		return anode;
 	}
-	
+
 	VectorSubtract(maxs, mins, size);
 
 	if (size[0] > size[1]) {
@@ -128,11 +128,10 @@ static worldSector_t *SV_CreateworldSector(int depth, vec3_t mins, vec3_t maxs) 
 	VectorCopy(mins, mins2);
 	VectorCopy(maxs, maxs1);
 	VectorCopy(maxs, maxs2);
-	
+
 	maxs1[anode->axis] = mins2[anode->axis] = anode->dist;
-	
-	anode->children[0] = SV_CreateworldSector(depth+1, mins2, maxs2);
-	anode->children[1] = SV_CreateworldSector(depth+1, mins1, maxs1);
+	anode->children[0] = SV_CreateworldSector(depth + 1, mins2, maxs2);
+	anode->children[1] = SV_CreateworldSector(depth + 1, mins1, maxs1);
 
 	return anode;
 }
@@ -140,7 +139,6 @@ static worldSector_t *SV_CreateworldSector(int depth, vec3_t mins, vec3_t maxs) 
 /*
 =======================================================================================================================================
 SV_ClearWorld
-
 =======================================================================================================================================
 */
 void SV_ClearWorld(void) {
@@ -267,9 +265,7 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 			// doors may legally straggle two areas, but nothing should evern need more than that
 			if (ent->areanum != -1 && ent->areanum != area) {
 				if (ent->areanum2 != -1 && ent->areanum2 != area && sv.state == SS_LOADING) {
-					Com_DPrintf("Object %i touching 3 areas at %f %f %f\n",
-					gEnt->s.number,
-					gEnt->r.absmin[0], gEnt->r.absmin[1], gEnt->r.absmin[2]);
+					Com_DPrintf("Object %i touching 3 areas at %f %f %f\n", gEnt->s.number, gEnt->r.absmin[0], gEnt->r.absmin[1], gEnt->r.absmin[2]);
 				}
 
 				ent->areanum2 = area;
@@ -286,6 +282,7 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 
 		if (cluster != -1) {
 			ent->clusternums[ent->numClusters++] = cluster;
+
 			if (ent->numClusters == MAX_ENT_CLUSTERS) {
 				break;
 			}
@@ -328,10 +325,10 @@ void SV_LinkEntity(sharedEntity_t *gEnt) {
 /*
 =======================================================================================================================================
 
-AREA QUERY
+	AREA QUERY
 
-Fills in a list of all entities who's absmin/absmax intersects the given bounds.
-This does NOT mean that they actually touch in the case of bmodels.
+	Fills in a list of all entities who's absmin/absmax intersects the given bounds. This does NOT mean that they actually touch in the
+	case of bmodels.
 
 =======================================================================================================================================
 */
@@ -342,7 +339,6 @@ typedef struct {
 	int *list;
 	int count, maxcount;
 } areaParms_t;
-
 
 /*
 =======================================================================================================================================
@@ -373,7 +369,7 @@ static void SV_AreaEntities_r(worldSector_t *node, areaParms_t *ap) {
 		ap->list[ap->count] = check - sv.svEntities;
 		ap->count++;
 	}
-	
+
 	if (node->axis == -1) {
 		return; // terminal node
 	}
@@ -402,14 +398,13 @@ int SV_AreaEntities(const vec3_t mins, const vec3_t maxs, int *entityList, int m
 	ap.maxcount = maxcount;
 
 	SV_AreaEntities_r(sv_worldSectors, &ap);
-
 	return ap.count;
 }
 
 typedef struct {
-	vec3_t boxmins, boxmaxs; // enclose the test object along entire move
+	vec3_t boxmins, boxmaxs;	// enclose the test object along entire move
 	const float *mins;
-	const float *maxs; // size of the moving object
+	const float *maxs;			// size of the moving object
 	const float *start;
 	vec3_t end;
 	trace_t trace;
@@ -469,7 +464,7 @@ static void SV_ClipMoveToEntities(moveclip_t *clip) {
 	num = SV_AreaEntities(clip->boxmins, clip->boxmaxs, touchlist, MAX_GENTITIES);
 
 	if (clip->passEntityNum != ENTITYNUM_NONE) {
-		passOwnerNum = (SV_GentityNum(clip->passEntityNum)) ->r.ownerNum;
+		passOwnerNum = (SV_GentityNum(clip->passEntityNum))->r.ownerNum;
 
 		if (passOwnerNum == ENTITYNUM_NONE) {
 			passOwnerNum = -1;
@@ -543,8 +538,7 @@ static void SV_ClipMoveToEntities(moveclip_t *clip) {
 =======================================================================================================================================
 SV_Trace
 
-Moves the given mins/maxs volume through the world from start to end.
-passEntityNum and entities owned by passEntityNum are explicitly not checked.
+Moves the given mins/maxs volume through the world from start to end. passEntityNum and entities owned by passEntityNum are explicitly not checked.
 =======================================================================================================================================
 */
 void SV_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentmask, traceType_t type) {
@@ -562,6 +556,7 @@ void SV_Trace(trace_t *results, const vec3_t start, const vec3_t mins, const vec
 	Com_Memset(&clip, 0, sizeof(moveclip_t));
 	// clip to world
 	CM_BoxTrace(&clip.trace, start, end, mins, maxs, 0, contentmask, type);
+
 	clip.trace.entityNum = clip.trace.fraction != 1.0 ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
 
 	if (clip.trace.fraction == 0) {
@@ -632,7 +627,8 @@ void SV_ClipToEntities(trace_t *results, const vec3_t start, const vec3_t mins, 
 	clip.passEntityNum = passEntityNum;
 	clip.traceType = type;
 	// create the bounding box of the entire move
-	// we can limit it to the part of the move not already clipped off by the world, which can be a significant savings for line of sight and shot traces
+	// we can limit it to the part of the move not already clipped off by the world,
+	// which can be a significant savings for line of sight and shot traces
 	for (i = 0; i < 3; i++) {
 		if (end[i] > start[i]) {
 			clip.boxmins[i] = clip.start[i] + clip.mins[i] - 1;
@@ -691,4 +687,3 @@ int SV_PointContents(const vec3_t p, int passEntityNum) {
 
 	return contents;
 }
-

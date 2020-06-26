@@ -21,7 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
 
 #include "g_local.h"
 
@@ -36,7 +35,7 @@ typedef struct {
 	float rangeMin;
 	float rangeMax;
 	qboolean rangeIntegral;
-	int modificationCount;  // for tracking changes
+	int modificationCount; // for tracking changes
 } cvarTable_t;
 
 // game cvar flags
@@ -175,6 +174,7 @@ static cvarTable_t gameCvarTable[] = {
 };
 
 static int gameCvarTableSize = ARRAY_LEN(gameCvarTable);
+
 void G_InitGame(int levelTime, int randomSeed, int restart);
 void G_RunFrame(int levelTime);
 void G_ShutdownGame(int restart);
@@ -275,6 +275,7 @@ void QDECL G_Printf(const char *fmt, ...) {
 	va_start(argptr, fmt);
 	Q_vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end(argptr);
+
 	trap_Print(text);
 }
 
@@ -290,6 +291,7 @@ void QDECL G_Error(const char *fmt, ...) {
 	va_start(argptr, fmt);
 	Q_vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end(argptr);
+
 	trap_Error(text);
 }
 
@@ -297,9 +299,7 @@ void QDECL G_Error(const char *fmt, ...) {
 =======================================================================================================================================
 G_FindTeams
 
-Chain together all entities with a matching team field.
-Entity teams are used for item groups and multi-entity mover groups.
-
+Chain together all entities with a matching team field. Entity teams are used for item groups and multi-entity mover groups.
 All but the first will have the FL_TEAMSLAVE flag set and teammaster field set.
 All but the last will have the teamchain field set to the next one.
 =======================================================================================================================================
@@ -312,7 +312,7 @@ void G_FindTeams(void) {
 	c = 0;
 	c2 = 0;
 
-	for (i = MAX_CLIENTS, e = g_entities+i; i < level.num_entities; i++, e++) {
+	for (i = MAX_CLIENTS, e = g_entities + i; i < level.num_entities; i++, e++) {
 		if (!e->inuse) {
 			continue;
 		}
@@ -329,7 +329,7 @@ void G_FindTeams(void) {
 		c++;
 		c2++;
 
-		for (j = i+1, e2 = e+1; j < level.num_entities; j++, e2++) {
+		for (j = i + 1, e2 = e + 1; j < level.num_entities; j++, e2++) {
 			if (!e2->inuse) {
 				continue;
 			}
@@ -373,9 +373,11 @@ void G_RemapTeamShaders(void) {
 	Com_sprintf(string, sizeof(string), "team_icon/%s_red", g_redteam.string);
 	AddRemap("textures/ctf2/redteam01", string, f);
 	AddRemap("textures/ctf2/redteam02", string, f);
+
 	Com_sprintf(string, sizeof(string), "team_icon/%s_blue", g_blueteam.string);
 	AddRemap("textures/ctf2/blueteam01", string, f);
 	AddRemap("textures/ctf2/blueteam02", string, f);
+
 	trap_SetConfigstring(CS_SHADERSTATE, BuildShaderStateConfig());
 #endif
 }
@@ -469,13 +471,12 @@ void G_UpdateCvars(void) {
 /*
 =======================================================================================================================================
 G_InitGame
-
 =======================================================================================================================================
 */
 void G_InitGame(int levelTime, int randomSeed, int restart) {
 	int i, j;
 
-	G_DPrintf(" ------- Game Initialization ------- \n");
+	G_DPrintf("------- Game Initialization -------\n");
 	G_DPrintf("gameversion: %s\n", PRODUCT_NAME " " PRODUCT_VERSION " " PLATFORM_STRING " " PRODUCT_DATE);
 	G_DPrintf("gameprotocol: %s\n", GAME_PROTOCOL);
 
@@ -508,8 +509,7 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 			char serverinfo[MAX_INFO_STRING];
 
 			trap_GetServerinfo(serverinfo, sizeof(serverinfo));
-
-			G_LogPrintf(" ------------------------------------------------------------ \n");
+			G_LogPrintf("------------------------------------------------------------\n");
 			G_LogPrintf("InitGame: %s\n", serverinfo);
 		}
 	} else {
@@ -559,14 +559,13 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 	G_SpawnEntitiesFromString();
 	// general initialization
 	G_FindTeams();
-	// make sure we have flags for CTF, etc
+	// make sure we have flags for CTF, etc.
 	if (g_gametype.integer >= GT_TEAM) {
 		G_CheckTeamItems();
 	}
 
 	SaveRegisteredItems();
-
-	G_DPrintf(" ----------------------------------- \n");
+	G_DPrintf("-----------------------------------\n");
 
 	if (g_gametype.integer == GT_SINGLE_PLAYER || trap_Cvar_VariableIntegerValue("com_buildScript")) {
 		G_ModelIndex(SP_PODIUM_MODEL);
@@ -591,7 +590,7 @@ G_ShutdownGame
 */
 void G_ShutdownGame(int restart) {
 
-	G_DPrintf(" ==== ShutdownGame ==== \n");
+	G_DPrintf("==== ShutdownGame ====\n");
 
 	if (level.logFile) {
 		G_LogPrintf("ShutdownGame:\n");
@@ -714,6 +713,7 @@ void QDECL Com_Error(int level, const char *error, ...) {
 	va_start(argptr, error);
 	Q_vsnprintf(text, sizeof(text), error, argptr);
 	va_end(argptr);
+
 	trap_Error(text);
 }
 
@@ -729,6 +729,7 @@ void QDECL Com_Printf(const char *msg, ...) {
 	va_start(argptr, msg);
 	Q_vsnprintf(text, sizeof(text), msg, argptr);
 	va_end(argptr);
+
 	trap_Print(text);
 }
 
@@ -960,7 +961,7 @@ int QDECL SortRanks(const void *a, const void *b) {
 =======================================================================================================================================
 CalculateRanks
 
-Recalculates the score ranks of all players.This will be called on every player connect, begin, disconnect, death, and team change.
+Recalculates the score ranks of all players. This will be called on every player connect, begin, disconnect, death, and team change.
 =======================================================================================================================================
 */
 void CalculateRanks(void) {
@@ -1052,7 +1053,7 @@ void CalculateRanks(void) {
 			}
 		}
 	}
-	// set the CS_SCORES1 / 2 configstrings, which will be visible to everyone
+	// set the CS_SCORES1/2 configstrings, which will be visible to everyone
 	if (g_gametype.integer >= GT_TEAM) {
 		trap_SetConfigstring(CS_SCORES1, va("%i", level.teamScores[TEAM_RED]));
 		trap_SetConfigstring(CS_SCORES2, va("%i", level.teamScores[TEAM_BLUE]));
@@ -1105,8 +1106,8 @@ void SendScoreboardMessageToAllClients(void) {
 =======================================================================================================================================
 MovePlayerToIntermission
 
-When the intermission starts, this will be called for all players. If a new player connects, this will be called after the spawn
-function.
+When the intermission starts, this will be called for all players.
+If a new player connects, this will be called after the spawn function.
 =======================================================================================================================================
 */
 void MovePlayerToIntermission(gentity_t *ent) {
@@ -1179,7 +1180,7 @@ void BeginIntermission(void) {
 	if (level.intermissiontime) {
 		return; // already active
 	}
-	// if in tournement mode, change the wins/losses
+	// if in tournament mode, change the wins/losses
 	if (g_gametype.integer == GT_TOURNAMENT) {
 		AdjustTournamentScores();
 	}
@@ -1214,7 +1215,6 @@ void BeginIntermission(void) {
 #endif
 	// send the current scoring to all clients
 	SendScoreboardMessageToAllClients();
-
 }
 
 /*
@@ -1232,7 +1232,7 @@ void ExitLevel(void) {
 
 	// bot interbreeding
 	BotInterbreedEndMatch();
-	// if we are running a tournement map, kick the loser to spectator status, which will automatically grab the next spectator and restart
+	// if we are running a tournament map, kick the loser to spectator status, which will automatically grab the next spectator and restart
 	if (g_gametype.integer == GT_TOURNAMENT) {
 		if (!level.restarted) {
 			RemoveTournamentLoser();
@@ -1299,6 +1299,7 @@ void QDECL G_LogPrintf(const char *fmt, ...) {
 	sec -= tens * 10;
 
 	Com_sprintf(string, sizeof(string), "%3i:%i%i ", min, tens, sec);
+
 	va_start(argptr, fmt);
 	Q_vsnprintf(string + 7, sizeof(string) - 7, fmt, argptr);
 	va_end(argptr);
@@ -1333,7 +1334,7 @@ void LogExit(const char *string) {
 	level.intermissionQueued = level.time;
 	// this will keep the clients from playing any voice sounds that will get cut off when the queued intermission starts
 	trap_SetConfigstring(CS_INTERMISSION, "1");
-	// don't send more than 32 scores(FIXME?)
+	// don't send more than 32 scores (FIXME?)
 	numSorted = level.numConnectedPlayers;
 
 	if (numSorted > 32) {
@@ -1474,7 +1475,7 @@ qboolean ScoreIsTied(void) {
 	if (level.numPlayingPlayers < 2) {
 		return qfalse;
 	}
-	
+
 	if (g_gametype.integer >= GT_TEAM) {
 		return level.teamScores[TEAM_RED] == level.teamScores[TEAM_BLUE];
 	}
@@ -1526,7 +1527,7 @@ void CheckExitRules(void) {
 	}
 
 	if (g_timelimit.integer && !level.warmupTime) {
-		if (level.time - level.startTime >= g_timelimit.integer*60000) {
+		if (level.time - level.startTime >= g_timelimit.integer * 60000) {
 			trap_SendServerCommand(-1, "print \"Timelimit hit.\n\"");
 			LogExit("Timelimit hit.");
 			return;
@@ -1592,7 +1593,7 @@ void CheckExitRules(void) {
 =======================================================================================================================================
 CheckTournament
 
-Once a frame, check for changes in tournement player state.
+Once a frame, check for changes in tournament player state.
 =======================================================================================================================================
 */
 void CheckTournament(void) {
@@ -1725,11 +1726,11 @@ void CheckVote(void) {
 		trap_SendServerCommand(-1, "print \"Vote failed.\n\"");
 	} else {
 		// ATVI Q3 1.32 Patch #9, WNF
-		if (level.voteYes > level.numVotingPlayers/2) {
+		if (level.voteYes > level.numVotingPlayers / 2) {
 			// execute the command, then remove the vote
 			trap_SendServerCommand(-1, "print \"Vote passed.\n\"");
 			level.voteExecuteTime = level.time + 3000;
-		} else if (level.voteNo >= level.numVotingPlayers/2) {
+		} else if (level.voteNo >= level.numVotingPlayers / 2) {
 			// same behavior as a timeout
 			trap_SendServerCommand(-1, "print \"Vote failed.\n\"");
 		} else {
@@ -1856,16 +1857,17 @@ void CheckTeamVote(int team) {
 	if (level.time - level.teamVoteTime[cs_offset] >= VOTE_TIME) {
 		trap_SendServerCommand(-1, "print \"Team vote failed.\n\"");
 	} else {
-		if (level.teamVoteYes[cs_offset] > level.numTeamVotingPlayers[cs_offset]/2) {
+		if (level.teamVoteYes[cs_offset] > level.numTeamVotingPlayers[cs_offset] / 2) {
 			// execute the command, then remove the vote
 			trap_SendServerCommand(-1, "print \"Team vote passed.\n\"");
+
 			if (!Q_strncmp("leader", level.teamVoteString[cs_offset], 6)) {
-				//set the team leader
+				// set the team leader
 				SetLeader(team, atoi(level.teamVoteString[cs_offset] + 7));
 			} else {
 				trap_Cmd_ExecuteText(EXEC_APPEND, va("%s\n", level.teamVoteString[cs_offset]));
 			}
-		} else if (level.teamVoteNo[cs_offset] >= level.numTeamVotingPlayers[cs_offset]/2) {
+		} else if (level.teamVoteNo[cs_offset] >= level.numTeamVotingPlayers[cs_offset] / 2) {
 			// same behavior as a timeout
 			trap_SendServerCommand(-1, "print \"Team vote failed.\n\"");
 		} else {
@@ -1917,7 +1919,7 @@ void G_RunThink(gentity_t *ent) {
 	if (thinktime > level.time) {
 		return;
 	}
-	
+
 	ent->nextthink = 0;
 
 	if (!ent->think) {
@@ -1958,7 +1960,7 @@ void G_RunFrame(int levelTime) {
 		// clear events that are too old
 		if (level.time - ent->eventTime > EVENT_VALID_MSEC) {
 			if (ent->s.event) {
-				ent->s.event = 0; // & = EV_EVENT_BITS;
+				ent->s.event = 0; // &= EV_EVENT_BITS;
 
 				if (ent->player) {
 					ent->player->ps.externalEvent = 0;
@@ -2017,7 +2019,7 @@ void G_RunFrame(int levelTime) {
 			PlayerEndFrame(ent);
 		}
 	}
-	// see if it is time to do a tournement restart
+	// see if it is time to do a tournament restart
 	CheckTournament();
 	// see if it is time to end the level
 	CheckExitRules();

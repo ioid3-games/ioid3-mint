@@ -35,7 +35,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-
 #ifndef DEDICATED
 #ifdef USE_LOCAL_HEADERS
 #include "SDL.h"
@@ -45,10 +44,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include <SDL_cpuinfo.h>
 #endif
 #endif
-
 #include "sys_local.h"
 #include "sys_loadlib.h"
-
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
@@ -88,10 +85,12 @@ Sys_DefaultInstallPath
 =======================================================================================================================================
 */
 char *Sys_DefaultInstallPath(void) {
-	if (*installPath)
+
+	if (*installPath) {
 		return installPath;
-	else
+	} else {
 		return Sys_Cwd();
+	}
 }
 
 /*
@@ -117,7 +116,6 @@ void Sys_In_Restart_f(void) {
 		return;
 	}
 #endif
-
 	IN_Restart();
 }
 
@@ -125,7 +123,7 @@ void Sys_In_Restart_f(void) {
 =======================================================================================================================================
 Sys_ConsoleInput
 
-Handle new console input
+Handle new console input.
 =======================================================================================================================================
 */
 char *Sys_ConsoleInput(void) {
@@ -146,11 +144,10 @@ char *Sys_GetClipboardData(void) {
 
 	if ((cliptext = SDL_GetClipboardText()) != NULL) {
 		if (cliptext[0] != '\0') {
-			size_t bufsize = strlen(cliptext) +  1;
+			size_t bufsize = strlen(cliptext) + 1;
 
 			data = Z_Malloc(bufsize);
 			Q_strncpyz(data, cliptext, bufsize);
-
 			// find first listed char and set to '\0'
 			strtok(data, "\n\r\b");
 		}
@@ -171,9 +168,9 @@ Sys_GetCapsLockMode
 qboolean Sys_GetCapsLockMode(void) {
 #ifdef WIN32
 	// ZTM: TODO: SDL does not track Windows num/caps lock state. Remove this after it's fixed by a major SDL version?(i.e., SDL 2.1)
-	return(GetKeyState(VK_CAPITAL)& 0x0001) ? qtrue : qfalse;
+	return (GetKeyState(VK_CAPITAL)& 0x0001) ? qtrue : qfalse;
 #else
-	return(SDL_GetModState()& KMOD_CAPS) ? qtrue : qfalse;
+	return (SDL_GetModState()& KMOD_CAPS) ? qtrue : qfalse;
 #endif
 }
 
@@ -185,9 +182,9 @@ Sys_GetNumLockMode
 qboolean Sys_GetNumLockMode(void) {
 #ifdef WIN32
 	// ZTM: TODO: SDL does not track Windows num/caps lock state. Remove this after it's fixed by a major SDL version?(i.e., SDL 2.1)
-	return(GetKeyState(VK_NUMLOCK)& 0x0001) ? qtrue : qfalse;
+	return (GetKeyState(VK_NUMLOCK)& 0x0001) ? qtrue : qfalse;
 #else
-	return(SDL_GetModState()& KMOD_NUM) ? qtrue : qfalse;
+	return (SDL_GetModState()& KMOD_NUM) ? qtrue : qfalse;
 #endif
 }
 #endif
@@ -206,8 +203,9 @@ Sys_PIDFileName
 static char *Sys_PIDFileName(const char *gamedir) {
 	const char *homePath = Cvar_VariableString("fs_homepath");
 
-	if (*homePath != '\0')
+	if (*homePath != '\0') {
 		return va("%s/%s/%s", homePath, gamedir, PID_FILENAME);
+	}
 
 	return NULL;
 }
@@ -220,26 +218,27 @@ Sys_RemovePIDFile
 void Sys_RemovePIDFile(const char *gamedir) {
 	char *pidFile = Sys_PIDFileName(gamedir);
 
-	if (pidFile != NULL)
+	if (pidFile != NULL) {
 		remove(pidFile);
+	}
 }
 
 /*
 =======================================================================================================================================
 Sys_WritePIDFile
 
-Return qtrue if there is an existing stale PID file
+Return qtrue if there is an existing stale PID file.
 =======================================================================================================================================
 */
 static qboolean Sys_WritePIDFile(const char *gamedir) {
 	char *pidFile = Sys_PIDFileName(gamedir);
-	FILE      *f;
+	FILE *f;
 	qboolean stale = qfalse;
 
-	if (pidFile == NULL)
+	if (pidFile == NULL) {
 		return qfalse;
-
-	// First, check if the pid file is already there
+	}
+	// first, check if the pid file is already there
 	if ((f = fopen(pidFile, "r")) != NULL) {
 		char pidBuffer[64] = { 0 };
 		int pid;
@@ -249,12 +248,13 @@ static qboolean Sys_WritePIDFile(const char *gamedir) {
 
 		if (pid > 0) {
 			pid = atoi(pidBuffer);
-			if (!Sys_PIDIsRunning(pid))
-				stale = qtrue;
-		}
 
-		else
+			if (!Sys_PIDIsRunning(pid)) {
+				stale = qtrue;
+			}
+		} else {
 			stale = qtrue;
+		}
 	}
 
 	if (FS_CreatePath(pidFile)) {
@@ -264,8 +264,9 @@ static qboolean Sys_WritePIDFile(const char *gamedir) {
 	if ((f = fopen(pidFile, "w")) != NULL) {
 		fprintf(f, "%d", Sys_PID());
 		fclose(f);
-	} else
+	} else {
 		Com_Printf(S_COLOR_YELLOW "Couldn't write %s.\n", pidFile);
+	}
 
 	return stale;
 }
@@ -295,25 +296,22 @@ void Sys_InitPIDFile(const char *gamedir) {
 =======================================================================================================================================
 Sys_Exit
 
-Single exit point(regular exit or in case of error)
+Single exit point (regular exit or in case of error).
 =======================================================================================================================================
 */
 static __attribute__ ((noreturn)) void Sys_Exit(int exitCode) {
-	CON_Shutdown();
 
+	CON_Shutdown();
 #ifndef DEDICATED
 	SDL_Quit();
 #endif
-
 	if (exitCode < 2 && com_fullyInitialized) {
-		// Normal exit
+		// normal exit
 		Sys_RemovePIDFile(FS_GetCurrentGameDir());
 	}
 
 	NET_Shutdown();
-
 	Sys_PlatformExit();
-
 	exit(exitCode);
 }
 
@@ -333,16 +331,31 @@ Sys_GetProcessorFeatures
 */
 cpuFeatures_t Sys_GetProcessorFeatures(void) {
 	cpuFeatures_t features = 0;
-
 #ifndef DEDICATED
-	if (SDL_HasRDTSC())     features |= CF_RDTSC;
-	if (SDL_Has3DNow())     features |= CF_3DNOW;
-	if (SDL_HasMMX())       features |= CF_MMX;
-	if (SDL_HasSSE())       features |= CF_SSE;
-	if (SDL_HasSSE2())      features |= CF_SSE2;
-	if (SDL_HasAltiVec())   features |= CF_ALTIVEC;
-#endif
+	if (SDL_HasRDTSC()) {
+		features |= CF_RDTSC;
+	}
 
+	if (SDL_Has3DNow()) {
+		features |= CF_3DNOW;
+	}
+
+	if (SDL_HasMMX()) {
+		features |= CF_MMX;
+	}
+
+	if (SDL_HasSSE()) {
+		features |= CF_SSE;
+	}
+
+	if (SDL_HasSSE2()) {
+		features |= CF_SSE2;
+	}
+
+	if (SDL_HasAltiVec()) {
+		features |= CF_ALTIVEC;
+	}
+#endif
 	return features;
 }
 
@@ -352,6 +365,7 @@ Sys_Init
 =======================================================================================================================================
 */
 void Sys_Init(void) {
+
 	Cmd_AddCommand("in_restart", Sys_In_Restart_f);
 	Cvar_Set("arch", OS_STRING " " ARCH_STRING);
 	Cvar_Set("username", Sys_GetCurrentUser());
@@ -361,14 +375,13 @@ void Sys_Init(void) {
 =======================================================================================================================================
 Sys_AnsiColorPrint
 
-Transform Q3 colour codes to ANSI escape sequences
+Transform Q3 colour codes to ANSI escape sequences.
 =======================================================================================================================================
 */
 void Sys_AnsiColorPrint(const char *msg) {
 	static char buffer[MAXPRINTMSG];
 	int length = 0;
-	static int q3ToAnsi[8] = 
-	{
+	static int q3ToAnsi[8] = {
 		30, // COLOR_BLACK
 		31, // COLOR_RED
 		32, // COLOR_GREEN
@@ -381,7 +394,7 @@ void Sys_AnsiColorPrint(const char *msg) {
 
 	while (*msg) {
 		if (Q_IsColorString(msg) || *msg == '\n') {
-			// First empty the buffer
+			// first empty the buffer
 			if (length > 0) {
 				buffer[length] = '\0';
 				fputs(buffer, stderr);
@@ -389,31 +402,26 @@ void Sys_AnsiColorPrint(const char *msg) {
 			}
 
 			if (*msg == '\n') {
-				// Issue a reset and then the newline
+				// issue a reset and then the newline
 				fputs("\033[0m\n", stderr);
 				msg++;
-			}
-
-			else
-			{
-				// Print the color code
-				Com_sprintf(buffer, sizeof(buffer), "\033[%dm",
-						q3ToAnsi[ColorIndex(*(msg + 1))]);
+			} else {
+				// print the color code
+				Com_sprintf(buffer, sizeof(buffer), "\033[%dm", q3ToAnsi[ColorIndex(*(msg + 1))]);
 				fputs(buffer, stderr);
 				msg += 2;
 			}
-		}
-
-		else {
-			if (length >= MAXPRINTMSG - 1)
+		} else {
+			if (length >= MAXPRINTMSG - 1) {
 				break;
+			}
 
 			buffer[length] = *msg;
 			length++;
 			msg++;
 		}
 	}
-	// Empty anything still left in the buffer
+	// empty anything still left in the buffer
 	if (length > 0) {
 		buffer[length] = '\0';
 		fputs(buffer, stderr);
@@ -426,6 +434,7 @@ Sys_Print
 =======================================================================================================================================
 */
 void Sys_Print(const char *msg) {
+
 	CON_LogWrite(msg);
 	CON_Print(msg);
 }
@@ -442,9 +451,7 @@ void Sys_Error(const char *error, ...) {
 	va_start(argptr, error);
 	Q_vsnprintf(string, sizeof(string), error, argptr);
 	va_end(argptr);
-
 	Sys_ErrorDialog(string);
-
 	Sys_Exit(3);
 }
 
@@ -461,23 +468,22 @@ static __attribute__ ((format(printf, 1, 2))) void Sys_Warn(char *warning, ...) 
 	va_start(argptr, warning);
 	Q_vsnprintf(string, sizeof(string), warning, argptr);
 	va_end(argptr);
-
 	CON_Print(va("Warning: %s", string));
 }
 #endif
-
 /*
 =======================================================================================================================================
 Sys_FileTime
 
-returns -1 if not present
+Returns -1 if not present.
 =======================================================================================================================================
 */
 int Sys_FileTime(char *path) {
 	struct stat buf;
 
-	if (stat(path, &buf) == -1)
+	if (stat(path, &buf) == -1) {
 		return - 1;
+	}
 
 	return buf.st_mtime;
 }
@@ -488,6 +494,7 @@ Sys_UnloadDll
 =======================================================================================================================================
 */
 void Sys_UnloadDll(void *dllHandle) {
+
 	if (!dllHandle) {
 		Com_Printf("Sys_UnloadDll(NULL)\n");
 		return;
@@ -500,11 +507,9 @@ void Sys_UnloadDll(void *dllHandle) {
 =======================================================================================================================================
 Sys_LoadDll
 
-First try to load library name from system library path,
-from executable path, then fs_basepath.
+First try to load library name from system library path, from executable path, then fs_basepath.
 =======================================================================================================================================
 */
-
 void *Sys_LoadDll(const char *name, qboolean useSystemLib) {
 	void *dllhandle = NULL;
 
@@ -517,7 +522,7 @@ void *Sys_LoadDll(const char *name, qboolean useSystemLib) {
 		Com_Printf("Trying to load \"%s\"...\n", name);
 		dllhandle = Sys_LoadLibrary(name);
 	}
-	
+
 	if (!dllhandle) {
 		const char *topDir;
 		char libPath[MAX_OSPATH];
@@ -525,45 +530,43 @@ void *Sys_LoadDll(const char *name, qboolean useSystemLib) {
 
 		topDir = Sys_BinaryPath();
 
-		if (!*topDir)
+		if (!*topDir) {
 			topDir = ".";
+		}
 
 		len = Com_sprintf(libPath, sizeof(libPath), "%s%c%s", topDir, PATH_SEP, name);
 
 		if (len < sizeof(libPath)) {
 			Com_Printf("Trying to load \"%s\" from \"%s\"...\n", name, topDir);
 			dllhandle = Sys_LoadLibrary(libPath);
-		}
-
-		else {
+		} else {
 			Com_Printf("Skipping trying to load \"%s\" from \"%s\", file name is too long.\n", name, topDir);
 		}
 
 		if (!dllhandle) {
 			const char *basePath = Cvar_VariableString("fs_basepath");
-			
-			if (!basePath || !*basePath)
+
+			if (!basePath || !*basePath) {
 				basePath = ".";
-			
+			}
+
 			if (FS_FilenameCompare(topDir, basePath)) {
 				len = Com_sprintf(libPath, sizeof(libPath), "%s%c%s", basePath, PATH_SEP, name);
 
 				if (len < sizeof(libPath)) {
 					Com_Printf("Trying to load \"%s\" from \"%s\"...\n", name, basePath);
 					dllhandle = Sys_LoadLibrary(libPath);
-				}
-
-				else
-				{
+				} else {
 					Com_Printf("Skipping trying to load \"%s\" from \"%s\", file name is too long.\n", name, basePath);
 				}
 			}
-			
-			if (!dllhandle)
+
+			if (!dllhandle) {
 				Com_Printf("Loading \"%s\" failed\n", name);
+			}
 		}
 	}
-	
+
 	return dllhandle;
 }
 
@@ -571,7 +574,7 @@ void *Sys_LoadDll(const char *name, qboolean useSystemLib) {
 =======================================================================================================================================
 Sys_LoadGameDll
 
-Used to load a development dll instead of a virtual machine
+Used to load a development dll instead of a virtual machine.
 =======================================================================================================================================
 */
 void *Sys_LoadGameDll(const char *name,
@@ -601,7 +604,6 @@ void *Sys_LoadGameDll(const char *name,
 	if (!*entryPoint || !dllEntry) {
 		Com_Printf("Sys_LoadGameDll(%s)failed to find vmMain function:\n\"%s\" !\n", name, Sys_LibraryError());
 		Sys_UnloadLibrary(libHandle);
-
 		return NULL;
 	}
 
@@ -617,9 +619,9 @@ Sys_ParseArgs
 =======================================================================================================================================
 */
 void Sys_ParseArgs(int argc, char **argv) {
+
 	if (argc == 2) {
-		if (!strcmp(argv[1], "--version") ||
-				!strcmp(argv[1], "-v")) {
+		if (!strcmp(argv[1], "--version") || !strcmp(argv[1], "-v")) {
 			const char *date = PRODUCT_DATE;
 #ifdef DEDICATED
 			fprintf(stdout, Q3_VERSION " dedicated server(%s)\n", date);
@@ -632,11 +634,11 @@ void Sys_ParseArgs(int argc, char **argv) {
 }
 
 #ifndef DEFAULT_BASEDIR
-#	ifdef __APPLE__
-#		define DEFAULT_BASEDIR Sys_StripAppBundle(Sys_BinaryPath())
-#	else
-#		define DEFAULT_BASEDIR Sys_BinaryPath()
-#	endif
+#ifdef __APPLE__
+#define DEFAULT_BASEDIR Sys_StripAppBundle(Sys_BinaryPath())
+#else
+#define DEFAULT_BASEDIR Sys_BinaryPath()
+#endif
 #endif
 
 /*
@@ -648,8 +650,7 @@ void Sys_SigHandler(int signal) {
 	static qboolean signalcaught = qfalse;
 
 	if (signalcaught) {
-		fprintf(stderr, "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n",
-			signal);
+		fprintf(stderr, "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n", signal);
 	} else {
 		signalcaught = qtrue;
 		VM_Forced_Unload_Start();
@@ -660,10 +661,11 @@ void Sys_SigHandler(int signal) {
 		VM_Forced_Unload_Done();
 	}
 
-	if (signal == SIGTERM || signal == SIGINT)
+	if (signal == SIGTERM || signal == SIGINT) {
 		Sys_Exit(1);
-	else
+	} else {
 		Sys_Exit(2);
+	}
 }
 
 /*
@@ -673,66 +675,58 @@ main
 */
 int main(int argc, char **argv) {
 	int i;
-	char commandLine[MAX_STRING_CHARS] = { 0 };
+	char commandLine[MAX_STRING_CHARS] = {0};
 
 	extern void Sys_LaunchAutoupdater(int argc, char **argv);
 	Sys_LaunchAutoupdater(argc, argv);
-
 #ifndef DEDICATED
 	// SDL version check
-
-	// Compile time
-#	if !SDL_VERSION_ATLEAST(MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH)
-#		error A more recent version of SDL is required
-#	endif
-
-	// Run time
+	// compile time
+#if !SDL_VERSION_ATLEAST(MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH)
+#error A more recent version of SDL is required
+#endif
+	// run time
 	SDL_version ver;
 	SDL_GetVersion(&ver);
-
 #define MINSDL_VERSION \
 	XSTRING(MINSDL_MAJOR)"." \
 	XSTRING(MINSDL_MINOR)"." \
 	XSTRING(MINSDL_PATCH)
 
-	if (SDL_VERSIONNUM(ver.major, ver.minor, ver.patch) < 
-			SDL_VERSIONNUM(MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH)) {
+	if (SDL_VERSIONNUM(ver.major, ver.minor, ver.patch) < SDL_VERSIONNUM(MINSDL_MAJOR, MINSDL_MINOR, MINSDL_PATCH)) {
 		Sys_Dialog(DT_ERROR, va("SDL version " MINSDL_VERSION " or greater is required, "
 			"but only version %d.%d.%d was found. You may be able to obtain a more recent copy "
 			"from http://www.libsdl.org/.", ver.major, ver.minor, ver.patch), "SDL Library Too Old");
-
 		Sys_Exit(1);
 	}
 
 	SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
 #endif
-
 	Sys_PlatformInit();
-
-	// Set the initial time base
+	// set the initial time base
 	Sys_Milliseconds();
-
 #ifdef __APPLE__
-	// This is passed if we are launched by double - clicking
-	if (argc >= 2 && Q_strncmp(argv[1], "-psn", 4) == 0)
+	// this is passed if we are launched by double-clicking
+	if (argc >= 2 && Q_strncmp(argv[1], "-psn", 4) == 0) {
 		argc = 1;
+	}
 #endif
-
 	Sys_ParseArgs(argc, argv);
 	Sys_SetBinaryPath(Sys_Dirname(argv[0]));
 	Sys_SetDefaultInstallPath(DEFAULT_BASEDIR);
-
-	// Concatenate the command line for passing to Com_Init
+	// concatenate the command line for passing to Com_Init
 	for (i = 1; i < argc; i++) {
 		const qboolean containsSpaces = strchr(argv[i], ' ') != NULL;
 
-		if (containsSpaces)
+		if (containsSpaces) {
 			Q_strcat(commandLine, sizeof(commandLine), "\"");
+		}
 
 		Q_strcat(commandLine, sizeof(commandLine), argv[i]);
 
-		if (containsSpaces)
+		if (containsSpaces) {
 			Q_strcat(commandLine, sizeof(commandLine), "\"");
+		}
 
 		Q_strcat(commandLine, sizeof(commandLine), " ");
 	}
@@ -746,13 +740,11 @@ int main(int argc, char **argv) {
 	signal(SIGSEGV, Sys_SigHandler);
 	signal(SIGTERM, Sys_SigHandler);
 	signal(SIGINT, Sys_SigHandler);
-
 #if !defined DEDICATED && !defined __APPLE__ && !defined WIN32
 	// HACK: Before SDL 2.0.4, Linux(X11)did not set numlock or capslock state
-	//       so I made the engine always assumed num lock was on.
+	//       so I made the engine always assumed num lock was on
 	// NOTE: The SDL mod state on X11 is not set at this point even when it's fixed
-	//       and will be corrected regardless of what is done here,
-	//       but limit to SDL 2.0.3 and earlier so that the message isn't shown.
+	//       and will be corrected regardless of what is done here, but limit to SDL 2.0.3 and earlier so that the message isn't shown
 	if (SDL_VERSIONNUM(ver.major, ver.minor, ver.patch) < SDL_VERSIONNUM(2, 0, 4)) {
 		if (!(SDL_GetModState()& KMOD_NUM)) {
 			Com_Printf("INFO: Forcing NUMLOCK modifier state to enabled(actual state unknown)!\n");
@@ -760,11 +752,9 @@ int main(int argc, char **argv) {
 		}
 	}
 #endif
-
 	while (1) {
 		Com_Frame();
 	}
 
 	return 0;
 }
-

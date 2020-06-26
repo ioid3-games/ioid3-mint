@@ -113,7 +113,7 @@ typedef struct bot_avoidspot_s {
 // movement state
 // NOTE: the moveflags MFL_ONGROUND, MFL_TELEPORTED, MFL_WATERJUMP, MFL_GRAPPLEPULL, and MFL_GRAPPLEEXISTS must be set outside the movement code
 typedef struct bot_movestate_s {
-	// input vars(all set outside the movement code)
+	// input vars (all set outside the movement code)
 	vec3_t origin;								// origin of the bot
 	vec3_t velocity;							// velocity of the bot
 	vec3_t viewoffset;							// view offset
@@ -170,5 +170,5 @@ void BotInitPhysicsSettings(void);
 // shutdown movement AI
 void BotShutdownMoveAI(void);
 
-#define BotAllocMoveState(_playerNum) (_playerNum+1)
+#define BotAllocMoveState(_playerNum) (_playerNum + 1)
 #define BotFreeMoveState(_playerNum) // nothing

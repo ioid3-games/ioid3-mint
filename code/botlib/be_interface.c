@@ -22,14 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_interface.c
- *
- * desc:		bot library interface
- *
- * $Archive: /MissionPack/code/botlib/be_interface.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ Bot library interface.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "l_log.h"
@@ -46,19 +41,22 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 botlib_globals_t botlibglobals;
 botlib_export_t be_botlib_export;
 botlib_import_t botimport;
+
 int botDeveloper;
 // qtrue if the library is setup
 int botlibsetup = qfalse;
 
-//===========================================================================
-//
-// several functions used by the exported functions
-//
-//===========================================================================
+/*
+=======================================================================================================================================
+
+	Several functions used by the exported functions.
+
+=======================================================================================================================================
+*/
 
 /*
 =======================================================================================================================================
-ValidEntityNumber
+ValidClientNumber
 =======================================================================================================================================
 */
 qboolean ValidClientNumber(int num, char *str) {
@@ -109,7 +107,7 @@ Export_BotLibSetup
 */
 int Export_BotLibSetup(void) {
 	int errnum;
-	
+
 	botDeveloper = LibVarGetValue("bot_developer");
 
 	memset(&botlibglobals, 0, sizeof(botlibglobals));
@@ -120,11 +118,12 @@ int Export_BotLibSetup(void) {
 		Log_Open("botlib.log");
 	}
 
-	botimport.Print(PRT_DEVELOPER, " ------- BotLib Initialization ------- \n");
+	botimport.Print(PRT_DEVELOPER, "------- BotLib Initialization -------\n");
+
 	botlibglobals.maxclients = (int)LibVarValue("maxclients", "128");
 	botlibglobals.maxentities = (int)LibVarValue("maxentities", "1024");
 
-	errnum = AAS_Setup(); // be_aas_main.c
+	errnum = AAS_Setup();			// be_aas_main.c
 
 	if (errnum != BLERR_NOERROR) {
 		return errnum;
@@ -148,8 +147,8 @@ int Export_BotLibShutdown(void) {
 	}
 #ifndef DEMO
 	//DumpFileCRCs();
-#endif //D EMO
-	// shut down aas
+#endif // DEMO
+	// shut down AAS
 	AAS_Shutdown();
 	// free all libvars
 	LibVarDeAllocAll();
@@ -163,6 +162,7 @@ int Export_BotLibShutdown(void) {
 #endif
 	// shut down library log file
 	Log_Shutdown();
+
 	botlibsetup = qfalse;
 	botlibglobals.botlibsetup = qfalse;
 	return BLERR_NOERROR;
@@ -188,7 +188,9 @@ int Export_BotLibVarGet(const char *var_name, char *value, int size) {
 	char *varvalue;
 
 	varvalue = LibVarGetString(var_name);
+
 	strncpy(value, varvalue, size - 1);
+
 	value[size - 1] = '\0';
 	return BLERR_NOERROR;
 }
@@ -222,14 +224,15 @@ int Export_BotLibLoadMap(const char *mapname) {
 		return BLERR_LIBRARYNOTSETUP;
 	}
 
-	botimport.Print(PRT_DEVELOPER, " ------------ Map Loading ------------ \n");
+	botimport.Print(PRT_DEVELOPER, "------------ Map Loading ------------\n");
 	// startup AAS for the current map, model and sound index
 	errnum = AAS_LoadMap(mapname);
+
 	if (errnum != BLERR_NOERROR) {
 		return errnum;
 	}
 
-	botimport.Print(PRT_DEVELOPER, " ------------------------------------- \n");
+	botimport.Print(PRT_DEVELOPER, "-------------------------------------\n");
 #ifdef DEBUG
 	botimport.Print(PRT_DEVELOPER, "map loaded in %d msec\n", botimport.MilliSeconds() - starttime);
 #endif
@@ -276,16 +279,17 @@ Init_AAS_Export
 =======================================================================================================================================
 */
 static void Init_AAS_Export(aas_export_t *aas) {
-	// --------------------------------------------
+
+	//--------------------------------------------
 	// be_aas_main.c
-	// --------------------------------------------
+	//--------------------------------------------
 	aas->AAS_Loaded = AAS_Loaded;
 	aas->AAS_Initialized = AAS_Initialized;
 	aas->AAS_PresenceTypeBoundingBox = AAS_PresenceTypeBoundingBox;
 	aas->AAS_Time = AAS_Time;
-	// --------------------------------------------
+	//--------------------------------------------
 	// be_aas_debug.c
-	// --------------------------------------------
+	//--------------------------------------------
 	aas->AAS_ClearShownDebugLines = AAS_ClearShownDebugLines;
 	aas->AAS_ClearShownPolygons = AAS_ClearShownPolygons;
 	aas->AAS_DebugLine = AAS_DebugLine;
@@ -311,18 +315,18 @@ static void Init_AAS_Export(aas_export_t *aas) {
 	aas->AAS_TraceAreas = AAS_TraceAreas;
 	aas->AAS_BBoxAreas = AAS_BBoxAreas;
 	aas->AAS_AreaInfo = AAS_AreaInfo;
-	// --------------------------------------------
+	//--------------------------------------------
 	// be_aas_bspq3.c
-	// --------------------------------------------
+	//--------------------------------------------
 	aas->AAS_PointContents = AAS_PointContents;
 	aas->AAS_NextBSPEntity = AAS_NextBSPEntity;
 	aas->AAS_ValueForBSPEpairKey = AAS_ValueForBSPEpairKey;
 	aas->AAS_VectorForBSPEpairKey = AAS_VectorForBSPEpairKey;
 	aas->AAS_FloatForBSPEpairKey = AAS_FloatForBSPEpairKey;
 	aas->AAS_IntForBSPEpairKey = AAS_IntForBSPEpairKey;
-	// --------------------------------------------
+	//--------------------------------------------
 	// be_aas_reach.c
-	// --------------------------------------------
+	//--------------------------------------------
 	aas->AAS_AreaReachability = AAS_AreaReachability;
 	aas->AAS_BestReachableArea = AAS_BestReachableArea;
 	aas->AAS_BestReachableFromJumpPadArea = AAS_BestReachableFromJumpPadArea;
@@ -337,9 +341,9 @@ static void Init_AAS_Export(aas_export_t *aas) {
 	aas->AAS_AreaLadder = AAS_AreaLadder;
 	aas->AAS_AreaJumpPad = AAS_AreaJumpPad;
 	aas->AAS_AreaDoNotEnter = AAS_AreaDoNotEnter;
-	// --------------------------------------------
+	//--------------------------------------------
 	// be_aas_route.c
-	// --------------------------------------------
+	//--------------------------------------------
 	aas->AAS_TravelFlagForType = AAS_TravelFlagForType;
 	aas->AAS_AreaContentsTravelFlags = AAS_AreaContentsTravelFlags;
 	aas->AAS_NextAreaReachability = AAS_NextAreaReachability;
@@ -349,13 +353,13 @@ static void Init_AAS_Export(aas_export_t *aas) {
 	aas->AAS_AreaTravelTime = AAS_AreaTravelTime;
 	aas->AAS_AreaTravelTimeToGoalArea = AAS_AreaTravelTimeToGoalArea;
 	aas->AAS_PredictRoute = AAS_PredictRoute;
-	// --------------------------------------------
+	//--------------------------------------------
 	// be_aas_altroute.c
-	// --------------------------------------------
+	//--------------------------------------------
 	aas->AAS_AlternativeRouteGoals = AAS_AlternativeRouteGoals;
-	// --------------------------------------------
+	//--------------------------------------------
 	// be_aas_move.c
-	// --------------------------------------------
+	//--------------------------------------------
 	aas->AAS_PredictPlayerMovement = AAS_PredictPlayerMovement;
 	aas->AAS_OnGround = AAS_OnGround;
 	aas->AAS_Swimming = AAS_Swimming;

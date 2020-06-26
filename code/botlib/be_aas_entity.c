@@ -22,14 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_aas_entity.c
- *
- * desc:		AAS entities
- *
- * $Archive: /MissionPack/code/botlib/be_aas_entity.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ AAS entities.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "aasfile.h"
@@ -60,6 +55,7 @@ int AAS_UpdateEntity(int entnum, bot_entitystate_t *state) {
 		AAS_UnlinkFromAreas(ent->areas);
 		// unlink the entity from the BSP leaves
 		AAS_UnlinkFromBSPLeaves(ent->leaves);
+
 		ent->areas = NULL;
 		ent->leaves = NULL;
 		return BLERR_NOERROR;

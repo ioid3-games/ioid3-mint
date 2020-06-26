@@ -573,6 +573,7 @@ void BotInitLevelItems(void) {
 		li->timeout = 0;
 		li->entitynum = 0;
 		li->flags = 0;
+
 		trap_AAS_IntForBSPEpairKey(ent, "notfree", &value);
 
 		if (value) {

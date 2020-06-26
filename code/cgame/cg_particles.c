@@ -1,31 +1,25 @@
 /*
-===========================================================================
+=======================================================================================================================================
 Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or (at your option) any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.  If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
-===========================================================================
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
+=======================================================================================================================================
 */
 
 /**************************************************************************************************************************************
@@ -326,7 +320,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		height = p->height + (ratio * (p->endheight - p->height));
 
 		if (p->roll) {
-			vectoangles(cg.refdef.viewaxis[0], rotate_ang);
+			VectorToAngles(cg.refdef.viewaxis[0], rotate_ang);
 			rotate_ang[ROLL] += p->roll;
 			AngleVectors(rotate_ang, NULL, rr, ru);
 		}
@@ -452,7 +446,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		if (p->type != P_SMOKE_IMPACT) {
 			vec3_t temp;
 
-			vectoangles(rforward, temp);
+			VectorToAngles(rforward, temp);
 			p->accumroll += p->roll;
 			temp[ROLL] += p->accumroll * 0.1;
 			AngleVectors(temp, NULL, rright2, rup2);
@@ -532,7 +526,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		alpha = p->alpha;
 
 		if (p->roll) {
-			vectoangles(cg.refdef.viewaxis[0], rotate_ang);
+			VectorToAngles(cg.refdef.viewaxis[0], rotate_ang);
 			rotate_ang[ROLL] += p->roll;
 			AngleVectors(rotate_ang, NULL, rr, ru);
 		} else {
@@ -709,7 +703,7 @@ void CG_AddParticleToScene(cparticle_t *p, vec3_t org, float alpha) {
 		p->pshader = shaderAnims[i][j];
 
 		if (p->roll) {
-			vectoangles(cg.refdef.viewaxis[0], rotate_ang);
+			VectorToAngles(cg.refdef.viewaxis[0], rotate_ang);
 			rotate_ang[ROLL] += p->roll;
 			AngleVectors(rotate_ang, NULL, rr, ru);
 		}
@@ -808,7 +802,7 @@ void CG_AddParticles(void) {
 	VectorCopy(cg.refdef.viewaxis[0], vforward);
 	VectorCopy(cg.refdef.viewaxis[1], vright);
 	VectorCopy(cg.refdef.viewaxis[2], vup);
-	vectoangles(cg.refdef.viewaxis[0], rotate_ang);
+	VectorToAngles(cg.refdef.viewaxis[0], rotate_ang);
 
 	roll += ((cg.time - oldtime) * 0.1);
 	rotate_ang[ROLL] += (roll * 0.9);
@@ -1637,7 +1631,7 @@ qboolean ValidBloodPool(vec3_t start) {
 	fheight = 16;
 
 	VectorSet(normal, 0, 0, 1);
-	vectoangles(normal, angles);
+	VectorToAngles(normal, angles);
 	AngleVectors(angles, NULL, right, up);
 	VectorMA(start, EXTRUDE_DIST, normal, center_pos);
 
@@ -1746,7 +1740,7 @@ void CG_ParticleBloodCloud(centity_t *cent, vec3_t origin, vec3_t dir) {
 	dist = 0;
 	length = VectorLength(dir);
 
-	vectoangles(dir, angles);
+	VectorToAngles(dir, angles);
 	AngleVectors(angles, forward, NULL, NULL);
 
 	crittersize = LARGESIZE;
@@ -1872,7 +1866,7 @@ void CG_ParticleDust(centity_t *cent, vec3_t origin, vec3_t dir) {
 
 	length = VectorLength(dir);
 
-	vectoangles(dir, angles);
+	VectorToAngles(dir, angles);
 	AngleVectors(angles, forward, NULL, NULL);
 
 	crittersize = LARGESIZE;

@@ -889,7 +889,7 @@ void UI_DrawPlayer(float x, float y, float w, float h, uiPlayerInfo_t *pi, int t
 		}
 		// make a dlight for the flash
 		if (pi->flashDlightColor[0] || pi->flashDlightColor[1] || pi->flashDlightColor[2]) {
-			trap_R_AddJuniorLightToScene(flash.origin, 200 + (rand()&31), 1.0f, pi->flashDlightColor[0], pi->flashDlightColor[1], pi->flashDlightColor[2]);
+			trap_R_AddJuniorLightToScene(flash.origin, 200 + (rand() & 31), 1.0f, pi->flashDlightColor[0], pi->flashDlightColor[1], pi->flashDlightColor[2]);
 		}
 	}
 	// add the chat icon

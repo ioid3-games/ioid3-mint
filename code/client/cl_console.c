@@ -39,7 +39,7 @@ void Con_Dump_f(void) {
 	char filename[MAX_QPATH];
 
 	if (Cmd_Argc() != 2) {
-		Com_Printf("usage: condump < filename > \n");
+		Com_Printf("usage: condump <filename>\n");
 		return;
 	}
 
@@ -52,6 +52,7 @@ void Con_Dump_f(void) {
 	}
 
 	f = FS_FOpenFileWrite(filename);
+
 	if (!f) {
 		Com_Printf("ERROR: couldn't open %s.\n", filename);
 		return;
@@ -83,9 +84,12 @@ void Con_ClearNotify(void) {
 /*
 =======================================================================================================================================
 Cmd_CompleteTxtName
+
+Complete file text name.
 =======================================================================================================================================
 */
 void Cmd_CompleteTxtName(char *args, int argNum) {
+
 	if (argNum == 2) {
 		Field_CompleteFilename("", "txt", qfalse, qtrue);
 	}
@@ -94,6 +98,8 @@ void Cmd_CompleteTxtName(char *args, int argNum) {
 /*
 =======================================================================================================================================
 Con_Init
+
+Initialize console.
 =======================================================================================================================================
 */
 void Con_Init(void) {
@@ -104,6 +110,8 @@ void Con_Init(void) {
 /*
 =======================================================================================================================================
 Con_Shutdown
+
+Free client console commands before shutdown.
 =======================================================================================================================================
 */
 void Con_Shutdown(void) {

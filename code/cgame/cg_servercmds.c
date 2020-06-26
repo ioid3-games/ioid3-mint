@@ -449,7 +449,6 @@ static qboolean CG_AddToPlayerChatBox(int localPlayerNum, const char *str) {
 			player->teamChatMsgTimes[player->teamChatPos % chatHeight] = cg.time;
 			player->teamChatPos++;
 			p = player->teamChatMsgs[player->teamChatPos % chatHeight];
-
 			*p = 0;
 			*p++ = Q_COLOR_ESCAPE;
 			*p++ = lastcolor;
@@ -473,7 +472,6 @@ static qboolean CG_AddToPlayerChatBox(int localPlayerNum, const char *str) {
 	}
 
 	*p = 0;
-
 	player->teamChatMsgTimes[player->teamChatPos % chatHeight] = cg.time;
 	player->teamChatPos++;
 
@@ -858,13 +856,13 @@ voiceChatList_t *CG_VoiceChatListForPlayer(int playerNum) {
 	for (k = 0; k < 2; k++) {
 		if (k == 0) {
 			if (pi->headModelName[0] == '*') {
-				Com_sprintf(headModelName, sizeof(headModelName), "%s/%s", pi->headModelName+1, pi->headSkinName);
+				Com_sprintf(headModelName, sizeof(headModelName), "%s/%s", pi->headModelName + 1, pi->headSkinName);
 			} else {
 				Com_sprintf(headModelName, sizeof(headModelName), "%s/%s", pi->headModelName, pi->headSkinName);
 			}
 		} else {
 			if (pi->headModelName[0] == '*') {
-				Com_sprintf(headModelName, sizeof(headModelName), "%s", pi->headModelName+1);
+				Com_sprintf(headModelName, sizeof(headModelName), "%s", pi->headModelName + 1);
 			} else {
 				Com_sprintf(headModelName, sizeof(headModelName), "%s", pi->headModelName);
 			}
@@ -1053,7 +1051,7 @@ void CG_VoiceChatLocal(int localPlayerBits, int mode, qboolean voiceOnly, int pl
 		return;
 	}
 
-	if (mode == SAY_ALL && cgs.gametype >= GT_TEAM && cg_teamChatsOnly.integer) {
+	if (mode == SAY_ALL && cgs.gametype > GT_TOURNAMENT && cg_teamChatsOnly.integer) {
 		return;
 	}
 
@@ -1291,14 +1289,14 @@ static void CG_ServerCommand(void) {
 	}
 
 	if (!strcmp(cmd, "chat")) {
-		if (trap_Argc() > start+2) {
-			chatPlayerNum = atoi(CG_Argv(start+2));
+		if (trap_Argc() > start + 2) {
+			chatPlayerNum = atoi(CG_Argv(start + 2));
 		} else {
 			// message is from a pre - Spearmint 0.5 server or demo
 			chatPlayerNum = CHATPLAYER_UNKNOWN;
 		}
-		// allow disabling non - team chat but always show server chat
-		if (cgs.gametype >= GT_TEAM && cg_teamChatsOnly.integer && chatPlayerNum != CHATPLAYER_SERVER) {
+		// allow disabling non-team chat but always show server chat
+		if (cgs.gametype > GT_TOURNAMENT && cg_teamChatsOnly.integer && chatPlayerNum != CHATPLAYER_SERVER) {
 			return;
 		}
 
@@ -1313,8 +1311,8 @@ static void CG_ServerCommand(void) {
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
 		Q_strncpyz(text, CG_Argv(start+1), MAX_SAY_TEXT);
 
-		if (trap_Argc() > start+2) {
-			chatPlayerNum = atoi(CG_Argv(start+2));
+		if (trap_Argc() > start + 2) {
+			chatPlayerNum = atoi(CG_Argv(start + 2));
 		} else {
 			// message is from a pre - Spearmint 0.5 server or demo
 			chatPlayerNum = CHATPLAYER_UNKNOWN;
@@ -1335,8 +1333,8 @@ static void CG_ServerCommand(void) {
 		trap_S_StartLocalSound(cgs.media.talkSound, CHAN_LOCAL_SOUND);
 		Q_strncpyz(text, CG_Argv(start+1), MAX_SAY_TEXT);
 
-		if (trap_Argc() > start+2) {
-			chatPlayerNum = atoi(CG_Argv(start+2));
+		if (trap_Argc() > start + 2) {
+			chatPlayerNum = atoi(CG_Argv(start + 2));
 		} else {
 			// message is from a pre - Spearmint 0.5 server or demo
 			chatPlayerNum = CHATPLAYER_UNKNOWN;

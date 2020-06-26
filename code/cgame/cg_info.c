@@ -250,7 +250,7 @@ void CG_DrawInformation(void) {
 		}
 	}
 
-	if (cgs.gametype >= GT_CTF) {
+	if (cgs.gametype > GT_TEAM) {
 		value = atoi(Info_ValueForKey(info, "capturelimit"));
 
 		if (value) {

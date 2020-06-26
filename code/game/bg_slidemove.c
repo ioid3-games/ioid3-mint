@@ -21,22 +21,21 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-// bg_slidemove.c -- part of bg_pmove functionality
+
+/**************************************************************************************************************************************
+ Part of bg_pmove functionality.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "bg_public.h"
 #include "bg_local.h"
 
 /*
-
 input: origin, velocity, bounds, groundPlane, trace function
-
 output: origin, velocity, impacts, stairup boolean
-
 */
-
 #define MAX_CLIP_PLANES 5
+
 /*
 =======================================================================================================================================
 PM_SlideMove
@@ -44,7 +43,6 @@ PM_SlideMove
 Returns qtrue if the velocity was clipped in some way.
 =======================================================================================================================================
 */
-
 qboolean PM_SlideMove(qboolean gravity) {
 	int bumpcount, numbumps;
 	vec3_t dir;
@@ -60,7 +58,7 @@ qboolean PM_SlideMove(qboolean gravity) {
 	float into;
 	vec3_t endVelocity;
 	vec3_t endClipVelocity;
-	
+
 	numbumps = 4;
 
 	VectorCopy(pm->ps->velocity, primal_velocity);
@@ -177,7 +175,9 @@ qboolean PM_SlideMove(qboolean gravity) {
 				// slide the original velocity along the crease
 				CrossProduct(planes[i], planes[j], dir);
 				VectorNormalize(dir);
+
 				d = DotProduct(dir, pm->ps->velocity);
+
 				VectorScale(dir, d, clipVelocity);
 
 				if (gravity) {
@@ -195,7 +195,6 @@ qboolean PM_SlideMove(qboolean gravity) {
 					if (DotProduct(clipVelocity, planes[k]) >= 0.1) {
 						continue; // move doesn't interact with the plane
 					}
-
 					// stop dead at a tripple plane interaction
 					VectorClear(pm->ps->velocity);
 					return qtrue;
@@ -220,13 +219,12 @@ qboolean PM_SlideMove(qboolean gravity) {
 		VectorCopy(primal_velocity, pm->ps->velocity);
 	}
 
-	return(bumpcount != 0);
+	return (bumpcount != 0);
 }
 
 /*
 =======================================================================================================================================
 PM_StepSlideMove
-
 =======================================================================================================================================
 */
 void PM_StepSlideMove(qboolean gravity) {
@@ -276,7 +274,6 @@ void PM_StepSlideMove(qboolean gravity) {
 	// try slidemove from this position
 	VectorCopy(trace.endpos, pm->ps->origin);
 	VectorCopy(start_v, pm->ps->velocity);
-
 	PM_SlideMove(gravity);
 	// push down the final amount
 	VectorCopy(pm->ps->origin, down);

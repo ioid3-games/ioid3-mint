@@ -35,7 +35,7 @@ qboolean G_SpawnString(const char *key, const char *defaultString, char **out) {
 
 	if (!level.spawning) {
 		*out = (char *)defaultString;
-//		G_Error("G_SpawnString()called while not spawning");
+		//G_Error("G_SpawnString() called while not spawning");
 	}
 
 	for (i = 0; i < level.numSpawnVars; i++) {
@@ -194,7 +194,7 @@ void SP_team_blueobelisk(gentity_t *ent);
 void SP_team_redobelisk(gentity_t *ent);
 void SP_team_neutralobelisk(gentity_t *ent);
 #endif
-void SP_item_botroam(gentity_t *ent) { }
+void SP_item_botroam(gentity_t *ent) {}
 void SP_dlight(gentity_t *ent);
 void SP_corona(gentity_t *ent);
 void SP_props_skyportal(gentity_t *ent);
@@ -218,7 +218,8 @@ spawn_t spawns[] = {
 	{"func_group", SP_info_null},
 	{"func_timer", SP_func_timer}, // rename trigger_timer?
 	// triggers are brush objects that cause an effect when contacted by a living player, usually involving firing targets
-	// while almost everything could be done with a single trigger class and different targets, triggered effects could not be client side predicted (push and teleport)
+	// while almost everything could be done with a single trigger class and different targets, triggered effects
+	// could not be client side predicted (push and teleport)
 	{"trigger_always", SP_trigger_always},
 	{"trigger_multiple", SP_trigger_multiple},
 	{"trigger_push", SP_trigger_push},
@@ -324,8 +325,8 @@ Builds a copy of the string, translating \n to real linefeeds so message texts c
 char *G_NewString(const char *string) {
 	char *newb, *new_p;
 	int i, l;
-	
-	l = strlen(string) +  1;
+
+	l = strlen(string) + 1;
 	newb = trap_HeapMalloc(l);
 	new_p = newb;
 	// turn \n into a real linefeed
@@ -342,7 +343,7 @@ char *G_NewString(const char *string) {
 			*new_p++ = string[i];
 		}
 	}
-	
+
 	return newb;
 }
 
@@ -393,9 +394,9 @@ void G_ParseField(const char *key, const char *value, gentity_t *ent) {
 	}
 }
 
-#define ADJUST_AREAPORTAL()\
-	if (ent->s.eType == ET_MOVER)\
-	{\
+#define ADJUST_AREAPORTAL() \
+	if (ent->s.eType == ET_MOVER) \
+	{ \
 		trap_LinkEntity(ent); \
 		trap_AdjustAreaPortalState(ent, qtrue); \
 	}
@@ -454,10 +455,9 @@ char *G_AddSpawnVarToken(const char *string) {
 
 	dest = level.spawnVarChars + level.numSpawnVarChars;
 
-	memcpy(dest, string, l+1);
+	memcpy(dest, string, l + 1);
 
 	level.numSpawnVarChars += l + 1;
-
 	return dest;
 }
 
@@ -515,12 +515,12 @@ qboolean G_ParseSpawnVars(void) {
 	return qtrue;
 }
 
-/*QUAKED worldspawn (0 0 0)?
+/*QUAKED worldspawn (0 0 0) ?
 
 Every map should have exactly one worldspawn.
-"music" music wav file
-"gravity" 800 is default gravity
-"message" Text to print during connection process
+"music"		music wav file
+"gravity"	800 is default gravity
+"message"	Text to print during connection process
 */
 void SP_worldspawn(void) {
 	char *s;
@@ -533,11 +533,15 @@ void SP_worldspawn(void) {
 	// make some data visible to connecting client
 	trap_SetConfigstring(CS_GAME_PROTOCOL, GAME_PROTOCOL);
 	trap_SetConfigstring(CS_LEVEL_START_TIME, va("%i", level.startTime));
+
 	G_SpawnString("music", "", &s);
 	trap_SetConfigstring(CS_MUSIC, s);
+
 	G_SpawnString("message", "", &s);
-	trap_SetConfigstring(CS_MESSAGE, s);				// map specific message
-	trap_SetConfigstring(CS_MOTD, g_motd.string);		// message of the day
+	trap_SetConfigstring(CS_MESSAGE, s); // map specific message
+
+	trap_SetConfigstring(CS_MOTD, g_motd.string); // message of the day
+
 	G_SpawnString("gravity", "800", &s);
 	trap_Cvar_Set("g_gravity", s);
 #if 0 // ZTM: currently game doesn't need the tracemap
@@ -581,7 +585,8 @@ void G_SpawnEntitiesFromString(void) {
 	level.spawning = qtrue;
 	level.numSpawnVars = 0;
 	level.spawnEntityOffset = 0;
-	// the worldspawn is not an actual entity, but it still has a "spawn" function to perform any global setup needed by a level (setting configstrings or cvars, etc.)
+	// the worldspawn is not an actual entity, but it still has a "spawn" function to perform any global setup needed by a level
+	// (setting configstrings or cvars, etc.)
 	if (!G_ParseSpawnVars()) {
 		G_Error("SpawnEntities: no entities");
 	}

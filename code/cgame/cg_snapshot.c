@@ -344,7 +344,7 @@ void CG_ProcessSnapshots(qboolean initialOnly) {
 
 		cg.latestSnapshotNum = n;
 	}
-	// if we have yet to receive a snapshot, check for it.
+	// if we have yet to receive a snapshot, check for it
 	// once we have gotten the first snapshot, cg.snap will always have valid data for the rest of the game
 	while (!cg.snap) {
 		snap = CG_ReadNextSnapshot();

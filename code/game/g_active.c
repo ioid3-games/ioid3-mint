@@ -21,7 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
 
 #include "g_local.h"
 
@@ -33,7 +32,7 @@ Called just before a snapshot is sent to the given player. Totals up all damage 
 that client for pain blends and kicks, and global pain sound events for all clients.
 =======================================================================================================================================
 */
-void P_DamageFeedback(gentity_t *ent) {
+void G_DamageFeedback(gentity_t *ent) {
 	gplayer_t *player;
 	float count;
 	vec3_t angles;
@@ -59,7 +58,6 @@ void P_DamageFeedback(gentity_t *ent) {
 	if (player->damage_fromWorld) {
 		player->ps.damagePitch = 255;
 		player->ps.damageYaw = 255;
-
 		player->damage_fromWorld = qfalse;
 	} else {
 		vectoangles(player->damage_from, angles);
@@ -82,12 +80,12 @@ void P_DamageFeedback(gentity_t *ent) {
 
 /*
 =======================================================================================================================================
-P_WorldEffects
+G_WorldEffects
 
 Check for lava/slime contents and drowning.
 =======================================================================================================================================
 */
-void P_WorldEffects(gentity_t *ent) {
+void G_WorldEffects(gentity_t *ent) {
 	qboolean envirosuit;
 	int waterlevel;
 
@@ -126,8 +124,8 @@ void P_WorldEffects(gentity_t *ent) {
 		ent->player->airOutTime = level.time + 12000;
 		ent->damage = 2;
 	}
-	// check for sizzle damage(move to pmove?)
-	if (waterlevel && (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME))) {
+	// check for sizzle damage (move to pmove?)
+	if (waterlevel && (ent->watertype &(CONTENTS_LAVA|CONTENTS_SLIME))) {
 		if (ent->health > 0 && ent->pain_debounce_time <= level.time) {
 			if (envirosuit) {
 				G_AddEvent(ent, EV_POWERUP_BATTLESUIT, 0);
@@ -155,7 +153,7 @@ void G_SetPlayerSound(gentity_t *ent) {
 		ent->player->ps.loopSound = G_SoundIndex("sound/weapons/proxmine/wstbtick.wav");
 	} else
 #endif
-	if (ent->waterlevel && (ent->watertype&(CONTENTS_LAVA|CONTENTS_SLIME))) {
+	if (ent->waterlevel && (ent->watertype &(CONTENTS_LAVA|CONTENTS_SLIME))) {
 		ent->player->ps.loopSound = level.snd_fry;
 	} else {
 		ent->player->ps.loopSound = 0;
@@ -212,7 +210,7 @@ void G_TouchTriggers(gentity_t *ent) {
 	gentity_t *hit;
 	trace_t trace;
 	vec3_t mins, maxs;
-	static vec3_t range = { 40, 40, 52 };
+	static vec3_t range = {40, 40, 52};
 
 	if (!ent->player) {
 		return;
@@ -242,8 +240,7 @@ void G_TouchTriggers(gentity_t *ent) {
 		}
 		// ignore most entities if a spectator
 		if (ent->player->sess.sessionTeam == TEAM_SPECTATOR) {
-			if (hit->s.eType != ET_TELEPORT_TRIGGER && hit->touch != Touch_DoorTrigger) {
-				// this is ugly but adding a new ET_? type will most likely cause network incompatibilities
+			if (hit->s.eType != ET_TELEPORT_TRIGGER && hit->touch != Touch_DoorTrigger) { // this is ugly but adding a new ET_? type will most likely cause network incompatibilities
 				continue;
 			}
 		}
@@ -316,7 +313,6 @@ void SpectatorThink(gentity_t *ent, usercmd_t *ucmd) {
 		Pmove(&pm);
 		// save results of pmove
 		VectorCopy(player->ps.origin, ent->s.origin);
-
 		G_TouchTriggers(ent);
 		trap_UnlinkEntity(ent);
 	}
@@ -378,7 +374,7 @@ void PlayerTimerActions(gentity_t *ent, int msec) {
 		player->timeResidual -= 1000;
 		// regenerate
 #ifdef MISSIONPACK
-		if (BG_ItemForItemNum(player->ps.stats[STAT_PERSISTANT_POWERUP]) ->giTag == PW_GUARD) {
+		if (BG_ItemForItemNum(player->ps.stats[STAT_PERSISTANT_POWERUP])->giTag == PW_GUARD) {
 			maxHealth = player->ps.stats[STAT_MAX_HEALTH] / 2;
 		} else
 #endif
@@ -409,12 +405,12 @@ void PlayerTimerActions(gentity_t *ent, int msec) {
 		} else {
 			// count down health when over max
 			if (ent->health > player->ps.stats[STAT_MAX_HEALTH]) {
-				ent->health --;
+				ent->health--;
 			}
 		}
 		// count down armor when over max
 		if (player->ps.stats[STAT_ARMOR] > player->ps.stats[STAT_MAX_HEALTH]) {
-			player->ps.stats[STAT_ARMOR] --;
+			player->ps.stats[STAT_ARMOR]--;
 		}
 	}
 #ifdef MISSIONPACK
@@ -536,8 +532,7 @@ void PlayerIntermissionThink(gplayer_t *player) {
 =======================================================================================================================================
 PlayerEvents
 
-Events will be passed on to the clients for presentation,
-but any server game effects are handled here
+Events will be passed on to the clients for presentation, but any server game effects are handled here.
 =======================================================================================================================================
 */
 void PlayerEvents(gentity_t *ent, int oldEventSequence) {
@@ -602,7 +597,6 @@ void PlayerEvents(gentity_t *ent, int oldEventSequence) {
 					default:
 					case HI_NONE:
 						break;
-
 					case HI_TELEPORTER:
 						TossPlayerGametypeItems(ent);
 						SelectSpawnPoint(ent->player->ps.origin, origin, angles, qfalse);
@@ -612,7 +606,6 @@ void PlayerEvents(gentity_t *ent, int oldEventSequence) {
 					case HI_MEDKIT:
 						ent->health = ent->player->ps.stats[STAT_MAX_HEALTH] + 25;
 						break;
-
 #ifdef MISSIONPACK
 					case HI_KAMIKAZE:
 						// make sure the invulnerability is off
@@ -620,7 +613,6 @@ void PlayerEvents(gentity_t *ent, int oldEventSequence) {
 						// start the kamikze
 						G_StartKamikaze(ent);
 						break;
-
 					case HI_PORTAL:
 						if (ent->player->portalID) {
 							DropPortalSource(ent);
@@ -629,7 +621,6 @@ void PlayerEvents(gentity_t *ent, int oldEventSequence) {
 						}
 
 						break;
-
 					case HI_INVULNERABILITY:
 						ent->player->invulnerabilityTime = level.time + 10000;
 						break;
@@ -704,7 +695,6 @@ static int StuckInOtherPlayer(gentity_t *ent) {
 	return qfalse;
 }
 #endif
-
 void BotTestSolid(vec3_t origin);
 
 /*
@@ -721,8 +711,8 @@ void SendPendingPredictableEvents(playerState_t *ps) {
 	// if there are still events pending
 	if (ps->entityEventSequence < ps->eventSequence) {
 		// create a temporary entity for this event which is sent to everyone except the client who generated the event
-		seq = ps->entityEventSequence &(MAX_PS_EVENTS - 1);
-		event = ps->events[seq] |((ps->entityEventSequence & 3) << 8);
+		seq = ps->entityEventSequence & (MAX_PS_EVENTS - 1);
+		event = ps->events[seq]|((ps->entityEventSequence & 3) << 8);
 		// set external event to zero before calling BG_PlayerStateToEntityState
 		extEvent = ps->externalEvent;
 		ps->externalEvent = 0;
@@ -769,7 +759,7 @@ void PlayerThink_real(gentity_t *ent) {
 
 	player = ent->player;
 
-	// don't think if the client is not yet connected(and thus not yet spawned in)
+	// don't think if the client is not yet connected (and thus not yet spawned in)
 	if (player->pers.connected != CON_CONNECTED) {
 		return;
 	}
@@ -789,7 +779,6 @@ void PlayerThink_real(gentity_t *ent) {
 	}
 
 	player->lastCmdServerTime = ucmd->serverTime;
-
 	msec = ucmd->serverTime - player->ps.commandTime;
 	// following others may result in bad times, but we still want to check for follow toggles
 	if (msec < 1 && player->sess.spectatorState != SPECTATOR_FOLLOW) {
@@ -810,7 +799,7 @@ void PlayerThink_real(gentity_t *ent) {
 
 	if (pmove_fixed.integer || player->pers.pmoveFixed) {
 		ucmd->serverTime = ((ucmd->serverTime + pmove_msec.integer - 1) / pmove_msec.integer) * pmove_msec.integer;
-		//if(ucmd->serverTime - player->ps.commandTime <= 0)
+		//if (ucmd->serverTime - player->ps.commandTime <= 0)
 		//	return;
 	}
 	// check for exiting intermission
@@ -827,13 +816,13 @@ void PlayerThink_real(gentity_t *ent) {
 		SpectatorThink(ent, ucmd);
 		return;
 	}
-	// check for inactivity timer, but never drop the local client of a non - dedicated server
+	// check for inactivity timer, but never drop the local client of a non-dedicated server
 	if (!PlayerInactivityTimer(player)) {
 		return;
 	}
 	// clear the rewards if time
 	if (level.time > player->rewardTime) {
-		player->ps.eFlags & = ~(EF_AWARD_IMPRESSIVE|EF_AWARD_EXCELLENT|EF_AWARD_GAUNTLET|EF_AWARD_ASSIST|EF_AWARD_DEFEND|EF_AWARD_CAP);
+		player->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE|EF_AWARD_EXCELLENT|EF_AWARD_GAUNTLET|EF_AWARD_ASSIST|EF_AWARD_DEFEND|EF_AWARD_CAP);
 	}
 
 	if (player->noclip) {
@@ -848,7 +837,7 @@ void PlayerThink_real(gentity_t *ent) {
 	// set speed
 	player->ps.speed = g_speed.value;
 #ifdef MISSIONPACK
-	if (BG_ItemForItemNum(player->ps.stats[STAT_PERSISTANT_POWERUP]) ->giTag == PW_SCOUT) {
+	if (BG_ItemForItemNum(player->ps.stats[STAT_PERSISTANT_POWERUP])->giTag == PW_SCOUT) {
 		player->ps.speed *= 1.5;
 	} else
 #endif
@@ -864,21 +853,21 @@ void PlayerThink_real(gentity_t *ent) {
 	oldEventSequence = player->ps.eventSequence;
 
 	memset(&pm, 0, sizeof(pm));
-	// check for the hit - scan gauntlet, don't let the action go through as an attack unless it actually hits something
+	// check for the hit-scan gauntlet, don't let the action go through as an attack unless it actually hits something
 	if (player->ps.weapon == WP_GAUNTLET && !(ucmd->buttons & BUTTON_TALK) && (ucmd->buttons & BUTTON_ATTACK) && player->ps.weaponTime <= 0) {
 		pm.gauntletHit = CheckGauntletAttack(ent);
 	}
 
 	if (ent->flags & FL_FORCE_GESTURE) {
-		ent->flags & = ~FL_FORCE_GESTURE;
+		ent->flags &= ~FL_FORCE_GESTURE;
 		ent->player->pers.cmd.buttons |= BUTTON_GESTURE;
 	}
 #ifdef MISSIONPACK
 	// check for invulnerability expansion before doing the Pmove
 	if (player->ps.powerups[PW_INVULNERABILITY]) {
 		if (!(player->ps.pm_flags & PMF_INVULEXPAND)) {
-			vec3_t mins = {-42, -42, -42 };
-			vec3_t maxs = { 42, 42, 42 };
+			vec3_t mins = {-42, -42, -42};
+			vec3_t maxs = {42, 42, 42};
 			vec3_t oldmins, oldmaxs;
 
 			VectorCopy(ent->s.mins, oldmins);
@@ -994,7 +983,7 @@ void PlayerThink_real(gentity_t *ent) {
 				return;
 			}
 			// pressing attack or use is the normal respawn method
-			if (ucmd->buttons &(BUTTON_ATTACK|BUTTON_USE_HOLDABLE)) {
+			if (ucmd->buttons & (BUTTON_ATTACK|BUTTON_USE_HOLDABLE)) {
 				PlayerRespawn(ent);
 			}
 		}
@@ -1066,7 +1055,7 @@ void SpectatorPlayerEndFrame(gentity_t *ent) {
 			cl = &level.players[playerNum];
 
 			if (cl->pers.connected == CON_CONNECTED && cl->sess.sessionTeam != TEAM_SPECTATOR) {
-				flags = (cl->ps.eFlags & ~(EF_VOTED|EF_TEAMVOTED))|(ent->player->ps.eFlags &(EF_VOTED|EF_TEAMVOTED));
+				flags = (cl->ps.eFlags & ~(EF_VOTED|EF_TEAMVOTED))|(ent->player->ps.eFlags & (EF_VOTED|EF_TEAMVOTED));
 				ent->player->ps = cl->ps;
 				ent->player->ps.pm_flags |= PMF_FOLLOW;
 				ent->player->ps.eFlags = flags;
@@ -1087,7 +1076,7 @@ void SpectatorPlayerEndFrame(gentity_t *ent) {
 	if (ent->player->sess.spectatorState == SPECTATOR_SCOREBOARD) {
 		ent->player->ps.pm_flags |= PMF_SCOREBOARD;
 	} else {
-		ent->player->ps.pm_flags & = ~PMF_SCOREBOARD;
+		ent->player->ps.pm_flags &= ~PMF_SCOREBOARD;
 	}
 }
 
@@ -1114,19 +1103,19 @@ void PlayerEndFrame(gentity_t *ent) {
 	}
 #ifdef MISSIONPACK
 	// set powerup for player animation
-	if (BG_ItemForItemNum(ent->player->ps.stats[STAT_PERSISTANT_POWERUP]) ->giTag == PW_GUARD) {
+	if (BG_ItemForItemNum(ent->player->ps.stats[STAT_PERSISTANT_POWERUP])->giTag == PW_GUARD) {
 		ent->player->ps.powerups[PW_GUARD] = level.time;
 	}
 
-	if (BG_ItemForItemNum(ent->player->ps.stats[STAT_PERSISTANT_POWERUP]) ->giTag == PW_SCOUT) {
+	if (BG_ItemForItemNum(ent->player->ps.stats[STAT_PERSISTANT_POWERUP])->giTag == PW_SCOUT) {
 		ent->player->ps.powerups[PW_SCOUT] = level.time;
 	}
 
-	if (BG_ItemForItemNum(ent->player->ps.stats[STAT_PERSISTANT_POWERUP]) ->giTag == PW_DOUBLER) {
+	if (BG_ItemForItemNum(ent->player->ps.stats[STAT_PERSISTANT_POWERUP])->giTag == PW_DOUBLER) {
 		ent->player->ps.powerups[PW_DOUBLER] = level.time;
 	}
 
-	if (BG_ItemForItemNum(ent->player->ps.stats[STAT_PERSISTANT_POWERUP]) ->giTag == PW_AMMOREGEN) {
+	if (BG_ItemForItemNum(ent->player->ps.stats[STAT_PERSISTANT_POWERUP])->giTag == PW_AMMOREGEN) {
 		ent->player->ps.powerups[PW_AMMOREGEN] = level.time;
 	}
 
@@ -1137,23 +1126,23 @@ void PlayerEndFrame(gentity_t *ent) {
 	// save network bandwidth
 #if 0
 	if (!g_synchronousClients->integer && ent->player->ps.pm_type == PM_NORMAL) {
-		// FIXME: this must change eventually for non - sync demo recording
+		// FIXME: this must change eventually for non-sync demo recording
 		VectorClear(ent->player->ps.viewangles);
 	}
 #endif
-	// If the end of unit layout is displayed, don't give the player any normal movement attributes
+	// if the end of unit layout is displayed, don't give the player any normal movement attributes
 	if (level.intermissiontime) {
 		return;
 	}
-	// burn from lava, etc
-	P_WorldEffects(ent);
+	// burn from lava, etc.
+	G_WorldEffects(ent);
 	// apply all the damage taken this frame
-	P_DamageFeedback(ent);
+	G_DamageFeedback(ent);
 	// add the EF_CONNECTION flag if we haven't gotten commands recently
 	if (level.time - ent->player->lastCmdTime > 1000) {
 		ent->player->ps.eFlags |= EF_CONNECTION;
 	} else {
-		ent->player->ps.eFlags & = ~EF_CONNECTION;
+		ent->player->ps.eFlags &= ~EF_CONNECTION;
 	}
 
 	ent->player->ps.stats[STAT_HEALTH] = ent->health; // FIXME: get rid of ent->health...

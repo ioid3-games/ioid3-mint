@@ -31,7 +31,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "../game/bg_public.h"
 #include "cg_public.h"
 #include "cg_syscalls.h"
-
 // ZTM: TODO: move usage of this out of this file?
 qboolean CG_AddCustomSurface(const refEntity_t *re);
 #ifndef Q3_VM

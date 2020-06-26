@@ -90,7 +90,6 @@ qboolean CG_PositionRotatedEntityOnTag(refEntity_t *entity, const refEntity_t *p
 	vec3_t tempAxis[3];
 	qboolean returnValue;
 
-	//AxisClear(entity->axis);
 	// lerp the tag
 	returnValue = trap_R_LerpTagFrameModel(&lerped, parentModel, parent->oldframeModel, parent->oldframe, parent->frameModel, parent->frame, 1.0 - parent->backlerp, tagName, NULL);
 	// FIXME: allow origin offsets along tag?
@@ -161,15 +160,13 @@ void CG_AddLightstyle(centity_t *cent) {
 	// it's been a long time since you were updated, lets assume a reset
 	if (otime > 2 * LS_FRAMETIME) {
 		otime = 0;
-		cent->dl_frame = cent->dl_oldframe = 0;
+		cent->dl_frame = 0;
+		cent->dl_oldframe = 0;
 		cent->dl_backlerp = 0;
 	}
 
 	cent->dl_time = cg.time;
-
 	offset = ((float)otime) / LS_FRAMETIME;
-	//offsetwhole = (int)offset;
-
 	cent->dl_backlerp += offset;
 
 	if (cent->dl_backlerp > 1) { // we're moving on to the next frame
@@ -193,7 +190,6 @@ void CG_AddLightstyle(centity_t *cent) {
 
 	lastch = cent->dl_stylestring[cent->dl_oldframe] - 'a';
 	nextch = cent->dl_stylestring[cent->dl_frame] - 'a';
-
 	lightval = (lastch * (1.0 - cent->dl_backlerp)) + (nextch * cent->dl_backlerp);
 	// dlight values go from 0 - 1.5ish
 #if 0
@@ -207,13 +203,13 @@ void CG_AddLightstyle(centity_t *cent) {
 #endif
 	cl = cent->currentState.constantLight;
 	r = cl & 255;
-	g = (cl >> 8)& 255;
-	b = (cl >> 16)& 255;
+	g = (cl >> 8) & 255;
+	b = (cl >> 16) & 255;
 	// if the dlight has angles, then it is a directional global dlight
 	if (cent->currentState.angles[0] || cent->currentState.angles[1] || cent->currentState.angles[2]) {
 		vec3_t normal;
-		// ZTM: NOTE: lightning on ET's Radar map is too bright with multiple light passes
-		// (enabled with r_dynamiclight 2 in vanilla ET, currently always done in Spearmint) so scale the light values down
+
+		// ZTM: NOTE: lightning on ET's Radar map is too bright with multiple light passes (enabled with r_dynamiclight 2 in vanilla ET, currently always done in Spearmint) so scale the light values down
 		lightval *= 0.25f;
 
 		AngleVectors(cent->currentState.angles, normal, NULL, NULL);
@@ -366,7 +362,7 @@ static void CG_Item(centity_t *cent) {
 	}
 	// items bob up and down continuously
 	scale = 0.005 + cent->currentState.number * 0.00001;
-	cent->lerpOrigin[2] += 4 + cos((cg.time + 1000) * scale) * 4;
+	cent->lerpOrigin[2] += 4 + cos((cg.time + 1000) * scale) * 2;
 
 	memset(&ent, 0, sizeof(ent));
 	// autorotate at one of two speeds
@@ -385,7 +381,7 @@ static void CG_Item(centity_t *cent) {
 		cent->lerpOrigin[0] -= wi->weaponMidpoint[0] * ent.axis[0][0] + wi->weaponMidpoint[1] * ent.axis[1][0] + wi->weaponMidpoint[2] * ent.axis[2][0];
 		cent->lerpOrigin[1] -= wi->weaponMidpoint[0] * ent.axis[0][1] + wi->weaponMidpoint[1] * ent.axis[1][1] + wi->weaponMidpoint[2] * ent.axis[2][1];
 		cent->lerpOrigin[2] -= wi->weaponMidpoint[0] * ent.axis[0][2] + wi->weaponMidpoint[1] * ent.axis[1][2] + wi->weaponMidpoint[2] * ent.axis[2][2];
-		cent->lerpOrigin[2] += 8; // an extra height boost
+		cent->lerpOrigin[2] += 12; // an extra height boost
 	}
 
 	if (item->giType == IT_WEAPON) {
@@ -556,7 +552,7 @@ static void CG_Missile(centity_t *cent) {
 	ent.hModel = weapon->missileModel;
 	ent.renderfx = RF_NOSHADOW;
 #ifdef MISSIONPACK
-	if (cent->currentState.weapon == WP_PROX_LAUNCHER) {
+	if (cent->currentState.weapon == WP_PROXLAUNCHER) {
 		if (s1->team == TEAM_BLUE) {
 			ent.hModel = cgs.media.blueProxMine;
 		}
@@ -571,7 +567,7 @@ static void CG_Missile(centity_t *cent) {
 		RotateAroundDirection(ent.axis, cg.time / 4);
 	} else {
 #ifdef MISSIONPACK
-		if (s1->weapon == WP_PROX_LAUNCHER) {
+		if (s1->weapon == WP_PROXLAUNCHER) {
 			AnglesToAxis(cent->lerpAngles, ent.axis);
 		} else
 #endif
@@ -1063,8 +1059,7 @@ Only coronas that are in your PVS are being added.
 */
 static void CG_Corona(centity_t *cent) {
 	trace_t tr;
-	int r, g, b;
-	int dli;
+	int r, g, b, dli;
 	qboolean visible, behind, toofar;
 	float dot, dist;
 	vec3_t dir;
@@ -1075,9 +1070,8 @@ static void CG_Corona(centity_t *cent) {
 
 	dli = cent->currentState.dl_intensity;
 	r = dli & 255;
-	g = (dli >> 8)& 255;
-	b = (dli >> 16)& 255;
-
+	g = (dli >> 8) & 255;
+	b = (dli >> 16) & 255;
 	visible = qfalse;
 	behind = qfalse;
 	toofar = qfalse;

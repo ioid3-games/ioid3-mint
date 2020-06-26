@@ -21,7 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-// sv_bot.c
 
 #include "server.h"
 
@@ -54,7 +53,7 @@ int SV_BotAllocateClient(void) {
 	}
 
 	if (i == sv_maxclients->integer) {
-		return - 1;
+		return -1;
 	}
 	// find a player slot
 	for (i = 0, player = svs.players; i < sv_maxclients->integer; i++, player++) {
@@ -104,7 +103,7 @@ void SV_BotFreeClient(int playerNum) {
 	player->name[0] = 0;
 
 	if (player->gentity) {
-		player->gentity->r.svFlags & = ~SVF_BOT;
+		player->gentity->r.svFlags &= ~SVF_BOT;
 	}
 }
 
@@ -115,7 +114,7 @@ SV_BotDrawDebugPolygons
 Set r_debugSurface to 2 to enable.
 =======================================================================================================================================
 */
-void SV_BotDrawDebugPolygons(void(*drawPoly)(int color, int numPoints, float *points)) {
+void SV_BotDrawDebugPolygons(void (*DrawPoly)(int color, int numPoints, float *points)) {
 	bot_debugpoly_t *poly;
 	int i;
 
@@ -130,7 +129,7 @@ void SV_BotDrawDebugPolygons(void(*drawPoly)(int color, int numPoints, float *po
 			continue;
 		}
 
-		drawPoly(poly->color, poly->numPoints, (float *)poly->points);
+		DrawPoly(poly->color, poly->numPoints, (float *)poly->points);
 		//Com_Printf("poly %i, numpoints = %d\n", i, poly->numPoints);
 	}
 }
@@ -154,7 +153,7 @@ int BotImport_DebugPolygonCreate(int color, int numPoints, vec3_t *points) {
 		}
 	}
 
-	if (i >= bot_maxdebugpolys->integer)
+	if (i >= bot_maxdebugpolys->integer) {
 		return 0;
 	}
 
@@ -299,7 +298,7 @@ void SV_BotInitBotLib(void) {
 	Com_Memset(debugpolygons, 0, sizeof(bot_debugpoly_t) * bot_maxdebugpolys->integer);
 }
 
-// *** BOT AI CODE IS BELOW THIS POINT ***
+// * * * BOT AI CODE IS BELOW THIS POINT * * *
 
 /*
 =======================================================================================================================================
@@ -352,7 +351,7 @@ int EntityInPVS(int playerNum, int entityNum) {
 	frame = &cl->frames[cl->netchan.outgoingSequence & PACKET_MASK];
 
 	for (i = 0; i < frame->num_entities; i++) {
-		if (SV_SnapshotEntity(frame->first_entity + i) ->number == entityNum) {
+		if (SV_SnapshotEntity(frame->first_entity + i)->number == entityNum) {
 			return qtrue;
 		}
 	}
@@ -378,9 +377,8 @@ int SV_BotGetSnapshotEntity(int playerNum, int sequence) {
 	frame = &cl->frames[cl->netchan.outgoingSequence & PACKET_MASK];
 
 	if (sequence < 0 || sequence >= frame->num_entities) {
-		return - 1;
+		return -1;
 	}
 
-	return SV_SnapshotEntity(frame->first_entity + sequence) ->number;
+	return SV_SnapshotEntity(frame->first_entity + sequence)->number;
 }
-

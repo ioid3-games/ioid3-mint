@@ -214,6 +214,7 @@ Text_GetGlyph
 =======================================================================================================================================
 */
 const glyphInfo_t *Text_GetGlyph(const fontInfo_t *font, unsigned long index) {
+
 	if (index == 0 || index >= GLYPHS_PER_FONT) {
 		return &font->glyphs[(int)'.'];
 	}

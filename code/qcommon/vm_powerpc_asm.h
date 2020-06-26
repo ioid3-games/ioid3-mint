@@ -1,6 +1,6 @@
 /*
 =======================================================================================================================================
-Copyright(C)2008 Przemyslaw Iskra < sparky@pld - linux.org>
+Copyright (C) 2008 Przemyslaw Iskra <sparky@pld-linux.org>.
 
 This file is part of Spearmint Source Code.
 
@@ -25,10 +25,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #ifndef VM_POWERPC_ASM_H
 #define VM_POWERPC_ASM_H
 
-/*
- * Register information according to:
- * http://refspecs.freestandards.org/elf/elfspec_ppc.pdf
- */
+// Register information according to: http://refspecs.freestandards.org/elf/elfspec_ppc.pdf
 
 #define r0	0	// volatile
 #define r1	1	// caller safe(stack pointer)

@@ -21,16 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-
-/*****************************************************************************
- * name:		ai_char.h
- *
- * desc:		bot characters
- *
- * $Archive: /source/code/game/ai_char.h $
- *
- *****************************************************************************/
 
 // loads a bot character from a file
 int BotLoadCharacter(char *charfile, float skill);

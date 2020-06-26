@@ -249,7 +249,9 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill) {
 				ch->skill = token.intvalue;
 
 				while (PC_ExpectAnyToken(source, &token)) {
-					if (!strcmp(token.string, "}"))break;
+					if (!strcmp(token.string, "}")) {
+						break;
+					}
 
 					if (token.type != TT_NUMBER || !(token.subtype & TT_INTEGER)) {
 						PC_SourceError(source, "expected integer index, found %s", token.string);
@@ -448,6 +450,7 @@ int BotLoadCachedCharacter(char *charfile, float skill, int reload) {
 		BotAI_Print(PRT_DEVELOPER, "loaded skill %f from %s\n", ch->skill, charfile);
 		return handle;
 	}
+
 	if (!reload) {
 		// try to load a cached character with any skill
 		cachedhandle = BotFindCachedCharacter(DEFAULT_CHARACTER, -1);
@@ -658,7 +661,8 @@ float Characteristic_Float(int character, int index) {
 		BotAI_Print(PRT_ERROR, "characteristic %d is not a float\n", index);
 		return 0;
 	}
-//	return 0;
+
+	//return 0;
 }
 
 /*
@@ -721,7 +725,8 @@ int Characteristic_Integer(int character, int index) {
 		BotAI_Print(PRT_ERROR, "characteristic %d is not an integer\n", index);
 		return 0;
 	}
-//	return 0;
+
+	//return 0;
 }
 
 /*

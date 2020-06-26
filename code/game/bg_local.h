@@ -21,16 +21,22 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-// local definitions for the bg(both games)files
+
+/**************************************************************************************************************************************
+ Local definitions for the bg (both games) files.
+**************************************************************************************************************************************/
 
 #define MIN_WALK_NORMAL 0.7f // can't walk on very steep slopes
 #define JUMP_VELOCITY 270
 #define TIMER_LAND 130
 #define TIMER_GESTURE (34 * 66 + 50)
 #define OVERCLIP 1.001f
-// all of the locals will be zeroed before each pmove, just to make damn sure we don't have
-// any differences when running on client or server
+
+/**************************************************************************************************************************************
+ All of the locals will be zeroed before each pmove, just to make damn sure we don't have any differences when running on client or
+ server.
+**************************************************************************************************************************************/
+
 typedef struct {
 	vec3_t forward, right, up;
 	float frametime;
@@ -44,8 +50,8 @@ typedef struct {
 	int previous_waterlevel;
 } pml_t;
 
-extern	pmove_t *pm;
-extern	pml_t pml;
+extern pmove_t *pm;
+extern pml_t pml;
 // movement parameters
 extern float pm_stopspeed;
 extern float pm_duckScale;

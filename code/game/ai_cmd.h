@@ -21,16 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-
-/*****************************************************************************
- * name:		ai_cmd.h
- *
- * desc:		Quake3 bot AI
- *
- * $Archive: /source/code/game/ai_cmd.h $
- *
- *****************************************************************************/
 
 extern int notleader[MAX_CLIENTS];
 int BotMatchMessage(bot_state_t *bs, char *message);

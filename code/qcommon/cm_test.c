@@ -21,8 +21,8 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-#include "cm_local.h"
 
+#include "cm_local.h"
 
 /*
 =======================================================================================================================================
@@ -37,7 +37,7 @@ int CM_PointLeafnum_r(const vec3_t p, int num) {
 	while (num >= 0) {
 		node = cm.nodes + num;
 		plane = node->plane;
-		
+
 		if (plane->type < 3) {
 			d = p[plane->type] - plane->dist;
 		} else {
@@ -53,7 +53,7 @@ int CM_PointLeafnum_r(const vec3_t p, int num) {
 
 	c_pointcontents++; // optimize counter
 
-	return - 1 - num;
+	return -1 - num;
 }
 
 /*
@@ -73,7 +73,7 @@ int CM_PointLeafnum(const vec3_t p) {
 /*
 =======================================================================================================================================
 
-LEAF LISTING
+	LEAF LISTING
 
 =======================================================================================================================================
 */
@@ -116,7 +116,7 @@ void CM_StoreBrushes(leafList_t *ll, int nodenum) {
 	leaf = &cm.leafs[leafnum];
 
 	for (k = 0; k < leaf->numLeafBrushes; k++) {
-		brushnum = cm.leafbrushes[leaf->firstLeafBrush+k];
+		brushnum = cm.leafbrushes[leaf->firstLeafBrush + k];
 		b = &cm.brushes[brushnum];
 
 		if (b->checkcount == cm.checkcount) {
@@ -156,7 +156,7 @@ void CM_StoreBrushes(leafList_t *ll, int nodenum) {
 
 /*
 =======================================================================================================================================
-CM_BoxLeafnums
+CM_BoxLeafnums_r
 
 Fills in a list of all the leafs touched.
 =======================================================================================================================================
@@ -171,7 +171,7 @@ void CM_BoxLeafnums_r(leafList_t *ll, int nodenum) {
 			ll->storeLeafs(ll, nodenum);
 			return;
 		}
-	
+
 		node = &cm.nodes[nodenum];
 		plane = node->plane;
 		s = BoxOnPlaneSide(ll->bounds[0], ll->bounds[1], plane);
@@ -233,7 +233,7 @@ int CM_BoxBrushes(const vec3_t mins, const vec3_t maxs, cbrush_t **list, int lis
 	ll.storeLeafs = CM_StoreBrushes;
 	ll.lastLeaf = 0;
 	ll.overflowed = qfalse;
-	
+
 	CM_BoxLeafnums_r(&ll, 0);
 
 	return ll.count;
@@ -269,7 +269,7 @@ int CM_PointContents(const vec3_t p, clipHandle_t model) {
 	contents = 0;
 
 	for (k = 0; k < leaf->numLeafBrushes; k++) {
-		brushnum = cm.leafbrushes[leaf->firstLeafBrush+k];
+		brushnum = cm.leafbrushes[leaf->firstLeafBrush + k];
 		b = &cm.brushes[brushnum];
 
 		if (!CM_BoundsIntersectPoint(b->bounds[0], b->bounds[1], p)) {
@@ -279,7 +279,7 @@ int CM_PointContents(const vec3_t p, clipHandle_t model) {
 		for (i = 0; i < b->numsides; i++) {
 			d = DotProduct(p, b->sides[i].plane->normal);
 			// FIXME test for Cash
-//			if (d >= b->sides[i].plane->dist) {
+			//if (d >= b->sides[i].plane->dist) {
 			if (d > b->sides[i].plane->dist) {
 				break;
 			}
@@ -310,8 +310,8 @@ int CM_TransformedPointContents(const vec3_t p, clipHandle_t model, const vec3_t
 	// rotate start and end into the models frame of reference
 	if (model != BOX_MODEL_HANDLE && (angles[0] || angles[1] || angles[2])) {
 		AngleVectors(angles, forward, right, up);
-
 		VectorCopy(p_l, temp);
+
 		p_l[0] = DotProduct(temp, forward);
 		p_l[1] = -DotProduct(temp, right);
 		p_l[2] = DotProduct(temp, up);
@@ -323,7 +323,7 @@ int CM_TransformedPointContents(const vec3_t p, clipHandle_t model, const vec3_t
 /*
 =======================================================================================================================================
 
-PVS
+	PVS
 
 =======================================================================================================================================
 */
@@ -345,7 +345,7 @@ byte *CM_ClusterPVS(int cluster) {
 /*
 =======================================================================================================================================
 
-AREAPORTALS
+	AREAPORTALS
 
 =======================================================================================================================================
 */
@@ -414,6 +414,7 @@ CM_AdjustAreaPortalState
 =======================================================================================================================================
 */
 void CM_AdjustAreaPortalState(int area1, int area2, qboolean open) {
+
 	if (area1 < 0 || area2 < 0) {
 		return;
 	}
@@ -478,7 +479,7 @@ int CM_WriteAreaBits(byte *buffer, int area) {
 	int floodnum;
 	int bytes;
 
-	bytes = (cm.numAreas+7) >> 3;
+	bytes = (cm.numAreas + 7) >> 3;
 #ifndef BSPC
 	if (cm_noAreas->integer || area == -1)
 #else

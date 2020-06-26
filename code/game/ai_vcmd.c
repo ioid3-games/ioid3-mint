@@ -21,16 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-// 
-
-/*****************************************************************************
- * name:		ai_vcmd.c
- *
- * desc:		Quake3 bot AI
- *
- * $Archive: /MissionPack/code/game/ai_vcmd.c $
- *
- *****************************************************************************/
 
 #include "g_local.h"
 #include "../botlib/botlib.h"
@@ -54,12 +44,11 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "inv.h" // indexes into the inventory
 #include "syn.h" // synonyms
 #include "match.h" // string matching types and vars
-// for the voice chats
-#include "../../ui/menudef.h"
+#include "../../ui/menudef.h" // for the voice chats
 
 typedef struct voiceCommand_s {
 	char *cmd;
-	void(*func)(bot_state_t *bs, int playernum, int mode);
+	void (*func)(bot_state_t *bs, int playernum, int mode);
 } voiceCommand_t;
 
 /*
@@ -68,19 +57,16 @@ BotVoiceChat_GetFlag
 =======================================================================================================================================
 */
 void BotVoiceChat_GetFlag(bot_state_t *bs, int playernum, int mode) {
+
 	if (gametype == GT_CTF) {
 		if (!ctf_redflag.areanum || !ctf_blueflag.areanum) {
 			return;
 		}
-	}
-#ifdef MISSIONPACK
-	else if (gametype == GT_1FCTF) {
+	} else if (gametype == GT_1FCTF) {
 		if (!ctf_neutralflag.areanum || !ctf_redflag.areanum || !ctf_blueflag.areanum) {
 			return;
 		}
-	}
-#endif
-	else {
+	} else {
 		return;
 	}
 
@@ -111,15 +97,11 @@ BotVoiceChat_Offense
 =======================================================================================================================================
 */
 void BotVoiceChat_Offense(bot_state_t *bs, int playernum, int mode) {
-	if (gametype == GT_CTF
-#ifdef MISSIONPACK
-		|| gametype == GT_1FCTF
-#endif
-		) {
+	if (gametype == GT_CTF || gametype == GT_1FCTF) {
 		BotVoiceChat_GetFlag(bs, playernum, mode);
 		return;
 	}
-#ifdef MISSIONPACK
+
 	if (gametype == GT_HARVESTER) {
 		bs->decisionmaker = playernum;
 		bs->ordered = qtrue;
@@ -131,12 +113,11 @@ void BotVoiceChat_Offense(bot_state_t *bs, int playernum, int mode) {
 		// set the team goal time
 		bs->teamgoal_time = FloatTime() + TEAM_HARVEST_TIME;
 		bs->harvestaway_time = 0;
+
 		BotSetTeamStatus(bs);
 		// remember last ordered task
 		BotRememberLastOrderedTask(bs);
-	} else
-#endif
-	{
+	} else {
 		bs->decisionmaker = playernum;
 		bs->ordered = qtrue;
 		bs->order_time = FloatTime();
@@ -147,6 +128,7 @@ void BotVoiceChat_Offense(bot_state_t *bs, int playernum, int mode) {
 		// set the team goal time
 		bs->teamgoal_time = FloatTime() + TEAM_ATTACKENEMYBASE_TIME;
 		bs->attackaway_time = 0;
+
 		BotSetTeamStatus(bs);
 		// remember last ordered task
 		BotRememberLastOrderedTask(bs);
@@ -161,7 +143,7 @@ BotVoiceChat_Defend
 =======================================================================================================================================
 */
 void BotVoiceChat_Defend(bot_state_t *bs, int playernum, int mode) {
-#ifdef MISSIONPACK
+
 	if (gametype == GT_OBELISK || gametype == GT_HARVESTER) {
 		switch (BotTeam(bs)) {
 			case TEAM_RED:
@@ -170,15 +152,10 @@ void BotVoiceChat_Defend(bot_state_t *bs, int playernum, int mode) {
 			case TEAM_BLUE:
 				memcpy(&bs->teamgoal, &blueobelisk, sizeof(bot_goal_t));
 				break;
-			default: return;
+			default:
+				return;
 		}
-	} else
-#endif
-		if (gametype == GT_CTF
-#ifdef MISSIONPACK
-			|| gametype == GT_1FCTF
-#endif
-			) {
+	} if (gametype == GT_CTF || gametype == GT_1FCTF) {
 		switch (BotTeam(bs)) {
 			case TEAM_RED:
 				memcpy(&bs->teamgoal, &ctf_redflag, sizeof(bot_goal_t));
@@ -186,7 +163,8 @@ void BotVoiceChat_Defend(bot_state_t *bs, int playernum, int mode) {
 			case TEAM_BLUE:
 				memcpy(&bs->teamgoal, &ctf_blueflag, sizeof(bot_goal_t));
 				break;
-			default: return;
+			default:
+				return;
 		}
 	} else {
 		return;
@@ -203,6 +181,7 @@ void BotVoiceChat_Defend(bot_state_t *bs, int playernum, int mode) {
 	bs->teamgoal_time = FloatTime() + TEAM_DEFENDKEYAREA_TIME;
 	// away from defending
 	bs->defendaway_time = 0;
+
 	BotSetTeamStatus(bs);
 	// remember last ordered task
 	BotRememberLastOrderedTask(bs);
@@ -248,20 +227,22 @@ void BotVoiceChat_Camp(bot_state_t *bs, int playernum, int mode) {
 	char netname[MAX_NETNAME];
 
 	bs->teamgoal.entitynum = -1;
+	// get the entity information
 	BotEntityInfo(playernum, &entinfo);
-	// if info is valid(in PVS)
+	// if the entity information is valid
 	if (entinfo.valid) {
 		areanum = BotPointAreaNum(entinfo.origin);
 
 		if (areanum) { // && trap_AAS_AreaReachability(areanum)) {
 			// NOTE: just assume the bot knows where the person is
-			// if(BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, playernum)) {
+			//if (BotEntityVisible(bs->entitynum, bs->eye, bs->viewangles, 360, playernum)) {
 				bs->teamgoal.entitynum = playernum;
 				bs->teamgoal.areanum = areanum;
+
 				VectorCopy(entinfo.origin, bs->teamgoal.origin);
 				VectorSet(bs->teamgoal.mins, -8, -8, -8);
 				VectorSet(bs->teamgoal.maxs, 8, 8, 8);
-			// }
+			//}
 		}
 	}
 	// if the other is not visible
@@ -284,6 +265,7 @@ void BotVoiceChat_Camp(bot_state_t *bs, int playernum, int mode) {
 	bs->teammate = playernum;
 	// not arrived yet
 	bs->arrive_time = 0;
+
 	BotSetTeamStatus(bs);
 	// remember last ordered task
 	BotRememberLastOrderedTask(bs);
@@ -301,12 +283,13 @@ void BotVoiceChat_FollowMe(bot_state_t *bs, int playernum, int mode) {
 	char netname[MAX_NETNAME];
 
 	bs->teamgoal.entitynum = -1;
+	// get the entity information
 	BotEntityInfo(playernum, &entinfo);
-	// if info is valid(in PVS)
+	// if the entity information is valid
 	if (entinfo.valid) {
 		areanum = BotPointAreaNum(entinfo.origin);
 
-		if (areanum) { // && trap_AAS_AreaReachability(areanum)) {
+		if (areanum) { //&& trap_AAS_AreaReachability(areanum)) {
 			bs->teamgoal.entitynum = playernum;
 			bs->teamgoal.areanum = areanum;
 			VectorCopy(entinfo.origin, bs->teamgoal.origin);
@@ -367,12 +350,7 @@ BotVoiceChat_ReturnFlag
 */
 void BotVoiceChat_ReturnFlag(bot_state_t *bs, int playernum, int mode) {
 	// if not in CTF mode
-	if (
-		gametype != GT_CTF
-#ifdef MISSIONPACK
-		&& gametype != GT_1FCTF
-#endif
-		) {
+	if (gametype != GT_CTF && gametype != GT_1FCTF) {
 		return;
 	}
 
@@ -445,7 +423,7 @@ void BotVoiceChat_WantOnDefense(bot_state_t *bs, int playernum, int mode) {
 	int preference;
 
 	preference = BotGetTeamMateTaskPreference(bs, playernum);
-	preference & = ~TEAMTP_ATTACKER;
+	preference &= ~TEAMTP_ATTACKER;
 	preference |= TEAMTP_DEFENDER;
 
 	BotSetTeamMateTaskPreference(bs, playernum, preference);
@@ -466,7 +444,7 @@ void BotVoiceChat_WantOnOffense(bot_state_t *bs, int playernum, int mode) {
 	int preference;
 
 	preference = BotGetTeamMateTaskPreference(bs, playernum);
-	preference & = ~TEAMTP_DEFENDER;
+	preference &= ~TEAMTP_DEFENDER;
 	preference |= TEAMTP_ATTACKER;
 
 	BotSetTeamMateTaskPreference(bs, playernum, preference);
@@ -511,7 +489,7 @@ BotVoiceChatCommand
 */
 int BotVoiceChatCommand(bot_state_t *bs, int mode, char *voiceChat) {
 	int i, playerNum;
-	// int voiceOnly, color;
+	//int voiceOnly, color;
 	char *ptr, buf[MAX_MESSAGE_SIZE], *cmd;
 
 	if (!TeamPlayIsOn()) {
@@ -526,30 +504,26 @@ int BotVoiceChatCommand(bot_state_t *bs, int mode, char *voiceChat) {
 
 	cmd = buf;
 
-	for (/*ptr = cmd*/; *cmd && *cmd > ' '; cmd++);
+	for (; *cmd && *cmd > ' '; cmd++);
 
 	while (*cmd && *cmd <= ' ') {
-		*cmd++ = '\0';;
+		*cmd++ = '\0';
 	}
-
 	// voiceOnly = atoi(ptr);
-
 	for (ptr = cmd; *cmd && *cmd > ' '; cmd++);
 
 	while (*cmd && *cmd <= ' ') {
-		*cmd++ = '\0';;
+		*cmd++ = '\0';
 	}
 
 	playerNum = atoi(ptr);
 
-	for (/*ptr = cmd*/; *cmd && *cmd > ' '; cmd++);
+	for (; *cmd && *cmd > ' '; cmd++);
 
 	while (*cmd && *cmd <= ' ') {
-		*cmd++ = '\0';;
+		*cmd++ = '\0';
 	}
-
 	// color = atoi(ptr);
-
 	if (!BotSameTeam(bs, playerNum)) {
 		return qfalse;
 	}

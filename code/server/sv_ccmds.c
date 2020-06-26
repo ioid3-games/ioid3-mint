@@ -27,13 +27,12 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 /*
 =======================================================================================================================================
 
-OPERATOR CONSOLE ONLY COMMANDS
+	OPERATOR CONSOLE ONLY COMMANDS
 
-These commands can only be entered from stdin or by a remote operator datagram.
+	These commands can only be entered from stdin or by a remote operator datagram.
 
 =======================================================================================================================================
 */
-
 
 /*
 =======================================================================================================================================
@@ -61,14 +60,14 @@ static player_t *SV_GetPlayerByHandle(void) {
 	s = Cmd_Argv(1);
 	// check whether this is a numeric player handle
 	for (i = 0; s[i] >= '0' && s[i] <= '9'; i++);
-	
+
 	if (!s[i]) {
 		int plid = atoi(s);
 
 		// check for numeric playerid match
 		if (plid >= 0 && plid < sv_maxclients->integer) {
 			player = &svs.players[plid];
-			
+
 			if (player->inUse) {
 				return player;
 			}
@@ -200,8 +199,7 @@ static void SV_Map_f(void) {
 =======================================================================================================================================
 SV_MapRestart_f
 
-Completely restarts a level, but doesn't send a new gamestate to the clients.
-This allows fair starts with variable load times.
+Completely restarts a level, but doesn't send a new gamestate to the clients. This allows fair starts with variable load times.
 =======================================================================================================================================
 */
 static void SV_MapRestart_f(void) {
@@ -234,15 +232,15 @@ static void SV_MapRestart_f(void) {
 		Com_Printf("variable change -- restarting.\n");
 		// restart the map the slow way
 		Q_strncpyz(mapname, Cvar_VariableString("mapname"), sizeof(mapname));
-
 		SV_SpawnServer(mapname, qfalse);
 		return;
 	}
 	// toggle the server bit so clients can detect that a map_restart has happened
-	svs.snapFlagServerBit ^ = SNAPFLAG_SERVERCOUNT;
+	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 	// generate a new serverid
 	// don't update restartedserverId there, otherwise we won't deal correctly with multiple map_restart
 	sv.serverId = com_frameTime;
+
 	Cvar_Set("sv_serverid", va("%i", sv.serverId));
 	// if a map_restart occurs while a client is changing maps, we need to give them the correct time so that when they finish loading
 	// they don't violate the backwards time check in cl_cgame.c
@@ -252,7 +250,8 @@ static void SV_MapRestart_f(void) {
 		}
 	}
 	// reset all the vm data in place without changing memory allocation
-	// note that we do NOT set sv.state = SS_LOADING, so configstrings that had been changed from their default values will generate broadcast updates
+	// note that we do NOT set sv.state = SS_LOADING, so configstrings that had been changed from their default values will generate
+	// broadcast updates
 	sv.state = SS_LOADING;
 	sv.restarting = qtrue;
 
@@ -260,6 +259,7 @@ static void SV_MapRestart_f(void) {
 	// run a few frames to allow everything to settle
 	for (i = 0; i < 3; i++) {
 		VM_Call(gvm, GAME_RUN_FRAME, sv.time);
+
 		sv.time += 100;
 		svs.time += 100;
 	}
@@ -337,7 +337,7 @@ static void SV_Kick_f(void) {
 	}
 
 	if (Cmd_Argc() != 2) {
-		Com_Printf("Usage: kick < player name > \n");
+		Com_Printf("Usage: kick <player name>\n");
 		return;
 	}
 
@@ -386,9 +386,11 @@ static void SV_KickBots_f(void) {
 		}
 
 		SV_DropClient(cl, "was kicked");
+
 		cl->lastPacketTime = svs.time; // in case there is a funny zombie
 	}
 }
+
 /*
 =======================================================================================================================================
 SV_KickAll_f
@@ -416,6 +418,7 @@ static void SV_KickAll_f(void) {
 		}
 
 		SV_DropClient(cl, "was kicked");
+
 		cl->lastPacketTime = svs.time; // in case there is a funny zombie
 	}
 }
@@ -472,14 +475,14 @@ static void SV_RehashBans_f(void) {
 	fileHandle_t readfrom;
 	char *textbuf, *curpos, *maskpos, *newlinepos, *endpos;
 	char filepath[MAX_QPATH];
-	
+
 	// make sure server is running
 	if (!com_sv_running->integer) {
 		return;
 	}
-	
+
 	serverBansCount = 0;
-	
+
 	if (!sv_banFile->string || !*sv_banFile->string) {
 		return;
 	}
@@ -488,14 +491,16 @@ static void SV_RehashBans_f(void) {
 
 	if ((filelen = FS_SV_FOpenFileRead(filepath, &readfrom)) >= 0) {
 		if (filelen < 2) {
-			// Don't bother if file is too short.
+			// don't bother if file is too short
 			FS_FCloseFile(readfrom);
 			return;
 		}
 
 		curpos = textbuf = Z_Malloc(filelen);
 		filelen = FS_Read(textbuf, filelen, readfrom);
+
 		FS_FCloseFile(readfrom);
+
 		endpos = textbuf + filelen;
 
 		for (index = 0; index < SERVER_MAXBANS && curpos + 2 < endpos; index++) {
@@ -548,19 +553,20 @@ static void SV_WriteBans(void) {
 	int index;
 	fileHandle_t writeto;
 	char filepath[MAX_QPATH];
-	
+
 	if (!sv_banFile->string || !*sv_banFile->string) {
 		return;
 	}
-	
+
 	Com_sprintf(filepath, sizeof(filepath), "%s/%s", FS_GetCurrentGameDir(), sv_banFile->string);
 
 	if ((writeto = FS_SV_FOpenFileWrite(filepath))) {
 		char writebuf[128];
 		serverBan_t *curban;
-		
+
 		for (index = 0; index < serverBansCount; index++) {
 			curban = &serverBans[index];
+
 			Com_sprintf(writebuf, sizeof(writebuf), "%d %s %d\n", curban->isexception, NET_AdrToString(curban->ip), curban->subnet);
 			FS_Write(writebuf, strlen(writebuf), writeto);
 		}
@@ -579,10 +585,10 @@ Remove a ban or an exception from the list.
 static qboolean SV_DelBanEntryFromList(int index) {
 
 	if (index == serverBansCount - 1) {
-		serverBansCount --;
+		serverBansCount--;
 	} else if (index < ARRAY_LEN(serverBans) - 1) {
 		memmove(serverBans + index, serverBans + index + 1, (serverBansCount - index - 1) * sizeof(*serverBans));
-		serverBansCount --;
+		serverBansCount--;
 	} else {
 		return qtrue;
 	}
@@ -599,7 +605,7 @@ Parse a CIDR notation type string and return a netadr_t and suffix by reference.
 */
 static qboolean SV_ParseCIDRNotation(netadr_t *dest, int *mask, char *adrstr) {
 	char *suffix;
-	
+
 	suffix = strchr(adrstr, '/');
 
 	if (suffix) {
@@ -613,7 +619,7 @@ static qboolean SV_ParseCIDRNotation(netadr_t *dest, int *mask, char *adrstr) {
 
 	if (suffix) {
 		*mask = atoi(suffix);
-		
+
 		if (dest->type == NA_IP) {
 			if (*mask < 1 || *mask > 32) {
 				*mask = 32;
@@ -653,9 +659,9 @@ static void SV_AddBanToList(qboolean isexception) {
 	}
 
 	argc = Cmd_Argc();
-	
+
 	if (argc < 2 || argc > 3) {
-		Com_Printf("Usage: %s(ip[/subnet]|playernum [subnet])\n", Cmd_Argv(0));
+		Com_Printf("Usage: %s (ip[/subnet]|playernum [subnet])\n", Cmd_Argv(0));
 		return;
 	}
 
@@ -665,7 +671,7 @@ static void SV_AddBanToList(qboolean isexception) {
 	}
 
 	banstring = Cmd_Argv(1);
-	
+
 	if (strchr(banstring, '.') || strchr(banstring, ':')) {
 		// this is an ip address, not a client num
 		if (SV_ParseCIDRNotation(&ip, &mask, banstring)) {
@@ -708,7 +714,7 @@ static void SV_AddBanToList(qboolean isexception) {
 	// first check whether a conflicting ban exists that would supersede the new one.
 	for (index = 0; index < serverBansCount; index++) {
 		curban = &serverBans[index];
-		
+
 		if (curban->subnet <= mask) {
 			if ((curban->isexception || !isexception) && NET_CompareBaseAdrMask(curban->ip, ip, curban->subnet)) {
 				Q_strncpyz(addy2, NET_AdrToString(ip), sizeof(addy2));
@@ -741,11 +747,10 @@ static void SV_AddBanToList(qboolean isexception) {
 	serverBans[serverBansCount].ip = ip;
 	serverBans[serverBansCount].subnet = mask;
 	serverBans[serverBansCount].isexception = isexception;
-	
-	serverBansCount++;
-	
-	SV_WriteBans();
 
+	serverBansCount++;
+
+	SV_WriteBans();
 	Com_Printf("Added %s: %s/%d\n", isexception ? "ban exception" : "ban", NET_AdrToString(ip), mask);
 }
 
@@ -760,20 +765,20 @@ static void SV_DelBanFromList(qboolean isexception) {
 	int index, count = 0, todel, mask;
 	netadr_t ip;
 	char *banstring;
-	
+
 	// make sure server is running
 	if (!com_sv_running->integer) {
 		Com_Printf("Server is not running.\n");
 		return;
 	}
-	
+
 	if (Cmd_Argc() != 2) {
-		Com_Printf("Usage: %s(ip[/subnet]|num)\n", Cmd_Argv(0));
+		Com_Printf("Usage: %s (ip[/subnet]|num)\n", Cmd_Argv(0));
 		return;
 	}
 
 	banstring = Cmd_Argv(1);
-	
+
 	if (strchr(banstring, '.') || strchr(banstring, ':')) {
 		serverBan_t *curban;
 
@@ -983,25 +988,27 @@ static void SV_Status_f(void) {
 		}
 
 		Com_Printf("%s", player->name);
-		
+
 		l = 16 - SV_Strlen(player->name);
 		j = 0;
-		
+
 		do {
 			Com_Printf(" ");
 			j++;
 		} while (j < l);
 		// adding a ^7 to reset the color
 		s = NET_AdrToString(cl->netchan.remoteAddress);
+
 		Com_Printf("^7%s", s);
+
 		l = 39 - strlen(s);
 		j = 0;
-		
+
 		do {
 			Com_Printf(" ");
 			j++;
 		} while (j < l);
-		
+
 		Com_Printf(" %5i", cl->rate);
 		Com_Printf("\n");
 	}
@@ -1075,7 +1082,7 @@ static void SV_DumpUser_f(void) {
 	}
 
 	if (Cmd_Argc() != 2) {
-		Com_Printf("Usage: dumpuser < userid > \n");
+		Com_Printf("Usage: dumpuser <userid>\n");
 		return;
 	}
 
@@ -1086,13 +1093,13 @@ static void SV_DumpUser_f(void) {
 	}
 
 	Com_Printf("userinfo\n");
-	Com_Printf(" -------- \n");
+	Com_Printf("--------\n");
 	Info_Print(player->userinfo);
 }
 
 /*
 =======================================================================================================================================
-SV_KillServer
+SV_KillServer_f
 =======================================================================================================================================
 */
 static void SV_KillServer_f(void) {

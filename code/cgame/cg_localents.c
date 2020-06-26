@@ -147,14 +147,14 @@ CG_FragmentBounceMark
 =======================================================================================================================================
 */
 void CG_FragmentBounceMark(localEntity_t *le, trace_t *trace) {
-	int radius;
+	int markRadius;
 
 	if (le->leMarkType == LEMT_BLOOD) {
-		radius = 16 + (rand()&31);
-		CG_ImpactMark(cgs.media.bloodMarkShader, trace->endpos, trace->plane.normal, random() * 360, 1, 1, 1, 1, qtrue, radius, qfalse);
+		markRadius = 16 + (rand()&31);
+		CG_ImpactMark(cgs.media.bloodMarkShader, trace->endpos, trace->plane.normal, random() * 360, 1, 1, 1, 1, qtrue, markRadius, qfalse);
 	} else if (le->leMarkType == LEMT_BURN) {
-		radius = 8 + (rand()&15);
-		CG_ImpactMark(cgs.media.burnMarkShader, trace->endpos, trace->plane.normal, random() * 360, 1, 1, 1, 1, qtrue, radius, qfalse);
+		markRadius = 8 + (rand()&15);
+		CG_ImpactMark(cgs.media.burnMarkShader, trace->endpos, trace->plane.normal, random() * 360, 1, 1, 1, 1, qtrue, markRadius, qfalse);
 	}
 	// don't allow a fragment to make multiple marks, or they pile up while settling
 	le->leMarkType = LEMT_NONE;
@@ -203,10 +203,12 @@ void CG_ReflectVelocity(localEntity_t *le, trace_t *trace) {
 	if (!trace->allsolid) {
 		// reflect the velocity on the trace plane
 		hitTime = cg.time - cg.frametime + cg.frametime * trace->fraction;
-		BG_EvaluateTrajectoryDelta(&le->pos, hitTime, velocity);
-		dot = DotProduct(velocity, trace->plane.normal);
-		VectorMA(velocity, -2*dot, trace->plane.normal, le->pos.trDelta);
 
+		BG_EvaluateTrajectoryDelta(&le->pos, hitTime, velocity);
+
+		dot = DotProduct(velocity, trace->plane.normal);
+
+		VectorMA(velocity, -2 * dot, trace->plane.normal, le->pos.trDelta);
 		VectorScale(le->pos.trDelta, le->bounceFactor, le->pos.trDelta);
 	}
 
@@ -216,8 +218,10 @@ void CG_ReflectVelocity(localEntity_t *le, trace_t *trace) {
 	// check for stop, making sure that even on low FPS systems it doesn't bobble
 	if (trace->allsolid || (trace->plane.normal[2] > 0 && (le->pos.trDelta[2] < 40 || le->pos.trDelta[2] < -cg.frametime * le->pos.trDelta[2]))) {
 		le->pos.trType = TR_STATIONARY;
+
 		VectorCopy(trace->endpos, le->refEntity.origin);
-		vectoangles(le->refEntity.axis[0], le->angles.trBase);
+		VectorToAngles(le->refEntity.axis[0], le->angles.trBase);
+
 		le->groundEntityNum = trace->entityNum;
 	} else {
 
@@ -294,7 +298,7 @@ void CG_AddFragment(localEntity_t *le) {
 
 		// get last location
 		if (cg.time == le->pos.trTime) {
-			// fragment was added this frame. no good way to fix this.
+			// fragment was added this frame, no good way to fix this
 			CG_FreeLocalEntity(le);
 			return;
 		} else {
@@ -305,11 +309,12 @@ void CG_AddFragment(localEntity_t *le) {
 		VectorClear(angles);
 		// add the distance mover has moved since then
 		CG_AdjustPositionForMover(origin, trace.entityNum, oldTime, cg.time, origin, angles, angles);
-		// nudge the origin farther to avoid being co - planar
+		// nudge the origin farther to avoid being co-planar
 		VectorSubtract(origin, newOrigin, dir);
-		dist = VectorNormalize(dir);
-		VectorMA(origin, dist, dir, origin);
 
+		dist = VectorNormalize(dir);
+
+		VectorMA(origin, dist, dir, origin);
 		CG_Trace(&tr, origin, NULL, NULL, newOrigin, -1, CONTENTS_SOLID);
 		// found impact. restore allsolid because trace fraction won't work correct in CG_ReflectVelocity
 		if (!tr.allsolid) {
@@ -828,8 +833,8 @@ void CG_BubbleThink(localEntity_t *le) {
 
 	contents = CG_PointContents(trace.endpos, -1);
 
-	if (!(contents &(CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))) {
-		// Bubble isn't in liquid anymore, remove it.
+	if (!(contents & (CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA))) {
+		// bubble isn't in liquid anymore, remove it
 		CG_FreeLocalEntity(le);
 		return;
 	}

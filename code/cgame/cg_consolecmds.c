@@ -165,7 +165,7 @@ Debugging command to print the current position.
 =======================================================================================================================================
 */
 static void CG_Viewpos_f(int localPlayerNum) {
-	CG_Printf("(%i %i %i): %i\n", (int)cg.localPlayers[localPlayerNum].lastViewPos[0], (int)cg.localPlayers[localPlayerNum].lastViewPos[1], (int)cg.localPlayers[localPlayerNum].lastViewPos[2], (int)cg.localPlayers[localPlayerNum].lastViewAngles[YAW]);
+	CG_Printf("(%i %i %i) : %i\n", (int)cg.localPlayers[localPlayerNum].lastViewPos[0], (int)cg.localPlayers[localPlayerNum].lastViewPos[1], (int)cg.localPlayers[localPlayerNum].lastViewPos[2], (int)cg.localPlayers[localPlayerNum].lastViewAngles[YAW]);
 }
 
 /*
@@ -942,6 +942,7 @@ CG_TaskDefense_f
 =======================================================================================================================================
 */
 static void CG_TaskDefense_f(int localPlayerNum) {
+
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONDEFENSE));
 	trap_SendClientCommand(va("teamtask %d\n", TEAMTASK_DEFENSE));
 }
@@ -952,6 +953,7 @@ CG_TaskPatrol_f
 =======================================================================================================================================
 */
 static void CG_TaskPatrol_f(int localPlayerNum) {
+
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONPATROL));
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_PATROL));
 }
@@ -962,6 +964,7 @@ CG_TaskCamp_f
 =======================================================================================================================================
 */
 static void CG_TaskCamp_f(int localPlayerNum) {
+
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONCAMPING));
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_CAMP));
 }
@@ -972,6 +975,7 @@ CG_TaskFollow_f
 =======================================================================================================================================
 */
 static void CG_TaskFollow_f(int localPlayerNum) {
+
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONFOLLOW));
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_FOLLOW));
 }
@@ -982,6 +986,7 @@ CG_TaskRetrieve_f
 =======================================================================================================================================
 */
 static void CG_TaskRetrieve_f(int localPlayerNum) {
+
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONRETURNFLAG));
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_RETRIEVE));
 }
@@ -992,6 +997,7 @@ CG_TaskEscort_f
 =======================================================================================================================================
 */
 static void CG_TaskEscort_f(int localPlayerNum) {
+
 	trap_Cmd_ExecuteText(EXEC_NOW, va("cmd %s %s\n", Com_LocalPlayerCvarName(localPlayerNum, "vsay_team"), VOICECHAT_ONFOLLOWCARRIER));
 	trap_SendClientCommand(va("%s %d\n", Com_LocalPlayerCvarName(localPlayerNum, "teamtask"), TEAMTASK_ESCORT));
 }
@@ -1093,7 +1099,9 @@ CG_EditHud_f
 */
 /*
 static void CG_EditHud_f(void) {
+
 	//cls.keyCatchers ^= KEYCATCH_CGAME;
+
 	//VM_Call(cgvm, CG_EVENT_HANDLING, (cls.keyCatchers & KEYCATCH_CGAME) ? CGAME_EVENT_EDITHUD : CGAME_EVENT_NONE);
 }
 */

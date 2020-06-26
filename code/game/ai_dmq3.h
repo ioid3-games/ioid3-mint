@@ -11,7 +11,7 @@ Spearmint Source Code is distributed in the hope that it will be useful, but WIT
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http:// www.gnu.org/licenses/>.
+If not, see <http://www.gnu.org/licenses/>.
 
 In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
 terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
@@ -21,16 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-// 
-
-/*****************************************************************************
- * name:		ai_dmq3.h
- *
- * desc:		Quake3 bot AI
- *
- * $Archive: /source/code/game/ai_dmq3.h $
- *
- *****************************************************************************/
 
 // setup the deathmatch AI
 void BotSetupDeathmatchAI(void);
@@ -70,7 +60,7 @@ qboolean EntityHasKamikaze(aas_entityinfo_t *entinfo);
 #endif
 // set a user info key/value pair
 void BotSetUserInfo(bot_state_t *bs, char *key, char *value);
-// set the team status(offense, defense etc.)
+// set the team status (offense, defense etc.)
 void BotSetTeamStatus(bot_state_t *bs);
 // returns the name of the player
 char *PlayerName(int playernum, char *name, int size);
@@ -108,7 +98,7 @@ int BotSameTeam(bot_state_t *bs, int entnum);
 int TeamPlayIsOn(void);
 // returns true if the bot can camp
 qboolean BotCanCamp(bot_state_t *bs);
-// returns the player number of the team mate flag carrier(-1 if none)
+// returns the player number of the team mate flag carrier (-1 if none)
 int BotTeamFlagCarrier(bot_state_t *bs);
 // returns visible team mate flag carrier if available
 int BotTeamFlagCarrierVisible(bot_state_t *bs);
@@ -146,15 +136,14 @@ void BotClearActivateGoalStack(bot_state_t *bs);
 int BotTeam(bot_state_t *bs);
 // returns the opposite team of the bot
 int BotOppositeTeam(bot_state_t *bs);
-// returns the flag the bot is carrying(CTFFLAG_?)
+// returns the flag the bot is carrying (CTFFLAG_?)
 int BotCTFCarryingFlag(bot_state_t *bs);
 // remember the last ordered task
 void BotRememberLastOrderedTask(bot_state_t *bs);
-// set ctf goals(defend base, get enemy flag)during seek
+// set ctf goals (defend base, get enemy flag) during seek
 void BotCTFSeekGoals(bot_state_t *bs);
-// set ctf goals(defend base, get enemy flag)during retreat
+// set ctf goals (defend base, get enemy flag) during retreat
 void BotCTFRetreatGoals(bot_state_t *bs);
-// 
 #ifdef MISSIONPACK
 int Bot1FCTFCarryingFlag(bot_state_t *bs);
 int BotHarvesterCarryingCubes(bot_state_t *bs);
@@ -181,21 +170,18 @@ char *stristr(char *str, char *charset);
 // returns the number of the player with the given name
 int PlayerFromName(char *name);
 int PlayerOnSameTeamFromName(bot_state_t *bs, char *name);
-// 
 int BotPointAreaNum(vec3_t origin);
-// 
 void BotMapScripts(bot_state_t *bs);
-
-// ctf flags
-#define CTF_FLAG_NONE		0
-#define CTF_FLAG_RED		1
-#define CTF_FLAG_BLUE		2
+// CTF flags
+#define CTF_FLAG_NONE	0
+#define CTF_FLAG_RED	1
+#define CTF_FLAG_BLUE	2
 // CTF skins
-#define CTF_SKIN_REDTEAM	"red"
-#define CTF_SKIN_BLUETEAM	"blue"
+#define CTF_SKIN_REDTEAM "red"
+#define CTF_SKIN_BLUETEAM "blue"
 
-extern int gametype;		// game type
-extern int maxplayers;		// maximum number of players
+extern int gametype;	// game type
+extern int maxplayers;	// maximum number of players
 
 extern vmCvar_t bot_grapple;
 extern vmCvar_t bot_rocketjump;

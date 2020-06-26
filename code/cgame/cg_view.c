@@ -124,7 +124,7 @@ void CG_TestGun_f(void) {
 	}
 
 	cg.testGun = qtrue;
-	cg.testModelEntity.renderfx = RF_DEPTHHACK|RF_NO_MIRROR;
+	cg.testModelEntity.renderfx = RF_NO_MIRROR|RF_DEPTHHACK;
 }
 
 /*
@@ -314,9 +314,9 @@ void CG_CalcVrect(void) {
 	}
 	// rendered window for drawing world
 	cg.refdef.width = cg.viewportWidth * size / 100;
-	cg.refdef.width & = ~1;
+	cg.refdef.width &= ~1;
 	cg.refdef.height = cg.viewportHeight * size / 100;
-	cg.refdef.height & = ~1;
+	cg.refdef.height &= ~1;
 	cg.refdef.x = cg.viewportX + (cg.viewportWidth - cg.refdef.width) / 2;
 	cg.refdef.y = cg.viewportY + (cg.viewportHeight - cg.refdef.height) / 2;
 }
@@ -325,7 +325,7 @@ void CG_CalcVrect(void) {
 =======================================================================================================================================
 CG_StepOffset
 
-This causes a compiler bug on mac MrC compiler.
+NOTE: This causes a compiler bug on mac MrC compiler.
 =======================================================================================================================================
 */
 void CG_StepOffset(vec3_t vieworg) {
@@ -350,7 +350,7 @@ static void CG_OffsetThirdPersonView(void) {
 	vec3_t view;
 	vec3_t focusAngles;
 	trace_t trace;
-	static vec3_t mins = {-5,-5, -5};
+	static vec3_t mins = {-5, -5, -5};
 	static vec3_t maxs = {5, 5, 5};
 	vec3_t focusPoint;
 	float focusDist;
@@ -400,7 +400,8 @@ static void CG_OffsetThirdPersonView(void) {
 
 	VectorMA(view, -thirdPersonRange * forwardScale, forward, view);
 	VectorMA(view, -thirdPersonRange * sideScale, right, view);
-	// trace a ray from the origin to the viewpoint to make sure the view isn't in a solid block. Use a 10 by 10 block to prevent the view from near clipping anything
+	// trace a ray from the origin to the viewpoint to make sure the view isn't in a solid block. Use a 10 by 10 block to prevent the
+	// view from near clipping anything
 	if (!cg_cameraMode.integer) {
 		CG_Trace(&trace, cg.refdef.vieworg, mins, maxs, view, cg.cur_lc->predictedPlayerState.playerNum, MASK_SOLID);
 
@@ -646,9 +647,8 @@ static void CG_CalcFov2(const refdef_t *refdef, float *input_fov, float *out_fov
 	}
 
 	if (cg_fovAspectAdjust.integer) {
-		// based on LordHavoc's code for Darkplaces
-		// http://www.quakeworld.nu/forum/topic/53/what-does-your-qw-look-like/page/30
-		const float baseAspect = 0.75f; // 3/4
+		// based on LordHavoc's code for Darkplaces -> http://www.quakeworld.nu/forum/topic/53/what-does-your-qw-look-like/page/30
+		const float baseAspect = 0.75f; // 3 / 4
 		const float aspect = (float)refdef->width / (float)refdef->height;
 		const float desiredFov = fov_x;
 
@@ -765,7 +765,7 @@ static void CG_DamageBlendBlob(void) {
 		return;
 	}
 
-	//if(cg.cameraMode) {
+	//if (cg.cameraMode) {
 	//	return;
 	//}
 
@@ -918,10 +918,10 @@ static void CG_PowerupTimerSounds(void) {
 
 /*
 =======================================================================================================================================
-CG_AddBufferedSound
+CG_AddBufferedAnnouncerSound
 =======================================================================================================================================
 */
-void CG_AddBufferedSound(sfxHandle_t sfx) {
+void CG_AddBufferedAnnouncerSound(sfxHandle_t sfx) {
 
 	if (!sfx) {
 		return;
@@ -937,10 +937,10 @@ void CG_AddBufferedSound(sfxHandle_t sfx) {
 
 /*
 =======================================================================================================================================
-CG_PlayBufferedSounds
+CG_PlayBufferedAnnouncerSounds
 =======================================================================================================================================
 */
-static void CG_PlayBufferedSounds(void) {
+static void CG_PlayBufferedAnnouncerSounds(void) {
 
 	if (cg.soundTime < cg.time) {
 		if (cg.soundBufferOut != cg.soundBufferIn && cg.soundBuffer[cg.soundBufferOut]) {
@@ -951,6 +951,14 @@ static void CG_PlayBufferedSounds(void) {
 		}
 	}
 }
+
+/*
+=======================================================================================================================================
+
+	FRUSTUM CODE
+
+=======================================================================================================================================
+*/
 
 // some culling bits
 typedef struct plane_s {
@@ -967,8 +975,7 @@ CG_SetupFrustum
 */
 void CG_SetupFrustum(void) {
 	int i;
-	float xs, xc;
-	float ang;
+	float xs, xc, ang;
 
 	ang = cg.refdef.fov_x / 180 * M_PI * 0.5f;
 	xs = sin(ang);
@@ -1011,16 +1018,18 @@ qboolean CG_CullPoint(vec3_t pt) {
 		frust = &frustum[i];
 
 		if ((DotProduct(pt, frust->normal) - frust->dist) < 0) {
-			return (qtrue);
+			return qtrue;
 		}
 	}
 
-	return (qfalse);
+	return qfalse;
 }
 
 /*
 =======================================================================================================================================
 CG_CullPointAndRadius
+
+Returns true if culled.
 =======================================================================================================================================
 */
 qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius) {
@@ -1032,11 +1041,11 @@ qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius) {
 		frust = &frustum[i];
 
 		if ((DotProduct(pt, frust->normal) - frust->dist) < -radius) {
-			return (qtrue);
+			return qtrue;
 		}
 	}
 
-	return (qfalse);
+	return qfalse;
 }
 
 /*
@@ -1123,7 +1132,7 @@ void CG_DrawActiveFrame(int serverTime, stereoFrame_t stereoView, qboolean demoP
 	// play lead change annoucement and time/frag limit warnings
 	CG_CheckGameSounds();
 	// add buffered sounds
-	CG_PlayBufferedSounds();
+	CG_PlayBufferedAnnouncerSounds();
 #ifdef MISSIONPACK
 	// play buffered voice chats
 	CG_PlayBufferedVoiceChats();

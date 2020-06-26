@@ -22,14 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_aas_bspq3.c
- *
- * desc:		BSP, Environment Sampling
- *
- * $Archive: /MissionPack/code/botlib/be_aas_bspq3.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ BSP, Environment Sampling.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "l_memory.h"
@@ -47,19 +42,16 @@ typedef struct rgb_s {
 	int green;
 	int blue;
 } rgb_t;
-
 // bsp entity epair
 typedef struct bsp_epair_s {
 	char *key;
 	char *value;
 	struct bsp_epair_s *next;
 } bsp_epair_t;
-
 // bsp data entity
 typedef struct bsp_entity_s {
 	bsp_epair_t *epairs;
 } bsp_entity_t;
-
 // id Software BSP data
 typedef struct bsp_s {
 	// true when bsp file is loaded
@@ -68,7 +60,6 @@ typedef struct bsp_s {
 	int numentities;
 	bsp_entity_t entities[MAX_BSPENTITIES];
 } bsp_t;
-
 // global bsp
 bsp_t bspworld;
 
@@ -119,7 +110,7 @@ qboolean AAS_EntityCollision(int entnum, vec3_t start, vec3_t boxmins, vec3_t bo
 =======================================================================================================================================
 AAS_inPVS
 
-Returns true if in Potentially Hearable Set.
+Returns true if in Potentially Visible Set.
 =======================================================================================================================================
 */
 qboolean AAS_inPVS(vec3_t p1, vec3_t p2) {
@@ -130,7 +121,7 @@ qboolean AAS_inPVS(vec3_t p1, vec3_t p2) {
 =======================================================================================================================================
 AAS_inPHS
 
-Returns true if in Potentially Visible Set.
+Returns true if in Potentially Hearable Set.
 =======================================================================================================================================
 */
 qboolean AAS_inPHS(vec3_t p1, vec3_t p2) {
@@ -139,7 +130,7 @@ qboolean AAS_inPHS(vec3_t p1, vec3_t p2) {
 
 /*
 =======================================================================================================================================
-
+AAS_BSPModelMinsMaxsOrigin
 =======================================================================================================================================
 */
 void AAS_BSPModelMinsMaxsOrigin(int modelnum, vec3_t angles, vec3_t mins, vec3_t maxs, vec3_t origin) {
@@ -148,12 +139,13 @@ void AAS_BSPModelMinsMaxsOrigin(int modelnum, vec3_t angles, vec3_t mins, vec3_t
 
 /*
 =======================================================================================================================================
-AAS_BSPLinkEntity
+AAS_UnlinkFromBSPLeaves
 
 Unlinks the entity from all leaves.
 =======================================================================================================================================
 */
 void AAS_UnlinkFromBSPLeaves(bsp_link_t *leaves) {
+
 }
 
 /*
@@ -180,6 +172,7 @@ AAS_NextBSPEntity
 =======================================================================================================================================
 */
 int AAS_NextBSPEntity(int ent) {
+
 	ent++;
 
 	if (ent >= 1 && ent < bspworld.numentities) {
@@ -245,7 +238,9 @@ int AAS_VectorForBSPEpairKey(int ent, char *key, vec3_t v) {
 	}
 	// scanf into doubles, then assign, so it is vec_t size independent
 	v1 = v2 = v3 = 0;
+
 	sscanf(buf, "%lf %lf %lf", &v1, &v2, &v3);
+
 	v[0] = v1;
 	v[1] = v2;
 	v[2] = v3;
@@ -259,7 +254,7 @@ AAS_FloatForBSPEpairKey
 */
 int AAS_FloatForBSPEpairKey(int ent, char *key, float *value) {
 	char buf[MAX_EPAIRKEY];
-	
+
 	*value = 0;
 
 	if (!AAS_ValueForBSPEpairKey(ent, key, buf, MAX_EPAIRKEY)) {
@@ -277,7 +272,7 @@ AAS_IntForBSPEpairKey
 */
 int AAS_IntForBSPEpairKey(int ent, char *key, int *value) {
 	char buf[MAX_EPAIRKEY];
-	
+
 	*value = 0;
 
 	if (!AAS_ValueForBSPEpairKey(ent, key, buf, MAX_EPAIRKEY)) {
@@ -303,6 +298,7 @@ void AAS_FreeBSPEntities(void) {
 
 		for (epair = ent->epairs; epair; epair = nextepair) {
 			nextepair = epair->next;
+
 			if (epair->key) {
 				FreeMemory(epair->key);
 			}
@@ -352,7 +348,9 @@ void AAS_ParseBSPEntities(void) {
 		}
 
 		ent = &bspworld.entities[bspworld.numentities];
+
 		bspworld.numentities++;
+
 		ent->epairs = NULL;
 		// go through all the key/value pairs
 		while (1) {
@@ -382,11 +380,12 @@ void AAS_ParseBSPEntities(void) {
 			epair = (bsp_epair_t *)GetClearedHunkMemory(sizeof(bsp_epair_t));
 			epair->next = ent->epairs;
 			ent->epairs = epair;
+			epair->key = (char *)GetHunkMemory(strlen(keyname) + 1);
 
-			epair->key = (char *)GetHunkMemory(strlen(keyname) +  1);
 			strcpy(epair->key, keyname);
 
-			epair->value = (char *)GetHunkMemory(strlen(com_token) +  1);
+			epair->value = (char *)GetHunkMemory(strlen(com_token) + 1);
+
 			strcpy(epair->value, com_token);
 		}
 	}
@@ -423,6 +422,7 @@ int AAS_LoadBSPFile(void) {
 
 	AAS_DumpBSPData();
 	AAS_ParseBSPEntities();
+
 	bspworld.loaded = qtrue;
 	return BLERR_NOERROR;
 }

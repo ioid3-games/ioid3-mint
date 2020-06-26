@@ -21,7 +21,10 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-// cl.input.c -- builds an intended movement command to send to the server
+
+/**************************************************************************************************************************************
+ Builds an intended movement command to send to the server.
+**************************************************************************************************************************************/
 
 #include "client.h"
 
@@ -147,13 +150,12 @@ void CL_MouseMove(int localPlayerNum, float *outmx, float *outmy) {
 		if (cl_mouseAccelStyle->integer == 0) {
 			float accelSensitivity;
 			float rate;
-			
-			rate = sqrt(mx * mx + my * my) / (float)frame_msec;
 
+			rate = sqrt(mx * mx + my * my) / (float)frame_msec;
 			accelSensitivity = cl_sensitivity->value + rate * cl_mouseAccel->value;
 			mx *= accelSensitivity;
 			my *= accelSensitivity;
-			
+
 			if (cl_showMouseRate->integer) {
 				Com_Printf("rate: %f, accelSensitivity: %f\n", rate, accelSensitivity);
 			}
@@ -170,8 +172,8 @@ void CL_MouseMove(int localPlayerNum, float *outmx, float *outmy) {
 			power[0] = powf(rate[0] / cl_mouseAccelOffset->value, cl_mouseAccel->value);
 			power[1] = powf(rate[1] / cl_mouseAccelOffset->value, cl_mouseAccel->value);
 
-			mx = cl_sensitivity->value * (mx + ((mx < 0) ? - power[0] : power[0]) * cl_mouseAccelOffset->value);
-			my = cl_sensitivity->value * (my + ((my < 0) ? - power[1] : power[1]) * cl_mouseAccelOffset->value);
+			mx = cl_sensitivity->value * (mx + ((mx < 0) ? -power[0] : power[0]) * cl_mouseAccelOffset->value);
+			my = cl_sensitivity->value * (my + ((my < 0) ? -power[1] : power[1]) * cl_mouseAccelOffset->value);
 
 			if (cl_showMouseRate->integer) {
 				Com_Printf("ratex: %f, ratey: %f, powx: %f, powy: %f\n", rate[0], rate[1], power[0], power[1]);
@@ -283,8 +285,7 @@ qboolean CL_ReadyToSendPacket(void) {
 		return qfalse;
 	}
 	// if we are downloading, we send no less than 50ms between packets
-	if (*clc.downloadTempName &&
-		cls.realtime - clc.lastPacketSentTime < 50) {
+	if (*clc.downloadTempName && cls.realtime - clc.lastPacketSentTime < 50) {
 		return qfalse;
 	}
 	// if we don't have a valid gamestate yet, only send one packet a second
@@ -302,6 +303,7 @@ qboolean CL_ReadyToSendPacket(void) {
 	// check for exceeding cl_maxpackets
 	oldPacketNum = (clc.netchan.outgoingSequence - 1)& PACKET_MASK;
 	delta = cls.realtime - cl.outPackets[oldPacketNum].p_realtime;
+
 	if (delta < 1000 / cl_maxpackets->integer) {
 		// the accumulated commands will go out in the next packet
 		return qfalse;
@@ -314,22 +316,21 @@ qboolean CL_ReadyToSendPacket(void) {
 =======================================================================================================================================
 CL_WritePacket
 
-Create and send the command packet to the server
-Including both the reliable commands and the usercmds
+Create and send the command packet to the server.
+Including both the reliable commands and the usercmds.
 
 During normal gameplay, a client packet will contain something like:
 
-4	sequence number
-2	qport
-4	serverid
-4	acknowledged sequence number
-4	clc.serverCommandSequence
- < optional reliable commands>
-1	clc_move or clc_moveNoDelta
-1	local player bits
-1	command count
- < local players * count * usercmds>
+ 4	sequence number
+ 2	qport
+ 4	serverid
+ 4	acknowledged sequence number
+ 4	clc.serverCommandSequence
 
+	<optional reliable commands>
+ 1	clc_move or clc_moveNoDelta
+ 1	command count
+	<count * usercmds>
 =======================================================================================================================================
 */
 void CL_WritePacket(void) {
@@ -364,7 +365,7 @@ void CL_WritePacket(void) {
 	for (i = clc.reliableAcknowledge + 1; i <= clc.reliableSequence; i++) {
 		MSG_WriteByte(&buf, clc_clientCommand);
 		MSG_WriteLong(&buf, i);
-		MSG_WriteString(&buf, clc.reliableCommands[i &(MAX_RELIABLE_COMMANDS - 1)]);
+		MSG_WriteString(&buf, clc.reliableCommands[i & (MAX_RELIABLE_COMMANDS - 1)]);
 	}
 	// we want to send all the usercmds that were generated in the last few packet, so even if a couple packets are dropped in a row,
 	// all the cmds will make it to the server
@@ -374,7 +375,7 @@ void CL_WritePacket(void) {
 		Cvar_Set("cl_packetdup", "5");
 	}
 
-	oldPacketNum = (clc.netchan.outgoingSequence - 1 - cl_packetdup->integer)& PACKET_MASK;
+	oldPacketNum = (clc.netchan.outgoingSequence - 1 - cl_packetdup->integer) & PACKET_MASK;
 	count = cl.cmdNumber - cl.outPackets[oldPacketNum].p_cmdNumber;
 
 	if (count > MAX_PACKET_USERCMDS) {
@@ -397,11 +398,12 @@ void CL_WritePacket(void) {
 			MSG_WriteShort(&buf, clc.voipOutgoingDataSize);
 			MSG_WriteData(&buf, clc.voipOutgoingData, clc.voipOutgoingDataSize);
 			// if we're recording a demo, we have to fake a server packet with this VoIP data so it gets to disk; the server doesn't send it
-			// back to us, and we might as well eliminate concerns about dropped and misordered packets here.
+			// back to us, and we might as well eliminate concerns about dropped and misordered packets here
 			if (clc.demorecording && !clc.demowaiting) {
 				const int voipSize = clc.voipOutgoingDataSize;
 				msg_t fakemsg;
 				byte fakedata[MAX_MSGLEN];
+
 				MSG_Init(&fakemsg, fakedata, sizeof(fakedata));
 				MSG_Bitstream(&fakemsg);
 				MSG_WriteLong(&fakemsg, clc.reliableAcknowledge);
@@ -414,6 +416,7 @@ void CL_WritePacket(void) {
 				MSG_WriteBits(&fakemsg, clc.voipFlags, VOIP_FLAGCNT);
 				MSG_WriteData(&fakemsg, clc.voipOutgoingData, voipSize);
 				MSG_WriteByte(&fakemsg, svc_EOF);
+
 				CL_WriteDemoMessage(&fakemsg, 0);
 			}
 
@@ -421,7 +424,7 @@ void CL_WritePacket(void) {
 			clc.voipOutgoingDataSize = 0;
 			clc.voipOutgoingDataFrames = 0;
 		} else {
-			// We have data, but no targets. Silently discard all data
+			// we have data, but no targets. Silently discard all data
 			clc.voipOutgoingDataSize = 0;
 			clc.voipOutgoingDataFrames = 0;
 		}
@@ -432,8 +435,7 @@ void CL_WritePacket(void) {
 			Com_Printf("(%i)", count);
 		}
 		// begin a player move command
-		if (cl_nodelta->integer || !cl.snap.valid || clc.demowaiting
-			|| clc.serverMessageSequence != cl.snap.messageNum) {
+		if (cl_nodelta->integer || !cl.snap.valid || clc.demowaiting || clc.serverMessageSequence != cl.snap.messageNum) {
 			MSG_WriteByte(&buf, clc_moveNoDelta);
 		} else {
 			MSG_WriteByte(&buf, clc_move);
@@ -454,7 +456,7 @@ void CL_WritePacket(void) {
 		// use the message acknowledge in the key
 		key = clc.serverMessageSequence;
 		// also use the last acknowledged server command in the key
-		key ^ = MSG_HashKey(clc.serverCommands[clc.serverCommandSequence &(MAX_RELIABLE_COMMANDS - 1)], 32);
+		key ^= MSG_HashKey(clc.serverCommands[clc.serverCommandSequence & (MAX_RELIABLE_COMMANDS - 1)], 32);
 
 		for (lc = 0; lc < MAX_SPLITVIEW; lc++) {
 			if (!(localPlayerBits &(1 << lc))) {
@@ -466,7 +468,7 @@ void CL_WritePacket(void) {
 			oldcmd = &nullcmd;
 			// write all the commands, including the predicted command
 			for (i = 0; i < count; i++) {
-				j = (cl.cmdNumber - count + i + 1)& CMD_MASK;
+				j = (cl.cmdNumber - count + i + 1) & CMD_MASK;
 				cmd = &cl.cmdss[lc][j];
 				MSG_WriteDeltaUsercmdKey(&buf, key, oldcmd, cmd);
 				oldcmd = cmd;
@@ -475,6 +477,7 @@ void CL_WritePacket(void) {
 	}
 	// deliver the message
 	packetNum = clc.netchan.outgoingSequence & PACKET_MASK;
+
 	cl.outPackets[packetNum].p_realtime = cls.realtime;
 	cl.outPackets[packetNum].p_serverTime = oldcmd->serverTime;
 	cl.outPackets[packetNum].p_cmdNumber = cl.cmdNumber;
@@ -484,7 +487,7 @@ void CL_WritePacket(void) {
 		Com_Printf("%i ", buf.cursize);
 	}
 
-	CL_Netchan_Transmit(&clc.netchan, &buf);	
+	CL_Netchan_Transmit(&clc.netchan, &buf);
 }
 
 /*

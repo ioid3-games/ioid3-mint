@@ -85,7 +85,7 @@ const char *BuildShaderStateConfig(void) {
 /*
 =======================================================================================================================================
 
-model/sound configstring indexes
+	model/sound configstring indexes
 
 =======================================================================================================================================
 */
@@ -502,7 +502,6 @@ gentity_t *G_Spawn(void) {
 
 		G_Error("G_Spawn: no free entities");
 	}
-	
 	// open up a new slot
 	level.num_entities++;
 	// let the server system know that there are more entities
@@ -555,6 +554,7 @@ void G_FreeEntity(gentity_t *ed) {
 	}
 
 	memset(ed, 0, sizeof(*ed));
+
 	ed->classname = "freed";
 	ed->freetime = level.time;
 	ed->inuse = qfalse;

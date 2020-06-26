@@ -146,6 +146,7 @@ void G_InitWorldSession(void) {
 	int gt;
 
 	trap_Cvar_VariableStringBuffer("session", s, sizeof(s));
+
 	gt = atoi(s);
 	// if the gametype changed since the last session, don't use any player sessions
 	if (g_gametype.integer != gt) {

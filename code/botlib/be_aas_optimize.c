@@ -22,15 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_aas_optimize.c
- *
- * desc:		decreases the .aas file size after the reachabilities have
- *				been calculated, just dumps all the faces, edges and vertexes
- *
- * $Archive: /MissionPack/code/botlib/be_aas_optimize.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ Decreases the .aas file size after the reachabilities have been calculated, just dumps all the faces, edges and vertexes.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "l_memory.h"
@@ -96,7 +90,7 @@ int AAS_OptimizeEdge(optimized_t *optimized, int edgenum) {
 		if (edgenum > 0) {
 			return optedgenum;
 		} else {
-			return - optedgenum;
+			return -optedgenum;
 		}
 	}
 
@@ -120,7 +114,7 @@ int AAS_OptimizeEdge(optimized_t *optimized, int edgenum) {
 	if (edgenum > 0) {
 		return optedgenum;
 	} else {
-		return - optedgenum;
+		return -optedgenum;
 	}
 }
 
@@ -204,6 +198,7 @@ void AAS_OptimizeArea(optimized_t *optimized, int areanum) {
 
 	area = &aasworld.areas[areanum];
 	optarea = &optimized->areas[areanum];
+
 	Com_Memcpy(optarea, area, sizeof(aas_area_t));
 
 	optarea->numfaces = 0;
@@ -227,6 +222,7 @@ AAS_OptimizeAlloc
 =======================================================================================================================================
 */
 void AAS_OptimizeAlloc(optimized_t *optimized) {
+
 	optimized->vertexes = (aas_vertex_t *)GetClearedMemory(aasworld.numvertexes * sizeof(aas_vertex_t));
 	optimized->numvertexes = 0;
 	optimized->edges = (aas_edge_t *)GetClearedMemory(aasworld.numedges * sizeof(aas_edge_t));
@@ -250,6 +246,7 @@ AAS_OptimizeStore
 =======================================================================================================================================
 */
 void AAS_OptimizeStore(optimized_t *optimized) {
+
 	// store the optimized vertexes
 	if (aasworld.vertexes) {
 		FreeMemory(aasworld.vertexes);

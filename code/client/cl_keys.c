@@ -21,20 +21,18 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
+
 #include "client.h"
 
-qboolean	key_overstrikeMode;
+qboolean key_overstrikeMode;
 int anykeydown;
 qkey_t keys[MAX_KEYS];
-
 
 typedef struct {
 	char *name;
 	int keynum;
 	int keynum2;
 } keyname_t;
-
-
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 keyname_t keynames[] = {
 	{"TAB", K_TAB},
@@ -46,7 +44,6 @@ keyname_t keynames[] = {
 	{"DOWNARROW", K_DOWNARROW},
 	{"LEFTARROW", K_LEFTARROW},
 	{"RIGHTARROW", K_RIGHTARROW},
-
 	{"LEFTALT", K_LEFTALT},
 	{"RIGHTALT", K_RIGHTALT},
 	{"LEFTCTRL", K_LEFTCTRL},
@@ -57,17 +54,14 @@ keyname_t keynames[] = {
 	{"RIGHTWINDOWS", K_RIGHTSUPER},
 	{"LEFTCOMMAND", K_LEFTCOMMAND},
 	{"RIGHTCOMMAND", K_RIGHTCOMMAND},
-
-	// These are after LEFTALT, etc so Key_KeynumToString()returns correct name.
+	// these are after LEFTALT, etc so Key_KeynumToString()returns correct name
 	{"ALT", K_LEFTALT, K_RIGHTALT},
 	{"CTRL", K_LEFTCTRL, K_RIGHTCTRL},
 	{"SHIFT", K_LEFTSHIFT, K_RIGHTSHIFT},
 	{"WINDOWS", K_LEFTSUPER, K_RIGHTSUPER},
 	{"COMMAND", K_LEFTCOMMAND, K_RIGHTCOMMAND},
-
 	{"CAPSLOCK", K_CAPSLOCK},
 
-	
 	{"F1", K_F1},
 	{"F2", K_F2},
 	{"F3", K_F3},
@@ -97,10 +91,10 @@ keyname_t keynames[] = {
 	{"MOUSE4", K_MOUSE4},
 	{"MOUSE5", K_MOUSE5},
 
-	{"MWHEELUP", K_MWHEELUP },
-	{"MWHEELDOWN", K_MWHEELDOWN },
-	{"MWHEELLEFT", K_MWHEELLEFT },
-	{"MWHEELRIGHT", K_MWHEELRIGHT },
+	{"MWHEELUP", K_MWHEELUP},
+	{"MWHEELDOWN", K_MWHEELDOWN},
+	{"MWHEELLEFT", K_MWHEELLEFT},
+	{"MWHEELRIGHT", K_MWHEELRIGHT},
 
 	// player 1
 	{"JOY_A", K_JOY_A},
@@ -167,7 +161,6 @@ keyname_t keynames[] = {
 	{"2JOY_RIGHTSTICK_RIGHT", K_2JOY_RIGHTSTICK_RIGHT},
 	{"2JOY_RIGHTSTICK_DOWN", K_2JOY_RIGHTSTICK_DOWN},
 	{"2JOY_RIGHTSTICK_LEFT", K_2JOY_RIGHTSTICK_LEFT},
-
 	// player 3
 	{"3JOY_A", K_3JOY_A},
 	{"3JOY_B", K_3JOY_B},
@@ -200,7 +193,6 @@ keyname_t keynames[] = {
 	{"3JOY_RIGHTSTICK_RIGHT", K_3JOY_RIGHTSTICK_RIGHT},
 	{"3JOY_RIGHTSTICK_DOWN", K_3JOY_RIGHTSTICK_DOWN},
 	{"3JOY_RIGHTSTICK_LEFT", K_3JOY_RIGHTSTICK_LEFT},
-
 	// player 4
 	{"4JOY_A", K_4JOY_A},
 	{"4JOY_B", K_4JOY_B},
@@ -251,28 +243,27 @@ keyname_t keynames[] = {
 	{"AUX15", K_AUX15},
 	{"AUX16", K_AUX16},
 
-	{"KP_HOME", K_KP_HOME },
-	{"KP_UPARROW", K_KP_UPARROW },
-	{"KP_PGUP", K_KP_PGUP },
-	{"KP_LEFTARROW", K_KP_LEFTARROW },
-	{"KP_5", K_KP_5 },
-	{"KP_RIGHTARROW", K_KP_RIGHTARROW },
-	{"KP_END", K_KP_END },
-	{"KP_DOWNARROW", K_KP_DOWNARROW },
-	{"KP_PGDN", K_KP_PGDN },
-	{"KP_ENTER", K_KP_ENTER },
-	{"KP_INS", K_KP_INS },
-	{"KP_DEL", K_KP_DEL },
-	{"KP_SLASH", K_KP_SLASH },
-	{"KP_MINUS", K_KP_MINUS },
-	{"KP_PLUS", K_KP_PLUS },
-	{"KP_NUMLOCK", K_KP_NUMLOCK },
-	{"KP_STAR", K_KP_STAR },
-	{"KP_EQUALS", K_KP_EQUALS },
+	{"KP_HOME", K_KP_HOME},
+	{"KP_UPARROW", K_KP_UPARROW},
+	{"KP_PGUP", K_KP_PGUP},
+	{"KP_LEFTARROW", K_KP_LEFTARROW},
+	{"KP_5", K_KP_5},
+	{"KP_RIGHTARROW", K_KP_RIGHTARROW},
+	{"KP_END", K_KP_END},
+	{"KP_DOWNARROW", K_KP_DOWNARROW},
+	{"KP_PGDN", K_KP_PGDN},
+	{"KP_ENTER", K_KP_ENTER},
+	{"KP_INS", K_KP_INS},
+	{"KP_DEL", K_KP_DEL},
+	{"KP_SLASH", K_KP_SLASH},
+	{"KP_MINUS", K_KP_MINUS},
+	{"KP_PLUS", K_KP_PLUS},
+	{"KP_NUMLOCK", K_KP_NUMLOCK},
+	{"KP_STAR", K_KP_STAR},
+	{"KP_EQUALS", K_KP_EQUALS},
 
 	{"PAUSE", K_PAUSE},
-	
-	{"SEMICOLON", '; '}, // because a raw semicolon separates commands
+	{"SEMICOLON", ';'}, // because a raw semicolon separates commands
 
 	{"WORLD_0", K_WORLD_0},
 	{"WORLD_1", K_WORLD_1},
@@ -536,7 +527,7 @@ keyname_t keynames[] = {
 	{"HELP", K_HELP},
 	{"PRINT", K_PRINT},
 	{"SYSREQ", K_SYSREQ},
-	{"SCROLLOCK", K_SCROLLOCK },
+	{"SCROLLOCK", K_SCROLLOCK},
 	{"BREAK", K_BREAK},
 	{"MENU", K_MENU},
 	{"POWER", K_POWER},
@@ -549,10 +540,21 @@ keyname_t keynames[] = {
 //============================================================================
 
 
+
+/*
+=======================================================================================================================================
+Key_GetOverstrikeMode
+=======================================================================================================================================
+*/
 qboolean Key_GetOverstrikeMode(void) {
 	return key_overstrikeMode;
 }
 
+/*
+=======================================================================================================================================
+Key_SetOverstrikeMode
+=======================================================================================================================================
+*/
 void Key_SetOverstrikeMode(qboolean state) {
 	key_overstrikeMode = state;
 }
@@ -563,6 +565,7 @@ Key_IsDown
 =======================================================================================================================================
 */
 qboolean Key_IsDown(int keynum) {
+
 	if (keynum < 0 || keynum >= MAX_KEYS) {
 		return qfalse;
 	}
@@ -574,19 +577,15 @@ qboolean Key_IsDown(int keynum) {
 =======================================================================================================================================
 Key_StringToKeynum
 
-Returns a key number to be used to index keys[] by looking at
-the given string.  Single ascii characters return themselves, while
-the K_* names are matched up.
-
-0x11 will be interpreted as raw hex, which will allow new controlers
-
-to be configured even if they don't have defined names.
+Returns a key number to be used to index keys[] by looking at the given string.
+Single ascii characters return themselves, while the K_* names are matched up.
+0x11 will be interpreted as raw hex, which will allow new controlers to be configured even if they don't have defined names.
 =======================================================================================================================================
 */
 qboolean Key_StringToKeynum(char *str, int keynums[KEYNUMS_PER_STRING]) {
 	keyname_t *kn;
 	int n;
-	
+
 	if (!str || !str[0]) {
 		keynums[0] = keynums[1] = -1;
 		return qfalse;
@@ -599,6 +598,7 @@ qboolean Key_StringToKeynum(char *str, int keynums[KEYNUMS_PER_STRING]) {
 	}
 	// check for hex code
 	n = Com_HexStrToInt(str);
+
 	if (n >= 0 && n < MAX_KEYS) {
 		keynums[0] = n;
 		keynums[1] = -1;
@@ -621,12 +621,11 @@ qboolean Key_StringToKeynum(char *str, int keynums[KEYNUMS_PER_STRING]) {
 =======================================================================================================================================
 Key_KeynumToString
 
-Returns a string(either a single ascii char, a K_* name, or a 0x11 hex string)for the
-given keynum.
+Returns a string (either a single ascii char, a K_* name, or a 0x11 hex string) for the given keynum.
 =======================================================================================================================================
 */
 char *Key_KeynumToString(int keynum) {
-	keyname_t *kn;	
+	keyname_t *kn;
 	static char tinystr[5];
 	int i, j;
 
@@ -637,8 +636,8 @@ char *Key_KeynumToString(int keynum) {
 	if (keynum < 0 || keynum >= MAX_KEYS) {
 		return "<OUT OF RANGE>";
 	}
-	// check for printable ascii(don't use quote)
-	if (keynum > 32 && keynum < 127 && keynum != '"' && keynum != '; ') {
+	// check for printable ascii (don't use quote)
+	if (keynum > 32 && keynum < 127 && keynum != '"' && keynum != ';') {
 		tinystr[0] = keynum;
 		tinystr[1] = 0;
 		return tinystr;
@@ -668,6 +667,7 @@ Key_SetBinding
 =======================================================================================================================================
 */
 void Key_SetBinding(int keynum, const char *binding) {
+
 	if (keynum < 0 || keynum >= MAX_KEYS) {
 		return;
 	}
@@ -675,12 +675,9 @@ void Key_SetBinding(int keynum, const char *binding) {
 	if (keys[keynum].binding) {
 		Z_Free(keys[keynum].binding);
 	}
-		
 	// allocate memory for new binding
 	keys[keynum].binding = CopyString(binding);
-
-	// consider this like modifying an archived cvar, so the
-	// file write will be triggered at the next opportunity
+	// consider this like modifying an archived cvar, so the file write will be triggered at the next opportunity
 	cvar_modifiedFlags |= CVAR_ARCHIVE;
 }
 
@@ -690,6 +687,7 @@ Key_GetBinding
 =======================================================================================================================================
 */
 char *Key_GetBinding(int keynum) {
+
 	if (keynum < 0 || keynum >= MAX_KEYS) {
 		return "";
 	}
@@ -697,23 +695,23 @@ char *Key_GetBinding(int keynum) {
 	return keys[keynum].binding;
 }
 
-/* 
-===================
+/*
+=======================================================================================================================================
 Key_GetKey
 =======================================================================================================================================
 */
-
 int Key_GetKey(const char *binding, int startKey) {
 	int i;
 
-  if (binding) {
-  	for (i = startKey; i < MAX_KEYS; i++) {
-      if (keys[i].binding && Q_stricmp(binding, keys[i].binding) == 0) {
-        return i;
-      }
-    }
-  }
-  return - 1;
+	if (binding) {
+		for (i = startKey; i < MAX_KEYS; i++) {
+			if (keys[i].binding && Q_stricmp(binding, keys[i].binding) == 0) {
+				return i;
+			}
+		}
+	}
+
+	return -1;
 }
 
 /*
@@ -725,18 +723,20 @@ void Key_Unbind_f(void) {
 	int i, b[KEYNUMS_PER_STRING];
 
 	if (Cmd_Argc() != 2) {
-		Com_Printf("unbind < key > : remove commands from a key\n");
+		Com_Printf("unbind <key> : remove commands from a key\n");
 		return;
 	}
-	
+
 	if (!Key_StringToKeynum(Cmd_Argv(1), b)) {
 		Com_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
 		return;
 	}
 
 	for (i = 0; i < KEYNUMS_PER_STRING; i++) {
-		if (b[i] == -1)
+		if (b[i] == -1) {
 			break;
+		}
+		
 		Key_SetBinding(b[i], "");
 	}
 }
@@ -748,10 +748,12 @@ Key_Unbindall_f
 */
 void Key_Unbindall_f(void) {
 	int i;
-	
-	for (i = 0; i < MAX_KEYS; i++)
-		if (keys[i].binding)
+
+	for (i = 0; i < MAX_KEYS; i++) {
+		if (keys[i].binding) {
 			Key_SetBinding(i, "");
+		}
+	}
 }
 
 /*
@@ -762,11 +764,11 @@ Key_Bind_f
 void Key_Bind_f(void) {
 	int i, c, b[KEYNUMS_PER_STRING];
 	char cmd[1024];
-	
+
 	c = Cmd_Argc();
 
 	if (c < 2) {
-		Com_Printf("bind < key > [command] : attach a command to a key\n");
+		Com_Printf("bind <key> [command] : attach a command to a key\n");
 		return;
 	}
 
@@ -777,25 +779,27 @@ void Key_Bind_f(void) {
 
 	if (c == 2) {
 		for (i = 0; i < KEYNUMS_PER_STRING; i++) {
-			if (b[i] == -1)
+			if (b[i] == -1) {
 				break;
 
-			if (keys[b[i]].binding && keys[b[i]].binding[0])
+			if (keys[b[i]].binding && keys[b[i]].binding[0]) {
 				Com_Printf("\"%s\" = \"%s\"\n", Key_KeynumToString(b[i]), keys[b[i]].binding);
-			else
+			} else {
 				Com_Printf("\"%s\" is not bound\n", Key_KeynumToString(b[i]));
+			}
 		}
 
 		return;
 	}
-	
-// copy the rest of the command line
-	cmd[0] = 0;		// start out with a null string
+	// copy the rest of the command line
+	cmd[0] = 0; // start out with a null string
+
 	for (i = 2; i < c; i++) {
 		strcat(cmd, Cmd_Argv(i));
 
-		if (i != (c - 1))
+		if (i != (c - 1)) {
 			strcat(cmd, " ");
+		}
 	}
 
 	for (i = 0; i < KEYNUMS_PER_STRING; i++) {
@@ -809,7 +813,7 @@ void Key_Bind_f(void) {
 =======================================================================================================================================
 Key_WriteBindings
 
-Writes lines containing "bind key value"
+Writes lines containing "bind key value".
 =======================================================================================================================================
 */
 void Key_WriteBindings(fileHandle_t f) {
@@ -820,16 +824,13 @@ void Key_WriteBindings(fileHandle_t f) {
 	for (i = 0; i < MAX_KEYS; i++) {
 		if (keys[i].binding && keys[i].binding[0]) {
 			FS_Printf(f, "bind %s \"%s\"\n", Key_KeynumToString(i), keys[i].binding);
-
 		}
-
 	}
 }
 
 /*
 =======================================================================================================================================
 Key_Bindlist_f
-
 =======================================================================================================================================
 */
 void Key_Bindlist_f(void) {
@@ -850,8 +851,9 @@ Key_KeynameCompletion
 void Key_KeynameCompletion(void(*callback)(const char *s)) {
 	int i;
 
-	for (i = 0; keynames[i].name != NULL; i++)
+	for (i = 0; keynames[i].name != NULL; i++) {
 		callback(keynames[i].name);
+	}
 }
 
 /*
@@ -860,12 +862,14 @@ Key_CompleteUnbind
 =======================================================================================================================================
 */
 static void Key_CompleteUnbind(char *args, int argNum) {
+
 	if (argNum == 2) {
-		// Skip "unbind "
+		// skip "unbind"
 		char *p = Com_SkipTokens(args, 1, " ");
 
-		if (p > args)
+		if (p > args) {
 			Field_CompleteKeyname();
+		}
 	}
 }
 
@@ -878,17 +882,19 @@ static void Key_CompleteBind(char *args, int argNum) {
 	char *p;
 
 	if (argNum == 2) {
-		// Skip "bind "
+		// skip "bind"
 		p = Com_SkipTokens(args, 1, " ");
 
-		if (p > args)
+		if (p > args) {
 			Field_CompleteKeyname();
+		}
 	} else if (argNum >= 3) {
-		// Skip "bind < key>"
+		// skip "bind <key>"
 		p = Com_SkipTokens(args, 2, " ");
 
-		if (p > args)
+		if (p > args) {
 			Field_CompleteCommand(p, qtrue, qtrue);
+		}
 	}
 }
 
@@ -898,6 +904,7 @@ CL_InitKeyCommands
 =======================================================================================================================================
 */
 void CL_InitKeyCommands(void) {
+
 	// register our functions
 	Cmd_AddCommand("bind", Key_Bind_f);
 	Cmd_SetCommandCompletionFunc("bind", Key_CompleteBind);
@@ -911,14 +918,16 @@ void CL_InitKeyCommands(void) {
 =======================================================================================================================================
 CL_KeyDownEvent
 
-Called by CL_KeyEvent to handle a keypress
+Called by CL_KeyEvent to handle a keypress.
 =======================================================================================================================================
 */
 void CL_KeyDownEvent(int key, unsigned time) {
 	keys[key].down = qtrue;
 	keys[key].repeats++;
-	if (keys[key].repeats == 1)
+
+	if (keys[key].repeats == 1) {
 		anykeydown++;
+	}
 
 	if ((keys[K_LEFTALT].down || keys[K_RIGHTALT].down) && key == K_ENTER) {
 		// don't repeat fullscreen toggle when keys are held down
@@ -926,8 +935,7 @@ void CL_KeyDownEvent(int key, unsigned time) {
 			return;
 		}
 
-		Cvar_SetValue("r_fullscreen",
-			!Cvar_VariableIntegerValue("r_fullscreen"));
+		Cvar_SetValue("r_fullscreen", !Cvar_VariableIntegerValue("r_fullscreen"));
 		return;
 	}
 
@@ -940,13 +948,15 @@ void CL_KeyDownEvent(int key, unsigned time) {
 =======================================================================================================================================
 CL_KeyUpEvent
 
-Called by CL_KeyEvent to handle a keyrelease
+Called by CL_KeyEvent to handle a keyrelease.
 =======================================================================================================================================
 */
 void CL_KeyUpEvent(int key, unsigned time) {
+
 	keys[key].repeats = 0;
 	keys[key].down = qfalse;
-	anykeydown --;
+
+	anykeydown--;
 
 	if (anykeydown < 0) {
 		anykeydown = 0;

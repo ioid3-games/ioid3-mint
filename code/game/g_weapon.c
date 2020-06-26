@@ -45,7 +45,7 @@ void G_BounceProjectile(vec3_t start, vec3_t impact, vec3_t dir, vec3_t endout) 
 
 	dot = DotProduct(v, dir);
 
-	VectorMA(v, -2*dot, dir, newv);
+	VectorMA(v, -2 * dot, dir, newv);
 	VectorNormalize(newv);
 	VectorMA(impact, 8192, newv, endout);
 }
@@ -543,7 +543,7 @@ void weapon_railgun_fire(gentity_t *ent) {
 		trap_UnlinkEntity(traceEnt);
 		unlinkedEntities[unlinked] = traceEnt;
 		unlinked++;
-	} while(unlinked < MAX_RAIL_HITS);
+	} while (unlinked < MAX_RAIL_HITS);
 	// put them back
 	G_UndoTimeShiftFor(ent);
 	// link back in any entities we unlinked
@@ -583,7 +583,7 @@ void weapon_railgun_fire(gentity_t *ent) {
 			ent->player->accurateCount -= 2;
 			ent->player->ps.persistant[PERS_IMPRESSIVE_COUNT]++;
 			// add the sprite over the player's head
-			ent->player->ps.eFlags & = ~(EF_AWARD_IMPRESSIVE|EF_AWARD_EXCELLENT|EF_AWARD_GAUNTLET|EF_AWARD_ASSIST|EF_AWARD_DEFEND|EF_AWARD_CAP);
+			ent->player->ps.eFlags &= ~(EF_AWARD_IMPRESSIVE|EF_AWARD_EXCELLENT|EF_AWARD_GAUNTLET|EF_AWARD_ASSIST|EF_AWARD_DEFEND|EF_AWARD_CAP);
 			ent->player->ps.eFlags |= EF_AWARD_IMPRESSIVE;
 			ent->player->rewardTime = level.time + REWARD_SPRITE_TIME;
 		}
@@ -622,7 +622,7 @@ Weapon_HookFree
 void Weapon_HookFree(gentity_t *ent) {
 
 	ent->parent->player->hook = NULL;
-	ent->parent->player->ps.pm_flags & = ~PMF_GRAPPLE_PULL;
+	ent->parent->player->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
 
 	G_FreeEntity(ent);
 }
@@ -690,7 +690,7 @@ void Weapon_LightningFire(gentity_t *ent) {
 		// put them back
 		G_UndoTimeShiftFor(ent);
 #ifdef MISSIONPACK
-		// if not the first trace(the lightning bounced of an invulnerability sphere)
+		// if not the first trace (the lightning bounced of an invulnerability sphere)
 		if (i) {
 			// add bounced off lightning bolt temp entity
 			// the first lightning bolt is a cgame only visual
@@ -1010,7 +1010,9 @@ static void KamikazeRadiusDamage(vec3_t origin, gentity_t *attacker, float damag
 			VectorSubtract(ent->r.currentOrigin, origin, dir);
 			// push the center of mass higher than the origin so players get knocked into the air more
 			dir[2] += 24;
+
 			G_Damage(ent, NULL, attacker, dir, origin, damage, DAMAGE_RADIUS|DAMAGE_NO_TEAM_PROTECTION, MOD_KAMIKAZE);
+
 			ent->kamikazeTime = level.time + 3000;
 //		}
 	}
@@ -1180,8 +1182,8 @@ void G_StartKamikaze(gentity_t *ent) {
 
 	if (ent->player) {
 		explosion->activator = ent;
-		ent->s.eFlags & = ~EF_KAMIKAZE;
-		ent->player->ps.eFlags & = ~EF_KAMIKAZE;
+		ent->s.eFlags &= ~EF_KAMIKAZE;
+		ent->player->ps.eFlags &= ~EF_KAMIKAZE;
 		// nuke the guy that used it
 		G_Damage(ent, ent, ent, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_KAMIKAZE);
 	} else {

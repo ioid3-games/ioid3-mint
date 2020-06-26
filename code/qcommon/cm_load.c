@@ -21,19 +21,20 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-// cmodel.c -- model loading
+
+/**************************************************************************************************************************************
+ Model loading.
+**************************************************************************************************************************************/
 
 #include "cm_local.h"
 #include "bsp.h"
 
-// to allow boxes to be treated as brush models, we allocate
-// some extra indexes along with those needed by the map
-#define BOX_LEAF_BRUSHES	1
-#define BOX_BRUSHES		1
-#define BOX_SIDES		6
-#define BOX_LEAFS		2
-#define BOX_PLANES		12
-
+// to allow boxes to be treated as brush models, we allocate some extra indexes along with those needed by the map
+#define BOX_LEAF_BRUSHES 1
+#define BOX_BRUSHES 1
+#define BOX_SIDES 6
+#define BOX_LEAFS 2
+#define BOX_PLANES 12
 #if 1 // ZTM: FIXME: BSP is already swapped by BSP_Load, but removing these probably makes merging ioq3 changes harder...
 #undef LittleShort
 #define LittleShort
@@ -58,21 +59,18 @@ cvar_t *cm_noCurves;
 cvar_t *cm_playerCurveClip;
 cvar_t *cm_betterSurfaceNums;
 #endif
-
 cmodel_t box_model;
 cplane_t *box_planes;
 cbrush_t *box_brush;
 int capsule_contents;
 
-
 void CM_InitBoxHull(void);
 void CM_FloodAreaConnections(void);
-
 
 /*
 =======================================================================================================================================
 
-					MAP LOADING
+	MAP LOADING
 
 =======================================================================================================================================
 */
@@ -116,9 +114,9 @@ void CMod_LoadSubmodels(void) {
 	for (i = 0; i < count; i++, in++) {
 		out = &cm.cmodels[i];
 
-		for (j = 0; j < 3; j++) { // spread the mins / maxs by a pixel
+		for (j = 0; j < 3; j++) { // spread the mins/maxs by a pixel
 			out->mins[j] = LittleFloat(in->mins[j]) - 1;
-			out->maxs[j] = LittleFloat(in->maxs[j]) +  1;
+			out->maxs[j] = LittleFloat(in->maxs[j]) + 1;
 		}
 
 		if (i == 0) {
@@ -146,7 +144,6 @@ void CMod_LoadSubmodels(void) {
 /*
 =======================================================================================================================================
 CMod_LoadNodes
-
 =======================================================================================================================================
 */
 void CMod_LoadNodes(void) {
@@ -154,7 +151,7 @@ void CMod_LoadNodes(void) {
 	int child;
 	cNode_t *out;
 	int i, j, count;
-	
+
 	in = cm_bsp->nodes;
 	count = cm_bsp->numNodes;
 
@@ -164,7 +161,6 @@ void CMod_LoadNodes(void) {
 
 	cm.nodes = Hunk_Alloc(count * sizeof(*cm.nodes), h_high);
 	cm.numNodes = count;
-
 	out = cm.nodes;
 
 	for (i = 0; i < count; i++, out++, in++) {
@@ -186,10 +182,8 @@ void CM_BoundBrush(cbrush_t *b) {
 
 	b->bounds[0][0] = -b->sides[0].plane->dist;
 	b->bounds[1][0] = b->sides[1].plane->dist;
-
 	b->bounds[0][1] = -b->sides[2].plane->dist;
 	b->bounds[1][1] = b->sides[3].plane->dist;
-
 	b->bounds[0][2] = -b->sides[4].plane->dist;
 	b->bounds[1][2] = b->sides[5].plane->dist;
 }
@@ -223,7 +217,6 @@ void CMod_LoadBrushes(void) {
 
 		CM_BoundBrush(out);
 	}
-
 }
 
 /*
@@ -236,7 +229,7 @@ void CMod_LoadLeafs(void) {
 	cLeaf_t *out;
 	dleaf_t *in;
 	int count;
-	
+
 	in = cm_bsp->leafs;
 	count = cm_bsp->numLeafs;
 
@@ -246,7 +239,6 @@ void CMod_LoadLeafs(void) {
 
 	cm.leafs = Hunk_Alloc((BOX_LEAFS + count) * sizeof(*cm.leafs), h_high);
 	cm.numLeafs = count;
-
 	out = cm.leafs;
 
 	for (i = 0; i < count; i++, in++, out++) {
@@ -291,7 +283,6 @@ void CMod_LoadPlanes(void) {
 
 	cm.planes = Hunk_Alloc((BOX_PLANES + count) * sizeof(*cm.planes), h_high);
 	cm.numPlanes = count;
-
 	out = cm.planes;
 
 	for (i = 0; i < count; i++, in++, out++) {
@@ -300,7 +291,7 @@ void CMod_LoadPlanes(void) {
 		for (j = 0; j < 3; j++) {
 			out->normal[j] = LittleFloat(in->normal[j]);
 
-			if (out->normal[j] < 0)
+			if (out->normal[j] < 0) {
 				bits |= 1 << j;
 			}
 		}
@@ -321,7 +312,7 @@ void CMod_LoadLeafBrushes(void) {
 	int *out;
 	int *in;
 	int count;
-	
+
 	in = cm_bsp->leafBrushes;
 	count = cm_bsp->numLeafBrushes;
 	cm.leafbrushes = Hunk_Alloc((BOX_LEAF_BRUSHES + count) * sizeof(*cm.leafbrushes), h_high);
@@ -349,7 +340,6 @@ void CMod_LoadLeafSurfaces(void) {
 
 	cm.leafsurfaces = Hunk_Alloc(count * sizeof(*cm.leafsurfaces), h_high);
 	cm.numLeafSurfaces = count;
-
 	out = cm.leafsurfaces;
 
 	for (i = 0; i < count; i++, in++, out++) {
@@ -374,7 +364,6 @@ void CMod_LoadBrushSides(void) {
 
 	cm.brushsides = Hunk_Alloc((BOX_SIDES + count) * sizeof(*cm.brushsides), h_high);
 	cm.numBrushSides = count;
-
 	out = cm.brushsides;
 
 	for (i = 0; i < count; i++, in++, out++) {
@@ -773,7 +762,7 @@ void CMod_LoadPatches(void) {
 		if (LittleLong(in->surfaceType) != MST_PATCH) {
 			continue; // ignore other surfaces
 		}
-		// FIXME: check for non - colliding patches
+		// FIXME: check for non-colliding patches
 		cm.surfaces[i] = patch = Hunk_Alloc(sizeof(*patch), h_high);
 		// load the full drawverts onto the stack
 		width = LittleLong(in->patchWidth);
@@ -880,6 +869,7 @@ void CM_ClearMap(void) {
 	cm_bsp = NULL;
 
 	Com_Memset(&cm, 0, sizeof(cm));
+
 	CM_ClearLevelPatches();
 }
 
@@ -902,7 +892,7 @@ cmodel_t *CM_ClipHandleToModel(clipHandle_t handle) {
 		return &box_model;
 	}
 
-	Com_Error(ERR_DROP, "CM_ClipHandleToModel: bad handle %i(max %d)", handle, cm.numSubModels);
+	Com_Error(ERR_DROP, "CM_ClipHandleToModel: bad handle %i (max %d)", handle, cm.numSubModels);
 
 	return NULL;
 }
@@ -1024,28 +1014,32 @@ void CM_InitBoxHull(void) {
 	box_brush->edges = (cbrushedge_t *)Hunk_Alloc(sizeof(cbrushedge_t) * 12, h_low);
 	box_brush->numEdges = 12;
 	box_model.leaf.numLeafBrushes = 1;
-//	box_model.leaf.firstLeafBrush = cm.numBrushes;
+	//box_model.leaf.firstLeafBrush = cm.numBrushes;
 	box_model.leaf.firstLeafBrush = cm.numLeafBrushes;
+
 	cm.leafbrushes[cm.numLeafBrushes] = cm.numBrushes;
 
 	for (i = 0; i < 6; i++) {
 		side = i&1;
 		// brush sides
-		s = &cm.brushsides[cm.numBrushSides+i];
-		s->plane = cm.planes + (cm.numPlanes+i*2+side);
+		s = &cm.brushsides[cm.numBrushSides + i];
+		s->plane = cm.planes + (cm.numPlanes + i * 2 + side);
 		s->surfaceFlags = 0;
 		s->surfaceNum = -1;
 		// planes
-		p = &box_planes[i*2];
+		p = &box_planes[i * 2];
 		p->type = i >> 1;
 		p->signbits = 0;
-		VectorClear(p->normal);
-		p->normal[i >> 1] = 1;
 
-		p = &box_planes[i*2+1];
+		VectorClear(p->normal);
+
+		p->normal[i >> 1] = 1;
+		p = &box_planes[i * 2 + 1];
 		p->type = 3 + (i >> 1);
 		p->signbits = 0;
+
 		VectorClear(p->normal);
+
 		p->normal[i >> 1] = -1;
 
 		SetPlaneSignbits(p);

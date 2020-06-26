@@ -54,12 +54,11 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "syn.h" // synonyms
 #include "match.h" // string matching types and vars
 
-//===========================================================================
-//
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-//===========================================================================
+/*
+=======================================================================================================================================
+GeneticSelection
+=======================================================================================================================================
+*/
 int GeneticSelection(int numranks, float *rankings) {
 	float sum;
 	int i, index;
@@ -101,13 +100,13 @@ int GeneticSelection(int numranks, float *rankings) {
 	}
 
 	return 0;
-} //end of the function GeneticSelection
-//===========================================================================
-//
-// Parameter:			 - 
-// Returns:				 - 
-// Changes Globals:		 - 
-//===========================================================================
+}
+
+/*
+=======================================================================================================================================
+GeneticParentsAndChildSelection
+=======================================================================================================================================
+*/
 int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, int *parent2, int *child) {
 	float rankings[256], max;
 	int i;

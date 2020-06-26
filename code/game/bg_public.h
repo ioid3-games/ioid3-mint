@@ -21,103 +21,85 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-// bg_public.h -- definitions shared by both the server game and client game modules
+
+/**************************************************************************************************************************************
+ Definitions shared by both the server game and client game modules.
+**************************************************************************************************************************************/
+
+// because games can change separately from the main system version, we need a second version that must match between game and cgame
 
 #include "../qcommon/surfaceflags.h"
 
 #ifndef MODDIR
-  #ifdef MISSIONPACK
+#ifdef MISSIONPACK
 #define MODDIR "missionpack"
-  #else
+#else
 #define MODDIR "baseq3"
-  #endif
 #endif
-
-#define PRODUCT_NAME				MODDIR
-
-// Keep this in - sync with VERSION in Makefile.
+#endif
+#define PRODUCT_NAME MODDIR
+// keep this in-sync with VERSION in Makefile
 #ifndef PRODUCT_VERSION
-	#define PRODUCT_VERSION			"1.0.2"
+#define PRODUCT_VERSION "1.0.2"
 #endif
-
 // because games can change separately from the main system protocol, we need a
 // second protocol that must match between game and cgame
-
-#define GAME_PROTOCOL		MODDIR "damageskins - 4"
-
+#define GAME_PROTOCOL MODDIR "damageskins - 4"
 // used for switching fs_game
 #ifndef BASEQ3
-	#define BASEQ3			"baseq3"
+#define BASEQ3 "baseq3"
 #endif
 #ifndef BASETA
-	#define BASETA			"missionpack"
+#define BASETA "missionpack"
 #endif
+#define DEFAULT_GRAVITY 800
+#define GIB_HEALTH -40
+#define ARMOR_PROTECTION 0.66
+#define MAX_LOCATIONS 64
+#define MAX_SAY_TEXT 150
+#define SAY_ALL 0
+#define SAY_TEAM 1
+#define SAY_TELL 2
 
-#define DEFAULT_GRAVITY		800
-#define GIB_HEALTH			 - 40
-#define ARMOR_PROTECTION	0.66
+#define CHATPLAYER_SERVER	-1
+#define CHATPLAYER_UNKNOWN	-2
 
-#define MAX_LOCATIONS		64
-
-#define MAX_SAY_TEXT	150
-
-#define SAY_ALL			0
-#define SAY_TEAM		1
-#define SAY_TELL		2
-
-#define CHATPLAYER_SERVER	 - 1
-#define CHATPLAYER_UNKNOWN	 - 2
-
-#define MODELINDEX_BITS		10
-
+#define MODELINDEX_BITS 10
 // these are networked using the modelindex and/or modelindex2 field, must fit in MODELINDEX_BITS
-#define MAX_SUBMODELS		1024	// max bsp models, q3map2 limits to 1024 via MAX_MAP_MODELS
-#define MAX_ITEMS			256		// max item types
-#define MAX_MODELS			256		// max model filenames set by game VM
-
-#define MAX_SOUNDS			256		// this is sent over the net as 8 bits(in eventParm)
-									// so they cannot be blindly increased
-
-#define RANK_TIED_FLAG		0x4000
-
-#define DEFAULT_SHOTGUN_SPREAD	700
-#define DEFAULT_SHOTGUN_COUNT	11
-
-#define ITEM_RADIUS			15		// item sizes are needed for client side pickup detection
-
-#define LIGHTNING_RANGE		768
-
-#define SCORE_NOT_PRESENT	 - 9999	// for the CS_SCORES[12] when only one player is present
-
-#define VOTE_TIME			30000	// 30 seconds before vote times out
-
-#define MINS_Z				 - 24
-#define DEFAULT_VIEWHEIGHT	26
-#define CROUCH_VIEWHEIGHT	12
-#define DEAD_VIEWHEIGHT		 - 16
-
-#define STEPSIZE			18
-
-#define BODY_SINK_DELAY		5000
-#define BODY_SINK_TIME		1500
-
+#define MAX_SUBMODELS 1024 // max bsp models, q3map2 limits to 1024 via MAX_MAP_MODELS
+#define MAX_ITEMS 256 // max item types
+#define MAX_MODELS 256 // max model filenames set by game VM
+#define MAX_SOUNDS 256 // this is sent over the net as 8 bits (in eventParm) so they cannot be blindly increased
+#define RANK_TIED_FLAG 0x4000
+#define DEFAULT_SHOTGUN_SPREAD 700
+#define DEFAULT_SHOTGUN_COUNT 11
+#define ITEM_RADIUS 15 // item sizes are needed for client side pickup detection
+#define LIGHTNING_RANGE 768
+#define SCORE_NOT_PRESENT -9999 // for the CS_SCORES[12] when only one player is present
+#define VOTE_TIME 30000 // 30 seconds before vote times out
+#define MINS_Z -24
+#define DEFAULT_VIEWHEIGHT 26
+#define CROUCH_VIEWHEIGHT 12
+#define DEAD_VIEWHEIGHT -16
+#define STEPSIZE 18
+#define BODY_SINK_DELAY 5000
+#define BODY_SINK_TIME 1500
 #ifdef MISSIONPACK
-#define OBELISK_TARGET_HEIGHT	56
+#define OBELISK_TARGET_HEIGHT 56
 #endif
-
 #define MAX_DLIGHT_CONFIGSTRINGS 128
 
-//
-// config strings are a general means of communicating variable length strings
-// from the server to all connected clients.
-//
+/**************************************************************************************************************************************
+
+	config strings are a general means of communicating variable length strings from the server to all connected clients.
+
+**************************************************************************************************************************************/
 
 // CS_SERVERINFO and CS_SYSTEMINFO are defined in q_shared.h
 #define CS_MUSIC				2
-#define CS_MESSAGE				3		// from the map worldspawn's message field
-#define CS_MOTD					4		// g_motd string for server message of the day
-#define CS_WARMUP				5		// server time when the match will be restarted
+#define CS_MESSAGE				3 // from the map worldspawn's message field
+#define CS_MOTD					4 // g_motd string for server message of the day
+#define CS_WARMUP				5 // server time when the match will be restarted
 #define CS_SCORES1				6
 #define CS_SCORES2				7
 #define CS_VOTE_TIME			8
@@ -157,9 +139,7 @@ typedef enum {
 	GT_FFA, // free for all
 	GT_TOURNAMENT, // one on one tournament
 	GT_SINGLE_PLAYER, // single player ffa
-
 	// -- team games go after this -- 
-
 	GT_TEAM, // team deathmatch
 	GT_CTF, // capture the flag
 #ifdef MISSIONPACK
@@ -173,7 +153,9 @@ typedef enum {
 extern const char *bg_netGametypeNames[GT_MAX_GAME_TYPE];
 extern const char *bg_displayGametypeNames[GT_MAX_GAME_TYPE];
 
-typedef enum { GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER } gender_t;
+typedef enum {
+	GENDER_MALE, GENDER_FEMALE, GENDER_NEUTER
+} gender_t;
 
 typedef enum {
 	TR_STATIONARY,
@@ -187,9 +169,9 @@ typedef enum {
 typedef struct {
 	trType_t trType;
 	int trTime;
-	int trDuration;			// if non 0, trTime + trDuration = stop time
+	int trDuration;	// if non 0, trTime + trDuration = stop time
 	vec3_t trBase;
-	vec3_t trDelta;			// velocity, etc
+	vec3_t trDelta;	// velocity, etc
 } trajectory_t;
 
 /*
@@ -233,53 +215,44 @@ typedef struct entityState_s {
 
 	int eType;			// entityType_t
 	int eFlags;
-
 	trajectory_t pos;	// for calculating position
 	trajectory_t apos;	// for calculating angles
-
 	int time;
 	int time2;
-
 	vec3_t angles;
 	vec3_t angles2;
-	int otherEntityNum;	// shotgun sources, etc
+	int otherEntityNum;		// shotgun sources, etc
 	int otherEntityNum2;
 	int groundEntityNum;	// ENTITYNUM_NONE = in air
-
-	int constantLight;	// r + (g << 8) +  (b << 16) +  (intensity << 24)
-	int dl_intensity;	// used for coronas
-	int loopSound;		// constantly loop this sound
-
+	int constantLight;		// r + (g << 8) +  (b << 16) +  (intensity << 24)
+	int dl_intensity;		// used for coronas
+	int loopSound;			// constantly loop this sound
 	int modelindex2;
-	int playerNum;		// 0 to(MAX_CLIENTS - 1), for players and corpses
+	int playerNum;			// 0 to(MAX_CLIENTS - 1), for players and corpses
 	int frame;
-	int event;			// impulse events -- muzzle flashes, footsteps, etc
+	int event;				// impulse events -- muzzle flashes, footsteps, etc
 	int eventParm;
 	int team;
-	int density;            // for particle effects
-
+	int density;			// for particle effects
 	// for players
-	int powerups;		// bit flags
-	int weapon;			// determines weapon and flash model, etc
-	int legsAnim;		// mask off ANIM_TOGGLEBIT
-	int torsoAnim;		// mask off ANIM_TOGGLEBIT
-	int tokens;			// harvester skulls
-	float skinFraction;	// 0 = full health, 1 = dead
+	int powerups;			// bit flags
+	int weapon;				// determines weapon and flash model, etc
+	int legsAnim;			// mask off ANIM_TOGGLEBIT
+	int torsoAnim;			// mask off ANIM_TOGGLEBIT
+	int tokens;				// harvester skulls
+	float skinFraction;		// 0 = full health, 1 = dead
 } entityState_t;
 
 // bit limits
-#define WEAPONNUM_BITS			4
+#define WEAPONNUM_BITS 4
+// array limits (engine will only network arrays <= 1024 elements)
+#define MAX_STATS		16
+#define MAX_PERSISTANT	16
+#define MAX_POWERUPS	16 // entityState_t::powerups bit field limits this to <= 32.
+#define MAX_WEAPONS		(1 << WEAPONNUM_BITS) // playerState_t::stats[STAT_WEAPONS] bit field limits this to <= 16.
 
-// array limits(engine will only network arrays <= 1024 elements)
-#define MAX_STATS				16
-#define MAX_PERSISTANT			16
-#define MAX_POWERUPS			16 // entityState_t::powerups bit field limits this to <= 32.
-#define MAX_WEAPONS				(1 << WEAPONNUM_BITS) // playerState_t::stats[STAT_WEAPONS] bit field limits this to <= 16.
-
-#define MAX_PS_EVENTS			2
-
-#define PS_PMOVEFRAMECOUNTBITS	6
-
+#define MAX_PS_EVENTS 2
+#define PS_PMOVEFRAMECOUNTBITS 6
 // playerState_t is the information needed by both the client and server
 // to predict player motion and actions
 // nothing outside of pmove should modify these, or some degree of prediction error
@@ -293,32 +266,23 @@ typedef struct entityState_s {
 
 typedef struct playerState_s {
 	int commandTime;	// cmd->serverTime of last executed command
-
 	vec3_t origin;
-
 	qboolean linked;			// set by server
-
 	int playerNum;		// ranges from 0 to MAX_CLIENTS - 1
-
 	vec3_t viewangles;		// for fixed views
 	int viewheight;
-
 	// ping is not communicated over the net at all
 	int ping;			// server to game info for scoreboard
-
 	// ZTM: FIXME: make persistant private to game/cgame. Currently server accesses PERS_SCORE(0)in it.
 	int persistant[MAX_PERSISTANT];	// stats that aren't cleared on death
-
 	// DO NOT MODIFY ANYTHING ABOVE THIS, THE SERVER
 	// EXPECTS THE FIELDS IN THAT ORDER!
 	//================================
-
 	//int commandTime;	// cmd->serverTime of last executed command
 	int pm_type;
 	int bobCycle;		// for view bobbing and footstep generation
 	int pm_flags;		// ducked, jump_held, etc
 	int pm_time;
-
 	//vec3_t origin;
 	vec3_t velocity;
 	int weaponTime;
@@ -326,42 +290,31 @@ typedef struct playerState_s {
 	int speed;
 	int delta_angles[3];	// add to command angles to get view direction
 									// changed by spawns, rotating objects, and teleporters
-
 	vec3_t mins, maxs;		// bounding box size
-
 	int groundEntityNum; // ENTITYNUM_NONE = in air
-
 	int legsTimer;		// don't change low priority animations until this runs out
 	int legsAnim;		// mask off ANIM_TOGGLEBIT
-
 	int torsoTimer;		// don't change low priority animations until this runs out
 	int torsoAnim;		// mask off ANIM_TOGGLEBIT
-
 	int movementDir;	// a number 0 to 7 that represents the relative angle
 								// of movement to the view angle(axial and diagonals)
 								// when at rest, the value will remain unchanged
 								// used to twist the legs during strafing
-
 	vec3_t grapplePoint;	// location of grapple to pull towards if PMF_GRAPPLE_PULL
-
 	int eFlags;				// copied to entityState_t->eFlags
 	int contents;			// copied to entityState_t->contents
 	collisionType_t collisionType;	// copied to entityState_t->capsule
 	//qboolean linked;				// set by server
-
 	int eventSequence;	// pmove generated events
 	int events[MAX_PS_EVENTS];
 	int eventParms[MAX_PS_EVENTS];
 	int externalEvent;	// events set on player from another source
 	int externalEventParm;
-
 	//int playerNum;		// ranges from 0 to MAX_CLIENTS - 1
 	int weapon;			// copied to entityState_t->weapon
 	int weaponstate;
-
 	//vec3_t viewangles;		// for fixed views
 	//int viewheight;
-
 	// damage feedback
 	int damageEvent;	// when it changes, latch the other parms
 	int damageYaw;
@@ -374,7 +327,6 @@ typedef struct playerState_s {
 	int tokens;			// harvester skulls
 	int loopSound;
 	int jumppad_ent;	// jumppad entity hit this frame
-
 	// not communicated over the net at all
 	//int ping;			// server to game info for scoreboard
 	int pmove_framecount;
@@ -407,30 +359,23 @@ usercmd_t->button bits definitions
 #define BUTTON_GUARDBASE	(1 << 8)
 #define BUTTON_PATROL		(1 << 9)
 #define BUTTON_FOLLOWME		(1 << 10)
-
-#define BUTTON_TALK			(1 << 13)		// displays talk balloon and disables actions
-
-#define BUTTON_WALKING		(1 << 14)		// walking can't just be infered from MOVE_RUN
+#define BUTTON_TALK			(1 << 13)	// displays talk balloon and disables actions
+#define BUTTON_WALKING		(1 << 14)	// walking can't just be infered from MOVE_RUN
 										// because a key pressed late in the frame will
 										// only generate a small move value for that frame
 										// walking will use different animations and
 										// won't generate footsteps
-
-#define BUTTON_ANY			(1 << 15)		// any key whatsoever
-
+#define BUTTON_ANY			(1 << 15)	// any key whatsoever
 #define BUTTONS_GENERATED	(BUTTON_TALK|BUTTON_WALKING|BUTTON_ANY)
-
-#define MOVE_RUN			120			// if forwardmove or rightmove are >= MOVE_RUN,
-										// then BUTTON_WALKING should be set
+#define MOVE_RUN			120			// if forwardmove or rightmove are >= MOVE_RUN,  then BUTTON_WALKING should be set
 
 /*
 =======================================================================================================================================
 
 PMOVE MODULE
 
-The pmove code takes a player_state_t and a usercmd_t and generates a new player_state_t
-and some other output data.  Used for local prediction on the client game and true
-movement on the server game.
+The pmove code takes a player_state_t and a usercmd_t and generates a new player_state_t and some other output data.  Used for local
+prediction on the client game and true movement on the server game.
 =======================================================================================================================================
 */
 
@@ -458,7 +403,6 @@ typedef enum {
 #define PMF_BACKWARDS_RUN	16		// coast down to backwards run
 #define PMF_TIME_LAND		32		// pm_time is time before rejump
 #define PMF_TIME_KNOCKBACK	64		// pm_time is an air - accelerate only time
-
 #define PMF_TIME_WATERJUMP	256		// pm_time is waterjump
 #define PMF_RESPAWNED		512		// clear after attack and jump buttons come up
 #define PMF_USE_ITEM_HELD	1024
@@ -473,31 +417,24 @@ typedef enum {
 typedef struct {
 	// state(in / out)
 	playerState_t *ps;
-
 	// command(in)
 	usercmd_t cmd;
 	int tracemask;			// collide against these types of surfaces
 	int debugLevel;			// if set, diagnostic output will be printed
 	qboolean noFootsteps;		// if the game is setup for no footsteps by the server
 	qboolean gauntletHit;		// true if a gauntlet attack would actually hit something
-
 	int framecount;
-
 	// results(out)
 	int numtouch;
 	int touchents[MAXTOUCH];
 	int watertype;
 	int waterlevel;
-
 	float xyspeed;
-
 	// enables overbounce bug
 	qboolean pmove_overbounce;
-
 	// for fixed msec Pmove
 	int pmove_fixed;
 	int pmove_msec;
-
 	// callbacks to test the world
 	// these will be different functions during game and cgame
 	void (*trace)(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask);
@@ -583,37 +520,30 @@ typedef enum {
 	PW_INVIS,
 	PW_REGEN,
 	PW_FLIGHT,
-
 	PW_REDFLAG,
 	PW_BLUEFLAG,
 	PW_NEUTRALFLAG,
-
 	PW_SCOUT,
 	PW_GUARD,
 	PW_DOUBLER,
 	PW_AMMOREGEN,
 	PW_INVULNERABILITY,
-
 	PW_NUM_POWERUPS
-
 } powerup_t;
 
 typedef enum {
 	HI_NONE,
-
 	HI_TELEPORTER,
 	HI_MEDKIT,
 	HI_KAMIKAZE,
 	HI_PORTAL,
 	HI_INVULNERABILITY,
-
 	HI_NUM_HOLDABLE
 } holdable_t;
 
 // NOTE: may not have more than MAX_WEAPONS
 typedef enum {
 	WP_NONE,
-
 	WP_GAUNTLET,
 	WP_MACHINEGUN,
 	WP_SHOTGUN,
@@ -629,14 +559,13 @@ typedef enum {
 	WP_PROX_LAUNCHER,
 	WP_CHAINGUN,
 #endif
-
 	WP_NUM_WEAPONS
 } weapon_t;
 
 // reward sounds(stored in ps->persistant[PERS_PLAYEREVENTS])
-#define PLAYEREVENT_DENIEDREWARD		0x0001
-#define PLAYEREVENT_GAUNTLETREWARD		0x0002
-#define PLAYEREVENT_HOLYSHIT			0x0004
+#define PLAYEREVENT_DENIEDREWARD	0x0001
+#define PLAYEREVENT_GAUNTLETREWARD	0x0002
+#define PLAYEREVENT_HOLYSHIT		0x0004
 
 // entityState_t->event values
 // entity events are for effects that take place relative
@@ -920,17 +849,15 @@ typedef enum {
 	TEAM_RED,
 	TEAM_BLUE,
 	TEAM_SPECTATOR,
-
 	TEAM_NUM_TEAMS
 } team_t;
 
 // Time between location updates
-#define TEAM_LOCATION_UPDATE_TIME		1000
-
+#define TEAM_LOCATION_UPDATE_TIME 1000
 // How many players on the overlay
-#define TEAM_MAXOVERLAY		32
+#define TEAM_MAXOVERLAY 32
 
-//team task
+// team task
 typedef enum {
 	TEAMTASK_NONE,
 	TEAMTASK_OFFENSE,
@@ -942,7 +869,7 @@ typedef enum {
 	TEAMTASK_CAMP
 } teamtask_t;
 
-//flag status
+// flag status
 typedef enum {
 	FLAG_ATBASE = 0,
 	FLAG_TAKEN, // CTF
@@ -987,7 +914,7 @@ typedef enum {
 	MOD_SUICIDE_TEAM_CHANGE
 } meansOfDeath_t;
 
-// --------------------------------------------------------- 
+// ---------------------------------------------------------
 
 // gitem_t->type
 typedef enum {
@@ -997,9 +924,9 @@ typedef enum {
 	IT_ARMOR, // EFX: rotate + minlight
 	IT_HEALTH, // EFX: static external sphere + rotating internal
 	IT_POWERUP, // instant on, timer based
-							// EFX: rotate + external ring that rotates
+				// EFX: rotate + external ring that rotates
 	IT_HOLDABLE, // single use, holdable item
-							// EFX: rotate + bob
+				// EFX: rotate + bob
 	IT_PERSISTANT_POWERUP,
 	IT_TEAM
 } itemType_t;
@@ -1010,21 +937,17 @@ typedef struct gitem_s {
 	char *classname;	// spawning name
 	char *pickup_sound;
 	char *world_model[MAX_ITEM_MODELS];
-
 	char *icon;
 	char *pickup_name;	// for printing on pickup
-
 	int quantity;		// for ammo how much, or duration of powerup
 	itemType_t giType;			// IT_* flags
-
 	int giTag;
-
 	char *sounds;		// string of all sounds this item will use
 } gitem_t;
 
 // included in both the game dll and the client
-extern	gitem_t bg_itemlist[];
-extern	int bg_numItems;
+extern gitem_t bg_itemlist[];
+extern int bg_numItems;
 
 gitem_t *BG_FindItem(const char *pickupName);
 gitem_t *BG_FindItemForWeapon(weapon_t weapon);
@@ -1036,12 +959,10 @@ gitem_t *BG_FindItemForHoldable(holdable_t pw);
 #define BG_ItemNumForItem(x)((x) - bg_itemlist)
 
 qboolean BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playerState_t *ps);
-
 // g_dmflags->integer flags
 #define DF_NO_FALLING			8
 #define DF_FIXED_FOV			16
 #define DF_NO_FOOTSTEPS			32
-
 // content masks
 #define MASK_ALL				(-1)
 #define MASK_SOLID				(CONTENTS_SOLID)
@@ -1051,9 +972,7 @@ qboolean BG_CanItemBeGrabbed(int gametype, const entityState_t *ent, const playe
 #define MASK_OPAQUE				(CONTENTS_SOLID|CONTENTS_SLIME|CONTENTS_LAVA)
 #define MASK_SHOT				(CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_CORPSE)
 
-//
 // entityState_t->eType
-//
 typedef enum {
 	ET_GENERAL,
 	ET_PLAYER,
@@ -1069,7 +988,6 @@ typedef enum {
 	ET_GRAPPLE, // grapple hooked on wall
 	ET_TEAM,
 	ET_CORONA,
-
 	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum
 							// this avoids having to set eFlags and eventNum
@@ -1077,20 +995,14 @@ typedef enum {
 
 void BG_EvaluateTrajectory(const trajectory_t *tr, int atTime, vec3_t result);
 void BG_EvaluateTrajectoryDelta(const trajectory_t *tr, int atTime, vec3_t result);
-
 void BG_AddPredictableEventToPlayerstate(int newEvent, int eventParm, playerState_t *ps);
-
 void BG_TouchJumpPad(playerState_t *ps, entityState_t *jumppad);
-
 void BG_PlayerStateToEntityState(playerState_t *ps, entityState_t *s, qboolean snap);
 void BG_PlayerStateToEntityStateExtraPolate(playerState_t *ps, entityState_t *s, int time, qboolean snap);
-
 qboolean BG_PlayerTouchesItem(playerState_t *ps, entityState_t *item, int atTime);
 int BG_ComposeUserCmdValue(int weapon);
 void BG_DecomposeUserCmdValue(int value, int *weapon);
-
 void BG_AddStringToList(char *list, size_t listSize, int *listLength, char *name);
-
 void SnapVectorTowards(vec3_t v, vec3_t to);
 
 #define ARENAS_PER_TIER		4
@@ -1121,36 +1033,31 @@ void SnapVectorTowards(vec3_t v, vec3_t to);
 #define KAMI_SHOCKWAVE_MAXRADIUS		1320
 #define KAMI_BOOMSPHERE_MAXRADIUS		720
 #define KAMI_SHOCKWAVE2_MAXRADIUS		704
-
 // font rendering values used by ui and cgame
-
-#define PROP_GAP_WIDTH			3
-#define PROP_SPACE_WIDTH		8
-#define PROP_HEIGHT				27
-#define PROP_SMALL_SIZE_SCALE	0.75
-
-#define PROPB_GAP_WIDTH			4
-#define PROPB_SPACE_WIDTH		12
-#define PROPB_HEIGHT			36
-
-#define BLINK_DIVISOR			200
-#define PULSE_DIVISOR			75.0f
-
+#define PROP_GAP_WIDTH 3
+#define PROP_SPACE_WIDTH 8
+#define PROP_HEIGHT 27
+#define PROP_SMALL_SIZE_SCALE 0.75
+#define PROPB_GAP_WIDTH 4
+#define PROPB_SPACE_WIDTH 12
+#define PROPB_HEIGHT 36
+#define BLINK_DIVISOR 200
+#define PULSE_DIVISOR 75.0f
 // horizontal alignment
-#define UI_LEFT			0x00000001	// default
+#define UI_LEFT			0x00000001 // default
 #define UI_CENTER		0x00000002
 #define UI_RIGHT		0x00000003
 #define UI_FORMATMASK	0x0000000F
 
 // vertical alignment
-#define UI_VA_TOP			0x00000010	// default
+#define UI_VA_TOP			0x00000010 // default
 #define UI_VA_CENTER		0x00000020
 #define UI_VA_BOTTOM		0x00000030
 #define UI_VA_FORMATMASK	0x000000F0
 
 // font selection
 #define UI_SMALLFONT	0x00000100
-#define UI_BIGFONT		0x00000200	// default
+#define UI_BIGFONT		0x00000200 // default
 #define UI_GIANTFONT	0x00000300
 #define UI_TINYFONT		0x00000400
 #define UI_NUMBERFONT	0x00000500
@@ -1168,14 +1075,13 @@ void SnapVectorTowards(vec3_t v, vec3_t to);
 #define UI_INMOTION		0x00080000 // use for scrolling / moving text to fix uneven scrolling caused by aligning to pixel boundary
 
 typedef struct {
-  const char *name;
+	const char *name;
 } dummyCmd_t;
+
 int cmdcmp(const void *a, const void *b);
 
-//
 typedef struct {
 	int gametype;
-
 	// callbacks to test the entity
 	// these will be different functions during game and cgame
 	qboolean(*spawnInt)(const char *key, const char *defaultString, int *out);
@@ -1187,9 +1093,7 @@ qboolean BG_CheckSpawnEntity(const bgEntitySpawnInfo_t *info);
 
 #define MAX_MAP_SIZE 65536
 
-//
 // bg_tracemap.c
-//
 typedef struct {
 	// callbacks to test the world
 	// these will be different functions during game and cgame
@@ -1247,33 +1151,26 @@ typedef struct structdef_s {
 
 qboolean PC_ReadStructure(int source, structdef_t *def, void *structure);
 
-//
 // System calls shared by game, cgame, and ui.
-//
+
 // print message on the local console
 void trap_Print(const char *text);
 
 // abort the game
 void trap_Error(const char *text)__attribute__ ((noreturn));
-
-// milliseconds should only be used for performance tuning, never
-// for anything game related.
+// milliseconds should only be used for performance tuning, never for anything game related
 int trap_Milliseconds(void);
 int trap_RealTime(qtime_t *qtime);
 void trap_SnapVector(float *v);
-
 // ServerCommand and ConsoleCommand parameter access
 int trap_Argc(void);
 void trap_Argv(int n, char *buffer, int bufferLength);
 void trap_Args(char *buffer, int bufferLength);
 void trap_LiteralArgs(char *buffer, int bufferLength);
-
 // register a command name so the console can perform command completion.
 void trap_AddCommand(const char *cmdName);
 void trap_RemoveCommand(const char *cmdName);
-
 void trap_Cmd_ExecuteText(int exec_when, const char *text);
-
 // console variable interaction
 void trap_Cvar_Register(vmCvar_t *cvar, const char *var_name, const char *value, int flags);
 void trap_Cvar_Update(vmCvar_t *cvar);
@@ -1287,7 +1184,6 @@ void trap_Cvar_LatchedVariableStringBuffer(const char *var_name, char *buffer, i
 void trap_Cvar_DefaultVariableStringBuffer(const char *var_name, char *buffer, int bufsize);
 void trap_Cvar_InfoStringBuffer(int bit, char *buffer, int bufsize);
 void trap_Cvar_CheckRange(const char *var_name, float min, float max, qboolean integral);
-
 // filesystem access
 // returns length of file
 int trap_FS_FOpenFile(const char *qpath, fileHandle_t *f, fsMode_t mode);
@@ -1308,11 +1204,9 @@ int trap_PC_AddDefine(int handle, const char *define);
 int trap_PC_ReadToken(int handle, pc_token_t *pc_token);
 void trap_PC_UnreadToken(int handle);
 int trap_PC_SourceFileAndLine(int handle, char *filename, int *line);
-
 void *trap_HeapMalloc(int size);
 int trap_HeapAvailable(void);
 void trap_HeapFree(void *data);
-
 // functions for console command argument completion
 void trap_Field_CompleteFilename(const char *dir, const char *ext, qboolean stripExt, qboolean allowNonPureFilesOnDisk);
 void trap_Field_CompleteCommand(const char *cmd, qboolean doCommands, qboolean doCvars);

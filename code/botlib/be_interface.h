@@ -22,27 +22,20 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_interface.h
- *
- * desc:		botlib interface
- *
- * $Archive: /source/code/botlib/be_interface.h $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ Botlib interface.
+**************************************************************************************************************************************/
 
-//#define DEBUG			//debug code
-#define RANDOMIZE		//randomize bot behaviour
-
-//FIXME: get rid of this global structure
+//#define DEBUG // debug code
+#define RANDOMIZE // randomize bot behaviour
+// FIXME: get rid of this global structure
 typedef struct botlib_globals_s {
-	int botlibsetup;						//true when the bot library has been setup
-	int maxentities;						//maximum number of entities
-	int maxclients;							//maximum number of clients
-	float time;								//the global time
+	int botlibsetup;	// true when the bot library has been setup
+	int maxentities;	// maximum number of entities
+	int maxclients;		// maximum number of clients
+	float time;			// the global time
 } botlib_globals_t;
-
 
 extern botlib_globals_t botlibglobals;
 extern botlib_import_t botimport;
-extern int botDeveloper;					//true if developer is on
+extern int botDeveloper; // true if developer is on

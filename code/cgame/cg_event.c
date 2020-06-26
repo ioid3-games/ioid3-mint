@@ -251,7 +251,7 @@ static void CG_Obituary(entityState_t *ent) {
 	// check for double player messages
 	if (!attackerInfo) {
 		attacker = ENTITYNUM_WORLD;
-		strcpy(attackerName, "noname");
+		strcpy(attackerName, "Noname");
 	} else {
 		Q_strncpyz(attackerName, Info_ValueForKey(attackerInfo, "n"), sizeof(attackerName) - 2);
 		strcat(attackerName, S_COLOR_WHITE);
@@ -342,7 +342,7 @@ static void CG_Obituary(entityState_t *ent) {
 		}
 
 		if (message) {
-			CG_Printf("%s %s %s%s\n", targetName, message, attackerName, message2);
+			CG_Printf("%s %s %s%s.\n", targetName, message, attackerName, message2);
 			return;
 		}
 	}

@@ -22,14 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_aas_file.c
- *
- * desc:		AAS file loading/writing
- *
- * $Archive: /MissionPack/code/botlib/be_aas_file.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ AAS file loading/writing.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "l_memory.h"
@@ -169,6 +164,7 @@ Dump the current loaded aas file.
 =======================================================================================================================================
 */
 void AAS_DumpAASData(void) {
+
 	aasworld.numbboxes = 0;
 
 	if (aasworld.bboxes) {
@@ -310,8 +306,9 @@ void AAS_FileInfo(void) {
 	botimport.Print(PRT_MESSAGE, "reachability size %d bytes\n", aasworld.reachabilitysize * sizeof(aas_reachability_t));
 	botimport.Print(PRT_MESSAGE, "portals size %d bytes\n", aasworld.numportals * sizeof(aas_portal_t));
 	botimport.Print(PRT_MESSAGE, "clusters size %d bytes\n", aasworld.numclusters * sizeof(aas_cluster_t));
+
 	optimized = aasworld.numplanes * sizeof(aas_plane_t) + aasworld.numareas * sizeof(aas_area_t) + aasworld.numareasettings * sizeof(aas_areasettings_t) + aasworld.numnodes * sizeof(aas_node_t) + aasworld.reachabilitysize * sizeof(aas_reachability_t) + aasworld.numportals * sizeof(aas_portal_t) + aasworld.numclusters * sizeof(aas_cluster_t);
-	botimport.Print(PRT_MESSAGE, "optimzed size %d KB\n", optimized >> 10);
+	botimport.Print(PRT_MESSAGE, "optimized size %d KB\n", optimized >> 10);
 }
 #endif // AASFILEDEBUG
 /*
@@ -323,9 +320,10 @@ Allocate memory and read a lump of an AAS file.
 */
 char *AAS_LoadAASLump(fileHandle_t fp, int offset, int length, int *lastoffset, int size) {
 	char *buf;
+
 	if (!length) {
 		// just alloc a dummy
-		return (char *)GetClearedHunkMemory(size+1);
+		return (char *)GetClearedHunkMemory(size + 1);
 	}
 	// seek to the data
 	if (offset != *lastoffset) {
@@ -339,7 +337,7 @@ char *AAS_LoadAASLump(fileHandle_t fp, int offset, int length, int *lastoffset, 
 		}
 	}
 	// allocate memory
-	buf = (char *)GetClearedHunkMemory(length+1);
+	buf = (char *)GetClearedHunkMemory(length + 1);
 	// read the data
 	if (length) {
 		botimport.FS_Read(buf, length, fp);
@@ -358,7 +356,7 @@ void AAS_DData(unsigned char *data, int size) {
 	int i;
 
 	for (i = 0; i < size; i++) {
-		data[i] ^ = (unsigned char)i * 119;
+		data[i] ^= (unsigned char)i * 119;
 	}
 }
 
@@ -397,6 +395,7 @@ int AAS_LoadAASFile(char *filename) {
 	}
 	// check the version
 	header.version = LittleLong(header.version);
+
 	if (header.version != AASVERSION_OLD && header.version != AASVERSION) {
 		AAS_Error("aas file %s is version %i, not %i\n", filename, header.version, AASVERSION);
 		botimport.FS_FCloseFile(fp);
@@ -563,7 +562,7 @@ int AAS_WriteAASLump(fileHandle_t fp, aas_header_t *h, int lumpnum, void *data, 
 	aas_lump_t *lump;
 
 	lump = &h->lumps[lumpnum];
-	lump->fileofs = LittleLong(AAS_WriteAASLump_offset); // LittleLong(ftell(fp));
+	lump->fileofs = LittleLong(AAS_WriteAASLump_offset); //LittleLong(ftell(fp))
 	lump->filelen = LittleLong(length);
 
 	if (length > 0) {
@@ -597,6 +596,7 @@ qboolean AAS_WriteAASFile(char *filename) {
 	header.bspchecksum = LittleLong(aasworld.bspchecksum);
 	// open a new file
 	botimport.FS_FOpenFile(filename, &fp, FS_WRITE);
+
 	if (!fp) {
 		botimport.Print(PRT_ERROR, "error opening %s\n", filename);
 		return qfalse;
@@ -663,7 +663,9 @@ qboolean AAS_WriteAASFile(char *filename) {
 	}
 	// rewrite the header with the added lumps
 	botimport.FS_Seek(fp, 0, FS_SEEK_SET);
+
 	AAS_DData((unsigned char *)&header + 8, sizeof(aas_header_t) - 8);
+
 	botimport.FS_Write(&header, sizeof(aas_header_t), fp);
 	// close the file
 	botimport.FS_FCloseFile(fp);

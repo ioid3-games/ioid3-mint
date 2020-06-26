@@ -38,7 +38,7 @@ qboolean CG_SpawnString(const char *key, const char *defaultString, char **out) 
 
 	if (!cg.spawning) {
 		*out = (char *)defaultString;
-		CG_Error("CG_SpawnString()called while not spawning");
+		CG_Error("CG_SpawnString() called while not spawning");
 	}
 
 	for (i = 0; i < cg.numSpawnVars; i++) {
@@ -115,12 +115,12 @@ VectorToString
 This is just a convenience function for printing vectors.
 =======================================================================================================================================
 */
-char *vtos(const vec3_t v) {
+char *VectorToString(const vec3_t v) {
 	static int index;
 	static char str[8][32];
 	char *s;
 
-	// use an array so that multiple vtos won't collide
+	// use an array so that multiple VectorToString won't collide
 	s = str[index];
 	index = (index + 1)& 7;
 
@@ -135,26 +135,23 @@ SP_misc_gamemodel
 =======================================================================================================================================
 */
 void SP_misc_gamemodel(void) {
-	char * model;
-	char * skin;
+	char *model;
+	char *skin;
 	vec_t angle;
 	vec3_t angles;
-
 	vec_t scale;
 	vec3_t vScale;
-
 	vec3_t org;
-
-	cg_gamemodel_t * gamemodel;
+	cg_gamemodel_t *gamemodel;
 	int i;
-#if 0 // ZTM: NOTE: Spearmint's game always drops misc_gamemodels. Also, RTCW has targetname set though I'm not sure what, if anything, it's used for
+#if 0 // ZTM: Note: Spearmint's game always drops misc_gamemodels. Also, RTCW has targetname set though I'm not sure what, if anything, it's used for
 	if (CG_SpawnString("targetname", "", &model) || CG_SpawnString("scriptname", "", &model) || CG_SpawnString("spawnflags", "", &model)) {
-		// Gordon: this model may not be static, so let the server handle it
+		// this model may not be static, so let the server handle it
 		return;
 	}
 #endif
 	if (cg.numMiscGameModels >= MAX_STATIC_GAMEMODELS) {
-		CG_Error("^1MAX_STATIC_GAMEMODELS(%i)hit", MAX_STATIC_GAMEMODELS);
+		CG_Error("^1MAX_STATIC_GAMEMODELS(%i) hit", MAX_STATIC_GAMEMODELS);
 	}
 
 	CG_SpawnString("model", "", &model);
@@ -205,11 +202,11 @@ void SP_misc_gamemodel(void) {
 }
 
 /*
-QUAKED props_skyportal(.6 .7 .7)(-8 - 8 0)(8 8 16)
+QUAKED props_skyportal (.6 .7 .7)(-8 -8 0)(8 8 16)
 "fov" for the skybox default is 90
 To have the portal sky fogged, enter any of the following values:
-"fogcolor"(r g b)(values 0.0 - 1.0)
-"fognear" distance from entity to start fogging(FIXME? Supported by RTCW, but not Spearmint)
+"fogcolor" (r g b)(values 0.0-1.0)
+"fognear" distance from entity to start fogging (FIXME? Supported by RTCW, but not Spearmint)
 "fogfar" distance from entity that fog is opaque
 */
 void SP_skyportal(void) {
@@ -241,7 +238,6 @@ spawn_t spawns[] = {
 };
 
 int numSpawns = ARRAY_LEN(spawns);
-
 /*
 =======================================================================================================================================
 CG_ParseEntityFromSpawnVars
@@ -369,9 +365,8 @@ void SP_worldspawn(void) {
 
 	CG_SpawnString("enableBreath", "0", &s);
 	trap_Cvar_Set("cg_enableBreath", s);
-
-	if (CG_SpawnVector2D("mapcoordsmins", "-128 128", cg.mapcoordsMins) &&  // top left
-		 CG_SpawnVector2D("mapcoordsmaxs", "128 - 128", cg.mapcoordsMaxs)) { // bottom right
+	// top left/bottom right
+	if (CG_SpawnVector2D("mapcoordsmins", "-128 128", cg.mapcoordsMins) && CG_SpawnVector2D("mapcoordsmaxs", "128 -128", cg.mapcoordsMaxs)) {
 		cg.mapcoordsValid = qtrue;
 	} else {
 		cg.mapcoordsValid = qfalse;
@@ -415,5 +410,5 @@ void CG_ParseEntitiesFromString(void) {
 
 	CG_DPrintf("CGame loaded %d misc_gamemodels\n", cg.numMiscGameModels);
 
-	cg.spawning = qfalse; // any future calls to CG_Spawn*()will be errors
+	cg.spawning = qfalse; // any future calls to CG_Spawn*() will be errors
 }

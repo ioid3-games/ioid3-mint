@@ -1,30 +1,24 @@
 /*
 =======================================================================================================================================
-Copyright(C)2005 - 2006 Tim Angus
+Copyright (C) 2005-2006 Tim Angus.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code.	If not, see < http://www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License.	If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -32,7 +26,6 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include "snd_local.h"
 
 #define INDEX_FILE_EXTENSION ".index.dat"
-
 #define MAX_RIFF_CHUNKS 16
 
 typedef struct audioFormat_s {
@@ -51,7 +44,6 @@ typedef struct aviFileData_s {
 	int fileSize;
 	int moviOffset;
 	int moviSize;
-
 	fileHandle_t idxF;
 	int numIndices;
 	int frameRate;
@@ -60,13 +52,11 @@ typedef struct aviFileData_s {
 	int numVideoFrames;
 	int maxRecordSize;
 	qboolean motionJpeg;
-
 	qboolean audio;
 	audioFormat_t a;
 	int numAudioFrames;
 	int chunkStack[MAX_RIFF_CHUNKS];
 	int chunkStackTop;
-
 	byte *cBuffer, *eBuffer;
 } aviFileData_t;
 
@@ -83,8 +73,10 @@ SafeFS_Write
 =======================================================================================================================================
 */
 static ID_INLINE void SafeFS_Write(const void *buffer, int len, fileHandle_t f) {
-	if (FS_Write(buffer, len, f) < len)
+
+	if (FS_Write(buffer, len, f) < len) {
 		Com_Error(ERR_DROP, "Failed to write avi file");
+	}
 }
 
 /*
@@ -93,7 +85,9 @@ WRITE_STRING
 =======================================================================================================================================
 */
 static ID_INLINE void WRITE_STRING(const char *s) {
+
 	Com_Memcpy(&buffer[bufIndex], s, strlen(s));
+
 	bufIndex += strlen(s);
 }
 
@@ -103,10 +97,10 @@ WRITE_4BYTES
 =======================================================================================================================================
 */
 static ID_INLINE void WRITE_4BYTES(int x) {
-	buffer[bufIndex + 0] = (byte)((x >>	0)& 0xFF);
-	buffer[bufIndex + 1] = (byte)((x >>	8)& 0xFF);
-	buffer[bufIndex + 2] = (byte)((x >> 16)& 0xFF);
-	buffer[bufIndex + 3] = (byte)((x >> 24)& 0xFF);
+	buffer[bufIndex + 0] = (byte)((x >> 0) & 0xFF);
+	buffer[bufIndex + 1] = (byte)((x >> 8) & 0xFF);
+	buffer[bufIndex + 2] = (byte)((x >> 16) & 0xFF);
+	buffer[bufIndex + 3] = (byte)((x >> 24) & 0xFF);
 	bufIndex += 4;
 }
 
@@ -116,8 +110,8 @@ WRITE_2BYTES
 =======================================================================================================================================
 */
 static ID_INLINE void WRITE_2BYTES(int x) {
-	buffer[bufIndex + 0] = (byte)((x >>	0)& 0xFF);
-	buffer[bufIndex + 1] = (byte)((x >>	8)& 0xFF);
+	buffer[bufIndex + 0] = (byte)((x >> 0) & 0xFF);
+	buffer[bufIndex + 1] = (byte)((x >> 8) & 0xFF);
 	bufIndex += 2;
 }
 
@@ -127,13 +121,14 @@ START_CHUNK
 =======================================================================================================================================
 */
 static ID_INLINE void START_CHUNK(const char *s) {
-	if (afd.chunkStackTop == MAX_RIFF_CHUNKS)
-	{
+
+	if (afd.chunkStackTop == MAX_RIFF_CHUNKS) {
 		Com_Error(ERR_DROP, "ERROR: Top of chunkstack breached");
 	}
 
 	afd.chunkStack[afd.chunkStackTop] = bufIndex;
 	afd.chunkStackTop++;
+
 	WRITE_STRING(s);
 	WRITE_4BYTES(0);
 }
@@ -146,15 +141,17 @@ END_CHUNK
 static ID_INLINE void END_CHUNK(void) {
 	int endIndex = bufIndex;
 
-	if (afd.chunkStackTop <= 0)
-	{
+	if (afd.chunkStackTop <= 0) {
 		Com_Error(ERR_DROP, "ERROR: Bottom of chunkstack breached");
 	}
 
-	afd.chunkStackTop --;
+	afd.chunkStackTop--;
+
 	bufIndex = afd.chunkStack[afd.chunkStackTop];
 	bufIndex += 4;
+
 	WRITE_4BYTES(endIndex - bufIndex - 4);
+
 	bufIndex = endIndex;
 	bufIndex = PAD(bufIndex, 2);
 }
@@ -170,39 +167,39 @@ void CL_WriteAVIHeader(void) {
 
 	START_CHUNK("RIFF");
 	{
-		WRITE_STRING("AVI ");
+		WRITE_STRING("AVI");
 		{
 			START_CHUNK("LIST");
 			{
 				WRITE_STRING("hdrl");
 				WRITE_STRING("avih");
-				WRITE_4BYTES(56);										 //"avih" "chunk" size
+				WRITE_4BYTES(56);										 // "avih" "chunk" size
 				WRITE_4BYTES(afd.framePeriod);				//dwMicroSecPerFrame
 				WRITE_4BYTES(afd.maxRecordSize *
-						afd.frameRate);										//dwMaxBytesPerSec
-				WRITE_4BYTES(0);											//dwReserved1
-				WRITE_4BYTES(0x110);									//dwFlags bits HAS_INDEX and IS_INTERLEAVED
-				WRITE_4BYTES(afd.numVideoFrames);		 //dwTotalFrames
-				WRITE_4BYTES(0);											//dwInitialFrame
+						afd.frameRate);										// dwMaxBytesPerSec
+				WRITE_4BYTES(0);											// dwReserved1
+				WRITE_4BYTES(0x110);									// dwFlags bits HAS_INDEX and IS_INTERLEAVED
+				WRITE_4BYTES(afd.numVideoFrames);		 // dwTotalFrames
+				WRITE_4BYTES(0);											// dwInitialFrame
 
-				if (afd.audio)												//dwStreams
+				if (afd.audio)												// dwStreams
 					WRITE_4BYTES(2);
 				else
 					WRITE_4BYTES(1);
 
-				WRITE_4BYTES(afd.maxRecordSize);			//dwSuggestedBufferSize
-				WRITE_4BYTES(afd.width);							//dwWidth
-				WRITE_4BYTES(afd.height);						 //dwHeight
-				WRITE_4BYTES(0);											//dwReserved[0]
-				WRITE_4BYTES(0);											//dwReserved[1]
-				WRITE_4BYTES(0);											//dwReserved[2]
-				WRITE_4BYTES(0);											//dwReserved[3]
+				WRITE_4BYTES(afd.maxRecordSize);			// dwSuggestedBufferSize
+				WRITE_4BYTES(afd.width);							// dwWidth
+				WRITE_4BYTES(afd.height);						 // dwHeight
+				WRITE_4BYTES(0);											// dwReserved[0]
+				WRITE_4BYTES(0);											// dwReserved[1]
+				WRITE_4BYTES(0);											// dwReserved[2]
+				WRITE_4BYTES(0);											// dwReserved[3]
 
 				START_CHUNK("LIST");
 				{
 					WRITE_STRING("strl");
 					WRITE_STRING("strh");
-					WRITE_4BYTES(56);									 //"strh" "chunk" size
+					WRITE_4BYTES(56);									 // "strh" "chunk" size
 					WRITE_STRING("vids");
 
 					if (afd.motionJpeg)
@@ -210,92 +207,83 @@ void CL_WriteAVIHeader(void) {
 					else
 						WRITE_4BYTES(0);									// BI_RGB
 
-					WRITE_4BYTES(0);										//dwFlags
-					WRITE_4BYTES(0);										//dwPriority
-					WRITE_4BYTES(0);										//dwInitialFrame
+					WRITE_4BYTES(0);										// dwFlags
+					WRITE_4BYTES(0);										// dwPriority
+					WRITE_4BYTES(0);										// dwInitialFrame
 
-					WRITE_4BYTES(1);										//dwTimescale
-					WRITE_4BYTES(afd.frameRate);				//dwDataRate
-					WRITE_4BYTES(0);										//dwStartTime
-					WRITE_4BYTES(afd.numVideoFrames);	 //dwDataLength
+					WRITE_4BYTES(1);										// dwTimescale
+					WRITE_4BYTES(afd.frameRate);				// dwDataRate
+					WRITE_4BYTES(0);										// dwStartTime
+					WRITE_4BYTES(afd.numVideoFrames);	 // dwDataLength
 
-					WRITE_4BYTES(afd.maxRecordSize);		//dwSuggestedBufferSize
-					WRITE_4BYTES(-1);									 //dwQuality
-					WRITE_4BYTES(0);										//dwSampleSize
-					WRITE_2BYTES(0);										//rcFrame
-					WRITE_2BYTES(0);										//rcFrame
-					WRITE_2BYTES(afd.width);						//rcFrame
-					WRITE_2BYTES(afd.height);					 //rcFrame
+					WRITE_4BYTES(afd.maxRecordSize);		// dwSuggestedBufferSize
+					WRITE_4BYTES(-1);									 // dwQuality
+					WRITE_4BYTES(0);										// dwSampleSize
+					WRITE_2BYTES(0);										// rcFrame
+					WRITE_2BYTES(0);										// rcFrame
+					WRITE_2BYTES(afd.width);						// rcFrame
+					WRITE_2BYTES(afd.height);					 // rcFrame
 
 					WRITE_STRING("strf");
-					WRITE_4BYTES(40);									 //"strf" "chunk" size
-					WRITE_4BYTES(40);									 //biSize
-					WRITE_4BYTES(afd.width);						//biWidth
-					WRITE_4BYTES(afd.height);					 //biHeight
-					WRITE_2BYTES(1);										//biPlanes
-					WRITE_2BYTES(24);									 //biBitCount
+					WRITE_4BYTES(40);									 // "strf" "chunk" size
+					WRITE_4BYTES(40);									 // biSize
+					WRITE_4BYTES(afd.width);						// biWidth
+					WRITE_4BYTES(afd.height);					 // biHeight
+					WRITE_2BYTES(1);										// biPlanes
+					WRITE_2BYTES(24);									 // biBitCount
 
-					if (afd.motionJpeg)								 //biCompression
-					{
+					if (afd.motionJpeg) {				// biCompression
 						WRITE_STRING("MJPG");
-						WRITE_4BYTES(afd.width *
-								afd.height);									 //biSizeImage
+						WRITE_4BYTES(afd.width * afd.height); // biSizeImage
+					} else {
+						WRITE_4BYTES(0);				// BI_RGB
+						WRITE_4BYTES(afd.width * afd.height * 3); // biSizeImage
 					}
 
-					else
-					{
-						WRITE_4BYTES(0);									// BI_RGB
-						WRITE_4BYTES(afd.width *
-								afd.height * 3);							 //biSizeImage
-					}
-
-					WRITE_4BYTES(0);										//biXPelsPetMeter
-					WRITE_4BYTES(0);										//biYPelsPetMeter
-					WRITE_4BYTES(0);										//biClrUsed
-					WRITE_4BYTES(0);										//biClrImportant
+					WRITE_4BYTES(0);					// biXPelsPetMeter
+					WRITE_4BYTES(0);					// biYPelsPetMeter
+					WRITE_4BYTES(0);					// biClrUsed
+					WRITE_4BYTES(0);					// biClrImportant
 				}
 
 				END_CHUNK();
 
-				if (afd.audio)
-				{
+				if (afd.audio) {
 					START_CHUNK("LIST");
 					{
 						WRITE_STRING("strl");
 						WRITE_STRING("strh");
-						WRITE_4BYTES(56);								 //"strh" "chunk" size
+						WRITE_4BYTES(56);				// "strh" "chunk" size
 						WRITE_STRING("auds");
-						WRITE_4BYTES(0);									//FCC
-						WRITE_4BYTES(0);									//dwFlags
-						WRITE_4BYTES(0);									//dwPriority
-						WRITE_4BYTES(0);									//dwInitialFrame
+						WRITE_4BYTES(0);				// FCC
+						WRITE_4BYTES(0);				// dwFlags
+						WRITE_4BYTES(0);				// dwPriority
+						WRITE_4BYTES(0);				// dwInitialFrame
 
-						WRITE_4BYTES(afd.a.sampleSize);	 //dwTimescale
-						WRITE_4BYTES(afd.a.sampleSize *
-								afd.a.rate);									 //dwDataRate
-						WRITE_4BYTES(0);									//dwStartTime
-						WRITE_4BYTES(afd.a.totalBytes /
-								afd.a.sampleSize);						 //dwDataLength
+						WRITE_4BYTES(afd.a.sampleSize);	// dwTimescale
+						WRITE_4BYTES(afd.a.sampleSize * afd.a.rate); // dwDataRate
+						WRITE_4BYTES(0);				// dwStartTime
+						WRITE_4BYTES(afd.a.totalBytes / afd.a.sampleSize); // dwDataLength
 
-						WRITE_4BYTES(0);									//dwSuggestedBufferSize
-						WRITE_4BYTES(-1);								 //dwQuality
-						WRITE_4BYTES(afd.a.sampleSize);	 //dwSampleSize
-						WRITE_2BYTES(0);									//rcFrame
-						WRITE_2BYTES(0);									//rcFrame
-						WRITE_2BYTES(0);									//rcFrame
-						WRITE_2BYTES(0);									//rcFrame
+						WRITE_4BYTES(0);				// dwSuggestedBufferSize
+						WRITE_4BYTES(-1);				// dwQuality
+						WRITE_4BYTES(afd.a.sampleSize);	// dwSampleSize
+						WRITE_2BYTES(0);				// rcFrame
+						WRITE_2BYTES(0);				// rcFrame
+						WRITE_2BYTES(0);				// rcFrame
+						WRITE_2BYTES(0);				// rcFrame
 
 						WRITE_STRING("strf");
-						WRITE_4BYTES(18);								 //"strf" "chunk" size
-						WRITE_2BYTES(afd.a.format);			 //wFormatTag
-						WRITE_2BYTES(afd.a.channels);		 //nChannels
-						WRITE_4BYTES(afd.a.rate);				 //nSamplesPerSec
-						WRITE_4BYTES(afd.a.sampleSize *
-								afd.a.rate);									 //nAvgBytesPerSec
-						WRITE_2BYTES(afd.a.sampleSize);	 //nBlockAlign
-						WRITE_2BYTES(afd.a.bits);				 //wBitsPerSample
-						WRITE_2BYTES(0);									//cbSize
+						WRITE_4BYTES(18);				// "strf" "chunk" size
+						WRITE_2BYTES(afd.a.format);		// wFormatTag
+						WRITE_2BYTES(afd.a.channels);	// nChannels
+						WRITE_4BYTES(afd.a.rate);		// nSamplesPerSec
+						WRITE_4BYTES(afd.a.sampleSize * afd.a.rate); // nAvgBytesPerSec
+						WRITE_2BYTES(afd.a.sampleSize);	// nBlockAlign
+						WRITE_2BYTES(afd.a.bits);		// wBitsPerSample
+						WRITE_2BYTES(0);				// cbSize
 					}
+
 					END_CHUNK();
 				}
 			}

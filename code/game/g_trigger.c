@@ -156,10 +156,11 @@ void trigger_always_think(gentity_t *ent) {
 	G_FreeEntity(ent);
 }
 
-/*QUAKED trigger_always(.5 .5 .5)(-8 - 8 - 8)(8 8 8)
+/*QUAKED trigger_always(.5 .5 .5)(-8 -8 -8)(8 8 8)
 This trigger will always fire. It is activated by the world.
 */
 void SP_trigger_always(gentity_t *ent) {
+
 	// we must have some delay to make sure our use targets are present
 	ent->nextthink = level.time + 300;
 	ent->think = trigger_always_think;
@@ -238,7 +239,7 @@ void SP_trigger_push(gentity_t *self) {
 
 	InitTrigger(self);
 	// unlike other triggers, we need to send this one to the client
-	self->r.svFlags & = ~SVF_NOCLIENT;
+	self->r.svFlags &= ~SVF_NOCLIENT;
 	// make sure the client precaches this sound
 	G_SoundIndex("sound/world/jumppad.wav");
 
@@ -277,7 +278,7 @@ void Use_target_push(gentity_t *self, gentity_t *other, gentity_t *activator) {
 	}
 }
 
-/*QUAKED target_push(.5 .5 .5)(-8 - 8 - 8)(8 8 8)bouncepad
+/*QUAKED target_push(.5 .5 .5)(-8 -8 -8)(8 8 8)bouncepad
 Pushes the activator in the direction.of angle, or towards a target apex.
 "speed" defaults to 1000
 if "bouncepad", play bounce noise instead of windfly
@@ -331,8 +332,7 @@ void trigger_teleporter_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 		return;
 	}
 	// spectators only?
-	if ((self->spawnflags & 1) && 
-		other->player->sess.sessionTeam != TEAM_SPECTATOR) {
+	if ((self->spawnflags & 1) && other->player->sess.sessionTeam != TEAM_SPECTATOR) {
 		return;
 	}
 
@@ -361,7 +361,7 @@ void SP_trigger_teleport(gentity_t *self) {
 	if (self->spawnflags & 1) {
 		self->r.svFlags |= SVF_NOCLIENT;
 	} else {
-		self->r.svFlags & = ~SVF_NOCLIENT;
+		self->r.svFlags &= ~SVF_NOCLIENT;
 	}
 	// make sure the client precaches this sound
 	G_SoundIndex("sound/world/jumppad.wav");
@@ -469,7 +469,7 @@ timer
 =======================================================================================================================================
 */
 
-/*QUAKED func_timer(0.3 0.1 0.6)(-8 - 8 - 8)(8 8 8)START_ON
+/*QUAKED func_timer(0.3 0.1 0.6)(-8 -8 -8)(8 8 8)START_ON
 This should be renamed trigger_timer...
 Repeatedly fires its targets.
 Can be turned on or off by using.

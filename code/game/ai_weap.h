@@ -21,23 +21,13 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
 
-/*****************************************************************************
- * name:		ai_weap.h
- *
- * desc:		weapon AI
- *
- * $Archive: /source/code/game/ai_weap.h $
- *
- *****************************************************************************/
-
-//projectile flags
+// projectile flags
 #define PFL_WINDOWDAMAGE	1 // projectile damages through window
 #define PFL_RETURN			2 // set when projectile returns to owner
-//weapon flags
+// weapon flags
 #define WFL_FIRERELEASED	1 // set when projectile is fired with key - up event
-//damage types
+// damage types
 #define DAMAGETYPE_IMPACT	1 // damage on impact
 #define DAMAGETYPE_RADIAL	2 // radial damage
 #define DAMAGETYPE_VISIBLE	4 // damage to all entities visible to the projectile

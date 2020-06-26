@@ -1127,7 +1127,6 @@ void CG_SetupDlightstyles(void) {
 		}
 
 		cent = &cg_entities[entnum];
-
 		token = COM_Parse(&str); // stylestring
 
 		Q_strncpyz(cent->dl_stylestring, token, sizeof(cent->dl_stylestring));
@@ -1247,7 +1246,7 @@ static void CG_RegisterSounds(void) {
 #ifdef MISSIONPACK
 	cgs.media.countPrepareTeamSound = trap_S_RegisterSound("sound/feedback/prepare_team.wav", qtrue);
 #endif
-	if (cgs.gametype >= GT_TEAM || cg_buildScript.integer) {
+	if (cgs.gametype > GT_TOURNAMENT || cg_buildScript.integer) {
 		// ZTM: disabled capture award sound because it causes capture sound to play twice this might make sense if it
 		// was a different sound, but you'd probably want to silence GTS_*_CAPTURE which is a callange of its own
 		//cgs.media.captureAwardSound = trap_S_RegisterSound("sound/teamplay/flagcapture_yourteam.wav", qtrue);
@@ -1424,7 +1423,7 @@ static void CG_RegisterSounds(void) {
 	cgs.media.hgrenb1aSound = trap_S_RegisterSound("sound/weapons/grenade/hgrenb1a.wav", qfalse);
 	cgs.media.hgrenb2aSound = trap_S_RegisterSound("sound/weapons/grenade/hgrenb2a.wav", qfalse);
 #ifdef MISSIONPACK
-	if (cgs.gametype >= GT_TEAM || cg_buildScript.integer) {
+	if (cgs.gametype > GT_TOURNAMENT || cg_buildScript.integer) {
 		CG_CachePlayerSounds(cg_defaultMaleTeamModel.string);
 		CG_CachePlayerSounds(cg_defaultFemaleTeamModel.string);
 	}
@@ -1515,11 +1514,9 @@ static void CG_RegisterGraphics(void) {
 #ifdef MISSIONPACK
 		cgs.media.flagPoleModel = trap_R_RegisterModel("models/flag2/flagpole.md3");
 		cgs.media.flagFlapModel = trap_R_RegisterModel("models/flag2/flagflap3.md3");
-
 		CG_RegisterSkin("models/flag2/red.skin", &cgs.media.redFlagFlapSkin, qfalse);
 		CG_RegisterSkin("models/flag2/blue.skin", &cgs.media.blueFlagFlapSkin, qfalse);
 		CG_RegisterSkin("models/flag2/white.skin", &cgs.media.neutralFlagFlapSkin, qfalse);
-
 		cgs.media.redFlagBaseModel = trap_R_RegisterModel("models/mapobjects/flagbase/red_base.md3");
 		cgs.media.blueFlagBaseModel = trap_R_RegisterModel("models/mapobjects/flagbase/blue_base.md3");
 		cgs.media.neutralFlagBaseModel = trap_R_RegisterModel("models/mapobjects/flagbase/ntrl_base.md3");
@@ -1552,7 +1549,7 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.redKamikazeShader = trap_R_RegisterShader("models/weaphits/kamikred");
 	cgs.media.dustPuffShader = trap_R_RegisterShader("hasteSmokePuff");
 #endif
-	if (cgs.gametype >= GT_TEAM || cg_buildScript.integer) {
+	if (cgs.gametype > GT_TOURNAMENT || cg_buildScript.integer) {
 		cgs.media.friendShader = trap_R_RegisterShader("sprites/foe");
 		cgs.media.redQuadShader = trap_R_RegisterShader("powerups/blueflag");
 		cgs.media.teamStatusBar = trap_R_RegisterShader("gfx/2d/colorbar.tga");
@@ -1633,7 +1630,7 @@ static void CG_RegisterGraphics(void) {
 	cgs.numInlineModels = trap_CM_NumInlineModels();
 
 	if (cgs.numInlineModels > MAX_SUBMODELS) {
-		CG_Error("MAX_SUBMODELS(%d)exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS);
+		CG_Error("MAX_SUBMODELS (%d) exceeded by %d", MAX_SUBMODELS, cgs.numInlineModels - MAX_SUBMODELS);
 	}
 
 	for (i = 1; i < cgs.numInlineModels; i++) {
@@ -1680,7 +1677,7 @@ static void CG_RegisterGraphics(void) {
 	cgs.media.flagShaders[1] = trap_R_RegisterShaderNoMip("ui/assets/statusbar/flag_capture.tga");
 	cgs.media.flagShaders[2] = trap_R_RegisterShaderNoMip("ui/assets/statusbar/flag_missing.tga");
 
-	if (cgs.gametype >= GT_TEAM || cg_buildScript.integer) {
+	if (cgs.gametype > GT_TOURNAMENT || cg_buildScript.integer) {
 		CG_CachePlayerModels(cg_defaultMaleTeamModel.string, cg_defaultMaleTeamHeadModel.string);
 		CG_CachePlayerModels(cg_defaultFemaleTeamModel.string, cg_defaultFemaleTeamHeadModel.string);
 	}
@@ -2275,7 +2272,7 @@ FIXME: might need to cache this info.
 static playerInfo_t *CG_InfoFromScoreIndex(int index, int team, int *scoreIndex) {
 	int i, count;
 
-	if (cgs.gametype >= GT_TEAM) {
+	if (cgs.gametype > GT_TOURNAMENT) {
 		count = 0;
 
 		for (i = 0; i < cg.numScores; i++) {
@@ -2408,7 +2405,7 @@ static void CG_FeederSelection(float feederID, int index) {
 		return;
 	}
 
-	if (cgs.gametype >= GT_TEAM) {
+	if (cgs.gametype > GT_TOURNAMENT) {
 		int i, count;
 		int team = (feederID == FEEDER_REDTEAM_LIST) ? TEAM_RED : TEAM_BLUE;
 
@@ -2571,7 +2568,7 @@ void CG_LoadHudMenu(void) {
 	cgDC.adjustFrom640 = &CG_AdjustFrom640;
 	cgDC.setScreenPlacement = &CG_SetScreenPlacement;
 	cgDC.popScreenPlacement = &CG_PopScreenPlacement;
-	
+
 	Init_Display(&cgDC);
 	Menu_Reset();
 	trap_Cvar_VariableStringBuffer("cg_hudFiles", buff, sizeof(buff));
@@ -2601,8 +2598,8 @@ void CG_HudMenuHacks(void) {
 	if (menu && !menu->forceScreenPlacement) {
 		Menu_SetScreenPlacement(menu, PLACE_LEFT, PLACE_TOP);
 	}
-	// make vertical power up area stick to the left or right side in widescreen
-	// Team Arena has it on the right side but also handle custom huds that use left side
+	// make vertical power up area stick to the left or right side in widescreen. Team Arena has it on the right side but also handle
+	// custom huds that use left side
 	menu = Menus_FindByName("powerup area");
 
 	if (menu && !menu->forceScreenPlacement) {
@@ -2611,7 +2608,7 @@ void CG_HudMenuHacks(void) {
 		if (item && item->window.ownerDraw == CG_AREA_POWERUP && item->alignment == HUD_VERTICAL) {
 			screenPlacement_e hpos;
 
-			if (item->window.rect.x > SCREEN_WIDTH*0.5f) {
+			if (item->window.rect.x > SCREEN_WIDTH * 0.5f) {
 				hpos = PLACE_RIGHT;
 			} else {
 				hpos = PLACE_LEFT;
@@ -2834,12 +2831,10 @@ void CG_Ingame_Init(int serverMessageNum, int serverCommandSequence, int maxSpli
 	CG_InitMarkPolys();
 	// remove the last loading update
 	cg.infoScreenText[0] = 0;
+	cg.lightstylesInited = qfalse;
 	// make sure we have update values (scores)
 	CG_SetConfigValues();
 	CG_StartMusic();
-
-	cg.lightstylesInited = qfalse;
-
 	CG_LoadingString("");
 #ifdef MISSIONPACK
 	CG_InitTeamChat();

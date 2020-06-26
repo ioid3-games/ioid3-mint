@@ -21,16 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-
-/*****************************************************************************
- * name:		ai_dmnet.h
- *
- * desc:		Quake3 bot AI
- *
- * $Archive: /source/code/game/ai_dmnet.h $
- *
- *****************************************************************************/
 
 #define MAX_NODESWITCHES 50
 

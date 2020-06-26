@@ -46,6 +46,7 @@ static void CG_MachineGunEjectBrass(centity_t *cent) {
 	}
 
 	le = CG_AllocLocalEntity();
+
 	re = &le->refEntity;
 
 	velocity[0] = 0;
@@ -814,11 +815,11 @@ void CG_RegisterItemVisuals(int itemNum) {
 }
 
 /*
-=======================================================================================================================================
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 	VIEW WEAPON
 
-=======================================================================================================================================
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 */
 
 /*
@@ -1320,7 +1321,7 @@ void CG_AddViewWeapon(playerState_t *ps) {
 		return;
 	}
 	// no gun if in third person view or a camera is active
-	//if(cg.cur_lc->renderingThirdPerson || cg.cur_lc->cameraMode) {
+	//if (cg.cur_lc->renderingThirdPerson || cg.cur_lc->cameraMode) {
 	if (cg.cur_lc->renderingThirdPerson) {
 		return;
 	}
@@ -1362,9 +1363,9 @@ void CG_AddViewWeapon(playerState_t *ps) {
 	// set up gun position
 	CG_CalculateWeaponPosition(hand.origin, angles);
 
-	VectorMA(hand.origin, (cg_gun_x.value+fovOffset[0]), cg.refdef.viewaxis[0], hand.origin);
-	VectorMA(hand.origin, (cg_gun_y.value+fovOffset[1]), cg.refdef.viewaxis[1], hand.origin);
-	VectorMA(hand.origin, (cg_gun_z.value+fovOffset[2]), cg.refdef.viewaxis[2], hand.origin);
+	VectorMA(hand.origin, (cg_gun_x.value + fovOffset[0]), cg.refdef.viewaxis[0], hand.origin);
+	VectorMA(hand.origin, (cg_gun_y.value + fovOffset[1]), cg.refdef.viewaxis[1], hand.origin);
+	VectorMA(hand.origin, (cg_gun_z.value + fovOffset[2]), cg.refdef.viewaxis[2], hand.origin);
 
 	AnglesToAxis(angles, hand.axis);
 	// map torso animations to weapon animations
@@ -1387,11 +1388,11 @@ void CG_AddViewWeapon(playerState_t *ps) {
 }
 
 /*
-=======================================================================================================================================
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 	WEAPON SELECTION
 
-=======================================================================================================================================
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 */
 
 /*
@@ -1477,7 +1478,7 @@ static qboolean CG_WeaponSelectable(playerState_t *ps, int i) {
 		return qfalse;
 	}
 
-	if (!(ps->stats[STAT_WEAPONS] &(1 << i))) {
+	if (!(ps->stats[STAT_WEAPONS] & (1 << i))) {
 		return qfalse;
 	}
 
@@ -1605,7 +1606,7 @@ void CG_Weapon_f(int localPlayerNum) {
 
 	player->weaponSelectTime = cg.time;
 
-	if (!(ps->stats[STAT_WEAPONS] &(1 << num))) {
+	if (!(ps->stats[STAT_WEAPONS] & (1 << num))) {
 		return; // don't have the weapon
 	}
 

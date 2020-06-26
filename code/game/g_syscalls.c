@@ -21,11 +21,16 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
+
+/**************************************************************************************************************************************
+ This file is only included when building a dll, g_syscalls.asm is included instead when building a qvm.
+**************************************************************************************************************************************/
+
 #include "g_local.h"
 
 #ifndef Q3_VM
 static intptr_t(QDECL *syscall)(intptr_t arg, ...) = (intptr_t(QDECL *)(intptr_t, ...)) - 1;
+
 /*
 =======================================================================================================================================
 dllEntry
@@ -62,6 +67,7 @@ trap_Error
 =======================================================================================================================================
 */
 void trap_Error(const char *text) {
+
 	syscall(G_ERROR, text);
 #ifndef Q3_VM
 	// shut up GCC warning about returning functions, because we know better

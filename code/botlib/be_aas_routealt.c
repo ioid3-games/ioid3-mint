@@ -22,14 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_aas_routealt.c
- *
- * desc:		AAS
- *
- * $Archive: /MissionPack/code/botlib/be_aas_routealt.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ AAS routing.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "l_memory.h"
@@ -159,7 +154,9 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 		midrangeareas[i].valid = qtrue;
 		midrangeareas[i].starttime = starttime;
 		midrangeareas[i].goaltime = goaltime;
+
 		Log_Write("%d midrange area %d", nummidrangeareas, i);
+
 		nummidrangeareas++;
 	}
 
@@ -169,8 +166,10 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 		}
 		// get the areas in one cluster
 		numclusterareas = 0;
+
 		AAS_AltRoutingFloodCluster_r(i);
-		// now we've got a cluster with areas through which an alternative route could go get the 'center' of the cluster
+		// now we've got a cluster with areas through which an alternative route could go
+		// get the 'center' of the cluster
 		VectorClear(mid);
 
 		for (j = 0; j < numclusterareas; j++) {
@@ -181,9 +180,12 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 		// get the area closest to the center of the cluster
 		bestdist = 999999;
 		bestareanum = 0;
+
 		for (j = 0; j < numclusterareas; j++) {
 			VectorSubtract(mid, aasworld.areas[clusterareas[j]].center, dir);
+
 			dist = VectorLength(dir);
+
 			if (dist < bestdist) {
 				bestdist = dist;
 				bestareanum = clusterareas[j];
@@ -192,10 +194,12 @@ int AAS_AlternativeRouteGoals(vec3_t start, int startareanum, vec3_t goal, int g
 		// now we've got an area for an alternative route
 		// FIXME: add alternative goal origin
 		VectorCopy(aasworld.areas[bestareanum].center, altroutegoals[numaltroutegoals].origin);
+
 		altroutegoals[numaltroutegoals].areanum = bestareanum;
 		altroutegoals[numaltroutegoals].starttraveltime = midrangeareas[bestareanum].starttime;
 		altroutegoals[numaltroutegoals].goaltraveltime = midrangeareas[bestareanum].goaltime;
 		altroutegoals[numaltroutegoals].extratraveltime = (midrangeareas[bestareanum].starttime + midrangeareas[bestareanum].goaltime) - goaltraveltime;
+
 		numaltroutegoals++;
 #ifdef ALTROUTE_DEBUG
 		AAS_ShowAreaPolygons(bestareanum, 1, qtrue);

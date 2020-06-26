@@ -21,15 +21,5 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-
-/*****************************************************************************
- * name:		ai_gen.h
- *
- * desc:		genetic selection
- *
- * $Archive: /source/code/game/ai_gen.h $
- *
- *****************************************************************************/
 
 int GeneticParentsAndChildSelection(int numranks, float *ranks, int *parent1, int *parent2, int *child);

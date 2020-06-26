@@ -163,7 +163,7 @@ typedef struct {
 	lerpFrame_t legs, torso, flag;
 	int painTime;
 	int painDirection; // flip from 0 to 1
-	int lightningFiring;
+	int beamgunFiring;
 	int railFireTime;
 	// machinegun spinning
 	float barrelAngle;
@@ -320,12 +320,12 @@ typedef struct {
 	int time;
 	int scoreFlags;
 	int accuracy;
-	int impressiveCount;
 	int excellentCount;
+	int impressiveCount;
 	int gauntletCount;
+	int captures;
 	int defendCount;
 	int assistCount;
-	int captures;
 	qboolean perfect;
 	int team;
 } score_t;
@@ -624,16 +624,16 @@ typedef struct {
 	vec3_t autoAxisFast[3];
 	// view rendering
 	refdef_t refdef;
-	vec3_t refdefViewAngles;			// will be converted to refdef.viewaxis
-	float viewWeaponFov;				// either range checked cg_weaponFov or forced value
+	vec3_t refdefViewAngles;		// will be converted to refdef.viewaxis
+	float viewWeaponFov;			// either range checked cg_weaponFov or forced value
 	// first person view pos, set even when rendering third person view
 	vec3_t firstPersonViewOrg;
 	vec3_t firstPersonViewAngles;
 	vec3_t firstPersonViewAxis[3];
 	// spawn variables
-	qboolean spawning;					// the CG_Spawn*()functions are valid
+	qboolean spawning;				// the CG_Spawn *() functions are valid
 	int numSpawnVars;
-	char *spawnVars[MAX_SPAWN_VARS][2];	// key/value pairs
+	char *spawnVars[MAX_SPAWN_VARS][2]; // key/value pairs
 	int numSpawnVarChars;
 	char spawnVarChars[MAX_SPAWN_VARS_CHARS];
 	int spawnEntityOffset;
@@ -860,12 +860,13 @@ typedef struct {
 	qhandle_t scoreboardScore;
 	qhandle_t scoreboardTime;
 	// medals shown during gameplay
-	qhandle_t medalImpressive;
 	qhandle_t medalExcellent;
+	qhandle_t medalImpressive;
 	qhandle_t medalGauntlet;
+	qhandle_t medalCapture;
 	qhandle_t medalDefend;
 	qhandle_t medalAssist;
-	qhandle_t medalCapture;
+
 	// sounds
 	sfxHandle_t itemPickupSounds[MAX_ITEMS];
 	sfxHandle_t quadSound;
@@ -1538,7 +1539,7 @@ void CG_SurfaceBeam(const refEntity_t *re);
 void CG_SurfaceText(const refEntity_t *re, const fontInfo_t *font, float scale, const char *text, float adjust, int limit, float gradient, qboolean forceColor);
 // cg_spawn.c
 qboolean CG_SpawnString(const char *key, const char *defaultString, char **out);
-// spawn string returns a temporary reference, you must CopyString()if you want to keep it
+// spawn string returns a temporary reference, you must CopyString() if you want to keep it
 qboolean CG_SpawnFloat(const char *key, const char *defaultString, float *out);
 qboolean CG_SpawnInt(const char *key, const char *defaultString, int *out);
 qboolean CG_SpawnVector(const char *key, const char *defaultString, float *out);
@@ -1596,7 +1597,7 @@ void CG_CheckGameSounds(void);
 void CG_EffectParse(const char *effectstr);
 void CG_AddAtmosphericEffects(void);
 // cg_polybus.c
-polyBuffer_t * CG_PB_FindFreePolyBuffer(qhandle_t shader, int numVerts, int numIndicies);
+polyBuffer_t *CG_PB_FindFreePolyBuffer(qhandle_t shader, int numVerts, int numIndicies);
 void CG_PB_ClearPolyBuffers(void);
 void CG_PB_RenderPolyBuffers(void);
 // cg_particles.c

@@ -21,16 +21,6 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
-
-/*****************************************************************************
- * name:		ai_team.h
- *
- * desc:		Quake3 bot AI
- *
- * $Archive: /source/code/game/ai_team.h $
- *
- *****************************************************************************/
 
 void BotTeamAI(bot_state_t *bs);
 int BotGetTeamMateTaskPreference(bot_state_t *bs, int teammate);

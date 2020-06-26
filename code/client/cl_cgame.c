@@ -21,7 +21,10 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-// cl_cgame.c -- client system interaction with client game
+
+/**************************************************************************************************************************************
+ Client system interaction with client game.
+**************************************************************************************************************************************/
 
 #include "client.h"
 #include "../botlib/l_script.h"
@@ -228,6 +231,7 @@ CL_GetCurrentSnapshotNumber
 =======================================================================================================================================
 */
 void CL_GetCurrentSnapshotNumber(int *snapshotNumber, int *serverTime) {
+
 	*snapshotNumber = cl.snap.messageNum;
 	*serverTime = cl.snap.serverTime;
 }
@@ -252,6 +256,7 @@ qboolean CL_GetSnapshot(int snapshotNumber, vmSnapshot_t *vmSnapshot, int vmSize
 	}
 	// if the frame is not valid, we can't return it
 	clSnap = &cl.snapshots[snapshotNumber & PACKET_MASK];
+
 	if (!clSnap->valid) {
 		return qfalse;
 	}
@@ -330,9 +335,8 @@ void CL_ConfigstringModified(void) {
 	if (index < 0 || index >= MAX_CONFIGSTRINGS) {
 		Com_Error(ERR_DROP, "CL_ConfigstringModified: bad index %i", index);
 	}
-	// get everything after "cs < num>"
+	// get everything after "cs <num>"
 	s = Cmd_ArgsFrom(2);
-
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[index];
 
 	if (!strcmp(old, s)) {
@@ -373,7 +377,6 @@ void CL_ConfigstringModified(void) {
 		// parse serverId and other cvars
 		CL_SystemInfoChanged();
 	}
-
 }
 
 /*
@@ -391,7 +394,8 @@ qboolean CL_GetServerCommand(int serverCommandNumber) {
 
 	// if we have irretrievably lost a reliable command, drop the connection
 	if (serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS) {
-		// when a demo record was started after the client got a whole bunch of reliable commands then the client never got those first reliable commands
+		// when a demo record was started after the client got a whole bunch of reliable commands then the client never got those first
+		// reliable commands
 		if (clc.demoplaying) {
 			return qfalse;
 		}
@@ -405,18 +409,19 @@ qboolean CL_GetServerCommand(int serverCommandNumber) {
 		return qfalse;
 	}
 
-	s = clc.serverCommands[serverCommandNumber &(MAX_RELIABLE_COMMANDS - 1)];
+	s = clc.serverCommands[serverCommandNumber & (MAX_RELIABLE_COMMANDS - 1)];
 	clc.lastExecutedServerCommand = serverCommandNumber;
 
 	Com_DPrintf("serverCommand: %i : %s\n", serverCommandNumber, s);
 
 rescan:
 	Cmd_TokenizeString(s);
+
 	cmd = Cmd_Argv(0);
 	argc = Cmd_Argc();
 
 	if (!strcmp(cmd, "disconnect")) {
-		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id = 552
+		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=552
 		// allow server to indicate why they were disconnected
 		if (argc >= 2) {
 			Com_Error(ERR_SERVERDISCONNECT, "Server disconnected - %s", Cmd_Argv(1));
@@ -433,7 +438,7 @@ rescan:
 	if (!strcmp(cmd, "bcs1")) {
 		s = Cmd_Argv(2);
 
-		if (strlen(bigConfigString) +  strlen(s) >= BIG_INFO_STRING) {
+		if (strlen(bigConfigString) + strlen(s) >= BIG_INFO_STRING) {
 			Com_Error(ERR_DROP, "bcs exceeded BIG_INFO_STRING");
 		}
 
@@ -444,7 +449,7 @@ rescan:
 	if (!strcmp(cmd, "bcs2")) {
 		s = Cmd_Argv(2);
 
-		if (strlen(bigConfigString) +  strlen(s) +  1 >= BIG_INFO_STRING) {
+		if (strlen(bigConfigString) + strlen(s) + 1 >= BIG_INFO_STRING) {
 			Com_Error(ERR_DROP, "bcs exceeded BIG_INFO_STRING");
 		}
 
@@ -464,12 +469,12 @@ rescan:
 	if (!strcmp(cmd, "map_restart")) {
 		// clear notify lines and outgoing commands before passing the restart to the cgame
 		Con_ClearNotify();
-		// reparse the string, because Con_ClearNotify()may have done another Cmd_TokenizeString()
+		// reparse the string, because Con_ClearNotify() may have done another Cmd_TokenizeString()
 		Cmd_TokenizeString(s);
 		Com_Memset(cl.cmdss, 0, sizeof(cl.cmdss));
 		return qtrue;
 	}
-	// the clientLevelShot command is used during development to generate 128*128 screenshots from the intermission
+	// the clientLevelShot command is used during development to generate 128 * 128 screenshots from the intermission
 	// point of levels for the menu system to use
 	// we pass it along to the cgame to make appropriate adjustments, but we also clear the console and notify lines here
 	if (!strcmp(cmd, "clientLevelShot")) {
@@ -1756,7 +1761,7 @@ intptr_t CL_CgameSystemCalls(intptr_t *args) {
 =======================================================================================================================================
 CL_InitCGame
 
-Should only be called by CL_StartHunkUsers´.
+Should only be called by CL_StartHunkUsers.
 =======================================================================================================================================
 */
 void CL_InitCGame(void) {
@@ -1853,7 +1858,7 @@ void CL_InitCGame(void) {
 	clc.state = CA_PRIMED;
 	t2 = Sys_Milliseconds();
 
-	Com_DPrintf("CL_InitCGame: %5.2f seconds\n", (t2 - t1) /1000.0);
+	Com_DPrintf("CL_InitCGame: %5.2f seconds\n", (t2 - t1) / 1000.0);
 	// have the renderer touch all its images, so they are present on the card even if the driver does deferred loading
 	re.EndRegistration();
 	// make sure everything is paged in
@@ -1962,9 +1967,11 @@ CL_AdjustTimeDelta
 
 Adjust the clients view of server time.
 
-We attempt to have cl.serverTime exactly equal the server's view of time plus the timeNudge, but with variable latencies over
-the internet it will often need to drift a bit to match conditions.
+We attempt to have cl.serverTime exactly equal the server's view of time plus the timeNudge, but with variable latencies over the
+internet it will often need to drift a bit to match conditions.
+
 Our ideal time would be to have the adjusted time approach, but not pass, the very latest snapshot.
+
 Adjustments are only made when a new snapshot arrives with a rational latency, which keeps the adjustment process framerate independent
 and prevents massive overadjustment during times of significant packet loss or bursted delayed packets.
 =======================================================================================================================================
@@ -1988,12 +1995,12 @@ void CL_AdjustTimeDelta(void) {
 		cl.serverTime = cl.snap.serverTime;
 
 		if (cl_showTimeDelta->integer) {
-			Com_Printf("<RESET>");
+			Com_Printf("<RESET> ");
 		}
 	} else if (deltaDelta > 100) {
 		// fast adjust, cut the difference in half
 		if (cl_showTimeDelta->integer) {
-			Com_Printf("<FAST>");
+			Com_Printf("<FAST> ");
 		}
 
 		cl.serverTimeDelta = (cl.serverTimeDelta + newDelta) >> 1;
@@ -2001,7 +2008,7 @@ void CL_AdjustTimeDelta(void) {
 		// slow drift adjust, only move 1 or 2 msec
 
 		// if any of the frames between this and the previous snapshot had to be extrapolated, nudge our sense of time back a little
-		// the granularity of +1 / - 2 is too high for timescale modified frametimes
+		// the granularity of +1/-2 is too high for timescale modified frametimes
 		if (com_timescale->value == 0 || com_timescale->value == 1) {
 			if (cl.extrapolatedSnapshot) {
 				cl.extrapolatedSnapshot = qfalse;
@@ -2034,9 +2041,10 @@ void CL_FirstSnapshot(void) {
 	// set the timedelta so we are exactly on this first frame
 	cl.serverTimeDelta = cl.snap.serverTime - cls.realtime;
 	cl.oldServerTime = cl.snap.serverTime;
+
 	clc.timeDemoBaseTime = cl.snap.serverTime;
-	// if this is the first frame of active play, execute the contents of activeAction now
-	// this is to allow scripting a timedemo to start right after loading
+	// if this is the first frame of active play, execute the contents of activeAction now this is to allow scripting a timedemo to
+	// start right after loading
 	if (cl_activeAction->string[0]) {
 		Cbuf_AddText(cl_activeAction->string);
 		Cvar_Set("activeAction", "");
@@ -2044,7 +2052,8 @@ void CL_FirstSnapshot(void) {
 #ifdef USE_MUMBLE
 	if ((cl_useMumble->integer) && !mumble_islinked()) {
 		int ret = mumble_link(com_productName->string);
-		Com_Printf("Mumble: Linking to Mumble application %s\n", ret == 0?"ok":"failed");
+
+		Com_Printf("Mumble: Linking to Mumble application %s\n", ret == 0 ? "ok" : "failed");
 	}
 #endif
 #ifdef USE_VOIP
@@ -2061,8 +2070,9 @@ void CL_FirstSnapshot(void) {
 
 		for (i = 0; i < MAX_CLIENTS; i++) {
 			clc.opusDecoder[i] = opus_decoder_create(48000, 1, &error);
+
 			if (error) {
-				Com_DPrintf("VoIP: Error opus_decoder_create(%d)%d\n", i, error);
+				Com_DPrintf("VoIP: Error opus_decoder_create(%d) %d\n", i, error);
 				return;
 			}
 
@@ -2074,6 +2084,7 @@ void CL_FirstSnapshot(void) {
 
 		clc.voipCodecInitialized = qtrue;
 		clc.voipMuteAll = qfalse;
+
 		Cmd_AddCommand("voip", CL_Voip_f);
 		Cvar_Set("cl_voipSendTarget", "spatial");
 		Com_Memset(clc.voipTargets, ~0, sizeof(clc.voipTargets));
@@ -2131,12 +2142,10 @@ void CL_SetCGameTime(void) {
 	// get our current view of time
 	if (clc.demoplaying && cl_freezeDemo->integer) {
 		// cl_freezeDemo is used to lock a demo in place for single frame advances
-
 	} else {
-		// cl_timeNudge is a user adjustable cvar that allows more or less latency to be added in the interest of better
-		// smoothness or better responsiveness.
+		// cl_timeNudge is a user adjustable cvar that allows more or less latency to be added in the interest of better smoothness or better responsiveness
 		int tn;
-		
+
 		tn = cl_timeNudge->integer;
 		cl.serverTime = cls.realtime + cl.serverTimeDelta - tn;
 		// guarantee that time will never flow backwards, even if serverTimeDelta made an adjustment or cl_timeNudge was changed
@@ -2150,7 +2159,8 @@ void CL_SetCGameTime(void) {
 			cl.extrapolatedSnapshot = qtrue;
 		}
 	}
-	// if we have gotten new snapshots, drift serverTimeDelta don't do this every frame, or a period of packet loss would make a huge adjustment
+	// if we have gotten new snapshots, drift serverTimeDelta
+	// don't do this every frame, or a period of packet loss would make a huge adjustment
 	if (cl.newSnapshots) {
 		CL_AdjustTimeDelta();
 	}
@@ -2158,9 +2168,11 @@ void CL_SetCGameTime(void) {
 	if (!clc.demoplaying) {
 		return;
 	}
-	// if we are playing a demo back, we can just keep reading messages from the demo file until the cgame definitely has valid snapshots to interpolate between
-	// a timedemo will always use a deterministic set of time samples no matter what speed machine it is run on, while a normal demo may have different time samples
-	// each time it is played back
+	// if we are playing a demo back, we can just keep reading messages from the demo file until the cgame definitely
+	// has valid snapshots to interpolate between
+
+	// a timedemo will always use a deterministic set of time samples no matter what speed machine it is run on,
+	// while a normal demo may have different time samples each time it is played back
 	if (cl_timedemo->integer) {
 		int now = Sys_Milliseconds();
 		int frameDuration;
@@ -2187,7 +2199,7 @@ void CL_SetCGameTime(void) {
 				frameDuration = UCHAR_MAX;
 			}
 
-			clc.timeDemoDurations[(clc.timeDemoFrames - 1)% MAX_TIMEDEMO_DURATIONS] = frameDuration;
+			clc.timeDemoDurations[(clc.timeDemoFrames - 1) % MAX_TIMEDEMO_DURATIONS] = frameDuration;
 		}
 
 		clc.timeDemoFrames++;
@@ -2195,7 +2207,7 @@ void CL_SetCGameTime(void) {
 	}
 
 	while (cl.serverTime >= cl.snap.serverTime) {
-		// feed another messag, which should change the contents of cl.snap
+		// feed another message, which should change the contents of cl.snap
 		CL_ReadDemoMessage();
 
 		if (clc.state != CA_ACTIVE) {

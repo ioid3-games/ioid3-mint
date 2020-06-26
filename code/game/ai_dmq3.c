@@ -4,27 +4,21 @@ Copyright (C) 1999-2010 id Software LLC, a ZeniMax Media company.
 
 This file is part of Spearmint Source Code.
 
-Spearmint Source Code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 3 of the License,
-or(at your option)any later version.
+Spearmint Source Code is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
-Spearmint Source Code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+Spearmint Source Code is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Spearmint Source Code. If not, see < http:// www.gnu.org/licenses/ > .
+You should have received a copy of the GNU General Public License along with Spearmint Source Code.
+If not, see <http://www.gnu.org/licenses/>.
 
-In addition, Spearmint Source Code is also subject to certain additional terms.
-You should have received a copy of these additional terms immediately following
-the terms and conditions of the GNU General Public License. If not, please
-request a copy in writing from id Software at the address below.
+In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
+terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
+id Software at the address below.
 
-If you have questions concerning this license or the applicable additional
-terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc.,
-Suite 120, Rockville, Maryland 20850 USA.
+If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o
+ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
@@ -49,8 +43,7 @@ Suite 120, Rockville, Maryland 20850 USA.
 #include "inv.h" // indexes into the inventory
 #include "syn.h" // synonyms
 #include "match.h" // string matching types and vars
-// for the voice chats
-#include "../../ui/menudef.h" // sos001205 - for q3_ui also
+#include "../../ui/menudef.h" // for the voice chats
 // from aasfile.h
 #define AREACONTENTS_MOVER 1024
 #define AREACONTENTS_MODELNUMSHIFT 24
@@ -326,7 +319,7 @@ EntityIsInvisible
 qboolean EntityIsInvisible(aas_entityinfo_t *entinfo) {
 
 	// if player is invisible
-	if (entinfo->powerups &(1 << PW_INVIS)) {
+	if (entinfo->powerups & (1 << PW_INVIS)) {
 		// a shooting player is always visible
 		if (EntityIsShooting(entinfo)) {
 			return qfalse;
@@ -340,7 +333,7 @@ qboolean EntityIsInvisible(aas_entityinfo_t *entinfo) {
 		if (EntityCarriesCubes(entinfo)) {
 			return qfalse;
 		}
-		// kamikaze are always visible
+		// the kamikaze is always visible
 		if (EntityHasKamikaze(entinfo)) {
 			return qfalse;
 		}
@@ -1756,7 +1749,7 @@ void BotSetupForMovement(bot_state_t *bs) {
 	} else {
 		initmove.presencetype = PRESENCE_NORMAL;
 	}
-
+	// set the walk flag
 	if (BotWantsToWalk(bs)) {
 		initmove.or_moveflags |= MFL_WALK;
 	}
@@ -1766,6 +1759,7 @@ void BotSetupForMovement(bot_state_t *bs) {
 	}
 
 	VectorCopy(bs->viewangles, initmove.viewangles);
+
 	BotInitMoveState(bs->ms, &initmove);
 }
 
@@ -2326,7 +2320,7 @@ qboolean BotIsObserver(bot_state_t *bs) {
 		return qtrue;
 	}
 
-	trap_GetConfigstring(CS_PLAYERS+bs->playernum, buf, sizeof(buf));
+	trap_GetConfigstring(CS_PLAYERS + bs->playernum, buf, sizeof(buf));
 
 	if (atoi(Info_ValueForKey(buf, "t")) == TEAM_SPECTATOR) {
 		return qtrue;
@@ -2546,11 +2540,11 @@ float BotAggression(bot_state_t *bs) {
 	if (bs->inventory[INVENTORY_LIGHTNING] > 0 && bs->inventory[INVENTORY_LIGHTNINGAMMO] > 50) {
 		return 90;
 	}
-	// if the bot can use the rocketlauncher
+	// if the bot can use the rocket launcher
 	if (bs->inventory[INVENTORY_ROCKETLAUNCHER] > 0 && bs->inventory[INVENTORY_ROCKETS] > 5) {
 		return 90;
 	}
-	// if the bot can use the plasmagun
+	// if the bot can use the plasma gun
 	if (bs->inventory[INVENTORY_PLASMAGUN] > 0 && bs->inventory[INVENTORY_CELLS] > 40) {
 		return 85;
 	}
@@ -2558,7 +2552,7 @@ float BotAggression(bot_state_t *bs) {
 	if (bs->inventory[INVENTORY_GRENADELAUNCHER] > 0 && bs->inventory[INVENTORY_GRENADES] > 10) {
 		return 80;
 	}
-	// if the bot can use the shotgun
+	// if the bot can use the shot gun
 	if (bs->inventory[INVENTORY_SHOTGUN] > 0 && bs->inventory[INVENTORY_SHELLS] > 10) {
 		return 50;
 	}
@@ -2751,7 +2745,7 @@ int BotCanAndWantsToRocketJump(bot_state_t *bs) {
 	if (bs->inventory[INVENTORY_ROCKETS] < 3) {
 		return qfalse;
 	}
-	// never rocket jump with the Quad
+	// never rocket jump with the quad damage powerup
 	if (bs->inventory[INVENTORY_QUAD]) {
 		return qfalse;
 	}
@@ -2830,23 +2824,23 @@ int BotHasPersistantPowerupAndWeapon(bot_state_t *bs) {
 	if (bs->inventory[INVENTORY_LIGHTNING] > 0 && bs->inventory[INVENTORY_LIGHTNINGAMMO] > 50) {
 		return qtrue;
 	}
-	// if the bot can use the rocketlauncher
+	// if the bot can use the rocket launcher
 	if (bs->inventory[INVENTORY_ROCKETLAUNCHER] > 0 && bs->inventory[INVENTORY_ROCKETS] > 5) {
 		return qtrue;
 	}
-
+	// if the bot can use the nail gun
 	if (bs->inventory[INVENTORY_NAILGUN] > 0 && bs->inventory[INVENTORY_NAILS] > 5) {
 		return qtrue;
 	}
-
+	// if the bot can use the proxy launcher
 	if (bs->inventory[INVENTORY_PROXLAUNCHER] > 0 && bs->inventory[INVENTORY_MINES] > 5) {
 		return qtrue;
 	}
-
+	// if the bot can use the chain gun
 	if (bs->inventory[INVENTORY_CHAINGUN] > 0 && bs->inventory[INVENTORY_BELT] > 40) {
 		return qtrue;
 	}
-	// if the bot can use the plasmagun
+	// if the bot can use the plasma gun
 	if (bs->inventory[INVENTORY_PLASMAGUN] > 0 && bs->inventory[INVENTORY_CELLS] > 20) {
 		return qtrue;
 	}
@@ -3010,7 +3004,7 @@ void BotRoamGoal(bot_state_t *bs, vec3_t goal) {
 			}
 		}
 		// add a random value to the z-coordinate (NOTE: 48 = maxjump?)
-		bestorg[2] += 2 * 48 * crandom();
+		bestorg[2] += 96 * crandom();
 		// trace a line from the origin to the roam target
 		BotAI_Trace(&trace, bs->origin, NULL, NULL, bestorg, bs->entitynum, MASK_SOLID);
 		// direction and length towards the roam target
@@ -3109,7 +3103,7 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 			bs->attackcrouch_time = FloatTime() + croucher * 5;
 		}
 	}
-
+	// if the bot wants to crouch
 	if (bs->attackcrouch_time > FloatTime()) {
 		// get the start point aiming from
 		VectorCopy(bs->origin, start);
@@ -3286,7 +3280,7 @@ float BotEntityVisible(int viewer, vec3_t eye, vec3_t viewangles, float fov, int
 
 	// get the entity information
 	BotEntityInfo(ent, &entinfo);
-	// if this player is active
+	// if the entity information is valid
 	if (!entinfo.valid) {
 		return 0;
 	}
@@ -3485,13 +3479,14 @@ int BotFindEnemy(bot_state_t *bs, int curenemy) {
 		if (BotSameTeam(bs, i)) {
 			continue;
 		}
-
+		// get the entity information
 		BotEntityInfo(i, &entinfo);
-		// if this player is active
+		// if the entity information is valid
 		if (!entinfo.valid) {
+			//BotAI_Print(PRT_MESSAGE, S_COLOR_YELLOW "BotFindEnemy: !entinfo.valid\n"); // Tobias CHECK: shouldn't happen?
 			continue;
 		}
-		// if the enemy isn't dead and the enemy isn't the bot self
+		// if the entity isn't the bot self
 		if (EntityIsDead(&entinfo) || entinfo.number == bs->entitynum) {
 			continue;
 		}
@@ -3604,7 +3599,7 @@ int BotTeamFlagCarrierVisible(bot_state_t *bs) {
 		}
 		// get the entity information
 		BotEntityInfo(i, &entinfo);
-		// if this player is active
+		// if the entity information is valid
 		if (!entinfo.valid) {
 			continue;
 		}
@@ -3644,7 +3639,7 @@ int BotTeamFlagCarrier(bot_state_t *bs) {
 		}
 		// get the entity information
 		BotEntityInfo(i, &entinfo);
-		// if this player is active
+		// if the entity information is valid
 		if (!entinfo.valid) {
 			continue;
 		}
@@ -3679,7 +3674,7 @@ int BotEnemyFlagCarrierVisible(bot_state_t *bs) {
 		}
 		// get the entity information
 		BotEntityInfo(i, &entinfo);
-		// if this player is active
+		// if the entity information is valid
 		if (!entinfo.valid) {
 			continue;
 		}
@@ -3729,7 +3724,7 @@ void BotVisibleTeamMatesAndEnemies(bot_state_t *bs, int *teammates, int *enemies
 		}
 		// get the entity information
 		BotEntityInfo(i, &entinfo);
-		// if this player is active
+		// if the entity information is valid
 		if (!entinfo.valid) {
 			continue;
 		}
@@ -3781,9 +3776,9 @@ int BotCountTeamMates(bot_state_t *bs, float range) {
 		if (i == bs->playernum) {
 			continue;
 		}
-
+		// get the entity information
 		BotEntityInfo(i, &entinfo);
-		// if this player is active
+		// if the entity information is valid
 		if (!entinfo.valid) {
 			continue;
 		}
@@ -3818,7 +3813,7 @@ int BotTeamCubeCarrierVisible(bot_state_t *bs) {
 		}
 		// get the entity information
 		BotEntityInfo(i, &entinfo);
-		// if this player is active
+		// if the entity information is valid
 		if (!entinfo.valid) {
 			continue;
 		}
@@ -3859,7 +3854,7 @@ int BotEnemyCubeCarrierVisible(bot_state_t *bs) {
 		}
 		// get the entity information
 		BotEntityInfo(i, &entinfo);
-		// if this player is active
+		// if the entity information is valid
 		if (!entinfo.valid) {
 			continue;
 		}
@@ -4015,10 +4010,11 @@ void BotAimAtEnemy(bot_state_t *bs) {
 		}
 		// if it is not an instant hit weapon the bot might want to predict the enemy
 		if (wi.speed) {
+			// direction towards the enemy
 			VectorSubtract(bestorigin, bs->origin, dir);
-
+			// distance towards the enemy
 			dist = VectorLength(dir);
-
+			// direction the enemy is moving in
 			VectorSubtract(entinfo.origin, bs->enemyorigin, dir);
 			// if the enemy is NOT pretty far away and strafing just small steps left and right
 			if (!(dist > 100 && VectorLengthSquared(dir) < Square(32))) {
@@ -4038,12 +4034,14 @@ void BotAimAtEnemy(bot_state_t *bs) {
 					origin[2] += 1;
 
 					VectorClear(cmdmove);
-					// AAS_ClearShownDebugLines();
+					//AAS_ClearShownDebugLines();
+					// movement prediction
 					trap_AAS_PredictPlayerMovement(&move, bs->enemy, origin, PRESENCE_CROUCH, qfalse, dir, cmdmove, 0, dist * 10 / wi.speed, 0.1f, 0, 0, qfalse, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
 					VectorCopy(move.endpos, bestorigin);
-					//BotAI_Print(PRT_MESSAGE, "%1.1f predicted speed = %f, frames = %f\n", FloatTime(), VectorLength(dir), dist * 10 / wi.speed);
+					//BotAI_Print(PRT_MESSAGE, "%s: Time = %1.1f Predicted speed = %f, Frames = %f.\n", FloatTime(), VectorLength(dir), dist * 10 / wi.speed);
 				// if not that skilled do linear prediction
 				} else if (aim_skill > 0.4) {
+					// direction towards the enemy
 					VectorSubtract(entinfo.origin, bs->origin, dir);
 					// distance towards the enemy
 					dist = VectorLength(dir);
@@ -4121,7 +4119,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 
 				if (BotPredictVisiblePosition(bs->lastenemyorigin, bs->lastenemyareanum, &goal, TFL_DEFAULT, target)) {
 					VectorSubtract(target, bs->eye, dir);
-
+					// if the hitpoint is far enough from the bot
 					if (VectorLengthSquared(dir) > Square(80)) {
 						VectorCopy(target, bestorigin);
 						bestorigin[2] -= 20;
@@ -4171,7 +4169,7 @@ void BotAimAtEnemy(bot_state_t *bs) {
 	// if the bots should be really challenging
 	if (bot_challenge.integer) {
 		// if the bot is really accurate and has the enemy in view for some time
-		if (aim_accuracy > 0.9 && bs->enemysight_time < FloatTime() - 1) {
+		if (aim_accuracy > 0.9f && bs->enemysight_time < FloatTime() - 1) {
 			// set the view angles directly
 			if (bs->ideal_viewangles[PITCH] > 180) {
 				bs->ideal_viewangles[PITCH] -= 360;
@@ -4207,7 +4205,7 @@ void BotCheckAttack(bot_state_t *bs) {
 #ifdef MISSIONPACK
 		// if attacking an obelisk
 		if (entinfo.number == redobelisk.entitynum || entinfo.number == blueobelisk.entitynum) {
-			// if obelisk is respawning return
+			// if the obelisk is respawning
 			if (g_entities[entinfo.number].activator && g_entities[entinfo.number].activator->s.frame == 2) {
 				return;
 			}
@@ -4287,7 +4285,7 @@ void BotCheckAttack(bot_state_t *bs) {
 	// a little back to make sure not inside a very close enemy
 	VectorMA(start, -12, forward, start);
 	BotAI_Trace(&trace, start, mins, maxs, end, bs->entitynum, MASK_SHOT);
-	// if the entity is a player
+	// if the entity is a client
 	if (trace.entityNum >= 0 && trace.entityNum < MAX_CLIENTS) {
 		if (trace.entityNum != attackentity) {
 			// if a teammate is hit
@@ -4367,7 +4365,7 @@ void BotMapScripts(bot_state_t *bs) {
 			}
 			// get the entity information
 			BotEntityInfo(i, &entinfo);
-			// if this player is active
+			// if the entity information is valid
 			if (!entinfo.valid) {
 				continue;
 			}
@@ -4887,9 +4885,8 @@ BotGetActivateGoal
 Returns the number of the bsp entity to activate. 'goal->entitynum' will be set to the game entity to activate.
 =======================================================================================================================================
 */
-// #define OBSTACLEDEBUG
 int BotGetActivateGoal(bot_state_t *bs, int entitynum, bot_activategoal_t *activategoal) {
-	int i, ent, cur_entities[10], spawnflags, modelindex, areas[MAX_ACTIVATEAREAS*2], numareas, t;
+	int i, ent, cur_entities[10], spawnflags, modelindex, areas[MAX_ACTIVATEAREAS * 2], numareas, t;
 	char model[MAX_INFO_STRING], tmpmodel[128];
 	char target[128], classname[128];
 	float health;
@@ -5125,7 +5122,7 @@ int BotGoForActivateGoal(bot_state_t *bs, bot_activategoal_t *activategoal, bot_
 
 	if (BotPushOntoActivateGoalStack(bs, activategoal)) {
 		// enter the activate entity AI node
-		AIEnter_Seek_ActivateEntity(bs, "BotGoForActivateGoal");
+		AIEnter_Seek_ActivateEntity(bs, "BotGoForActivateGoal: entering activate ent.");
 		return qtrue;
 	} else {
 		// enable any routing areas that were disabled
@@ -5176,7 +5173,7 @@ void BotRandomMove(bot_state_t *bs, bot_moveresult_t *moveresult, float speed) {
 			break;
 		}
 
-		angles[1] = ((int)angles[1] + 45)% 360;
+		angles[1] = ((int)angles[1] + 45) % 360;
 	}
 
 	moveresult->failure = (i == 8);
@@ -5604,7 +5601,7 @@ void BotCheckConsoleMessages(bot_state_t *bs) {
 
 /*
 =======================================================================================================================================
-BotCheckEvents
+BotCheckForGrenades
 =======================================================================================================================================
 */
 void BotCheckForGrenades(bot_state_t *bs, entityState_t *state) {
@@ -5691,7 +5688,7 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 	}
 
 	switch (event) {
-		// player obituary event
+		// client obituary event
 		case EV_OBITUARY:
 		{
 			int target, attacker, mod;
@@ -5883,7 +5880,7 @@ void BotCheckEvents(bot_state_t *bs, entityState_t *state) {
 			// if this sound is played on the bot
 			if (state->number == bs->playernum) {
 				if (state->eventParm < 0 || state->eventParm >= MAX_SOUNDS) {
-					BotAI_Print(PRT_ERROR, "EV_GENERAL_SOUND: eventParm(%d)out of range\n", state->eventParm);
+					BotAI_Print(PRT_ERROR, "EV_GENERAL_SOUND: eventParm (%d) out of range\n", state->eventParm);
 					break;
 				}
 				// check out the sound
@@ -6177,7 +6174,7 @@ void BotDeathmatchAI(bot_state_t *bs, float thinktime) {
 	}
 	// no ideal view set
 	bs->flags &= ~BFL_IDEALVIEWSET;
-
+	// if not in the intermission and not in observer mode
 	if (!BotIntermission(bs)) {
 		// set the teleport time
 		BotSetTeleportTime(bs);

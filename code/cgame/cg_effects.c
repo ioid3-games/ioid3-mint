@@ -61,6 +61,7 @@ void CG_BubbleTrail(vec3_t start, vec3_t end, float spacing) {
 
 		le = CG_AllocLocalEntity();
 		le->leFlags = LEF_PUFF_DONT_SCALE;
+		le->startTime = cg.time;
 
 		if (cg_oldBubbles.integer) {
 			le->leType = LE_MOVE_SCALE_FADE;
@@ -70,7 +71,6 @@ void CG_BubbleTrail(vec3_t start, vec3_t end, float spacing) {
 			le->endTime = cg.time + 8000 + random() * 250;
 		}
 
-		le->startTime = cg.time;
 		le->lifeRate = 1.0 / (le->endTime - le->startTime);
 
 		re = &le->refEntity;
@@ -139,8 +139,8 @@ int CG_SpawnBubbles(localEntity_t **bubbles, vec3_t origin, float baseSize, int 
 
 		le->leFlags = LEF_PUFF_DONT_SCALE;
 		le->leType = LE_BUBBLE;
-		le->endTime = cg.time + 8000 + random() * 250;
 		le->startTime = cg.time;
+		le->endTime = cg.time + 8000 + random() * 250;
 		le->lifeRate = 1.0 / (le->endTime - le->startTime);
 
 		re = &le->refEntity;
@@ -230,7 +230,6 @@ localEntity_t *CG_SmokePuff(const vec3_t p, const vec3_t vel, float radius, floa
 	re->shaderRGBA[1] = le->color[1] * 0xff;
 	re->shaderRGBA[2] = le->color[2] * 0xff;
 	re->shaderRGBA[3] = 0xff;
-
 	re->reType = RT_SPRITE;
 	re->radius = le->radius;
 
@@ -275,10 +274,10 @@ void CG_SpawnEffect(vec3_t org) {
 #ifdef MISSIONPACK
 /*
 =======================================================================================================================================
-CG_LightningBoltBeam
+CG_LightningBolt
 =======================================================================================================================================
 */
-void CG_LightningBoltBeam(vec3_t start, vec3_t end) {
+void CG_LightningBolt(vec3_t start, vec3_t end) {
 	localEntity_t *le;
 	refEntity_t *beam;
 
@@ -613,10 +612,10 @@ Generated a bunch of gibs launching out from the bodies location.
 void CG_GibPlayer(vec3_t playerOrigin) {
 	vec3_t origin, velocity;
 
-	if (CG_PointContents(playerOrigin, -1)&(CONTENTS_WATER|CONTENTS_SLIME|CONTENTS_LAVA)) {
+	if (CG_PointContents(playerOrigin, -1) & (CONTENTS_WATER|CONTENTS_SLIME)) {
 		CG_SpawnBubbles(NULL, playerOrigin, 3, 5 + random() * 5);
 	}
-
+	// allow gibs to be turned off for speed
 	if (!cg_blood.integer || !cg_gibs.integer) {
 		return;
 	}

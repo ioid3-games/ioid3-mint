@@ -75,7 +75,7 @@ static void SV_SendConfigstring(client_t *client, int index) {
 SV_UpdateConfigstrings
 
 Called when a client goes from CS_PRIMED to CS_ACTIVE.
-Updates all Configstring indexes that have changed while the client was in CS_PRIMED
+Updates all Configstring indexes that have changed while the client was in CS_PRIMED.
 =======================================================================================================================================
 */
 void SV_UpdateConfigstrings(client_t *client) {
@@ -88,6 +88,7 @@ void SV_UpdateConfigstrings(client_t *client) {
 		}
 
 		SV_SendConfigstring(client, index);
+
 		client->csUpdated[index] = qfalse;
 	}
 }
@@ -359,9 +360,11 @@ void SV_ChangeMaxClients(void) {
 	Z_Free(svs.players);
 	// allocate new clients and players
 	svs.clients = Z_Malloc(sv_maxclients->integer * sizeof(client_t));
+
 	Com_Memset(svs.clients, 0, sv_maxclients->integer * sizeof(client_t));
 
 	svs.players = Z_Malloc(sv_maxclients->integer * sizeof(player_t));
+
 	Com_Memset(svs.players, 0, sv_maxclients->integer * sizeof(player_t));
 	// copy the clients and players over
 	for (i = 0; i < count; i++) {
@@ -446,8 +449,7 @@ static void SV_InitDedicatedRef(void) {
 =======================================================================================================================================
 SV_SpawnServer
 
-Change the server to a new map, taking all connected clients along with it.
-This is NOT called for map_restart.
+Change the server to a new map, taking all connected clients along with it. This is NOT called for map_restart.
 =======================================================================================================================================
 */
 void SV_SpawnServer(char *server, qboolean killBots) {
@@ -461,13 +463,14 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	SV_ShutdownGameProgs();
 
 	Com_Printf("Loading level %s...\n", server);
-	Com_DPrintf(" ------ Server Initialization ------ \n");
+	Com_DPrintf(" ------ Server Initialization ------\n");
 	Com_DPrintf("Server: %s\n", server);
-	// if not running a dedicated server CL_MapLoading will connect the client to the server also print some status stuff
+	// if not running a dedicated server CL_MapLoading will connect the client to the server
+	// also print some status stuff
 	CL_MapLoading();
 	// make sure all the client stuff is unloaded
 	CL_ShutdownAll(qfalse);
-	// clear the whole hunk because we're(re)loading the server
+	// clear the whole hunk because we're (re)loading the server
 	Hunk_Clear();
 #ifdef DEDICATED
 	// Restart renderer
@@ -479,7 +482,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 #endif
 	// clear collision map data
 	CM_ClearMap();
-	// init client structures and svs.numSnapshotEntities 
+	// init client structures and svs.numSnapshotEntities
 	if (!Cvar_VariableValue("sv_running")) {
 		SV_Startup();
 	} else {
@@ -489,7 +492,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 		}
 	}
 	// toggle the server bit so clients can detect that a server has changed
-	svs.snapFlagServerBit ^ = SNAPFLAG_SERVERCOUNT;
+	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 	// set nextmap to the same map, but it may be overriden by the game startup or another console command
 	Cvar_Set("nextmap", "map_restart 0");
 	//Cvar_Set("nextmap", va("map %s", server));
@@ -524,8 +527,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	Cvar_Set("sv_serverid", va("%i", sv.serverId));
 	// clear physics interaction links
 	SV_ClearWorld();
-	// media configstring setting should be done during the loading stage, so connected clients don't have
-	// to load during actual gameplay
+	// media configstring setting should be done during the loading stage, so connected clients don't have to load during actual gameplay
 	sv.state = SS_LOADING;
 	// update latched bot cvars
 	SV_BotInitCvars();
@@ -540,6 +542,7 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	for (i = 0; i < 3; i++) {
 		VM_Call(gvm, GAME_RUN_FRAME, sv.time);
 		SV_BotFrame(sv.time);
+
 		sv.time += 100;
 		svs.time += 100;
 	}
@@ -630,9 +633,10 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	// we need to touch the cgame because it could be in a separate pk3 file and it needs to be referenced for the
 	// client to download the latest cgame or use it if pure server is enabled
 	SV_TouchCGame();
-	// the server sends these to the clients so they can figure out which pk3s should be auto - downloaded
+	// the server sends these to the clients so they can figure out which pk3s should be auto-downloaded
 	p = FS_ReferencedPakChecksums();
 	Cvar_Set("sv_referencedPaks", p);
+
 	p = FS_ReferencedPakNames();
 	Cvar_Set("sv_referencedPakNames", p);
 	// set the game title so client can create description.txt
@@ -643,26 +647,27 @@ void SV_SpawnServer(char *server, qboolean killBots) {
 	}
 	// save systeminfo and serverinfo strings
 	Q_strncpyz(systemInfo, Cvar_InfoString_Big(CVAR_SYSTEMINFO), sizeof(systemInfo));
-	cvar_modifiedFlags & = ~CVAR_SYSTEMINFO;
+
+	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 
 	SV_SetConfigstring(CS_SYSTEMINFO, systemInfo);
 	SV_SetConfigstring(CS_SERVERINFO, Cvar_InfoString(CVAR_SERVERINFO));
 
-	cvar_modifiedFlags & = ~CVAR_SERVERINFO;
+	cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 	// any media configstring setting now should issue a warning and any configstring changes should be reliably transmitted
 	// to all clients
 	sv.state = SS_GAME;
 	// send a heartbeat now so the master will get up to date info
 	SV_Heartbeat_f();
+
 	Hunk_SetMark();
 #ifndef DEDICATED
 	if (com_dedicated->integer) {
-		// restart cgame in order to show console for dedicated servers
-		// launched through the regular binary
+		// restart cgame in order to show console for dedicated servers launched through the regular binary
 		CL_StartHunkUsers(qfalse);
 	}
 #endif
-	Com_DPrintf(" ----------------------------------- \n");
+	Com_DPrintf("-----------------------------------\n");
 }
 
 /*
@@ -682,9 +687,8 @@ void SV_Init(void) {
 	sv_gametypeName = Cvar_Get("sv_gametypeName", "Unknown Gametype", CVAR_SERVERINFO|CVAR_ROM);
 	sv_gametypeNetName = Cvar_Get("sv_gametypeNetName", "Unknown", CVAR_SERVERINFO|CVAR_ROM);
 	sv_privateClients = Cvar_Get("sv_privateClients", "0", CVAR_SERVERINFO);
-	sv_hostname = Cvar_Get("sv_hostname", "noname", CVAR_SERVERINFO|CVAR_ARCHIVE);
-	sv_maxclients = Cvar_Get("sv_maxclients", "8", CVAR_SERVERINFO|CVAR_LATCH);
-
+	sv_hostname = Cvar_Get("sv_hostname", "Noname", CVAR_SERVERINFO|CVAR_ARCHIVE);
+	sv_maxclients = Cvar_Get("sv_maxclients", "64", CVAR_SERVERINFO|CVAR_LATCH);
 	sv_minRate = Cvar_Get("sv_minRate", "0", CVAR_ARCHIVE|CVAR_SERVERINFO);
 	sv_maxRate = Cvar_Get("sv_maxRate", "0", CVAR_ARCHIVE|CVAR_SERVERINFO);
 	sv_dlRate = Cvar_Get("sv_dlRate", "100", CVAR_ARCHIVE|CVAR_SERVERINFO);
@@ -713,14 +717,12 @@ void SV_Init(void) {
 	// server vars
 	sv_rconPassword = Cvar_Get("rconPassword", "", CVAR_TEMP);
 	sv_privatePassword = Cvar_Get("sv_privatePassword", "", CVAR_TEMP);
-	sv_fps = Cvar_Get("sv_fps", "20", CVAR_TEMP);
+	sv_fps = Cvar_Get("sv_fps", "60", CVAR_TEMP);
 	sv_timeout = Cvar_Get("sv_timeout", "200", CVAR_TEMP);
 	sv_zombietime = Cvar_Get("sv_zombietime", "2", CVAR_TEMP);
 	Cvar_Get("nextmap", "", CVAR_TEMP);
-
 	sv_allowDownload = Cvar_Get("sv_allowDownload", "0", CVAR_SERVERINFO);
 	Cvar_Get("sv_dlURL", "", CVAR_SERVERINFO|CVAR_ARCHIVE);
-	
 	sv_master[0] = Cvar_Get("sv_master1", MASTER_SERVER_NAME, 0);
 	sv_master[1] = Cvar_Get("sv_master2", "master.ioquake3.org", 0);
 
@@ -740,7 +742,7 @@ void SV_Init(void) {
 	Cvar_CheckRange(sv_public, -2, 1, qtrue);
 	// initialize bot cvars so they are listed and can be set before loading the botlib
 	SV_BotInitCvars();
-	// Load saved bans
+	// load saved bans
 	Cbuf_AddText("rehashbans\n");
 }
 
@@ -755,7 +757,7 @@ not just stuck on the outgoing message list, because the server is going to tota
 void SV_FinalMessage(char *message) {
 	int i, j;
 	client_t *cl;
-	
+
 	// send it twice, ignoring rate
 	for (j = 0; j < 2; j++) {
 		for (i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++) {
@@ -767,6 +769,7 @@ void SV_FinalMessage(char *message) {
 				}
 				// force a snapshot to be sent
 				cl->lastSnapshotTime = 0;
+
 				SV_SendClientSnapshot(cl);
 			}
 		}
@@ -786,7 +789,7 @@ void SV_Shutdown(char *finalmsg) {
 		return;
 	}
 
-	Com_Printf(" ----- Server Shutdown(%s) ----- \n", finalmsg);
+	Com_Printf("----- Server Shutdown (%s) -----\n", finalmsg);
 
 	NET_LeaveMulticast6();
 
@@ -834,7 +837,7 @@ void SV_Shutdown(char *finalmsg) {
 	// to the master servers.
 	Cvar_Set("sv_public", "0");
 #endif
-	Com_Printf(" --------------------------- \n");
+	Com_Printf("---------------------------\n");
 	// when starting a demo while running a server, do not disconnect any local clients and free netfields
 	if (sv_killserver->integer != 2) {
 		CL_Disconnect(qfalse);

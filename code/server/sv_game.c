@@ -21,7 +21,10 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-// sv_game.c -- interface to the game dll
+
+/**************************************************************************************************************************************
+ Interface to the game dll.
+**************************************************************************************************************************************/
 
 #include "server.h"
 
@@ -33,13 +36,18 @@ define_t *game_globaldefines;
 void SV_GameCommand(void);
 void SV_GameCompleteArgument(char *args, int argNum);
 
-// these functions must be used instead of pointer arithmetic, because
-// the game allocates gentities with private information after the server shared part
+// these functions must be used instead of pointer arithmetic, because the game allocates gentities with private information after the
+// server shared part
+
+/*
+=======================================================================================================================================
+SV_NumForGentity
+=======================================================================================================================================
+*/
 int SV_NumForGentity(sharedEntity_t *ent) {
 	int num;
 
 	num = ((byte *)ent - (byte *)sv.gentities) / sv.gentitySize;
-
 	return num;
 }
 
@@ -51,8 +59,7 @@ SV_GentityNum
 sharedEntity_t *SV_GentityNum(int num) {
 	sharedEntity_t *ent;
 
-	ent = (sharedEntity_t *)((byte *)sv.gentities + sv.gentitySize*(num));
-
+	ent = (sharedEntity_t *)((byte *)sv.gentities + sv.gentitySize * (num));
 	return ent;
 }
 
@@ -78,7 +85,6 @@ sharedPlayerState_t *SV_GamePlayerNum(int num) {
 	sharedPlayerState_t *ps;
 
 	ps = (sharedPlayerState_t *)((byte *)sv.gamePlayers + sv.gamePlayerSize*(num));
-
 	return ps;
 }
 
@@ -209,11 +215,10 @@ qboolean SV_inPVSIgnorePortals(const vec3_t p1, const vec3_t p2) {
 	leafnum = CM_PointLeafnum(p1);
 	cluster = CM_LeafCluster(leafnum);
 	mask = CM_ClusterPVS(cluster);
-
 	leafnum = CM_PointLeafnum(p2);
 	cluster = CM_LeafCluster(leafnum);
 
-	if (mask && (!(mask[cluster >> 3] &(1 << (cluster&7))))) {
+	if (mask && (!(mask[cluster >> 3] & (1 << (cluster&7))))) {
 		return qfalse;
 	}
 
@@ -288,7 +293,6 @@ void SV_LocateGameData(sharedEntity_t *gEnts, int numGEntities, int sizeofGEntit
 /*
 =======================================================================================================================================
 SV_SetNetFields
-
 =======================================================================================================================================
 */
 void SV_SetNetFields(int entityStateSize, int entityNetworkSize, vmNetField_t *entityStateFields, int numEntityStateFields, int playerStateSize, int playerNetworkSize, vmNetField_t *playerStateFields, int numPlayerStateFields) {
@@ -628,7 +632,7 @@ static void SV_InitGameVM(qboolean restart) {
 	// start the entity parsing at the beginning
 	sv.entityParsePoint = CM_EntityString();
 	// clear all gentity pointers that might still be set from a previous level
-	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id = 522
+	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=522
 	// now done before GAME_INIT call
 	for (i = 0; i < sv_maxclients->integer; i++) {
 		svs.players[i].gentity = NULL;

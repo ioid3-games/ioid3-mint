@@ -22,23 +22,13 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_aas_entity.h
- *
- * desc:		AAS
- *
- * $Archive: /source/code/botlib/be_aas_entity.h $
- *
- *****************************************************************************/
-
 #ifdef AASINTERN
-//invalidates all entity infos
+// invalidates all entity infos
 void AAS_InvalidateEntities(void);
-//unlink not updated entities
+// unlink not updated entities
 void AAS_UnlinkInvalidEntities(void);
-//resets the entity AAS and BSP links(sets areas and leaves pointers to NULL)
+// resets the entity AAS and BSP links (sets areas and leaves pointers to NULL)
 void AAS_ResetEntityLinks(void);
-//updates an entity
+// updates an entity
 int AAS_UpdateEntity(int ent, bot_entitystate_t *state);
-#endif //AASINTERN
-
+#endif // AASINTERN

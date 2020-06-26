@@ -31,33 +31,28 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #else
 #include <SDL_version.h>
 #endif
-
-// Require a minimum version of SDL
+// require a minimum version of SDL
 #define MINSDL_MAJOR 2
 #define MINSDL_MINOR 0
-#if SDL_VERSION_ATLEAST(2, 0, 5)
+#if SDL_VERSION_ATLEAST (2, 0, 5)
 #define MINSDL_PATCH 5
-#elif SDL_VERSION_ATLEAST(2, 0, 2)
+#elif SDL_VERSION_ATLEAST (2, 0, 2)
 #define MINSDL_PATCH 2
 #else
 #define MINSDL_PATCH 0
 #endif
 #endif
-
-// Console
+// console
 void CON_Shutdown(void);
 void CON_Init(void);
 char *CON_Input(void);
 void CON_Print(const char *message);
-
 unsigned int CON_LogSize(void);
 unsigned int CON_LogWrite(const char *in);
 unsigned int CON_LogRead(char *out, unsigned int outSize);
-
 #ifdef __APPLE__
 char *Sys_StripAppBundle(char *pwd);
 #endif
-
 void Sys_GLimpSafeInit(void);
 void Sys_GLimpInit(void);
 void Sys_PlatformInit(void);

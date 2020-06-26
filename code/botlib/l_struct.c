@@ -22,54 +22,49 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		l_struct.c
- *
- * desc:		structure reading / writing
- *
- * $Archive: /MissionPack/CODE/botlib/l_struct.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ Structure reading/writing.
+**************************************************************************************************************************************/
 
 #ifdef BOTLIB
 #include "../qcommon/q_shared.h"
-#include "botlib.h"				//for the include of be_interface.h
+#include "botlib.h" // for the include of be_interface.h
 #include "l_script.h"
 #include "l_precomp.h"
 #include "l_struct.h"
 #include "l_utils.h"
 #include "be_interface.h"
-#endif //BOTLIB
-
+#endif // BOTLIB
 #ifdef BSPC
-//include files for usage in the BSP Converter
+// include files for usage in the BSP Converter
 #include "../bspc/qbsp.h"
 #include "../bspc/l_log.h"
 #include "../bspc/l_mem.h"
 #include "l_precomp.h"
 #include "l_struct.h"
-#endif //BSPC
-
-//===========================================================================
-//
-// Parameter:				 - 
-// Returns:					 - 
-// Changes Globals:		 - 
-//===========================================================================
+#endif // BSPC
+/*
+=======================================================================================================================================
+FindField
+=======================================================================================================================================
+*/
 fielddef_t *FindField(fielddef_t *defs, char *name) {
 	int i;
 
 	for (i = 0; defs[i].name; i++) {
-		if (!strcmp(defs[i].name, name))return &defs[i];
-	} //end for
+		if (!strcmp(defs[i].name, name)) {
+			return &defs[i];
+		}
+	}
+
 	return NULL;
-} //end of the function FindField
-//===========================================================================
-//
-// Parameter:				 - 
-// Returns:					 - 
-// Changes Globals:		 - 
-//===========================================================================
+}
+
+/*
+=======================================================================================================================================
+ReadNumber
+=======================================================================================================================================
+*/
 qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p) {
 	token_t token;
 	int negative = qfalse;

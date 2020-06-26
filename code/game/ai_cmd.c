@@ -11,7 +11,7 @@ Spearmint Source Code is distributed in the hope that it will be useful, but WIT
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http:// www.gnu.org/licenses/>.
+If not, see <http://www.gnu.org/licenses/>.
 
 In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
 terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
@@ -43,8 +43,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include "inv.h" // indexes into the inventory
 #include "syn.h" // synonyms
 #include "match.h" // string matching types and vars
-// for the voice chats
-#include "../../ui/menudef.h"
+#include "../../ui/menudef.h" // for the voice chats
 
 int notleader[MAX_CLIENTS];
 /*
@@ -327,7 +326,7 @@ int NumPlayersOnSameTeam(bot_state_t *bs) {
 
 /*
 =======================================================================================================================================
-TeamPlayIsOn
+BotGetPatrolWaypoints
 =======================================================================================================================================
 */
 int BotGetPatrolWaypoints(bot_state_t *bs, bot_match_t *match) {
@@ -568,7 +567,7 @@ void BotMatch_HelpAccompany(bot_state_t *bs, bot_match_t *match) {
 			other = qtrue;
 		}
 	}
-	// if the bot doesn't know who to help(FindPlayerByName returned -1)
+	// if the bot doesn't know who to help (FindPlayerByName returned -1)
 	if (playernum < 0) {
 		if (other) {
 			BotAI_BotInitialChat(bs, "whois", teammate, NULL);
@@ -587,8 +586,9 @@ void BotMatch_HelpAccompany(bot_state_t *bs, bot_match_t *match) {
 	}
 
 	bs->teamgoal.entitynum = -1;
+	// get the entity information
 	BotEntityInfo(playernum, &entinfo);
-	// if info is valid(in PVS)
+	// if the entity information is valid
 	if (entinfo.valid) {
 		areanum = BotPointAreaNum(entinfo.origin);
 
@@ -812,7 +812,7 @@ void BotMatch_Camp(bot_state_t *bs, bot_match_t *match) {
 		bs->teamgoal.entitynum = -1;
 		// get the entity information
 		BotEntityInfo(playernum, &entinfo);
-		// if info is valid (in PVS)
+		// if the entity information is valid
 		if (entinfo.valid) {
 			areanum = BotPointAreaNum(entinfo.origin);
 
@@ -1169,8 +1169,9 @@ void BotMatch_ReturnFlag(bot_state_t *bs, bot_match_t *match) {
 #ifdef MISSIONPACK
 		&& gametype != GT_1FCTF
 #endif
-		)
+		) {
 		return;
+	}
 	// if not addressed to this bot
 	if (!BotAddressedToBot(bs, match)) {
 		return;
@@ -1838,7 +1839,7 @@ void BotMatch_LeadTheWay(bot_state_t *bs, bot_match_t *match) {
 	bs->lead_teamgoal.entitynum = -1;
 	// get the entity information
 	BotEntityInfo(playernum, &entinfo);
-	// if info is valid (in PVS)
+	// if the entity information is valid
 	if (entinfo.valid) {
 		areanum = BotPointAreaNum(entinfo.origin);
 
@@ -2006,7 +2007,7 @@ void BotMatch_NewLeader(bot_state_t *bs, bot_match_t *match) {
 	BotMatchVariable(match, NETNAME, netname, sizeof(netname));
 
 	playernum = FindPlayerByName(netname);
-
+	// ignore enemies
 	if (!BotSameTeam(bs, playernum)) {
 		return;
 	}

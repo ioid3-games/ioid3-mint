@@ -11,7 +11,7 @@ Spearmint Source Code is distributed in the hope that it will be useful, but WIT
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Spearmint Source Code.
-If not, see <http://www.gnu.org/licenses/>.
+If not, see <http:// www.gnu.org/licenses/>.
 
 In addition, Spearmint Source Code is also subject to certain additional terms. You should have received a copy of these additional
 terms immediately following the terms and conditions of the GNU General Public License. If not, please request a copy in writing from
@@ -21,7 +21,7 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
+// 
 // g_botlib.c
 
 #include "g_local.h"
@@ -43,7 +43,7 @@ static void BotImport_BSPModelMinsMaxsOrigin(int modelnum, vec3_t angles, vec3_t
 
 	trap_GetBrushBounds(modelnum, mins, maxs);
 
-	//if the model is rotated
+	// if the model is rotated
 	if ((angles[0] || angles[1] || angles[2])) {
 		// expand for rotation
 
@@ -114,31 +114,28 @@ void G_BotInitBotLib(void) {
 	botlib_import.GetEntityToken = trap_GetEntityToken;
 	botlib_import.BSPModelMinsMaxsOrigin = BotImport_BSPModelMinsMaxsOrigin;
 	botlib_import.BotClientCommand = trap_ClientCommand;
-
-	//memory management
+	// memory management
 	botlib_import.GetMemory = BotImport_GetMemory;
 	botlib_import.FreeMemory = BotImport_FreeMemory;
 	botlib_import.AvailableMemory = BotImport_AvailableMemory;
 	botlib_import.HunkAlloc = BotImport_HunkAlloc;
-
 	// file system access
 	botlib_import.FS_FOpenFile = trap_FS_FOpenFile;
 	botlib_import.FS_Read = trap_FS_Read;
 	botlib_import.FS_Write = trap_FS_Write;
 	botlib_import.FS_FCloseFile = trap_FS_FCloseFile;
 	botlib_import.FS_Seek = trap_FS_Seek;
-
-	//debug lines
+	// debug lines
 	botlib_import.DebugLineCreate = BotAI_DebugLineCreate;
 	botlib_import.DebugLineDelete = BotAI_DebugLineDelete;
 	botlib_import.DebugLineShow = BotAI_DebugLineShow;
-
-	//debug polygons
+	// debug polygons
 	botlib_import.DebugPolygonCreate = trap_DebugPolygonCreate;
 	botlib_import.DebugPolygonDelete = trap_DebugPolygonDelete;
 
 	botlib_export = (botlib_export_t *)GetBotLibAPI(BOTLIB_API_VERSION, &botlib_import);
-	assert(botlib_export);	// somehow we end up with a zero import.
+
+	assert(botlib_export); // somehow we end up with a zero import.
 }
 
 /*
@@ -175,7 +172,7 @@ static int G_BotLibSetup(void) {
 =======================================================================================================================================
 G_BotLibShutdown
 
-Called when map is restarted or changed
+Called when map is restarted or changed.
 =======================================================================================================================================
 */
 static int G_BotLibShutdown(void) {

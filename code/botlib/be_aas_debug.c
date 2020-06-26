@@ -22,14 +22,9 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_aas_debug.c
- *
- * desc:		AAS debug code
- *
- * $Archive: /MissionPack/code/botlib/be_aas_debug.c $
- *
- *****************************************************************************/
+/**************************************************************************************************************************************
+ AAS debug code.
+**************************************************************************************************************************************/
 
 #include "../qcommon/q_shared.h"
 #include "l_memory.h"
@@ -153,10 +148,15 @@ void AAS_DrawPermanentCross(vec3_t origin, float size, int color) {
 
 	for (i = 0; i < 3; i++) {
 		VectorCopy(origin, start);
+
 		start[i] += size;
+
 		VectorCopy(origin, end);
+
 		end[i] -= size;
+
 		AAS_DebugLine(start, end, color);
+
 		debugline = botimport.DebugLineCreate();
 		botimport.DebugLineShow(debugline, start, end, color);
 	}
@@ -178,8 +178,8 @@ void AAS_DrawPlaneCross(vec3_t point, vec3_t normal, float dist, int type, int c
 	VectorCopy(point, end2);
 
 	n0 = type % 3;
-	n1 = (type + 1)% 3;
-	n2 = (type + 2)% 3;
+	n1 = (type + 1) % 3;
+	n2 = (type + 2) % 3;
 	start1[n1] -= 6;
 	start1[n2] -= 6;
 	end1[n1] += 6;
@@ -224,12 +224,15 @@ void AAS_ShowBoundingBox(vec3_t origin, vec3_t mins, vec3_t maxs) {
 	bboxcorners[0][0] = origin[0] + maxs[0];
 	bboxcorners[0][1] = origin[1] + maxs[1];
 	bboxcorners[0][2] = origin[2] + maxs[2];
+
 	bboxcorners[1][0] = origin[0] + mins[0];
 	bboxcorners[1][1] = origin[1] + maxs[1];
 	bboxcorners[1][2] = origin[2] + maxs[2];
+
 	bboxcorners[2][0] = origin[0] + mins[0];
 	bboxcorners[2][1] = origin[1] + mins[1];
 	bboxcorners[2][2] = origin[2] + maxs[2];
+
 	bboxcorners[3][0] = origin[0] + maxs[0];
 	bboxcorners[3][1] = origin[1] + mins[1];
 	bboxcorners[3][2] = origin[2] + maxs[2];
@@ -338,7 +341,9 @@ void AAS_ShowFacePolygon(int facenum, int color, int flip) {
 			// edge number
 			edgenum = aasworld.edgeindex[face->firstedge + i];
 			edge = &aasworld.edges[abs(edgenum)];
+
 			VectorCopy(aasworld.vertexes[edge->v[edgenum < 0]], points[numpoints]);
+
 			numpoints++;
 		}
 	} else {
@@ -346,7 +351,9 @@ void AAS_ShowFacePolygon(int facenum, int color, int flip) {
 			// edge number
 			edgenum = aasworld.edgeindex[face->firstedge + i];
 			edge = &aasworld.edges[abs(edgenum)];
+
 			VectorCopy(aasworld.vertexes[edge->v[edgenum < 0]], points[numpoints]);
+
 			numpoints++;
 		}
 	}
@@ -386,7 +393,7 @@ void AAS_ShowArea(int areanum, int groundfacesonly) {
 		face = &aasworld.faces[facenum];
 		// ground faces only
 		if (groundfacesonly) {
-			if (!(face->faceflags &(FACE_GROUND|FACE_LADDER))) {
+			if (!(face->faceflags & (FACE_GROUND|FACE_LADDER))) {
 				continue;
 			}
 		}
@@ -443,6 +450,7 @@ void AAS_ShowArea(int areanum, int groundfacesonly) {
 		}
 
 		botimport.DebugLineShow(debuglines[line], aasworld.vertexes[edge->v[0]], aasworld.vertexes[edge->v[1]], color);
+
 		debuglinevisible[line] = qtrue;
 	}
 }
@@ -474,7 +482,7 @@ void AAS_ShowAreaPolygons(int areanum, int color, int groundfacesonly) {
 		face = &aasworld.faces[facenum];
 		// ground faces only
 		if (groundfacesonly) {
-			if (!(face->faceflags &(FACE_GROUND|FACE_LADDER))) {
+			if (!(face->faceflags & (FACE_GROUND|FACE_LADDER))) {
 				continue;
 			}
 		}
@@ -494,9 +502,13 @@ void AAS_DrawCross(vec3_t origin, float size, int color) {
 
 	for (i = 0; i < 3; i++) {
 		VectorCopy(origin, start);
+
 		start[i] += size;
+
 		VectorCopy(origin, end);
+
 		end[i] -= size;
+
 		AAS_DebugLine(start, end, color);
 	}
 }
@@ -586,6 +598,7 @@ void AAS_DrawArrow(vec3_t start, vec3_t end, int linecolor, int arrowcolor) {
 
 	VectorSubtract(end, start, dir);
 	VectorNormalize(dir);
+
 	dot = DotProduct(dir, up);
 
 	if (dot > 0.99 || dot < -0.99) {
@@ -621,13 +634,17 @@ void AAS_ShowReachability(aas_reachability_t *reach, int contentmask) {
 	if ((reach->traveltype & TRAVELTYPE_MASK) == TRAVEL_JUMP || (reach->traveltype & TRAVELTYPE_MASK) == TRAVEL_WALKOFFLEDGE) {
 		AAS_HorizontalVelocityForJump(aassettings.phys_jumpvel, reach->start, reach->end, &speed);
 		VectorSubtract(reach->end, reach->start, dir);
+
 		dir[2] = 0;
+
 		VectorNormalize(dir);
 		// set the velocity
 		VectorScale(dir, speed, velocity);
 		// set the command movement
 		VectorClear(cmdmove);
+
 		cmdmove[2] = aassettings.phys_jumpvel;
+		// movement prediction
 		AAS_PredictPlayerMovement(&move, -1, reach->start, PRESENCE_NORMAL, qtrue, velocity, cmdmove, 3, 30, 0.1f, SE_HITGROUND|SE_ENTERWATER|SE_ENTERSLIME|SE_ENTERLAVA|SE_HITGROUNDDAMAGE, 0, qtrue, contentmask);
 
 		if ((reach->traveltype & TRAVELTYPE_MASK) == TRAVEL_JUMP) {
@@ -636,24 +653,31 @@ void AAS_ShowReachability(aas_reachability_t *reach, int contentmask) {
 		}
 	} else if ((reach->traveltype & TRAVELTYPE_MASK) == TRAVEL_ROCKETJUMP) {
 		zvel = AAS_RocketJumpZVelocity(reach->start, contentmask);
+
 		AAS_HorizontalVelocityForJump(zvel, reach->start, reach->end, &speed);
 		VectorSubtract(reach->end, reach->start, dir);
+
 		dir[2] = 0;
+
 		VectorNormalize(dir);
 		// get command movement
 		VectorScale(dir, speed, cmdmove);
 		VectorSet(velocity, 0, 0, zvel);
+		// movement prediction
 		AAS_PredictPlayerMovement(&move, -1, reach->start, PRESENCE_NORMAL, qtrue, velocity, cmdmove, 30, 30, 0.1f, SE_ENTERWATER|SE_ENTERSLIME|SE_ENTERLAVA|SE_HITGROUNDDAMAGE|SE_TOUCHJUMPPAD|SE_HITGROUNDAREA, reach->areanum, qtrue, contentmask);
 	} else if ((reach->traveltype & TRAVELTYPE_MASK) == TRAVEL_JUMPPAD) {
 		VectorSet(cmdmove, 0, 0, 0);
 		VectorSubtract(reach->end, reach->start, dir);
+
 		dir[2] = 0;
+
 		VectorNormalize(dir);
 		// set the velocity
 		// NOTE: the edgenum is the horizontal velocity
 		VectorScale(dir, reach->edgenum, velocity);
 		// NOTE: the facenum is the Z velocity
 		velocity[2] = reach->facenum;
+		// movement prediction
 		AAS_PredictPlayerMovement(&move, -1, reach->start, PRESENCE_NORMAL, qtrue, velocity, cmdmove, 30, 30, 0.1f, SE_ENTERWATER|SE_ENTERSLIME|SE_ENTERLAVA|SE_HITGROUNDDAMAGE|SE_TOUCHJUMPPAD|SE_HITGROUNDAREA, reach->areanum, qtrue, contentmask);
 	}
 }
@@ -686,9 +710,12 @@ void AAS_ShowReachableAreas(int areanum, int contentmask) {
 
 	if (AAS_Time() - lasttime > 1.5) {
 		Com_Memcpy(&reach, &aasworld.reachability[settings->firstreachablearea + index], sizeof(aas_reachability_t));
+
 		index++;
 		lasttime = AAS_Time();
+
 		AAS_PrintTravelType(reach.traveltype & TRAVELTYPE_MASK);
+
 		botimport.Print(PRT_MESSAGE, "\n");
 	}
 
@@ -739,6 +766,7 @@ void AAS_FloodAreas_r(int areanum, int cluster, int *done) {
 		if (AAS_AreaCluster(nextareanum) != cluster) {
 			continue;
 		}
+
 		AAS_FloodAreas_r(nextareanum, cluster, done);
 	}
 

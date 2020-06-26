@@ -22,19 +22,8 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		be_aas_cluster.h
- *
- * desc:		AAS
- *
- * $Archive: /source/code/botlib/be_aas_cluster.h $
- *
- *****************************************************************************/
-
 #ifdef AASINTERN
-//initialize the AAS clustering
+// initialize the AAS clustering
 void AAS_InitClustering(void);
-//
 void AAS_SetViewPortalsAsClusterPortals(void);
-#endif //AASINTERN
-
+#endif // AASINTERN

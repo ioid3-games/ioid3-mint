@@ -21,7 +21,10 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-// cvar.c -- dynamic variable tracking
+
+/**************************************************************************************************************************************
+ Dynamic variable tracking.
+**************************************************************************************************************************************/
 
 #include "q_shared.h"
 #include "qcommon.h"
@@ -39,7 +42,9 @@ static cvar_t *hashTable[FILE_HASH_SIZE];
 
 /*
 =======================================================================================================================================
-return a hash value for the filename
+generateHashValue
+
+Return a hash value for the filename.
 =======================================================================================================================================
 */
 static long generateHashValue(const char *fname) {
@@ -52,11 +57,11 @@ static long generateHashValue(const char *fname) {
 
 	while (fname[i] != '\0') {
 		letter = tolower(fname[i]);
-		hash += (long)(letter) * (i+119);
+		hash += (long)(letter) * (i + 119);
 		i++;
 	}
 
-	hash & = (FILE_HASH_SIZE - 1);
+	hash &= (FILE_HASH_SIZE - 1);
 	return hash;
 }
 
@@ -79,7 +84,7 @@ static qboolean Cvar_ValidateString(const char *s) {
 		return qfalse;
 	}
 
-	if (strchr(s, '; ')) {
+	if (strchr(s, ';')) {
 		return qfalse;
 	}
 
@@ -96,7 +101,7 @@ static cvar_t *Cvar_FindVar(const char *var_name) {
 	long hash;
 
 	hash = generateHashValue(var_name);
-	
+
 	for (var = hashTable[hash]; var; var = var->hashNext) {
 		if (!Q_stricmp(var_name, var->name)) {
 			return var;
@@ -219,7 +224,7 @@ Cvar_Flags
 */
 int Cvar_Flags(const char *var_name) {
 	cvar_t *var;
-	
+
 	if (!(var = Cvar_FindVar(var_name))) {
 		return CVAR_NONEXISTENT;
 	} else {
@@ -236,9 +241,9 @@ int Cvar_Flags(const char *var_name) {
 Cvar_CommandCompletion
 =======================================================================================================================================
 */
-void Cvar_CommandCompletion(void(*callback)(const char *s)) {
+void Cvar_CommandCompletion(void (*callback)(const char *s)) {
 	cvar_t *cvar;
-	
+
 	for (cvar = cvar_vars; cvar; cvar = cvar->next) {
 		if (cvar->name) {
 			callback(cvar->name);
@@ -312,9 +317,9 @@ static const char *Cvar_Validate(cvar_t *var, const char *value, qboolean warn) 
 			}
 
 			if (Q_isintegral(var->max)) {
-				Com_Printf(" out of range(max %d)", (int)var->max);
+				Com_Printf(" out of range (max %d)", (int)var->max);
 			} else {
-				Com_Printf(" out of range(max %f)", var->max);
+				Com_Printf(" out of range (max %f)", var->max);
 			}
 		}
 
@@ -347,8 +352,7 @@ static const char *Cvar_Validate(cvar_t *var, const char *value, qboolean warn) 
 =======================================================================================================================================
 Cvar_Get
 
-If the variable already exists, the value will not be set unless CVAR_ROM.
-The flags will be or'ed in if the variable exists.
+If the variable already exists, the value will not be set unless CVAR_ROM. The flags will be or'ed in if the variable exists.
 =======================================================================================================================================
 */
 cvar_t *Cvar_Get(const char *var_name, const char *var_value, int flags) {
@@ -356,7 +360,7 @@ cvar_t *Cvar_Get(const char *var_name, const char *var_value, int flags) {
 	long hash;
 	int index;
 
-	if (!var_name || ! var_value) {
+	if (!var_name || !var_value) {
 		Com_Error(ERR_FATAL, "Cvar_Get: NULL parameter");
 	}
 
@@ -371,22 +375,22 @@ cvar_t *Cvar_Get(const char *var_name, const char *var_value, int flags) {
 	}
 #endif
 	var = Cvar_FindVar(var_name);
-	
+
 	if (var) {
 		var_value = Cvar_Validate(var, var_value, qfalse);
-		// make sure the game code cannot mark engine - added variables as gamecode vars
+		// make sure the game code cannot mark engine-added variables as gamecode vars
 		if (var->flags & CVAR_VM_CREATED) {
 			if (!(flags & CVAR_VM_CREATED)) {
-				var->flags & = ~CVAR_VM_CREATED;
+				var->flags &= ~CVAR_VM_CREATED;
 			}
 		} else if (!(var->flags & CVAR_USER_CREATED)) {
 			if (flags & CVAR_VM_CREATED) {
-				flags & = ~CVAR_VM_CREATED;
+				flags &= ~CVAR_VM_CREATED;
 			}
 		}
 		// if the C code is now specifying a variable that the user already set a value for, take the new value as the reset value
 		if (var->flags & CVAR_USER_CREATED) {
-			var->flags & = ~CVAR_USER_CREATED;
+			var->flags &= ~CVAR_USER_CREATED;
 
 			if (!(var->flags & CVAR_CUSTOM_RESET)) {
 				Z_Free(var->resetString);
@@ -402,19 +406,19 @@ cvar_t *Cvar_Get(const char *var_name, const char *var_value, int flags) {
 				var->latchedString = CopyString(var_value);
 			}
 		}
-		// make sure servers cannot mark engine - added variables as SERVER_CREATED
+		// make sure servers cannot mark engine-added variables as SERVER_CREATED
 		if (var->flags & CVAR_SERVER_CREATED) {
 			if (!(flags & CVAR_SERVER_CREATED)) {
-				var->flags & = ~CVAR_SERVER_CREATED;
+				var->flags &= ~CVAR_SERVER_CREATED;
 			}
 		} else {
 			if (flags & CVAR_SERVER_CREATED) {
-				flags & = ~CVAR_SERVER_CREATED;
+				flags &= ~CVAR_SERVER_CREATED;
 			}
 		}
-		
+
 		var->flags |= flags;
-		// only allow one non - empty reset string without a warning
+		// only allow one non-empty reset string without a warning
 		if (!var->resetString[0]) {
 			// we don't have a reset string yet
 			Z_Free(var->resetString);
@@ -437,8 +441,7 @@ cvar_t *Cvar_Get(const char *var_name, const char *var_value, int flags) {
 				var->overriddenResetString = CopyString(var_value);
 			}
 		}
-		// ZOID -- needs to be set so that cvars the game sets as 
-		// SERVERINFO get sent to clients
+		// needs to be set so that cvars the game sets as SERVERINFO get sent to clients
 		cvar_modifiedFlags |= flags;
 
 		return var;
@@ -447,8 +450,9 @@ cvar_t *Cvar_Get(const char *var_name, const char *var_value, int flags) {
 
 	// find a free cvar
 	for (index = 0; index < MAX_CVARS; index++) {
-		if (!cvar_indexes[index].name)
+		if (!cvar_indexes[index].name) {
 			break;
+		}
 	}
 
 	if (index >= MAX_CVARS) {
@@ -458,9 +462,9 @@ cvar_t *Cvar_Get(const char *var_name, const char *var_value, int flags) {
 
 		return NULL;
 	}
-	
+
 	var = &cvar_indexes[index];
-	
+
 	if (index >= cvar_numIndexes) {
 		cvar_numIndexes = index + 1;
 	}
@@ -484,11 +488,9 @@ cvar_t *Cvar_Get(const char *var_name, const char *var_value, int flags) {
 
 	var->prev = NULL;
 	cvar_vars = var;
-
 	var->flags = flags;
 	// note what types of cvars have been modified (userinfo, archive, serverinfo, systeminfo)
 	cvar_modifiedFlags |= var->flags;
-
 	hash = generateHashValue(var_name);
 	var->hashIndex = hash;
 	var->hashNext = hashTable[hash];
@@ -667,7 +669,7 @@ cvar_t *Cvar_Set2(const char *var_name, const char *value, int defaultFlags, qbo
 	} else if (!strcmp(value, var->string)) {
 		return var;
 	}
-	// note what types of cvars have been modified(userinfo, archive, serverinfo, systeminfo)
+	// note what types of cvars have been modified (userinfo, archive, serverinfo, systeminfo)
 	cvar_modifiedFlags |= var->flags;
 
 	if (!force) {
@@ -690,7 +692,7 @@ cvar_t *Cvar_Set2(const char *var_name, const char *value, int defaultFlags, qbo
 			Com_Printf("%s is cheat protected.\n", var_name);
 			return var;
 		}
-		
+
 		if (var->flags & CVAR_LATCH) {
 			if (var->latchedString) {
 				if (strcmp(value, var->latchedString) == 0) {
@@ -723,9 +725,9 @@ cvar_t *Cvar_Set2(const char *var_name, const char *value, int defaultFlags, qbo
 
 	var->modified = qtrue;
 	var->modificationCount++;
-	
+
 	Z_Free(var->string); // free the old value string
-	
+
 	var->string = CopyString(value);
 	var->value = atof(var->string);
 	var->integer = atoi(var->string);
@@ -748,7 +750,7 @@ cvar_t *Cvar_Set(const char *var_name, const char *value) {
 =======================================================================================================================================
 Cvar_SetSafe
 
-Try to set cvar to a value. respects CVAR_ROM, etc.
+Try to set cvar to a value. Respects CVAR_ROM, etc.
 =======================================================================================================================================
 */
 cvar_t *Cvar_SetSafe(const char *var_name, const char *value) {
@@ -919,6 +921,7 @@ qboolean Cvar_Command(void) {
 
 	// check variables
 	v = Cvar_FindVar(Cmd_Argv(0));
+
 	if (!v) {
 		return qfalse;
 	}
@@ -942,15 +945,15 @@ Prints the contents of a cvar (preferred over Cvar_Command where cvar names and 
 void Cvar_Print_f(void) {
 	char *name;
 	cvar_t *cv;
-	
+
 	if (Cmd_Argc() != 2) {
-		Com_Printf("usage: print <variable> \n");
+		Com_Printf("usage: print <variable>\n");
 		return;
 	}
 
 	name = Cmd_Argv(1);
 	cv = Cvar_FindVar(name);
-	
+
 	if (cv) {
 		Cvar_Print(cv);
 	} else {
@@ -1069,7 +1072,7 @@ Cvar_Reset_f
 void Cvar_Reset_f(void) {
 
 	if (Cmd_Argc() != 2) {
-		Com_Printf("usage: reset < variable > \n");
+		Com_Printf("usage: reset <variable>\n");
 		return;
 	}
 
@@ -1326,7 +1329,7 @@ Unsets a cvar.
 cvar_t *Cvar_Unset(cvar_t *cv) {
 	cvar_t *next = cv->next;
 
-	// note what types of cvars have been modified(userinfo, archive, serverinfo, systeminfo)
+	// note what types of cvars have been modified (userinfo, archive, serverinfo, systeminfo)
 	cvar_modifiedFlags |= cv->flags;
 
 	if (cv->name) {
@@ -1374,7 +1377,7 @@ cvar_t *Cvar_Unset(cvar_t *cv) {
 	}
 
 	Com_Memset(cv, '\0', sizeof(*cv));
-	
+
 	return next;
 }
 
@@ -1387,18 +1390,18 @@ Unsets a userdefined cvar.
 */
 void Cvar_Unset_f(void) {
 	cvar_t *cv;
-	
+
 	if (Cmd_Argc() != 2) {
-		Com_Printf("Usage: %s <varname> \n", Cmd_Argv(0));
+		Com_Printf("Usage: %s <varname>\n", Cmd_Argv(0));
 		return;
 	}
-	
+
 	cv = Cvar_FindVar(Cmd_Argv(1));
 
 	if (!cv) {
 		return;
 	}
-	
+
 	if (cv->flags & CVAR_USER_CREATED) {
 		Cvar_Unset(cv);
 	} else {
@@ -1428,7 +1431,7 @@ void Cvar_Restart(qboolean unsetVM) {
 		}
 
 		if (!(curvar->flags &(CVAR_ROM|CVAR_INIT|CVAR_NORESTART))) {
-			// just reset the rest to their default values.
+			// just reset the rest to their default values
 			Cvar_Reset(curvar->name);
 		}
 
@@ -1498,7 +1501,6 @@ char *Cvar_InfoString_Big(int bit) {
 
 	return info;
 }
-
 
 /*
 =======================================================================================================================================
@@ -1585,35 +1587,36 @@ void Cvar_Register(vmCvar_t *vmCvar, const char *varName, const char *defaultVal
 	cvar_t *cv;
 
 	// there is code in Cvar_Get to prevent CVAR_ROM cvars being changed by the user. In other words CVAR_ARCHIVE and CVAR_ROM are
-	// mutually exclusive flags. Unfortunately some historical game code (including single player baseq3) sets both flags. We unset CVAR_ROM for such cvars
+	// mutually exclusive flags. Unfortunately some historical game code (including single player baseq3) sets both flags
+	// we unset CVAR_ROM for such cvars
 	if ((flags &(CVAR_ARCHIVE|CVAR_ROM)) == (CVAR_ARCHIVE|CVAR_ROM)) {
 		Com_Printf(S_COLOR_YELLOW "WARNING: Unsetting CVAR_ROM from cvar '%s', since it is also CVAR_ARCHIVE\n", varName);
-		flags & = ~CVAR_ROM;
+		flags &= ~CVAR_ROM;
 	}
 	// don't allow VM to specific a different creator or other internal flags
 	if (flags & CVAR_USER_CREATED) {
 		Com_Printf(S_COLOR_YELLOW "WARNING: VM tried to set CVAR_USER_CREATED on cvar '%s'\n", varName);
-		flags & = ~CVAR_USER_CREATED;
+		flags &= ~CVAR_USER_CREATED;
 	}
 
 	if (flags & CVAR_SERVER_CREATED) {
 		Com_Printf(S_COLOR_YELLOW "WARNING: VM tried to set CVAR_SERVER_CREATED on cvar '%s'\n", varName);
-		flags & = ~CVAR_SERVER_CREATED;
+		flags &= ~CVAR_SERVER_CREATED;
 	}
 
 	if (flags & CVAR_PROTECTED) {
 		Com_Printf(S_COLOR_YELLOW "WARNING: VM tried to set CVAR_PROTECTED on cvar '%s'\n", varName);
-		flags & = ~CVAR_PROTECTED;
+		flags &= ~CVAR_PROTECTED;
 	}
 
 	if (flags & CVAR_MODIFIED) {
 		Com_Printf(S_COLOR_YELLOW "WARNING: VM tried to set CVAR_MODIFIED on cvar '%s'\n", varName);
-		flags & = ~CVAR_MODIFIED;
+		flags &= ~CVAR_MODIFIED;
 	}
 
 	if (flags & CVAR_NONEXISTENT) {
 		Com_Printf(S_COLOR_YELLOW "WARNING: VM tried to set CVAR_NONEXISTENT on cvar '%s'\n", varName);
-		flags & = ~CVAR_NONEXISTENT;
+		flags &= ~CVAR_NONEXISTENT;
 	}
 
 	cv = Cvar_FindVar(varName);
@@ -1648,6 +1651,7 @@ Updates an interpreted modules' version of a cvar.
 */
 void Cvar_Update(vmCvar_t *vmCvar) {
 	cvar_t *cv = NULL;
+
 	assert(vmCvar);
 
 	if ((unsigned)vmCvar->handle >= cvar_numIndexes) {

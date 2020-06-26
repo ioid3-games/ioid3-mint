@@ -22,15 +22,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-/*****************************************************************************
- * name:		ai_move.c
- *
- * desc:		bot movement AI
- *
- * $Archive: /MissionPack/code/game/ai_move.c $
- *
- *****************************************************************************/
-
 #include "g_local.h"
 #include "../botlib/botlib.h"
 #include "../botlib/aasfile.h"
@@ -461,7 +452,7 @@ int BotOnMover(vec3_t origin, int entnum, aas_reachability_t *reach) {
 	int i, modelnum;
 	vec3_t mins, maxs, modelorigin, org, end;
 	vec3_t angles = {0, 0, 0};
-	vec3_t boxmins = { - 16, -16, -8}, boxmaxs = {16, 16, 8};
+	vec3_t boxmins = {-16, -16, -8}, boxmaxs = {16, 16, 8};
 	trace_t trace;
 
 	modelnum = reach->facenum & 0x0000FFFF;
@@ -1377,7 +1368,7 @@ int BotWalkInDirection(bot_movestate_t *ms, vec3_t dir, float speed, int type) {
 			stopevent = SE_HITGROUNDDAMAGE|SE_GAP|SE_ENTERWATER|SE_ENTERSLIME|SE_ENTERLAVA;
 		}
 
-		// trap_AAS_ClearShownDebugLines();
+		//trap_AAS_ClearShownDebugLines();
 		VectorCopy(ms->origin, origin);
 
 		origin[2] += 0.5;
@@ -1424,7 +1415,7 @@ int BotWalkInDirection(bot_movestate_t *ms, vec3_t dir, float speed, int type) {
 			}
 		}
 
-		// trap_AAS_DrawCross(move.endpos, 4, LINECOLOR_BLUE);
+		//trap_AAS_DrawCross(move.endpos, 4, LINECOLOR_BLUE);
 
 		if (!(type & MOVE_JUMP)) {
 			// get horizontal movement

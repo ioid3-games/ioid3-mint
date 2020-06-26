@@ -31,7 +31,6 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 */
 
 // use this to get a demo build without an explicit demo build, i.e. to get the demo ui files to build
-//#define PRE_RELEASE_TADEMO
 
 #include "ui_local.h"
 
@@ -1057,7 +1056,7 @@ static void UI_DrawClanCinematic(rectDef_t *rect, float scale, vec4_t color) {
 				uiInfo.teamList[i].cinematic = -2;
 			}
 		} else {
-			rap_R_SetColor(color);
+			trap_R_SetColor(color);
 			CG_DrawPic(rect->x, rect->y, rect->w, rect->h, uiInfo.teamList[i].teamIcon);
 			trap_R_SetColor(NULL);
 		}
@@ -1124,7 +1123,7 @@ static void UI_DrawTeamMember(rectDef_t *rect, float scale, vec4_t color, qboole
 	// 0 - None
 	// 1 - Human
 	// 2 - Random Bot
-	// 3..NumCharacters - Bot
+	// 3.. NumCharacters - Bot
 	int value = trap_Cvar_VariableValue(va(blue ? "ui_blueteam%i" : "ui_redteam%i", num));
 	const char *text;
 
@@ -1137,7 +1136,7 @@ static void UI_DrawTeamMember(rectDef_t *rect, float scale, vec4_t color, qboole
 	} else {
 		value -= 3;
 
-		if (ui_actualNetGameType.integer >= GT_TEAM) {
+		if (ui_actualNetGameType.integer > GT_TOURNAMENT) {
 			if (value >= uiInfo.characterCount) {
 				value = 0;
 			}
@@ -1178,7 +1177,9 @@ static void UI_DrawEffects(rectDef_t *rect, float scale, vec4_t color) {
 		}
 
 		CG_PlayerColorFromIndex(uitogamecode[uiInfo.effectsColor], picColor);
+
 		picColor[3] = 1;
+
 		trap_R_SetColor(picColor);
 	}
 
@@ -1478,7 +1479,7 @@ static const char *UI_AIFromName(const char *name) {
 			return uiInfo.characterList[j].name;
 		}
 	}
-	// name is listed in team list but not in alias or characters list.
+	// name is listed in team list but not in alias or characters list
 	Com_Printf(S_COLOR_YELLOW "WARNING: Unknown team character '%s'.\n", name);
 	return name;
 }
@@ -1851,14 +1852,14 @@ UI_DrawBotName
 */
 static void UI_DrawBotName(rectDef_t *rect, float scale, vec4_t color, int textStyle) {
 	// 0 - Random Bot
-	// 1..NumCharacters - Bot
+	// 1.. NumCharacters - Bot
 	int value = uiInfo.botIndex;
 	int game = trap_Cvar_VariableValue("g_gametype");
 	const char *text = "";
 
 	if (value == 0) {
 		text = "Random Bot";
-	} else if (game >= GT_TEAM) {
+	} else if (game > GT_TOURNAMENT) {
 		text = uiInfo.characterList[value - 1].name;
 	} else {
 		text = UI_GetBotNameByNumber(value - 1);
@@ -2069,7 +2070,7 @@ static void UI_DrawGLInfo(rectDef_t *rect, float scale, vec4_t color, int textSt
 
 	UI_Text_Paint(rect->x + 2, rect->y, scale, color, va("VENDOR: %s", cgs.glconfig.vendor_string), 0, 30, textStyle);
 	UI_Text_Paint(rect->x + 2, rect->y + 15, scale, color, va("VERSION: %s: %s", cgs.glconfig.version_string, cgs.glconfig.renderer_string), 0, 30, textStyle);
-	UI_Text_Paint(rect->x + 2, rect->y + 30, scale, color, va("PIXELFORMAT: color(%d-bits) Z(%d-bits)stencil(%d-bits)", cgs.glconfig.colorBits, cgs.glconfig.depthBits, cgs.glconfig.stencilBits), 0, 30, textStyle);
+	UI_Text_Paint(rect->x + 2, rect->y + 30, scale, color, va("PIXELFORMAT: color(%d-bits) Z(%d-bits) stencil(%d-bits)", cgs.glconfig.colorBits, cgs.glconfig.depthBits, cgs.glconfig.stencilBits), 0, 30, textStyle);
 	// build null terminated extension strings
 	// TTimo: https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=399
 	// in Team Arena this was not directly crashing, but displaying a nasty broken shader right in the middle
@@ -2355,7 +2356,7 @@ static qboolean UI_OwnerDrawVisible(int flags) {
 		}
 
 		if (flags & UI_SHOW_ANYTEAMGAME) {
-			if (uiInfo.gameTypes[ui_gameType.integer].gtEnum <= GT_TEAM) {
+			if (uiInfo.gameTypes[ui_gameType.integer].gtEnum < GT_CTF) {
 				vis = qfalse;
 			}
 
@@ -2371,7 +2372,7 @@ static qboolean UI_OwnerDrawVisible(int flags) {
 		}
 
 		if (flags & UI_SHOW_NETANYTEAMGAME) {
-			if (uiInfo.gameTypes[ui_netGameType.integer].gtEnum <= GT_TEAM) {
+			if (uiInfo.gameTypes[ui_netGameType.integer].gtEnum < GT_CTF) {
 				vis = qfalse;
 			}
 
@@ -2682,13 +2683,13 @@ static qboolean UI_TeamMember_HandleKey(int flags, float *special, int key, qboo
 		// 0 - None
 		// 1 - Human
 		// 2 - Random Bot
-		// 3..NumCharacters - Bot
+		// 3.. NumCharacters - Bot
 		char *cvar = va(blue ? "ui_blueteam%i" : "ui_redteam%i", num);
 		int value = trap_Cvar_VariableValue(cvar);
 
 		value += select;
 
-		if (ui_actualNetGameType.integer >= GT_TEAM) {
+		if (ui_actualNetGameType.integer > GT_TOURNAMENT) {
 			if (value >= uiInfo.characterCount + 3) {
 				value = 0;
 			} else if (value < 0) {
@@ -2807,13 +2808,13 @@ static qboolean UI_BotName_HandleKey(int flags, float *special, int key) {
 
 	if (select != 0) {
 		// 0 - Random Bot
-		// 1..NumCharacters - Bot
+		// 1.. NumCharacters - Bot
 		int game = trap_Cvar_VariableValue("g_gametype");
 		int value = uiInfo.botIndex;
 
 		value += select;
 
-		if (game >= GT_TEAM) {
+		if (game > GT_TOURNAMENT) {
 			if (value >= uiInfo.characterCount + 1) {
 				value = 0;
 			} else if (value < 0) {
@@ -3030,7 +3031,7 @@ UI_ServersQsortCompare
 =======================================================================================================================================
 */
 static int QDECL UI_ServersQsortCompare(const void *arg1, const void *arg2) {
-	return trap_LAN_CompareServers(UI_SourceForLAN(), uiInfo.serverStatus.sortKey, uiInfo.serverStatus.sortDir, *(int *)arg1, * (int*)arg2);
+	return trap_LAN_CompareServers(UI_SourceForLAN(), uiInfo.serverStatus.sortKey, uiInfo.serverStatus.sortDir, *(int *)arg1, *(int *)arg2);
 }
 
 /*
@@ -3362,7 +3363,7 @@ static void UI_StartSkirmish(qboolean next) {
 		}
 	}
 
-	if (g >= GT_TEAM) {
+	if (g > GT_TOURNAMENT) {
 		trap_Cvar_Set("teampref", "red");
 	}
 }
@@ -3575,19 +3576,19 @@ static void UI_RunMenuScript(char **args) {
 				// 0 - None
 				// 1 - Human
 				// 2 - Random Bot
-				// 3..NumCharacters - Bot
+				// 3.. NumCharacters - Bot
 				int bot = trap_Cvar_VariableValue(va("ui_blueteam%i", i + 1));
 
 				if (bot > 1) {
 					if (bot == 2) {
 						name = "random";
-					} else if (ui_actualNetGameType.integer >= GT_TEAM) {
+					} else if (ui_actualNetGameType.integer > GT_TOURNAMENT) {
 						name = uiInfo.characterList[bot - 3].name;
 					} else {
 						name = UI_GetBotNameByNumber(bot - 3);
 					}
 
-					if (ui_actualNetGameType.integer >= GT_TEAM) {
+					if (ui_actualNetGameType.integer > GT_TOURNAMENT) {
 						Com_sprintf(buff, sizeof(buff), "addbot %s %f %s\n", name, skill, "Blue");
 					} else {
 						Com_sprintf(buff, sizeof(buff), "addbot %s %f\n", name, skill);
@@ -3601,13 +3602,13 @@ static void UI_RunMenuScript(char **args) {
 				if (bot > 1) {
 					if (bot == 2) {
 						name = "random";
-					} else if (ui_actualNetGameType.integer >= GT_TEAM) {
+					} else if (ui_actualNetGameType.integer > GT_TOURNAMENT) {
 						name = uiInfo.characterList[bot - 3].name;
 					} else {
 						name = UI_GetBotNameByNumber(bot - 3);
 					}
 
-					if (ui_actualNetGameType.integer >= GT_TEAM) {
+					if (ui_actualNetGameType.integer > GT_TOURNAMENT) {
 						Com_sprintf(buff, sizeof(buff), "addbot %s %f %s\n", name, skill, "Red");
 					} else {
 						Com_sprintf(buff, sizeof(buff), "addbot %s %f\n", name, skill);
@@ -3773,16 +3774,16 @@ static void UI_RunMenuScript(char **args) {
 			}
 		} else if (Q_stricmp(name, "addBot") == 0) {
 			// 0 - Random Bot
-			// 1..NumCharacters - Bot
+			// 1.. NumCharacters - Bot
 			if (uiInfo.botIndex == 0) {
 				name = "random";
-			} else if (trap_Cvar_VariableValue("g_gametype") >= GT_TEAM) {
+			} else if (trap_Cvar_VariableValue("g_gametype") > GT_TOURNAMENT) {
 				name = uiInfo.characterList[uiInfo.botIndex - 1].name;
 			} else {
 				name = UI_GetBotNameByNumber(uiInfo.botIndex - 1);
 			}
 
-			trap_Cmd_ExecuteText(EXEC_APPEND, va("addbot %s %i %s\n", name, uiInfo.skillIndex+1, (uiInfo.redBlue == 0) ? "red" : "blue"));
+			trap_Cmd_ExecuteText(EXEC_APPEND, va("addbot %s %i %s\n", name, uiInfo.skillIndex + 1, (uiInfo.redBlue == 0) ? "red" : "blue"));
 		} else if (Q_stricmp(name, "addFavorite") == 0) {
 			if (ui_netSource.integer != UIAS_FAVORITES) {
 				char name[MAX_NAME_LENGTH];
@@ -5773,7 +5774,7 @@ void UI_Init(qboolean inGameLoad, int maxSplitView) {
 	UI_LoadBots();
 	// sets defaults for ui temp cvars
 	uiInfo.effectsColor = gamecodetoui[(int)trap_Cvar_VariableValue("color1") - 1];
-	uiInfo.currentCrosshair = (int)trap_Cvar_VariableValue("cg_drawCrosshair")% NUM_CROSSHAIRS;
+	uiInfo.currentCrosshair = (int)trap_Cvar_VariableValue("cg_drawCrosshair") % NUM_CROSSHAIRS;
 
 	if (uiInfo.currentCrosshair < 0) {
 		uiInfo.currentCrosshair = 0;

@@ -21,40 +21,40 @@ If you have questions concerning this license or the applicable additional terms
 ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
-//
 
-// this file holds commands that can be executed by the server console, but not remote clients
+/**************************************************************************************************************************************
+ This file holds commands that can be executed by the server console, but not remote clients.
+**************************************************************************************************************************************/
 
 #include "g_local.h"
 
 /*
 =======================================================================================================================================
 
-PACKET FILTERING
+	PACKET FILTERING
 
 You can add or remove addresses from the filter list with:
+addip <ip>
+removeip <ip>
 
-addip < ip>
-removeip < ip>
+The ip address is specified in dot format, and you can use '*' to match any value, so you can specify an entire class C network with
+"addip 192.246.40.*".
 
-The ip address is specified in dot format, and you can use '*' to match any value
-so you can specify an entire class C network with "addip 192.246.40.*"
-
-Removeip will only remove an address specified exactly the same way.  You cannot addip a subnet, then removeip a single host.
+Removeip will only remove an address specified exactly the same way. You cannot addip a subnet, then removeip a single host.
 
 listip
 Prints the current list of filters.
 
-g_filterban < 0 or 1>
+g_filterban <0 or 1>.
 
-If 1(the default), then ip addresses matching the current list will be prohibited from entering the game.  This is the default setting.
+If 1 (the default), then ip addresses matching the current list will be prohibited from entering the game. This is the default setting.
 
-If 0, then only addresses matching the list will be allowed.  This lets you easily set up a private game, or a game that only allows players from your local network.
+If 0, then only addresses matching the list will be allowed. This lets you easily set up a private game, or a game that only allows
+players from your local network.
 
-TTimo NOTE: for persistence, bans are stored in g_banIPs cvar MAX_CVAR_VALUE_STRING
-The size of the cvar string buffer is limiting the banning to around 20 masks
-this could be improved by putting some g_banIPs2 g_banIps3 etc. maybe
-still, you should rely on PB for banning instead
+For persistence, bans are stored in g_banIPs cvar MAX_CVAR_VALUE_STRING.
+The size of the cvar string buffer is limiting the banning to around 20 masks.
+This could be improved by putting some g_banIPs2 g_banIps3 etc. maybe still, you should rely on PB for banning instead.
 
 =======================================================================================================================================
 */
@@ -79,12 +79,12 @@ static qboolean StringToFilter(char *s, ipFilter_t *f) {
 	int i, j;
 	byte b[4];
 	byte m[4];
-	
+
 	for (i = 0; i < 4; i++) {
 		b[i] = 0;
 		m[i] = 0;
 	}
-	
+
 	for (i = 0; i < 4; i++) {
 		if (*s < '0' || *s > '9') {
 			if (*s == '*') { // 'match any'
@@ -102,7 +102,7 @@ static qboolean StringToFilter(char *s, ipFilter_t *f) {
 			G_Printf("Bad filter address: %s\n", s);
 			return qfalse;
 		}
-		
+
 		j = 0;
 
 		while (*s >= '0' && *s <= '9') {
@@ -119,10 +119,10 @@ static qboolean StringToFilter(char *s, ipFilter_t *f) {
 
 		s++;
 	}
-	
-	f->mask = * (unsigned *)m;
-	f->compare = * (unsigned *)b;
-	
+
+	f->mask = *(unsigned *)m;
+	f->compare = *(unsigned *)b;
+
 	return qtrue;
 }
 
@@ -150,7 +150,7 @@ static void UpdateIPBans(void) {
 		*ip = 0;
 
 		for (j = 0; j < 4; j++) {
-			if (m[j]!= 255) {
+			if (m[j] != 255) {
 				Q_strcat(ip, sizeof(ip), "*");
 			} else {
 				Q_strcat(ip, sizeof(ip), va("%i", b[j]));
@@ -198,8 +198,8 @@ qboolean G_FilterPacket(char *from) {
 
 		i++, p++;
 	}
-	
-	in = * (unsigned *)m;
+
+	in = *(unsigned *)m;
 
 	for (i = 0; i < numIPFilters; i++) {
 		if ((in & ipFilters[i].mask) == ipFilters[i].compare) {
@@ -232,7 +232,7 @@ static void AddIP(char *str) {
 
 		numIPFilters++;
 	}
-	
+
 	if (!StringToFilter(str, &ipFilters[i])) {
 		ipFilters[i].compare = 0xffffffffu;
 	}
@@ -279,12 +279,11 @@ void Svcmd_AddIP_f(void) {
 	char str[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 2) {
-		G_Printf("Usage: addip < ip - mask > \n");
+		G_Printf("Usage: addip <ip-mask>\n");
 		return;
 	}
 
 	trap_Argv(1, str, sizeof(str));
-
 	AddIP(str);
 }
 
@@ -299,7 +298,7 @@ void Svcmd_RemoveIP_f(void) {
 	char str[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 2) {
-		G_Printf("Usage: removeip <ip - mask> \n");
+		G_Printf("Usage: removeip <ip-mask>\n");
 		return;
 	}
 
@@ -483,7 +482,7 @@ void Svcmd_ForceTeam_f(void) {
 	char str[MAX_TOKEN_CHARS];
 
 	if (trap_Argc() < 3) {
-		G_Printf("Usage: forceTeam < player > < team > \n");
+		G_Printf("Usage: forceTeam <player> <team>\n");
 		return;
 	}
 	// find the player
