@@ -137,13 +137,11 @@ punctuation_t default_punctuations[] = {
 #ifdef BOTLIB
 char basefolder[MAX_QPATH];
 #endif
-
-// ===========================================================================
-// 
-// Parameter:				 - 
-// Returns:					 - 
-// Changes Globals:		 - 
-// ===========================================================================
+/*
+=======================================================================================================================================
+PS_CreatePunctuationTable
+=======================================================================================================================================
+*/
 void PS_CreatePunctuationTable(script_t *script, punctuation_t *punctuations) {
 	int i;
 	punctuation_t *p, *lastp, *newp;
@@ -174,13 +172,13 @@ void PS_CreatePunctuationTable(script_t *script, punctuation_t *punctuations) {
 			else script->punctuationtable[(unsigned int)newp->p[0]] = newp;
 		}
 	}
-} // end of the function PS_CreatePunctuationTable
-// ===========================================================================
-// 
-// Parameter:				 - 
-// Returns:					 - 
-// Changes Globals:		 - 
-// ===========================================================================
+}
+
+/*
+=======================================================================================================================================
+PunctuationFromNum
+=======================================================================================================================================
+*/
 char *PunctuationFromNum(script_t *script, int num) {
 	int i;
 
@@ -189,13 +187,13 @@ char *PunctuationFromNum(script_t *script, int num) {
 	}
 
 	return "unknown punctuation";
-} // end of the function PunctuationFromNum
-// ===========================================================================
-// 
-// Parameter:				 - 
-// Returns:					 - 
-// Changes Globals:		 - 
-// ===========================================================================
+}
+
+/*
+=======================================================================================================================================
+ScriptError
+=======================================================================================================================================
+*/
 void QDECL ScriptError(script_t *script, char *str, ...) {
 	char text[1024];
 	va_list ap;
@@ -211,13 +209,13 @@ void QDECL ScriptError(script_t *script, char *str, ...) {
 #ifdef BSPC
 	Log_Print("error: file %s, line %d: %s\n", script->filename, script->line, text);
 #endif // BSPC
-} // end of the function ScriptError
-// ===========================================================================
-// 
-// Parameter:				 - 
-// Returns:					 - 
-// Changes Globals:		 - 
-// ===========================================================================
+}
+
+/*
+=======================================================================================================================================
+ScriptWarning
+=======================================================================================================================================
+*/
 void QDECL ScriptWarning(script_t *script, char *str, ...) {
 	char text[1024];
 	va_list ap;
@@ -233,13 +231,13 @@ void QDECL ScriptWarning(script_t *script, char *str, ...) {
 #ifdef BSPC
 	Log_Print("warning: file %s, line %d: %s\n", script->filename, script->line, text);
 #endif // BSPC
-} // end of the function ScriptWarning
-// ===========================================================================
-// 
-// Parameter:				 - 
-// Returns:					 - 
-// Changes Globals:		 - 
-// ===========================================================================
+}
+
+/*
+=======================================================================================================================================
+SetScriptPunctuations
+=======================================================================================================================================
+*/
 void SetScriptPunctuations(script_t *script, punctuation_t *p) {
 #ifdef PUNCTABLE
 	if (p)PS_CreatePunctuationTable(script, p);
