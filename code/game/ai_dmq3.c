@@ -56,7 +56,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 bot_waypoint_t botai_waypoints[MAX_WAYPOINTS];
 bot_waypoint_t *botai_freewaypoints;
-// NOTE: not using a cvars which can be updated because the game should be reloaded anyway
+// NOTE: not using a cvar which can be updated because the game should be reloaded anyway
 int gametype; // game type
 
 vmCvar_t bot_grapple;
@@ -1472,7 +1472,7 @@ char *PlayerName(int playernum, char *name, int size) {
 		return "[playernum out of range]";
 	}
 
-	trap_GetConfigstring(CS_PLAYERS+playernum, buf, sizeof(buf));
+	trap_GetConfigstring(CS_PLAYERS + playernum, buf, sizeof(buf));
 	strncpy(name, Info_ValueForKey(buf, "n"), size - 1);
 
 	name[size - 1] = '\0';

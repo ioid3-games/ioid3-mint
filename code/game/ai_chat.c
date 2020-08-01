@@ -631,7 +631,7 @@ int BotChat_EndLevel(bot_state_t *bs) {
 	if (bs->lastchat_time > FloatTime() - TIME_BETWEENCHATTING) {
 		return qfalse;
 	}
-	// teamplay
+	// don't chat in teamplay
 	if (TeamPlayIsOn()) {
 #ifdef MISSIONPACK
 		if (BotIsFirstInRankings(bs)) {
@@ -718,7 +718,7 @@ int BotChat_Death(bot_state_t *bs) {
 
 		bs->chatto = CHAT_TEAM;
 	} else {
-		// teamplay
+		// don't chat in teamplay
 		if (TeamPlayIsOn()) {
 #ifdef MISSIONPACK
 			EA_Command(bs->playernum, "vtaunt");
@@ -735,7 +735,7 @@ int BotChat_Death(bot_state_t *bs) {
 		} else if (bs->botdeathtype == MOD_FALLING) {
 			BotAI_BotInitialChat(bs, "death_cratered", BotRandomOpponentName(bs), NULL);
 		// all other suicides by own weapon
-		} else if (bs->botsuicide || bs->botdeathtype == MOD_CRUSH || bs->botdeathtype == MOD_SUICIDE || bs->botdeathtype == MOD_TARGET_LASER || bs->botdeathtype == MOD_TRIGGER_HURT || bs->botdeathtype == MOD_UNKNOWN) { // all other suicides by own weapon
+		} else if (bs->botsuicide || bs->botdeathtype == MOD_CRUSH || bs->botdeathtype == MOD_SUICIDE || bs->botdeathtype == MOD_TARGET_LASER || bs->botdeathtype == MOD_TRIGGER_HURT || bs->botdeathtype == MOD_UNKNOWN) {
 			BotAI_BotInitialChat(bs, "death_suicide", BotRandomOpponentName(bs), NULL);
 		} else if (bs->botdeathtype == MOD_TELEFRAG) {
 			BotAI_BotInitialChat(bs, "death_telefrag", name, NULL);
@@ -1179,7 +1179,7 @@ int BotChat_Random(bot_state_t *bs) {
 	} else {
 		EasyPlayerName(bs->lastkilledplayer, name, sizeof(name));
 	}
-
+	// don't chat in teamplay
 	if (TeamPlayIsOn()) {
 #ifdef MISSIONPACK
 		EA_Command(bs->playernum, "vtaunt");
